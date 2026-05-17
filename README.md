@@ -21,10 +21,10 @@ Locked palette (see `tailwind.config.ts`):
 
 | Token | Hex |
 |---|---|
-| `navy` | `#162F4A` |
-| `navy-deep` | `#0F2032` |
-| `salt` | `#EFEEE7` |
+| `olive-deep` | `#1B1F17` |
+| `olive` | `#3B4131` |
 | `brown` | `#2D291E` |
+| `salt` | `#EFEEE7` |
 | `yellow` | `#EFFDA4` |
 
 Type: Source Sans Pro 400 / 600 (`font-sans`). Courier for metadata (`font-mono` / `.meta`).

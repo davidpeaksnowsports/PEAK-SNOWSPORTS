@@ -11,7 +11,7 @@
   }
 
   html {
-    @apply bg-navy-deep text-salt antialiased;
+    @apply bg-olive-deep text-salt antialiased;
     font-family: theme('fontFamily.sans');
   }
 
@@ -20,7 +20,7 @@
   }
 
   ::selection {
-    @apply bg-yellow text-navy-deep;
+    @apply bg-yellow text-olive-deep;
   }
 
   a {

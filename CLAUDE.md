@@ -41,12 +41,22 @@ Examples:
 - ❌ "Elevating your snow sports journey to new heights"
 
 ### Visual language
-- **Dark-mode-first.** Deep charcoal primary surface (#0A0E12 area), high-contrast white type. Avoids the corporate navy/baby-blue ski-school cliché.
-- **One signature accent colour** — TBD during design phase. Candidates: snow-touched blue, sunrise-on-piste orange, or alpine green.
-- **Type:** Big confident sans for display headlines (Inter Tight, Söhne, or Geist at 80–120px weight 600+ on desktop hero). All-caps where it earns it. Body in Inter or similar warm grotesque.
+- **Dark-mode-first.** Deep olive primary surface, high-contrast salt type. Avoids the corporate navy/baby-blue ski-school cliché.
+- **Type:** Source Sans Pro 400/600 for display + body. Courier for metadata (kickers, bylines, captions, timestamps).
 - **Imagery:** Real, raw mountain photography. Real Peak team faces. Video backgrounds on hero. Instructor portraits shot consistently — same lighting, same crop, builds the team as a visual ensemble.
 - **Layout:** Full-bleed everywhere. Generous vertical rhythm. Mobile-first (majority of traffic is mobile per Arch discovery).
 - **No stock photo clichés.** No corporate-handshake imagery, no generic-skier-in-action stock.
+
+### Palette (locked)
+Defined in [`tailwind.config.ts`](./tailwind.config.ts). Do not introduce hex codes outside that file.
+
+| Token | Hex | Role |
+|---|---|---|
+| `olive-deep` | `#1B1F17` | Primary dark surface (body bg, nav, footer) |
+| `olive` | `#3B4131` | Mid-tone — cards, elevated surfaces. Matches the team uniform. |
+| `brown` | `#2D291E` | Warm dark alt surface. Sectional accent. |
+| `salt` | `#EFEEE7` | Type and subtle borders. |
+| `yellow` | `#EFFDA4` | Single signature accent — kickers, CTAs, links. Used sparingly. |
 
 ### Aspirational references
 - **barrys.com** — the lifestyle/brand-led model. Confident type, full-bleed video, booking tucked behind a single CTA.

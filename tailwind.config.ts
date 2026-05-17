@@ -7,12 +7,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: {
-          DEFAULT: '#162F4A',
-          deep: '#0F2032',
+        olive: {
+          DEFAULT: '#3B4131', // mid-tone, matches team uniform jackets
+          deep: '#1B1F17',    // primary dark surface
         },
+        brown: '#2D291E',     // warm dark — alt surface, sectional accent
         salt: '#EFEEE7',
-        brown: '#2D291E',
         yellow: '#EFFDA4',
       },
       fontFamily: {
