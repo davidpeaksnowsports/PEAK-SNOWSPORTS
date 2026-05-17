@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import PostCard from '../../components/journal/PostCard.astro';
+
+const categories = ['All', 'Resort guides', 'Kit reviews', 'Season updates', 'Technique', 'GAP stories', 'Instructor profiles'];
+
+const posts = Array.from({ length: 9 }, (_, i) => ({
+  slug: `post-${i + 1}`,
+  title: `Lorem ipsum dolor sit amet ${i + 1}`,
+  category: categories[(i % (categories.length - 1)) + 1],
+  author: ['George Walton', 'Marc Walton', 'Tom Peek'][i % 3],
+  date: '12 Mar 2026',
+}));
+---
+
+<BaseLayout title="Journal — Peak Snowsports">
+  <Hero
+    kicker="Journal"
+    headline="Words from the team."
+    sub="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    variant="compact"
+  />
+
+  <Section>
+    <div class="flex flex-wrap gap-3">
+      {categories.map((c, i) => (
+        <button class={`meta border px-3 py-2 ${i === 0 ? 'border-yellow text-yellow' : 'border-salt/20 text-salt/70 hover:border-yellow hover:text-yellow'}`}>
+          {c}
+        </button>
+      ))}
+    </div>
+
+    <div class="mt-16 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+      {posts.map((p) => (
+        <PostCard
+          title={p.title}
+          category={p.category}
+          author={p.author}
+          date={p.date}
+          href={`/journal/${p.slug}`}
+        />
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

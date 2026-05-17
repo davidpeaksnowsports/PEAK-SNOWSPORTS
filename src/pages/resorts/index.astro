@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import Card from '../../components/ui/Card.astro';
+import { LOREM } from '../../lib/utils';
+
+const resorts = [
+  { slug: 'morzine', name: 'Morzine', kicker: 'Resort 01' },
+  { slug: 'chatel', name: 'Chatel', kicker: 'Resort 02' },
+  { slug: 'les-gets', name: 'Les Gets', kicker: 'Resort 03' },
+];
+---
+
+<BaseLayout title="Resorts — Peak Snowsports">
+  <Hero
+    kicker="Resorts"
+    headline="Three resorts. One ski school."
+    sub={LOREM}
+    variant="compact"
+  />
+
+  <Section kicker="Portes du Soleil" title="Pick the resort that fits.">
+    <div class="grid gap-6 md:grid-cols-3">
+      {resorts.map((r) => (
+        <Card href={`/resorts/${r.slug}`} kicker={r.kicker} title={r.name}>
+          {LOREM}
+        </Card>
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

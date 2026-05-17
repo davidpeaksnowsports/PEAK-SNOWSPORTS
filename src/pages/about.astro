@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import Section from '../components/ui/Section.astro';
+import { LOREM, LOREM_LONG } from '../lib/utils';
+
+const stats = [
+  { value: '20,000+', label: 'Clients taught' },
+  { value: '25+', label: 'Instructors' },
+  { value: '3', label: 'Resorts' },
+  { value: '12+', label: 'Seasons' },
+];
+---
+
+<BaseLayout title="About — Peak Snowsports">
+  <Hero
+    kicker="About"
+    headline="We don't run lessons. We build skiers."
+    sub={LOREM}
+    variant="full"
+  />
+
+  <Section kicker="The story" title="How Peak started.">
+    <div class="grid gap-8 text-lg leading-relaxed text-salt/80 md:grid-cols-2">
+      <p>{LOREM_LONG}</p>
+      <p>{LOREM_LONG}</p>
+    </div>
+  </Section>
+
+  <Section kicker="By the numbers" title="A network, not a sole trader.">
+    <div class="grid gap-8 md:grid-cols-4">
+      {stats.map((s) => (
+        <div class="border-t border-salt/10 pt-6">
+          <p class="text-5xl font-semibold text-yellow">{s.value}</p>
+          <p class="meta mt-3 text-salt/60">{s.label}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section kicker="Philosophy" title="Time. Team. Experience.">
+    <div class="grid gap-8 text-lg leading-relaxed text-salt/80 md:grid-cols-2">
+      <p>{LOREM_LONG}</p>
+      <p>{LOREM_LONG}</p>
+    </div>
+  </Section>
+</BaseLayout>

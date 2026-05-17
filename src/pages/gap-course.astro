@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import Section from '../components/ui/Section.astro';
+import Card from '../components/ui/Card.astro';
+import { LOREM, LOREM_LONG } from '../lib/utils';
+
+const weeks = Array.from({ length: 6 }, (_, i) => ({
+  label: `Week ${i + 1}`,
+  title: `Lorem ipsum dolor sit amet ${i + 1}`,
+  body: LOREM,
+}));
+
+const coaches = [
+  { name: 'George Walton', role: 'Lead coach' },
+  { name: 'Marc Walton', role: 'Operations / coach' },
+  { name: 'Tom Peek', role: 'Technical coach' },
+  { name: 'Eilidh', role: 'Performance coach' },
+];
+---
+
+<BaseLayout title="GAP Course — Peak Snowsports">
+  <Hero
+    kicker="GAP Course"
+    headline="Six weeks. From skier to instructor."
+    sub="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Six weeks in the Portes du Soleil. Real qualifications. Real teaching."
+    primaryCta={{ href: '#enquire', label: 'Enquire now' }}
+    variant="full"
+  />
+
+  <Section kicker="Who it's for" title="If you're serious about it, we'll match you.">
+    <p class="max-w-2xl text-lg text-salt/80">{LOREM_LONG}</p>
+  </Section>
+
+  <Section kicker="The six weeks" title="Structured to actually work.">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {weeks.map((w) => (
+        <Card kicker={w.label} title={w.title}>{w.body}</Card>
+      ))}
+    </div>
+  </Section>
+
+  <Section kicker="The team" title="George. Marc. Tom. Eilidh.">
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      {coaches.map((c) => (
+        <div>
+          <div class="aspect-[3/4] bg-brown" aria-hidden="true" />
+          <p class="meta mt-4 text-yellow">{c.role}</p>
+          <h3 class="mt-2 text-xl font-semibold">{c.name}</h3>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section kicker="Alumni" title="Lorem ipsum dolor sit amet.">
+    <div class="grid gap-12 md:grid-cols-2">
+      {[1, 2].map((n) => (
+        <figure class="border-l border-yellow pl-8">
+          <blockquote class="text-2xl font-semibold leading-snug">
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. GAP {2024 + n} cohort."
+          </blockquote>
+          <figcaption class="meta mt-6 text-salt/60">Alumnus {n} · GAP {2024 + n}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </Section>
+
+  <Section id="enquire" kicker="Enquire" title="Tell us about you.">
+    <form class="grid max-w-2xl gap-6" action="#" method="post">
+      <label class="block">
+        <span class="meta text-salt/60">Name</span>
+        <input
+          type="text"
+          name="name"
+          required
+          class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-salt/60">Email</span>
+        <input
+          type="email"
+          name="email"
+          required
+          class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-salt/60">Tell us about your skiing</span>
+        <textarea
+          name="message"
+          rows="4"
+          class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none"
+        />
+      </label>
+      <button type="submit" class="justify-self-start bg-yellow px-6 py-3 text-sm font-semibold uppercase tracking-wider text-navy-deep hover:bg-salt">
+        Send enquiry
+      </button>
+      <p class="meta text-salt/40">Submissions route to the WhatsApp GAP track.</p>
+    </form>
+  </Section>
+</BaseLayout>

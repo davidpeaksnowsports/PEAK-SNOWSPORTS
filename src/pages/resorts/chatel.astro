@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import { LOREM, LOREM_LONG } from '../../lib/utils';
+---
+
+<BaseLayout title="Ski lessons in Chatel — Peak Snowsports" description="Ski lessons in Chatel with Peak Snowsports.">
+  <Hero
+    kicker="Resorts / Chatel"
+    headline="Chatel."
+    sub={LOREM}
+    primaryCta={{ href: '/book', label: 'Book a lesson in Chatel' }}
+    variant="full"
+  />
+
+  <Section kicker="The resort" title="Lorem ipsum dolor sit amet.">
+    <p class="max-w-2xl text-lg text-salt/80">{LOREM_LONG}</p>
+  </Section>
+
+  <Section kicker="Meeting points" title="Where you'll find us.">
+    <div class="aspect-[16/9] bg-brown" aria-hidden="true" />
+  </Section>
+</BaseLayout>

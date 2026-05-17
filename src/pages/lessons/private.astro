@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import BookingWidget from '../../components/booking/BookingWidget.astro';
+import { LOREM, LOREM_LONG } from '../../lib/utils';
+---
+
+<BaseLayout title="Private lessons — Peak Snowsports">
+  <Hero
+    kicker="Lessons / Private"
+    headline="One instructor. One goal. Yours."
+    sub={LOREM}
+    primaryCta={{ href: '#availability', label: 'Check availability' }}
+    secondaryCta={{ href: '/instructors', label: 'Request an instructor' }}
+    variant="compact"
+  />
+
+  <Section kicker="Who it's for" title="Lorem ipsum dolor sit amet.">
+    <p class="max-w-2xl text-lg text-salt/80">{LOREM_LONG}</p>
+  </Section>
+
+  <Section kicker="What's included" title="Everything in the lesson.">
+    <ul class="grid gap-4 md:grid-cols-2">
+      {Array.from({ length: 6 }, (_, i) => (
+        <li class="border-l border-yellow pl-6 text-salt/80">Lorem ipsum dolor sit amet {i + 1}.</li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section id="availability" kicker="Availability" title="Book a private lesson.">
+    <BookingWidget productId="private-lesson" variant="product" />
+  </Section>
+</BaseLayout>

@@ -1,0 +1,27 @@
+---
+interface Props {
+  productId?: string;
+  variant?: 'full' | 'product';
+}
+
+const { productId, variant = 'product' } = Astro.props;
+---
+
+<!--
+  Placeholder for the Arch booking widget embed.
+  Final integration TBC with Rachel Vaclik (Arch PM) and Jake Charlton (Arch designer).
+  See CLAUDE.md §7.
+-->
+<div
+  class="flex min-h-[480px] flex-col items-center justify-center border border-dashed border-salt/30 bg-navy/50 p-8 text-center"
+  data-arch-widget
+  data-product={productId}
+  data-variant={variant}
+>
+  <p class="meta text-yellow">arch booking widget</p>
+  <p class="mt-4 max-w-md text-sm text-salt/70">
+    {variant === 'full'
+      ? 'Full Arch widget mounts here on /book. Coordinate visual tokens with Jake (Arch).'
+      : `Inline availability for product ${productId ?? '<set product id>'} mounts here.`}
+  </p>
+</div>

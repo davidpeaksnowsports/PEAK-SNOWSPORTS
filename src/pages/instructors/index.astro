@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import InstructorCard from '../../components/instructors/InstructorCard.astro';
+import { LOREM } from '../../lib/utils';
+
+const resorts = ['All', 'Morzine', 'Chatel', 'Les Gets'];
+const specialities = ['All', 'Private', 'Group', 'Family', 'Off-piste', 'Race'];
+const languages = ['All', 'EN', 'FR', 'DE', 'NL'];
+
+const instructors = Array.from({ length: 12 }, (_, i) => ({
+  name: `Instructor ${i + 1}`,
+  slug: `instructor-${i + 1}`,
+  resort: ['Morzine', 'Chatel', 'Les Gets'][i % 3],
+  speciality: ['Private', 'Off-piste', 'Race'][i % 3],
+}));
+---
+
+<BaseLayout title="Instructors — Peak Snowsports">
+  <Hero
+    kicker="The team"
+    headline="25+ instructors. None of them anonymous."
+    sub={LOREM}
+    variant="compact"
+  />
+
+  <Section kicker="Find your instructor" title="Filter the team.">
+    <div class="grid gap-4 md:grid-cols-3">
+      <label class="block">
+        <span class="meta text-salt/60">Resort</span>
+        <select class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none">
+          {resorts.map((r) => <option>{r}</option>)}
+        </select>
+      </label>
+      <label class="block">
+        <span class="meta text-salt/60">Speciality</span>
+        <select class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none">
+          {specialities.map((s) => <option>{s}</option>)}
+        </select>
+      </label>
+      <label class="block">
+        <span class="meta text-salt/60">Language</span>
+        <select class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none">
+          {languages.map((l) => <option>{l}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <div class="mt-16 grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-4">
+      {instructors.map((i) => (
+        <InstructorCard
+          name={i.name}
+          resort={i.resort}
+          speciality={i.speciality}
+          href={`/instructors/${i.slug}`}
+        />
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

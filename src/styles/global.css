@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Source Sans Pro 400 + 600, Courier for metadata.
+   Loaded via Google Fonts for now; swap to self-hosted /public/fonts when assets land. */
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    @apply bg-navy-deep text-salt antialiased;
+    font-family: theme('fontFamily.sans');
+  }
+
+  body {
+    @apply min-h-screen;
+  }
+
+  ::selection {
+    @apply bg-yellow text-navy-deep;
+  }
+
+  a {
+    @apply underline-offset-4 hover:underline;
+  }
+
+  /* Courier used for metadata: bylines, timestamps, captions, kicker text. */
+  .meta {
+    font-family: theme('fontFamily.mono');
+    @apply text-xs uppercase tracking-widest;
+  }
+}

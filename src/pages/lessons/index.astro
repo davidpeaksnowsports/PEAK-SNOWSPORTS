@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import Card from '../../components/ui/Card.astro';
+import { LOREM } from '../../lib/utils';
+
+const products = [
+  { slug: 'private', name: 'Private lessons', kicker: 'One on one' },
+  { slug: 'group', name: 'Group lessons', kicker: 'Small groups' },
+  { slug: 'family', name: 'Family lessons', kicker: 'All ages' },
+  { slug: 'off-piste', name: 'Off-piste & freeride', kicker: 'Beyond the rope' },
+  { slug: 'race-coaching', name: 'Race coaching', kicker: 'Gates and timing' },
+];
+---
+
+<BaseLayout title="Lessons — Peak Snowsports">
+  <Hero
+    kicker="Lessons"
+    headline="Five lesson products. One standard."
+    sub={LOREM}
+    primaryCta={{ href: '/book', label: 'Check availability' }}
+    variant="compact"
+  />
+
+  <Section kicker="Choose your lesson" title="What kind of skier are you becoming?">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {products.map((p) => (
+        <Card href={`/lessons/${p.slug}`} kicker={p.kicker} title={p.name}>
+          {LOREM}
+        </Card>
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

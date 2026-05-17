@@ -1,0 +1,33 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  category?: string;
+  author?: string;
+  date?: string;
+}
+
+const { title, description, category, author, date } = Astro.props;
+---
+
+<BaseLayout title={`${title} — Peak Journal`} description={description}>
+  <article class="px-6 pb-24 pt-16 md:pb-32 md:pt-24">
+    <header class="mx-auto max-w-3xl">
+      {category && <p class="meta text-yellow">{category}</p>}
+      <h1 class="mt-6 text-4xl font-semibold leading-tight md:text-6xl">{title}</h1>
+      <p class="meta mt-6 text-salt/60">
+        {author && <span>{author}</span>}
+        {author && date && <span class="px-2">·</span>}
+        {date && <span>{date}</span>}
+      </p>
+    </header>
+
+    <div class="mx-auto mt-16 aspect-[16/9] max-w-5xl bg-brown" aria-hidden="true" />
+
+    <div class="prose-invert mx-auto mt-16 max-w-2xl space-y-6 text-lg leading-relaxed text-salt/80">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

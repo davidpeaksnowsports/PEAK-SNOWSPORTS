@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import { LOREM, LOREM_LONG } from '../../lib/utils';
+---
+
+<BaseLayout title="Ski lessons in Morzine — Peak Snowsports" description="Ski lessons in Morzine with Peak Snowsports.">
+  <Hero
+    kicker="Resorts / Morzine"
+    headline="Morzine."
+    sub={LOREM}
+    primaryCta={{ href: '/book', label: 'Book a lesson in Morzine' }}
+    variant="full"
+  />
+
+  <Section kicker="The resort" title="Lorem ipsum dolor sit amet.">
+    <p class="max-w-2xl text-lg text-salt/80">{LOREM_LONG}</p>
+  </Section>
+
+  <Section kicker="Meeting points" title="Where you'll find us.">
+    <div class="aspect-[16/9] bg-brown" aria-hidden="true" />
+    <p class="meta mt-4 text-salt/60">Map placeholder — meeting points sourced from Sanity.</p>
+  </Section>
+
+  <Section kicker="Our presence" title="Peak in Morzine.">
+    <p class="max-w-2xl text-lg text-salt/80">{LOREM_LONG}</p>
+  </Section>
+</BaseLayout>

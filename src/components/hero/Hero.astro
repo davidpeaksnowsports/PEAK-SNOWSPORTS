@@ -1,0 +1,52 @@
+---
+interface Props {
+  kicker?: string;
+  headline: string;
+  sub?: string;
+  primaryCta?: { href: string; label: string };
+  secondaryCta?: { href: string; label: string };
+  variant?: 'full' | 'compact';
+}
+
+const {
+  kicker,
+  headline,
+  sub,
+  primaryCta,
+  secondaryCta,
+  variant = 'full',
+} = Astro.props;
+
+const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
+---
+
+<section class={`relative flex ${height} items-end overflow-hidden bg-brown`}>
+  <div class="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/70 to-transparent" />
+  <div class="relative mx-auto w-full max-w-screen-2xl px-6 py-16 md:py-24">
+    {kicker && <p class="meta text-yellow">{kicker}</p>}
+    <h1 class="mt-4 max-w-5xl text-5xl font-semibold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
+      {headline}
+    </h1>
+    {sub && <p class="mt-6 max-w-2xl text-lg text-salt/80 md:text-xl">{sub}</p>}
+    {(primaryCta || secondaryCta) && (
+      <div class="mt-10 flex flex-wrap gap-4">
+        {primaryCta && (
+          <a
+            href={primaryCta.href}
+            class="inline-flex items-center bg-yellow px-6 py-3 text-sm font-semibold uppercase tracking-wider text-navy-deep no-underline hover:bg-salt"
+          >
+            {primaryCta.label}
+          </a>
+        )}
+        {secondaryCta && (
+          <a
+            href={secondaryCta.href}
+            class="inline-flex items-center border border-salt/40 px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline hover:border-yellow hover:text-yellow"
+          >
+            {secondaryCta.label}
+          </a>
+        )}
+      </div>
+    )}
+  </div>
+</section>

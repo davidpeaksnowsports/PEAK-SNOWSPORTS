@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import Section from '../components/ui/Section.astro';
+import BookingWidget from '../components/booking/BookingWidget.astro';
+import { LOREM } from '../lib/utils';
+---
+
+<BaseLayout title="Book — Peak Snowsports">
+  <Hero
+    kicker="Book"
+    headline="Pick a date. Pick an instructor."
+    sub={LOREM}
+    variant="compact"
+  />
+
+  <Section>
+    <BookingWidget variant="full" />
+    <p class="meta mt-6 text-salt/40">
+      Widget delivered by Arch. Visual continuity coordinated with Jake Charlton.
+    </p>
+  </Section>
+</BaseLayout>

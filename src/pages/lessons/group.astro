@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import BookingWidget from '../../components/booking/BookingWidget.astro';
+import { LOREM, LOREM_LONG } from '../../lib/utils';
+---
+
+<BaseLayout title="Group lessons — Peak Snowsports">
+  <Hero
+    kicker="Lessons / Group"
+    headline="Small groups. Real progression."
+    sub={LOREM}
+    primaryCta={{ href: '#availability', label: 'Check availability' }}
+    variant="compact"
+  />
+
+  <Section kicker="Who it's for" title="Lorem ipsum dolor sit amet.">
+    <p class="max-w-2xl text-lg text-salt/80">{LOREM_LONG}</p>
+  </Section>
+
+  <Section id="availability" kicker="Availability" title="Book a group lesson.">
+    <BookingWidget productId="group-lesson" variant="product" />
+  </Section>
+</BaseLayout>

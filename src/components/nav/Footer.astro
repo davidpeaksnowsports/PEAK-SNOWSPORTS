@@ -1,0 +1,81 @@
+---
+const cols = [
+  {
+    title: 'Peak',
+    links: [
+      { href: '/about', label: 'About' },
+      { href: '/journal', label: 'Journal' },
+      { href: '/instructors', label: 'Instructors' },
+    ],
+  },
+  {
+    title: 'Book',
+    links: [
+      { href: '/lessons', label: 'Lessons' },
+      { href: '/gap-course', label: 'GAP Course' },
+      { href: '/book', label: 'Booking widget' },
+    ],
+  },
+  {
+    title: 'Resorts',
+    links: [
+      { href: '/resorts/morzine', label: 'Morzine' },
+      { href: '/resorts/chatel', label: 'Chatel' },
+      { href: '/resorts/les-gets', label: 'Les Gets' },
+    ],
+  },
+  {
+    title: 'Help',
+    links: [
+      { href: '/contact', label: 'Contact' },
+      { href: '/faqs', label: 'FAQs' },
+      { href: '/partners', label: 'Partner enquiries' },
+    ],
+  },
+];
+---
+
+<footer class="mt-32 border-t border-salt/10 bg-navy-deep">
+  <div class="mx-auto grid max-w-screen-2xl gap-12 px-6 py-16 md:grid-cols-5">
+    <div class="md:col-span-2">
+      <p class="meta text-yellow">peak snowsports</p>
+      <p class="mt-4 max-w-sm text-sm text-salt/70">
+        Morzine · Chatel · Les Gets. We don't run lessons. We build skiers.
+      </p>
+      <form class="mt-8 flex max-w-sm gap-2">
+        <input
+          type="email"
+          placeholder="email@example.com"
+          class="flex-1 border-b border-salt/30 bg-transparent py-2 text-sm placeholder:text-salt/40 focus:border-yellow focus:outline-none"
+          aria-label="Email for newsletter"
+        />
+        <button class="meta border border-salt/30 px-3 py-2 hover:border-yellow hover:text-yellow">
+          Subscribe
+        </button>
+      </form>
+    </div>
+
+    {cols.map((col) => (
+      <div>
+        <p class="meta text-salt/50">{col.title}</p>
+        <ul class="mt-4 space-y-2">
+          {col.links.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm no-underline hover:text-yellow">{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+
+  <div class="border-t border-salt/10">
+    <div class="mx-auto flex max-w-screen-2xl flex-col gap-4 px-6 py-6 text-xs text-salt/50 md:flex-row md:items-center md:justify-between">
+      <p>&copy; {new Date().getFullYear()} Peak Snowsports. All rights reserved.</p>
+      <div class="flex gap-6">
+        <a href="/privacy" class="no-underline hover:text-yellow">Privacy</a>
+        <a href="/terms" class="no-underline hover:text-yellow">T&amp;Cs</a>
+      </div>
+    </div>
+  </div>
+</footer>

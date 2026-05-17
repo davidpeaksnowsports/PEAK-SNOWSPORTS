@@ -1,0 +1,46 @@
+---
+const primary = [
+  { href: '/lessons', label: 'Lessons' },
+  { href: '/gap-course', label: 'GAP Course' },
+  { href: '/resorts', label: 'Resorts' },
+  { href: '/instructors', label: 'Instructors' },
+  { href: '/journal', label: 'Journal' },
+  { href: '/about', label: 'About' },
+];
+
+const secondary = [
+  { href: '/book', label: 'Book' },
+  { href: 'https://app.peaksnowsports.com', label: 'Account' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<header class="sticky top-0 z-50 border-b border-salt/10 bg-navy-deep/80 backdrop-blur">
+  <div class="mx-auto flex max-w-screen-2xl items-center justify-between px-6 py-4">
+    <a href="/" class="font-semibold tracking-tight no-underline">
+      <span class="meta block leading-none text-yellow">peak</span>
+      <span class="block text-lg leading-none">snowsports</span>
+    </a>
+
+    <nav class="hidden items-center gap-6 md:flex">
+      {primary.map((item) => (
+        <a href={item.href} class="text-sm no-underline hover:text-yellow">{item.label}</a>
+      ))}
+    </nav>
+
+    <div class="hidden items-center gap-4 md:flex">
+      {secondary.map((item) => (
+        <a href={item.href} class="meta no-underline hover:text-yellow">{item.label}</a>
+      ))}
+      <span class="meta text-salt/60">EN / FR</span>
+    </div>
+
+    <button
+      type="button"
+      class="md:hidden meta"
+      aria-label="Open menu"
+    >
+      Menu
+    </button>
+  </div>
+</header>
