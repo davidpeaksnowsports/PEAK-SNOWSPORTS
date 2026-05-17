@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import { LOREM, LOREM_LONG } from '../../lib/utils';
+import heroImage from '../../assets/images/hero-morzine.jpg';
 ---
 
 <BaseLayout title="Ski lessons in Morzine — Peak Snowsports" description="Ski lessons in Morzine with Peak Snowsports.">
@@ -12,6 +13,8 @@ import { LOREM, LOREM_LONG } from '../../lib/utils';
     sub={LOREM}
     primaryCta={{ href: '/book', label: 'Book a lesson in Morzine' }}
     variant="full"
+    image={heroImage}
+    imageAlt="A cliffside face above a Portes du Soleil chairlift."
   />
 
   <Section kicker="The resort" title="Lorem ipsum dolor sit amet.">

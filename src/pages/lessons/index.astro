@@ -4,6 +4,7 @@ import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import Card from '../../components/ui/Card.astro';
 import { LOREM } from '../../lib/utils';
+import heroImage from '../../assets/images/hero-lessons.jpg';
 
 const products = [
   { slug: 'private', name: 'Private lessons', kicker: 'One on one' },
@@ -21,6 +22,8 @@ const products = [
     sub={LOREM}
     primaryCta={{ href: '/book', label: 'Check availability' }}
     variant="compact"
+    image={heroImage}
+    imageAlt="A skier under a chairlift on a busy piste."
   />
 
   <Section kicker="Choose your lesson" title="What kind of skier are you becoming?">

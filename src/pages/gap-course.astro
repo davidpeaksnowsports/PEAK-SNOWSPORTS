@@ -4,6 +4,7 @@ import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
 import Card from '../components/ui/Card.astro';
 import { LOREM, LOREM_LONG } from '../lib/utils';
+import heroImage from '../assets/images/hero-gap.jpg';
 
 const weeks = Array.from({ length: 6 }, (_, i) => ({
   label: `Week ${i + 1}`,
@@ -26,6 +27,8 @@ const coaches = [
     sub="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Six weeks in the Portes du Soleil. Real qualifications. Real teaching."
     primaryCta={{ href: '#enquire', label: 'Enquire now' }}
     variant="full"
+    image={heroImage}
+    imageAlt="A GAP Course cohort regrouping below a rocky alpine face at dusk."
   />
 
   <Section kicker="Who it's for" title="If you're serious about it, we'll match you.">

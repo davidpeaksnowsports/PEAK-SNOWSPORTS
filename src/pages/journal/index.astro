@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import PostCard from '../../components/journal/PostCard.astro';
+import heroImage from '../../assets/images/hero-journal.jpg';
 
 const categories = ['All', 'Resort guides', 'Kit reviews', 'Season updates', 'Technique', 'GAP stories', 'Instructor profiles'];
 
@@ -21,6 +22,8 @@ const posts = Array.from({ length: 9 }, (_, i) => ({
     headline="Words from the team."
     sub="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     variant="compact"
+    image={heroImage}
+    imageAlt="Snow-laden pine forest against a pale alpine sky."
   />
 
   <Section>

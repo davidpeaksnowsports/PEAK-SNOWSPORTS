@@ -4,6 +4,7 @@ import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import InstructorCard from '../../components/instructors/InstructorCard.astro';
 import { LOREM } from '../../lib/utils';
+import heroImage from '../../assets/images/hero-instructors.jpg';
 
 const resorts = ['All', 'Morzine', 'Chatel', 'Les Gets'];
 const specialities = ['All', 'Private', 'Group', 'Family', 'Off-piste', 'Race'];
@@ -23,6 +24,8 @@ const instructors = Array.from({ length: 12 }, (_, i) => ({
     headline="25+ instructors. None of them anonymous."
     sub={LOREM}
     variant="compact"
+    image={heroImage}
+    imageAlt="Skiers and instructors spread across a piste in long afternoon shadow."
   />
 
   <Section kicker="Find your instructor" title="Filter the team.">

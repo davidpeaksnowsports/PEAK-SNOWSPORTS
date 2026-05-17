@@ -4,6 +4,7 @@ import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import Card from '../../components/ui/Card.astro';
 import { LOREM } from '../../lib/utils';
+import heroImage from '../../assets/images/hero-resorts.jpg';
 
 const resorts = [
   { slug: 'morzine', name: 'Morzine', kicker: 'Resort 01' },
@@ -18,6 +19,8 @@ const resorts = [
     headline="Three resorts. One ski school."
     sub={LOREM}
     variant="compact"
+    image={heroImage}
+    imageAlt="A piste in the Portes du Soleil dotted with skiers from above."
   />
 
   <Section kicker="Portes du Soleil" title="Pick the resort that fits.">
