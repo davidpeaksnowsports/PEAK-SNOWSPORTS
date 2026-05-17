@@ -146,7 +146,7 @@ peaksnowsports-web/
 ### Home (`/`)
 - Full-bleed hero with video background. Single headline statement ("LEARN TO SKI. PROPERLY." or similar — TBD). One primary CTA: "Book a lesson." Secondary: "Explore the GAP Course."
 - Three resort cards (Morzine / Chatel / Les Gets) with imagery.
-- "Why Peak" — three concise pillars (time, team, experience).
+- "Why Peak" — three concise pillars: **Premium**, **Personal**, **Professional**.
 - Instructor strip — scrolling horizontal showcase of team faces with names.
 - Two or three testimonials.
 - Journal teaser (latest 3 posts).

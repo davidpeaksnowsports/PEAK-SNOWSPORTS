@@ -14,9 +14,21 @@ const resorts = [
 ];
 
 const pillars = [
-  { kicker: 'Time', title: 'Time invested in the client', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.' },
-  { kicker: 'Team', title: 'Time invested in our team', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam.' },
-  { kicker: 'Experience', title: 'An experience, not a transaction', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor.' },
+  {
+    kicker: 'Premium',
+    title: 'Experiences. Not transactions.',
+    body: 'Lessons that become moments. A team committed to taking you out of your comfort zone and into something worth remembering.',
+  },
+  {
+    kicker: 'Personal',
+    title: 'Small groups. Real attention.',
+    body: 'Max six skiers in a group. Max four in the mini beginners. Kids’ lessons sized to age — three hours up to seven, four hours after.',
+  },
+  {
+    kicker: 'Professional',
+    title: 'The team that teaches the teachers.',
+    body: 'Every instructor holds the highest qualification in their country plus a full French Carte Pro. Led by ski instructor examiners — the people who train other schools’ staff.',
+  },
 ];
 
 const instructors = Array.from({ length: 6 }, (_, i) => ({
@@ -35,9 +47,9 @@ const posts = Array.from({ length: 3 }, (_, i) => ({
 
 <BaseLayout>
   <Hero
-    kicker="Morzine · Chatel · Les Gets"
+    kicker="Moments on snow"
     headline="Learn to ski. Properly."
-    sub="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    sub="Experiences, not transactions. Across Morzine, Chatel and Les Gets."
     primaryCta={{ href: '/book', label: 'Book a lesson' }}
     secondaryCta={{ href: '/gap-course', label: 'Explore the GAP Course' }}
     variant="full"
@@ -53,7 +65,7 @@ const posts = Array.from({ length: 3 }, (_, i) => ({
     </div>
   </Section>
 
-  <Section kicker="Why Peak" title="Time. Team. Experience.">
+  <Section kicker="Why Peak" title="Premium. Personal. Professional.">
     <div class="grid gap-6 md:grid-cols-3">
       {pillars.map((pillar) => (
         <Card kicker={pillar.kicker} title={pillar.title}>
@@ -74,17 +86,13 @@ const posts = Array.from({ length: 3 }, (_, i) => ({
     </div>
   </Section>
 
-  <Section kicker="Testimonials" title="Lorem ipsum dolor sit amet.">
-    <div class="grid gap-12 md:grid-cols-2">
-      {[1, 2].map((n) => (
-        <figure class="border-l border-yellow pl-8">
-          <blockquote class="text-2xl font-semibold leading-snug md:text-3xl">
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-          </blockquote>
-          <figcaption class="meta mt-6 text-salt/60">Client {n} · Private lessons · Morzine 2025</figcaption>
-        </figure>
-      ))}
-    </div>
+  <Section kicker="What clients say" title="Three years. Same family. Same answer.">
+    <figure class="mx-auto max-w-4xl border-l border-yellow pl-8 md:pl-12">
+      <blockquote class="text-2xl font-semibold leading-snug md:text-3xl">
+        “This is our third year of booking lessons for our boys (now aged 11 and 7) with Peak and they loved it more than ever. George and Marc were fun, patient and so skilled in ensuring that our boys were safe and progressed well. Rachel was kind, patient and lovely with our complete beginner niece (aged 4) — she progressed incredibly quickly in her 3-hour lesson. Thanks so much again, see you next time 🤙🏼”
+      </blockquote>
+      <figcaption class="meta mt-8 text-salt/60">Repeat client · Private &amp; kids’ lessons · Morzine</figcaption>
+    </figure>
   </Section>
 
   <Section kicker="From the journal" title="Words from the team.">
