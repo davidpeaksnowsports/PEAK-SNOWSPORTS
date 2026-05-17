@@ -6,6 +6,7 @@ import Card from '../components/ui/Card.astro';
 import InstructorCard from '../components/instructors/InstructorCard.astro';
 import PostCard from '../components/journal/PostCard.astro';
 import { LOREM } from '../lib/utils';
+import heroImage from '../assets/images/hero-home.jpg';
 
 const resorts = [
   { name: 'Morzine', href: '/resorts/morzine', kicker: 'Resort 01' },
@@ -53,6 +54,8 @@ const posts = Array.from({ length: 3 }, (_, i) => ({
     primaryCta={{ href: '/book', label: 'Book a lesson' }}
     secondaryCta={{ href: '/gap-course', label: 'Explore the GAP Course' }}
     variant="full"
+    image={heroImage}
+    imageAlt="A Peak Snowsports instructor carving on piste in Morzine."
   />
 
   <Section kicker="Three resorts" title="One school. Three resorts in the Portes du Soleil.">

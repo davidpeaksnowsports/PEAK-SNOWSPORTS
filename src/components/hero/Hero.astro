@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 interface Props {
   kicker?: string;
   headline: string;
@@ -6,6 +9,8 @@ interface Props {
   primaryCta?: { href: string; label: string };
   secondaryCta?: { href: string; label: string };
   variant?: 'full' | 'compact';
+  image?: ImageMetadata;
+  imageAlt?: string;
 }
 
 const {
@@ -15,13 +20,26 @@ const {
   primaryCta,
   secondaryCta,
   variant = 'full',
+  image,
+  imageAlt = '',
 } = Astro.props;
 
 const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
 ---
 
 <section class={`relative flex ${height} items-end overflow-hidden bg-brown`}>
-  <div class="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/70 to-transparent" />
+  {image && (
+    <Image
+      src={image}
+      alt={imageAlt}
+      widths={[640, 1024, 1600, 2400]}
+      sizes="100vw"
+      class="absolute inset-0 h-full w-full object-cover"
+      loading="eager"
+      fetchpriority="high"
+    />
+  )}
+  <div class="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/80 to-navy-deep/30" />
   <div class="relative mx-auto w-full max-w-screen-2xl px-6 py-16 md:py-24">
     {kicker && <p class="meta text-yellow">{kicker}</p>}
     <h1 class="mt-4 max-w-5xl text-5xl font-semibold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
