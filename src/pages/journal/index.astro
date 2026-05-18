@@ -5,14 +5,28 @@ import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import PostCard from '../../components/journal/PostCard.astro';
 import heroImage from '../../assets/images/hero-journal.jpg';
-import { formatDate } from '../../lib/utils';
-
-const categories = ['All', 'Resort guides', 'Kit reviews', 'Season updates', 'Technique', 'GAP stories', 'Instructor profiles'];
+import { formatDate, readingTime } from '../../lib/utils';
 
 const allPosts = await getCollection('journal', ({ data }) => !data.draft);
 const posts = allPosts.sort(
   (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
 );
+
+// Categories with counts — only show categories that have at least one post.
+const categoryCounts = new Map<string, number>();
+posts.forEach((p) => {
+  categoryCounts.set(p.data.category, (categoryCounts.get(p.data.category) ?? 0) + 1);
+});
+const categories = [{ label: 'All', href: '/journal', count: posts.length }];
+[...categoryCounts.keys()].sort().forEach((c) => {
+  categories.push({
+    label: c,
+    href: `/journal/category/${c.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    count: categoryCounts.get(c) ?? 0,
+  });
+});
+
+const [featured, ...rest] = posts;
 ---
 
 <BaseLayout title="Journal — Peak Snowsports">
@@ -28,23 +42,46 @@ const posts = allPosts.sort(
   <Section>
     <div class="flex flex-wrap gap-3">
       {categories.map((c, i) => (
-        <button class={`meta rounded-full border px-4 py-2 transition ${i === 0 ? 'border-yellow bg-yellow text-olive-deep' : 'border-olive/20 text-olive/70 hover:border-yellow hover:bg-yellow hover:text-olive-deep'}`}>
-          {c}
-        </button>
+        <a
+          href={c.href}
+          class={`meta rounded-full border px-4 py-2 no-underline transition ${i === 0 ? 'border-yellow bg-yellow text-olive-deep' : 'border-olive/20 text-olive/70 hover:border-yellow hover:bg-yellow hover:text-olive-deep'}`}
+        >
+          {c.label}
+          <span class="ml-1 text-olive-deep/40">{c.count}</span>
+        </a>
       ))}
     </div>
 
-    <div class="mt-16 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
-      {posts.map((p) => (
+    {featured && (
+      <div class="mt-16">
         <PostCard
-          title={p.data.title}
-          category={p.data.category}
-          author={p.data.author}
-          date={formatDate(p.data.publishedAt)}
-          href={`/journal/${p.id}`}
+          title={featured.data.title}
+          category={featured.data.category}
+          author={featured.data.author}
+          date={formatDate(featured.data.publishedAt)}
+          href={`/journal/${featured.id}`}
+          hero={featured.data.hero}
+          readingMinutes={readingTime(featured.body ?? '')}
+          featured
         />
-      ))}
-    </div>
+      </div>
+    )}
+
+    {rest.length > 0 && (
+      <div class="mt-16 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+        {rest.map((p) => (
+          <PostCard
+            title={p.data.title}
+            category={p.data.category}
+            author={p.data.author}
+            date={formatDate(p.data.publishedAt)}
+            href={`/journal/${p.id}`}
+            hero={p.data.hero}
+            readingMinutes={readingTime(p.body ?? '')}
+          />
+        ))}
+      </div>
+    )}
 
     {posts.length === 0 && (
       <p class="mt-16 text-olive/60">No posts yet. Check back soon.</p>

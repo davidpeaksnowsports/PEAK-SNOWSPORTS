@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content';
 import JournalLayout from '../../layouts/JournalLayout.astro';
 import Section from '../../components/ui/Section.astro';
 import PostCard from '../../components/journal/PostCard.astro';
-import { formatDate } from '../../lib/utils';
+import { formatDate, readingTime } from '../../lib/utils';
 
 export async function getStaticPaths() {
   const posts = await getCollection('journal', ({ data }) => !data.draft);
@@ -29,6 +29,7 @@ const moreFromAuthor = allPosts
   date={formatDate(post.data.publishedAt)}
   hero={post.data.hero}
   heroAlt={post.data.title}
+  readingMinutes={readingTime(post.body ?? '')}
 >
   <Content />
 </JournalLayout>
@@ -43,6 +44,8 @@ const moreFromAuthor = allPosts
           author={p.data.author}
           date={formatDate(p.data.publishedAt)}
           href={`/journal/${p.id}`}
+          hero={p.data.hero}
+          readingMinutes={readingTime(p.body ?? '')}
         />
       ))}
     </div>

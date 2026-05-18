@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Hero from '../../../components/hero/Hero.astro';
+import Section from '../../../components/ui/Section.astro';
+import PostCard from '../../../components/journal/PostCard.astro';
+import heroImage from '../../../assets/images/hero-journal.jpg';
+import { formatDate, readingTime } from '../../../lib/utils';
+
+const toSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+export async function getStaticPaths() {
+  const posts = await getCollection('journal', ({ data }) => !data.draft);
+  const uniqueCategories = [...new Set(posts.map((p) => p.data.category))];
+  return uniqueCategories.map((category) => ({
+    params: { category: category.toLowerCase().replace(/[^a-z0-9]+/g, '-') },
+    props: { categoryName: category },
+  }));
+}
+
+const { categoryName } = Astro.props;
+
+const allPosts = await getCollection('journal', ({ data }) => !data.draft);
+const posts = allPosts
+  .filter((p) => p.data.category === categoryName)
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+const categoryCounts = new Map<string, number>();
+allPosts.forEach((p) => {
+  categoryCounts.set(p.data.category, (categoryCounts.get(p.data.category) ?? 0) + 1);
+});
+
+const categories = [{ label: 'All', href: '/journal', count: allPosts.length, isActive: false }];
+[...categoryCounts.keys()].sort().forEach((c) => {
+  categories.push({
+    label: c,
+    href: `/journal/category/${toSlug(c)}`,
+    count: categoryCounts.get(c) ?? 0,
+    isActive: c === categoryName,
+  });
+});
+---
+
+<BaseLayout title={`${categoryName} — Peak Journal`}>
+  <Hero
+    kicker={`Journal · ${categoryName}`}
+    headline={categoryName + '.'}
+    sub={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} in this category.`}
+    variant="compact"
+    image={heroImage}
+    imageAlt="Snow-laden pine forest against a pale alpine sky."
+  />
+
+  <Section>
+    <div class="flex flex-wrap gap-3">
+      {categories.map((c) => (
+        <a
+          href={c.href}
+          class={`meta rounded-full border px-4 py-2 no-underline transition ${c.isActive ? 'border-yellow bg-yellow text-olive-deep' : 'border-olive/20 text-olive/70 hover:border-yellow hover:bg-yellow hover:text-olive-deep'}`}
+        >
+          {c.label}
+          <span class={`ml-1 ${c.isActive ? 'text-olive-deep/40' : 'text-olive/40'}`}>{c.count}</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="mt-16 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+      {posts.map((p) => (
+        <PostCard
+          title={p.data.title}
+          category={p.data.category}
+          author={p.data.author}
+          date={formatDate(p.data.publishedAt)}
+          href={`/journal/${p.id}`}
+          hero={p.data.hero}
+          readingMinutes={readingTime(p.body ?? '')}
+        />
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

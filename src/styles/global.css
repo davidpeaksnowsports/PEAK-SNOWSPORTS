@@ -43,4 +43,11 @@
     font-family: theme('fontFamily.mono');
     @apply text-xs uppercase tracking-widest;
   }
+
+  /* Drop cap on the first paragraph of journal articles. Editorial touch. */
+  .article-prose > p:first-of-type::first-letter {
+    font-family: theme('fontFamily.display');
+    @apply float-left mr-3 mt-2 text-7xl font-bold leading-none text-olive;
+    line-height: 0.85;
+  }
 }

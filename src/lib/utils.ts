@@ -2,6 +2,13 @@ export function cn(...classes: Array<string | false | null | undefined>): string
   return classes.filter(Boolean).join(' ');
 }
 
+export function readingTime(body: string): number {
+  // Strip frontmatter, code blocks, then count words. ~225 wpm reading speed.
+  const text = body.replace(/```[\s\S]*?```/g, '').replace(/[#>*_`\-]/g, '');
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 225));
+}
+
 export function formatDate(input: string | Date): string {
   const date = typeof input === 'string' ? new Date(input) : input;
   return date.toLocaleDateString('en-GB', {

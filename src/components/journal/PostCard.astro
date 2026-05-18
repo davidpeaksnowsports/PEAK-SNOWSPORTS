@@ -5,23 +5,53 @@ interface Props {
   author?: string;
   date?: string;
   href?: string;
+  hero?: string;
+  readingMinutes?: number;
+  featured?: boolean;
 }
 
-const { title, category, author, date, href = '#' } = Astro.props;
+const {
+  title,
+  category,
+  author,
+  date,
+  href = '#',
+  hero,
+  readingMinutes,
+  featured = false,
+} = Astro.props;
+
+const aspect = featured ? 'aspect-[16/9] md:aspect-[2/1]' : 'aspect-[16/10]';
+const titleSize = featured ? 'text-2xl md:text-4xl' : 'text-xl md:text-2xl';
 ---
 
 <a href={href} class="group block no-underline">
-  <div class="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-brown" aria-hidden="true" />
+  <div class={`w-full overflow-hidden rounded-2xl bg-brown ${aspect}`}>
+    {hero && (
+      <img
+        src={hero}
+        alt=""
+        class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+        loading="lazy"
+        aria-hidden="true"
+      />
+    )}
+  </div>
+
   <div class="mt-6">
-    <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">
-      {category ?? 'Journal'}
-    </span>
-    <h3 class="mt-4 text-xl font-semibold leading-snug underline-offset-4 group-hover:underline md:text-2xl">{title}</h3>
-    {(author || date) && (
-      <p class="meta mt-4 text-olive/50">
+    {category && (
+      <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">
+        {category}
+      </span>
+    )}
+    <h3 class={`mt-4 font-semibold leading-snug underline-offset-4 group-hover:underline ${titleSize}`}>{title}</h3>
+    {(author || date || readingMinutes) && (
+      <p class="meta mt-4 flex flex-wrap items-center gap-x-2 text-olive/50">
         {author && <span>{author}</span>}
-        {author && date && <span class="px-2">·</span>}
+        {author && date && <span>·</span>}
         {date && <span>{date}</span>}
+        {(author || date) && readingMinutes && <span>·</span>}
+        {readingMinutes && <span>{readingMinutes} min read</span>}
       </p>
     )}
   </div>
