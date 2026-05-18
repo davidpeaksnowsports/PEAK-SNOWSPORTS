@@ -45,6 +45,16 @@ const whyPeak = [
   },
 ];
 
+// Brothers in motion — alternated so no two same-brother are adjacent
+const motion = [
+  { src: '/images/about/david-motion-1.jpg',  alt: 'David carving in snow spray' },
+  { src: '/images/about/marc-motion-1.jpg',   alt: 'Marc on piste with a chairlift overhead' },
+  { src: '/images/about/george-motion-1.jpg', alt: 'George airborne in front of an alpine face' },
+  { src: '/images/about/george-motion-2.jpg', alt: 'George in deep powder' },
+  { src: '/images/about/david-motion-2.jpg',  alt: 'David mid-carve under a clear blue sky' },
+  { src: '/images/about/marc-motion-2.jpg',   alt: 'Marc on a powder turn' },
+];
+
 const brothers = [
   {
     name: 'George',
@@ -157,6 +167,21 @@ const brothers = [
           <h3 class="mt-6 font-display text-3xl font-bold tracking-tight">{b.name}</h3>
           <p class="mt-4 text-base leading-relaxed text-olive/80">{b.body}</p>
         </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section kicker="On the mountain" title="Where they're happiest.">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {motion.map((m) => (
+        <figure class="overflow-hidden rounded-3xl bg-brown">
+          <img
+            src={m.src}
+            alt={m.alt}
+            loading="lazy"
+            class="aspect-[4/3] h-full w-full object-cover transition duration-500 hover:scale-105"
+          />
+        </figure>
       ))}
     </div>
   </Section>
