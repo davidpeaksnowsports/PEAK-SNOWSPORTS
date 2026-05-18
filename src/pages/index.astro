@@ -1,12 +1,23 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
 import Card from '../components/ui/Card.astro';
 import InstructorCard from '../components/instructors/InstructorCard.astro';
 import PostCard from '../components/journal/PostCard.astro';
-import { LOREM } from '../lib/utils';
+import { LOREM, formatDate, readingTime } from '../lib/utils';
 import heroImage from '../assets/images/hero-home.jpg';
+
+const allInstructors = await getCollection('instructors', ({ data }) => !data.draft);
+const instructorStrip = allInstructors
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
+  .slice(0, 6);
+
+const allPosts = await getCollection('journal', ({ data }) => !data.draft);
+const latestPosts = allPosts
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 3);
 
 const resorts = [
   { name: 'Morzine', href: '/resorts/morzine', kicker: 'Resort 01' },
@@ -32,18 +43,6 @@ const pillars = [
   },
 ];
 
-const instructors = Array.from({ length: 6 }, (_, i) => ({
-  name: `Instructor ${i + 1}`,
-  resort: ['Morzine', 'Chatel', 'Les Gets'][i % 3],
-  speciality: 'Private · Off-piste',
-}));
-
-const posts = Array.from({ length: 3 }, (_, i) => ({
-  title: `Lorem ipsum dolor sit amet ${i + 1}`,
-  category: ['Resort guides', 'Technique', 'Season updates'][i],
-  author: 'George Walton',
-  date: '12 Mar 2026',
-}));
 ---
 
 <BaseLayout>
@@ -82,8 +81,14 @@ const posts = Array.from({ length: 3 }, (_, i) => ({
 
   <Section kicker="The team" title="25+ instructors. No anonymous ESF badges.">
     <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
-      {instructors.map((i) => (
-        <InstructorCard name={i.name} resort={i.resort} speciality={i.speciality} />
+      {instructorStrip.map((i) => (
+        <InstructorCard
+          name={i.data.name}
+          resort={i.data.resorts[0]}
+          role={i.data.role}
+          photo={i.data.photo}
+          href={`/instructors/${i.id}`}
+        />
       ))}
     </div>
     <div class="mt-12">
@@ -102,8 +107,16 @@ const posts = Array.from({ length: 3 }, (_, i) => ({
 
   <Section kicker="From the journal" title="Words from the team.">
     <div class="grid gap-12 md:grid-cols-3">
-      {posts.map((p) => (
-        <PostCard title={p.title} category={p.category} author={p.author} date={p.date} href="/journal" />
+      {latestPosts.map((p) => (
+        <PostCard
+          title={p.data.title}
+          category={p.data.category}
+          author={p.data.author}
+          date={formatDate(p.data.publishedAt)}
+          href={`/journal/${p.id}`}
+          hero={p.data.hero}
+          readingMinutes={readingTime(p.body ?? '')}
+        />
       ))}
     </div>
   </Section>

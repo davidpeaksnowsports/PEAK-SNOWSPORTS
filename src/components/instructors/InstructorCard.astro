@@ -1,21 +1,36 @@
 ---
 interface Props {
   name: string;
+  role?: string;
   resort?: string;
   speciality?: string;
+  photo?: string;
   href?: string;
 }
 
-const { name, resort, speciality, href = '#' } = Astro.props;
+const { name, role, resort, speciality, photo, href = '#' } = Astro.props;
 ---
 
 <a href={href} class="group block no-underline">
-  <div class="aspect-[3/4] w-full overflow-hidden rounded-2xl bg-brown" aria-hidden="true">
-    <!-- Instructor portrait — same lighting / same crop convention. -->
+  <div class="aspect-[3/4] w-full overflow-hidden rounded-2xl bg-brown">
+    {photo ? (
+      <img
+        src={photo}
+        alt={name}
+        loading="lazy"
+        class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+      />
+    ) : (
+      <div class="flex h-full w-full items-center justify-center">
+        <span class="meta text-salt/30">portrait pending</span>
+      </div>
+    )}
   </div>
   <div class="mt-4">
-    <p class="meta text-olive/50">{resort ?? 'Morzine'}</p>
-    <h3 class="mt-1 text-lg font-semibold group-hover:text-yellow">{name}</h3>
-    {speciality && <p class="mt-1 text-sm text-olive/60">{speciality}</p>}
+    {resort && <p class="meta text-olive/50">{resort}</p>}
+    <h3 class="mt-1 text-lg font-semibold leading-tight group-hover:underline">{name}</h3>
+    {(role || speciality) && (
+      <p class="mt-1 text-sm text-olive/60">{speciality ?? role}</p>
+    )}
   </div>
 </a>

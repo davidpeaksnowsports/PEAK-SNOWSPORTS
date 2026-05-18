@@ -1,28 +1,26 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import InstructorCard from '../../components/instructors/InstructorCard.astro';
-import { LOREM } from '../../lib/utils';
 import heroImage from '../../assets/images/hero-instructors.jpg';
 
-const resorts = ['All', 'Morzine', 'Chatel', 'Les Gets'];
-const specialities = ['All', 'Private', 'Group', 'Family', 'Off-piste', 'Race'];
-const languages = ['All', 'EN', 'FR', 'DE', 'NL'];
+const allInstructors = await getCollection('instructors', ({ data }) => !data.draft);
+const instructors = allInstructors.sort(
+  (a, b) => (a.data.order ?? 999) - (b.data.order ?? 999)
+);
 
-const instructors = Array.from({ length: 12 }, (_, i) => ({
-  name: `Instructor ${i + 1}`,
-  slug: `instructor-${i + 1}`,
-  resort: ['Morzine', 'Chatel', 'Les Gets'][i % 3],
-  speciality: ['Private', 'Off-piste', 'Race'][i % 3],
-}));
+// Unique values for the filter chips.
+const resorts = [...new Set(instructors.flatMap((i) => i.data.resorts))].sort();
+const languages = [...new Set(instructors.flatMap((i) => i.data.languages))].sort();
 ---
 
 <BaseLayout title="Instructors — Peak Snowsports">
   <Hero
     kicker="The team"
-    headline="25+ instructors. None of them anonymous."
-    sub={LOREM}
+    headline="No anonymous ESF badges."
+    sub="Every Peak instructor is BASI-qualified and holds a full French Carte Pro. Browse, or let us match you."
     variant="compact"
     image={heroImage}
     imageAlt="Skiers and instructors spread across a piste in long afternoon shadow."
@@ -33,18 +31,25 @@ const instructors = Array.from({ length: 12 }, (_, i) => ({
       <label class="block">
         <span class="meta text-olive/60">Resort</span>
         <select class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none">
+          <option>All</option>
           {resorts.map((r) => <option>{r}</option>)}
         </select>
       </label>
       <label class="block">
         <span class="meta text-olive/60">Speciality</span>
         <select class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none">
-          {specialities.map((s) => <option>{s}</option>)}
+          <option>All</option>
+          <option>Private</option>
+          <option>Group</option>
+          <option>Family</option>
+          <option>Off-piste</option>
+          <option>Race</option>
         </select>
       </label>
       <label class="block">
         <span class="meta text-olive/60">Language</span>
         <select class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none">
+          <option>All</option>
           {languages.map((l) => <option>{l}</option>)}
         </select>
       </label>
@@ -53,12 +58,17 @@ const instructors = Array.from({ length: 12 }, (_, i) => ({
     <div class="mt-16 grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-4">
       {instructors.map((i) => (
         <InstructorCard
-          name={i.name}
-          resort={i.resort}
-          speciality={i.speciality}
-          href={`/instructors/${i.slug}`}
+          name={i.data.name}
+          role={i.data.role}
+          resort={i.data.resorts[0]}
+          photo={i.data.photo}
+          href={`/instructors/${i.id}`}
         />
       ))}
     </div>
+
+    {instructors.length === 0 && (
+      <p class="mt-16 text-olive/60">No instructors yet.</p>
+    )}
   </Section>
 </BaseLayout>
