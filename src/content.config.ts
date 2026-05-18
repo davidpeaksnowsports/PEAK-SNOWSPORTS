@@ -48,4 +48,24 @@ const instructors = defineCollection({
   }),
 });
 
-export const collections = { journal, instructors };
+const resortCollection = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/resorts' }),
+  schema: z.object({
+    name: z.string(),
+    type: z.enum(['home', 'product']),
+    product: z.string().optional(),       // for type=product, e.g. "Ski camps", "GAP Course", "Race training"
+    country: z.string().default('France'),
+    parentArea: z.string().optional(),    // e.g. "Portes du Soleil", "Espace Killy"
+    knownFor: z.string(),
+    altitude: z.string().optional(),
+    liftCount: z.string().optional(),
+    runDistance: z.string().optional(),
+    transferTime: z.string().optional(),
+    meetingPoints: z.array(z.string()).optional(),
+    hero: z.string().optional(),
+    order: z.number().optional(),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
+export const collections = { journal, instructors, resorts: resortCollection };

@@ -1,35 +1,84 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
-import Card from '../../components/ui/Card.astro';
-import { LOREM } from '../../lib/utils';
 import heroImage from '../../assets/images/hero-resorts.jpg';
 
-const resorts = [
-  { slug: 'morzine', name: 'Morzine', kicker: 'Resort 01' },
-  { slug: 'chatel', name: 'Chatel', kicker: 'Resort 02' },
-  { slug: 'les-gets', name: 'Les Gets', kicker: 'Resort 03' },
-];
+const all = await getCollection('resorts', ({ data }) => !data.draft);
+const byOrder = (a, b) => (a.data.order ?? 999) - (b.data.order ?? 999);
+const homeResorts = all.filter((r) => r.data.type === 'home').sort(byOrder);
+const productResorts = all.filter((r) => r.data.type === 'product').sort(byOrder);
 ---
 
 <BaseLayout title="Resorts — Peak Snowsports">
   <Hero
     kicker="Resorts"
-    headline="Three resorts. One ski school."
-    sub={LOREM}
+    headline="Four home resorts. Four product destinations."
+    sub="Based in the Portes du Soleil. Travelling further for the specialty trips."
     variant="compact"
     image={heroImage}
     imageAlt="A piste in the Portes du Soleil dotted with skiers from above."
   />
 
-  <Section kicker="Portes du Soleil" title="Pick the resort that fits.">
-    <div class="grid gap-6 md:grid-cols-3">
-      {resorts.map((r) => (
-        <Card href={`/resorts/${r.slug}`} kicker={r.kicker} title={r.name}>
-          {LOREM}
-        </Card>
+  <!-- Home resorts -->
+  <Section kicker="Where we're based" title="Our home resorts.">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
+      Day-in / day-out, Peak runs lessons from four villages across the Portes du Soleil — one of the largest connected ski areas in the world.
+    </p>
+
+    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {homeResorts.map((r) => (
+        <a href={`/resorts/${r.id}`} class="group block no-underline">
+          <div class="aspect-[4/5] overflow-hidden rounded-3xl bg-brown">
+            {r.data.hero ? (
+              <img
+                src={r.data.hero}
+                alt={r.data.name}
+                loading="lazy"
+                class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <div class="flex h-full w-full items-center justify-center">
+                <span class="meta text-salt/30">image pending</span>
+              </div>
+            )}
+          </div>
+          <h3 class="mt-5 font-display text-3xl font-bold tracking-tight transition group-hover:text-yellow md:text-4xl">{r.data.name}</h3>
+          <p class="meta mt-2 text-olive/60">{r.data.knownFor}</p>
+        </a>
       ))}
     </div>
+  </Section>
+
+  <!-- Product-specific destinations -->
+  <Section kicker="Specialty destinations" title="Where we travel for specific products.">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
+      Beyond our home resorts, we run a small set of specialty trips at destinations chosen for the product — high-altitude snow-sure terrain, glacier coverage, or dedicated race venues.
+    </p>
+
+    <ul class="mt-16 divide-y divide-olive/10 border-y border-olive/10">
+      {productResorts.map((r) => (
+        <li>
+          <a
+            href={`/resorts/${r.id}`}
+            class="group grid gap-3 py-8 no-underline transition md:grid-cols-[1fr_minmax(0,420px)_auto] md:items-baseline md:gap-8 md:py-10"
+          >
+            <div class="flex items-baseline gap-3 md:gap-5">
+              <span class="font-display text-3xl font-bold tracking-tight transition group-hover:text-yellow md:text-5xl lg:text-6xl">
+                {r.data.name}.
+              </span>
+              {r.data.product && (
+                <span class="meta hidden shrink-0 rounded-full bg-yellow px-3 py-1 text-olive-deep sm:inline">
+                  {r.data.product}
+                </span>
+              )}
+            </div>
+            <span class="meta text-olive/55 md:text-right">{r.data.country}{r.data.parentArea ? ` · ${r.data.parentArea}` : ''}</span>
+            <span class="hidden font-display text-2xl transition group-hover:translate-x-2 group-hover:text-yellow md:inline md:text-3xl">→</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </Section>
 </BaseLayout>

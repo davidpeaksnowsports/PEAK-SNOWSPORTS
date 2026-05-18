@@ -1,0 +1,142 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+
+export async function getStaticPaths() {
+  const resorts = await getCollection('resorts', ({ data }) => !data.draft);
+  return resorts.map((resort) => ({
+    params: { slug: resort.id },
+    props: { resort, allResorts: resorts },
+  }));
+}
+
+const { resort, allResorts } = Astro.props;
+const { Content } = await render(resort);
+const d = resort.data;
+
+// Build the stats array, only include defined fields
+const stats = [
+  d.altitude && { label: 'Altitude', value: d.altitude },
+  d.liftCount && { label: 'Lifts', value: d.liftCount },
+  d.runDistance && { label: 'Pistes', value: d.runDistance },
+  d.transferTime && { label: 'Transfer', value: d.transferTime },
+].filter(Boolean);
+
+const otherResorts = allResorts
+  .filter((r) => r.id !== resort.id && r.data.type === d.type)
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
+  .slice(0, 3);
+---
+
+<BaseLayout title={`${d.name} — Peak Snowsports`} description={d.knownFor}>
+  <!-- Hero -->
+  <section class="relative flex min-h-[60vh] items-end overflow-hidden bg-brown text-salt">
+    {d.hero && (
+      <img
+        src={d.hero}
+        alt={d.name}
+        class="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+      />
+    )}
+    <div class="absolute inset-0 bg-gradient-to-t from-olive-deep via-olive-deep/70 to-olive-deep/20" />
+    <div class="relative mx-auto w-full max-w-screen-2xl px-6 py-16 md:py-20">
+      <p class="meta text-salt/60">
+        <a href="/resorts" class="no-underline hover:text-yellow">Resorts</a>
+        <span class="px-2">/</span>
+        <span>{d.country}{d.parentArea ? ` · ${d.parentArea}` : ''}</span>
+      </p>
+      {d.type === 'product' && d.product && (
+        <p class="meta mt-4 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">
+          {d.product}
+        </p>
+      )}
+      <h1 class="mt-6 max-w-4xl text-6xl leading-[0.95] tracking-tight md:text-8xl">
+        {d.name}.
+      </h1>
+      <p class="mt-6 max-w-2xl text-lg text-salt/85 md:text-xl">{d.knownFor}</p>
+    </div>
+  </section>
+
+  <!-- Stat pills -->
+  {stats.length > 0 && (
+    <section class="border-b border-olive/10 px-6 py-10">
+      <div class="mx-auto flex max-w-screen-2xl flex-wrap gap-3">
+        {stats.map((s) => (
+          <span class="inline-flex items-center gap-3 rounded-full border border-olive/20 px-5 py-3">
+            <span class="meta text-olive/50">{s.label}</span>
+            <span class="text-sm font-semibold text-olive">{s.value}</span>
+          </span>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Body content from MD -->
+  <Section>
+    <div class="prose prose-lg max-w-3xl
+      prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-olive
+      prose-p:text-olive/80 prose-strong:text-olive
+      prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:text-yellow">
+      <Content />
+    </div>
+  </Section>
+
+  {/* Meeting points — home resorts only */}
+  {d.type === 'home' && d.meetingPoints && d.meetingPoints.length > 0 && (
+    <Section kicker="Meeting points" title="Where you'll find us.">
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        {d.meetingPoints.map((mp) => (
+          <div class="rounded-2xl border border-olive/15 bg-snow px-6 py-5">
+            <span class="meta text-olive/50">{d.name}</span>
+            <p class="mt-2 font-display text-xl font-bold tracking-tight">{mp}</p>
+          </div>
+        ))}
+      </div>
+    </Section>
+  )}
+
+  {/* CTAs */}
+  <Section>
+    <div class="border-t border-olive/10 pt-12">
+      <div class="flex flex-wrap gap-3">
+        <a
+          href="/book"
+          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+        >
+          {d.type === 'product' ? `Enquire about ${d.product}` : `Book a lesson in ${d.name}`} →
+        </a>
+        <a
+          href="/lessons"
+          class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+        >
+          See all lessons
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  {/* Other resorts of the same type */}
+  {otherResorts.length > 0 && (
+    <Section kicker={d.type === 'home' ? 'Where else we ski' : 'Other camps'} title="Keep exploring.">
+      <ul class="divide-y divide-olive/10 border-y border-olive/10">
+        {otherResorts.map((r) => (
+          <li>
+            <a
+              href={`/resorts/${r.id}`}
+              class="group flex items-baseline gap-4 py-6 no-underline transition md:gap-8"
+            >
+              <span class="font-display text-3xl font-bold tracking-tight transition group-hover:text-yellow md:text-5xl">
+                {r.data.name}.
+              </span>
+              <span class="meta hidden text-olive/50 md:inline">{r.data.knownFor}</span>
+              <span class="ml-auto font-display text-2xl transition group-hover:translate-x-2 group-hover:text-yellow md:text-3xl">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )}
+</BaseLayout>
