@@ -27,13 +27,15 @@
     @apply underline-offset-4 hover:underline;
   }
 
-  /* Display headlines use Fraunces — variable serif with optical sizing.
-     Heavy weight + tight tracking for impact at large sizes. */
+  /* Display headlines use Bricolage Grotesque — variable grotesque with
+     optical sizing. Heavy weight, optical size 96, tight tracking for
+     architectural impact at large sizes. */
   h1, h2 {
     font-family: theme('fontFamily.display');
-    font-variation-settings: "opsz" 144;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-variation-settings: "opsz" 96, "wdth" 100;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
   }
 
   /* Courier used for metadata: bylines, timestamps, captions, kicker text. */
