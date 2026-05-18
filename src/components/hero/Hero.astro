@@ -51,7 +51,7 @@ const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
         {primaryCta && (
           <a
             href={primaryCta.href}
-            class="inline-flex items-center bg-yellow px-6 py-3 text-sm font-semibold uppercase tracking-wider text-olive-deep no-underline hover:bg-salt"
+            class="inline-flex items-center rounded-full bg-yellow px-6 py-3 text-sm font-semibold uppercase tracking-wider text-olive-deep no-underline hover:bg-salt"
           >
             {primaryCta.label}
           </a>
@@ -59,7 +59,7 @@ const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
         {secondaryCta && (
           <a
             href={secondaryCta.href}
-            class="inline-flex items-center border border-salt/40 px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline hover:border-yellow hover:text-yellow"
+            class="inline-flex items-center rounded-full border border-salt/40 px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline hover:border-yellow hover:text-yellow"
           >
             {secondaryCta.label}
           </a>
