@@ -7,13 +7,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        snow: '#F7F7F7',      // primary light surface — body bg in light mode
         olive: {
-          DEFAULT: '#3B4131', // mid-tone, matches team uniform jackets
-          deep: '#1B1F17',    // primary dark surface
+          DEFAULT: '#3B4131', // text default + brand signature (matches uniform)
+          deep: '#1B1F17',    // dark surface for hero overlays + button text on yellow
         },
-        brown: '#2D291E',     // warm dark — alt surface, sectional accent
-        salt: '#EFEEE7',
-        yellow: '#EFFDA4',
+        brown: '#2D291E',     // card surface — warm dark contrast against snow
+        salt: '#EFEEE7',      // text on dark surfaces (cards, hero)
+        yellow: '#EFFDA4',    // single accent — kickers, CTAs, hover
       },
       fontFamily: {
         sans: ['"Source Sans Pro"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],

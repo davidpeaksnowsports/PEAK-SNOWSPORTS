@@ -41,7 +41,7 @@ Examples:
 - ❌ "Elevating your snow sports journey to new heights"
 
 ### Visual language
-- **Dark-mode-first.** Deep olive primary surface, high-contrast salt type. Avoids the corporate navy/baby-blue ski-school cliché.
+- **Light-mode primary.** Warm snow surface (`#F7F7F7`) with olive type — editorial feel, like a premium magazine. Cards and the hero overlay flip dark (brown / olive-deep) for contrast moments. No corporate navy/baby-blue ski-school cliché.
 - **Type:** Source Sans Pro 400/600 for display + body. Courier for metadata (kickers, bylines, captions, timestamps).
 - **Imagery:** Real, raw mountain photography. Real Peak team faces. Video backgrounds on hero. Instructor portraits shot consistently — same lighting, same crop, builds the team as a visual ensemble.
 - **Layout:** Full-bleed everywhere. Generous vertical rhythm. Mobile-first (majority of traffic is mobile per Arch discovery).
@@ -52,11 +52,12 @@ Defined in [`tailwind.config.ts`](./tailwind.config.ts). Do not introduce hex co
 
 | Token | Hex | Role |
 |---|---|---|
-| `olive-deep` | `#1B1F17` | Primary dark surface (body bg, nav, footer) |
-| `olive` | `#3B4131` | Mid-tone — cards, elevated surfaces. Matches the team uniform. |
-| `brown` | `#2D291E` | Warm dark alt surface. Sectional accent. |
-| `salt` | `#EFEEE7` | Type and subtle borders. |
-| `yellow` | `#EFFDA4` | Single signature accent — kickers, CTAs, links. Used sparingly. |
+| `snow` | `#F7F7F7` | Primary surface — body bg, nav, footer. |
+| `olive` | `#3B4131` | Default text colour. Matches the team uniform — brand signature. |
+| `olive-deep` | `#1B1F17` | Dark surface for hero overlays + button text on yellow. |
+| `brown` | `#2D291E` | Card surface — warm dark contrast against snow. Cards use `text-salt` inside. |
+| `salt` | `#EFEEE7` | Type on dark surfaces (cards, hero overlay). |
+| `yellow` | `#EFFDA4` | Single signature accent — kickers, CTAs, hover. Used sparingly. |
 
 ### Aspirational references
 - **barrys.com** — the lifestyle/brand-led model. Confident type, full-bleed video, booking tucked behind a single CTA.

@@ -7,11 +7,11 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   html {
-    @apply bg-olive-deep text-salt antialiased;
+    @apply bg-snow text-olive antialiased;
     font-family: theme('fontFamily.sans');
   }
 

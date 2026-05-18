@@ -21,8 +21,9 @@ Locked palette (see `tailwind.config.ts`):
 
 | Token | Hex |
 |---|---|
-| `olive-deep` | `#1B1F17` |
+| `snow` | `#F7F7F7` |
 | `olive` | `#3B4131` |
+| `olive-deep` | `#1B1F17` |
 | `brown` | `#2D291E` |
 | `salt` | `#EFEEE7` |
 | `yellow` | `#EFFDA4` |

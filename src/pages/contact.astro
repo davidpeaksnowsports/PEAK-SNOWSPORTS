@@ -26,8 +26,8 @@ const routes = [
         <ul class="mt-8 space-y-4">
           {routes.map((r) => (
             <li>
-              <a href={r.href} class="group flex items-baseline gap-4 border-b border-salt/10 py-4 no-underline hover:text-yellow">
-                <span class="meta text-salt/50 group-hover:text-yellow">{r.kicker}</span>
+              <a href={r.href} class="group flex items-baseline gap-4 border-b border-olive/10 py-4 no-underline hover:text-yellow">
+                <span class="meta text-olive/50 group-hover:text-yellow">{r.kicker}</span>
                 <span class="flex-1 text-xl font-semibold">{r.label}</span>
                 <span aria-hidden="true">→</span>
               </a>
@@ -38,16 +38,16 @@ const routes = [
 
       <form class="space-y-6" action="#" method="post">
         <label class="block">
-          <span class="meta text-salt/60">Name</span>
-          <input type="text" name="name" required class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
+          <span class="meta text-olive/60">Name</span>
+          <input type="text" name="name" required class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
         </label>
         <label class="block">
-          <span class="meta text-salt/60">Email</span>
-          <input type="email" name="email" required class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
+          <span class="meta text-olive/60">Email</span>
+          <input type="email" name="email" required class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
         </label>
         <label class="block">
-          <span class="meta text-salt/60">Message</span>
-          <textarea name="message" rows="5" class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
+          <span class="meta text-olive/60">Message</span>
+          <textarea name="message" rows="5" class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
         </label>
         <button type="submit" class="rounded-full bg-yellow px-6 py-3 text-sm font-semibold uppercase tracking-wider text-olive-deep hover:bg-salt">
           Send
