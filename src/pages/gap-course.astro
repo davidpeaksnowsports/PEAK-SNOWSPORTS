@@ -2,104 +2,233 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
-import Card from '../components/ui/Card.astro';
-import { LOREM, LOREM_LONG } from '../lib/utils';
 import heroImage from '../assets/images/hero-gap.jpg';
 
-const weeks = Array.from({ length: 6 }, (_, i) => ({
-  label: `Week ${i + 1}`,
-  title: `Lorem ipsum dolor sit amet ${i + 1}`,
-  body: LOREM,
-}));
+const included = [
+  {
+    title: 'On-snow',
+    items: [
+      '100+ hours of training, BASI trainers only',
+      'BASI Level 1 and Level 2 exams',
+      '8:1 student-to-trainer maximum',
+      'Racing, freestyle, piste performance, demos, off-piste',
+      'Mock assessment days',
+      'Teaching sessions to nail the assessment models',
+    ],
+  },
+  {
+    title: 'Off-snow',
+    items: [
+      'Outdoor First Aid Course',
+      'Workshops on equipment, avalanche, career and more',
+      'Video analysis sessions',
+      'Theory sessions on technical + teaching concepts',
+      'Team merch and team puffer',
+      'Interview prep for teaching positions',
+    ],
+  },
+  {
+    title: 'Pastoral care',
+    items: [
+      '24/7 care line and WhatsApp community group',
+      'In-resort pastoral care with weekly room reviews',
+      'Weekly 1-2-1s with the training team',
+      'Social events and supervised après parties',
+      'Alumni channel',
+      'Training mentality workshop',
+    ],
+  },
+  {
+    title: 'Living',
+    items: [
+      'Private Peak chalet in Morzine',
+      'Proper community, not a block of apartments',
+      'Easy access to Avoriaz lifts each morning',
+      'Pro discount on skis, boots, poles, helmets, goggles, clothing and packs',
+      'Morzine bars, restaurants and après on your doorstep',
+      'End-of-course party',
+      'One-way transfer from Geneva airport',
+    ],
+  },
+];
 
-const coaches = [
-  { name: 'George Walton', role: 'Lead coach' },
-  { name: 'Marc Walton', role: 'Operations / coach' },
-  { name: 'Tom Peek', role: 'Technical coach' },
-  { name: 'Eilidh', role: 'Performance coach' },
+const reasons = [
+  {
+    title: 'Coached by the examiners.',
+    body: "Every session is delivered by current BASI trainers. You'll know exactly what they're looking for — because they're the ones looking for it.",
+  },
+  {
+    title: '8:1 max group size.',
+    body: 'Real coaching, not crowd management. We keep groups small so every student gets proper attention every session.',
+  },
+  {
+    title: 'A job at the end of it.',
+    body: 'Our partner ski schools across the Alps take BASI Level 2 instructors directly from our course. The winter intake wraps just before February half-term, so you can be working a full week straight after.',
+  },
+  {
+    title: 'Alumni for life.',
+    body: "Every Peak student joins the alumni network. There's always a space for you on our chairlifts.",
+  },
 ];
 ---
 
 <BaseLayout title="GAP Course — Peak Snowsports">
   <Hero
-    kicker="GAP Course"
+    kicker="GAP Course · 3 Jan – 12 Feb 2027"
     headline="Six weeks. From skier to instructor."
-    sub="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Six weeks in the Portes du Soleil. Real qualifications. Real teaching."
-    primaryCta={{ href: '#enquire', label: 'Enquire now' }}
+    sub="One chalet in Morzine. The Portes du Soleil out the front door. Coached by the people who run BASI exams."
+    primaryCta={{ href: '#book', label: 'Reserve your spot' }}
+    secondaryCta={{ href: '#enquire', label: 'Book a call with us' }}
     variant="full"
     image={heroImage}
     imageAlt="A GAP Course cohort regrouping below a rocky alpine face at dusk."
   />
 
-  <Section kicker="Who it's for" title="If you're serious about it, we'll match you.">
-    <p class="max-w-2xl text-lg text-olive/80">{LOREM_LONG}</p>
-  </Section>
-
-  <Section kicker="The six weeks" title="Structured to actually work.">
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {weeks.map((w) => (
-        <Card kicker={w.label} title={w.title}>{w.body}</Card>
-      ))}
+  <!-- Welcome / overview -->
+  <Section kicker="Welcome" title="Six weeks. One chalet. The Portes du Soleil.">
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-20">
+      <div class="space-y-6 text-lg leading-relaxed text-olive/80 md:text-xl">
+        <p>
+          Our BASI Level 1 + Level 2 GAP course is built around a simple idea: get coached by the people who run BASI exams, live with the team that's training you, and walk out the other end with a qualification, a job offer, and friends you'll be skiing with for the rest of your life.
+        </p>
+        <p>
+          <strong class="font-semibold text-olive">New for 2027:</strong> we're moving the whole course into a private Peak chalet in Morzine. Students, coaches and the wider Peak team under one roof. Breakfasts together, debriefs over dinner, the coaching team around in the evenings if you want to talk through your day. It's the community hub we've been building towards.
+        </p>
+        <p>
+          You'll train and ski in Avoriaz — the heart of the 650 km Portes du Soleil — and come home to Morzine, a proper Alpine town with the bars, restaurants and atmosphere that make six weeks fly by.
+        </p>
+      </div>
+      <div class="space-y-4">
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive/50">Dates</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">3 Jan – 12 Feb 2027</p>
+        </div>
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive/50">Where</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Morzine + Avoriaz</p>
+        </div>
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive/50">Group size</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">8:1 max</p>
+        </div>
+      </div>
     </div>
   </Section>
 
-  <Section kicker="The team" title="George. Marc. Tom. Eilidh.">
-    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-      {coaches.map((c) => (
-        <div>
-          <div class="aspect-[3/4] overflow-hidden rounded-3xl bg-brown" aria-hidden="true" />
-          <p class="meta mt-4 text-yellow">{c.role}</p>
-          <h3 class="mt-2 text-xl font-semibold">{c.name}</h3>
+  <!-- Early bird offer band -->
+  <section class="bg-olive-deep text-salt">
+    <div class="mx-auto max-w-screen-2xl px-6 py-16 md:py-20">
+      <p class="meta text-yellow">Early bird · book by 30 June 2026</p>
+      <h2 class="mt-6 max-w-3xl text-4xl leading-tight md:text-6xl">
+        Free skis + bindings. On us.
+      </h2>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-salt/80 md:text-xl">
+        We've partnered with <strong class="text-salt">Fluid Lines</strong> — the UK outdoor sports store — to put together a kit package built specifically for what you'll need on course. Lock in your spot before the end of June and the skis and bindings are included. Yours to keep.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a
+          href="#book"
+          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+        >
+          Reserve your spot →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Book your place / pricing -->
+  <Section id="book" kicker="Book your place" title="Two packages. Staged payments as standard.">
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="rounded-3xl border border-olive/15 bg-snow p-8">
+        <p class="meta text-olive/50">Standard package</p>
+        <p class="mt-3 font-display text-5xl font-bold tracking-tight md:text-6xl">€8,999</p>
+        <p class="mt-5 text-base leading-relaxed text-olive/70">Six weeks, all course content, private Peak chalet accommodation, transfers, kit deal — everything below.</p>
+      </div>
+      <div class="rounded-3xl border border-yellow bg-yellow/10 p-8">
+        <p class="meta text-olive-deep/70">Upgraded room option</p>
+        <p class="mt-3 font-display text-5xl font-bold tracking-tight md:text-6xl">€9,499</p>
+        <p class="mt-5 text-base leading-relaxed text-olive/80">Same course, single-occupancy room with en-suite. Limited availability.</p>
+      </div>
+    </div>
+
+    <div class="mt-12 max-w-3xl space-y-6 text-base leading-relaxed text-olive/75">
+      <p>
+        We've kept the 2026 course price and added a staged payment plan as standard — so you can spread the cost rather than finding it all at once.
+      </p>
+      <ul class="space-y-2">
+        <li class="flex gap-3"><span class="text-yellow">·</span><span>Staged payment plan — we'll set up a schedule that works for you, with the balance paid in instalments before the course starts.</span></li>
+        <li class="flex gap-3"><span class="text-yellow">·</span><span>10-day cooling-off period — change your mind, full refund, no questions.</span></li>
+        <li class="flex gap-3"><span class="text-yellow">·</span><span>All payments in EUR, by card or bank transfer.</span></li>
+      </ul>
+      <p>
+        If a payment plan still doesn't make it work, talk to us early. We've helped plenty of students piece it together — sponsorships, family contributions, savings — and we'll do what we can.
+      </p>
+    </div>
+  </Section>
+
+  <!-- What's included -->
+  <Section kicker="What's included" title="Everything you need. Nothing you don't.">
+    <div class="grid gap-6 md:grid-cols-2">
+      {included.map((group) => (
+        <div class="rounded-3xl border border-salt/10 bg-brown p-8 text-salt">
+          <p class="meta text-salt/50">{group.title}</p>
+          <ul class="mt-5 space-y-3">
+            {group.items.map((item) => (
+              <li class="flex gap-3 text-base leading-relaxed text-salt/85">
+                <span class="text-yellow">·</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       ))}
     </div>
   </Section>
 
-  <Section kicker="Alumni" title="Lorem ipsum dolor sit amet.">
-    <div class="grid gap-12 md:grid-cols-2">
-      {[1, 2].map((n) => (
-        <figure class="border-l border-yellow pl-8">
-          <blockquote class="text-2xl font-semibold leading-snug">
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. GAP {2024 + n} cohort."
-          </blockquote>
-          <figcaption class="meta mt-6 text-olive/60">Alumnus {n} · GAP {2024 + n}</figcaption>
-        </figure>
+  <!-- Why students choose Peak -->
+  <Section kicker="Why students choose Peak" title="Four reasons it works.">
+    <ol class="space-y-16">
+      {reasons.map((r, i) => (
+        <li class="border-t border-olive/10 pt-10">
+          <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
+            <span class="meta text-olive/40">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3 class="font-display text-2xl font-bold tracking-tight md:text-4xl">{r.title}</h3>
+              <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/80">{r.body}</p>
+            </div>
+          </div>
+        </li>
       ))}
-    </div>
+    </ol>
   </Section>
 
-  <Section id="enquire" kicker="Enquire" title="Tell us about you.">
-    <form class="grid max-w-2xl gap-6" action="#" method="post">
+  <!-- Closing CTA: book a call -->
+  <Section id="enquire" kicker="Ready to talk it through?" title="Book a call.">
+    <p class="max-w-2xl text-lg leading-relaxed text-olive/80">
+      Book a video call with us and we'll walk you through the course, the chalet, the kit, and how to get the most out of your six weeks.
+    </p>
+
+    <form class="mt-12 grid max-w-2xl gap-6" action="#" method="post">
       <label class="block">
         <span class="meta text-olive/60">Name</span>
-        <input
-          type="text"
-          name="name"
-          required
-          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none"
-        />
+        <input type="text" name="name" required class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
       </label>
       <label class="block">
         <span class="meta text-olive/60">Email</span>
-        <input
-          type="email"
-          name="email"
-          required
-          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none"
-        />
+        <input type="email" name="email" required class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
       </label>
       <label class="block">
         <span class="meta text-olive/60">Tell us about your skiing</span>
-        <textarea
-          name="message"
-          rows="4"
-          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none"
-        />
+        <textarea name="message" rows="4" class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-yellow focus:outline-none" />
       </label>
-      <button type="submit" class="justify-self-start rounded-full bg-yellow px-6 py-3 text-sm font-semibold uppercase tracking-wider text-olive-deep hover:bg-salt">
-        Send enquiry
+      <button type="submit" class="justify-self-start rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep transition hover:bg-salt">
+        Book a call →
       </button>
       <p class="meta text-olive/40">Submissions route to the WhatsApp GAP track.</p>
     </form>
+
+    <p class="meta mt-12 text-olive/50">
+      Joining a Peak course means joining our community. You'll be added to our alumni network — and we'll always have a space on our chairlifts for you.
+    </p>
   </Section>
 </BaseLayout>
