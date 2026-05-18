@@ -35,21 +35,21 @@ const cols = [
 ];
 ---
 
-<footer class="mt-32 border-t border-olive/10 bg-snow">
+<footer class="mt-32 bg-olive-deep text-salt">
   <div class="mx-auto grid max-w-screen-2xl gap-12 px-6 py-16 md:grid-cols-5">
     <div class="md:col-span-2">
       <p class="meta text-yellow">peak snowsports</p>
-      <p class="mt-4 max-w-sm text-sm text-olive/70">
+      <p class="mt-4 max-w-sm text-sm text-salt/70">
         Morzine · Chatel · Les Gets. We don't run lessons. We build skiers.
       </p>
       <form class="mt-8 flex max-w-sm gap-2">
         <input
           type="email"
           placeholder="email@example.com"
-          class="flex-1 border-b border-olive/30 bg-transparent py-2 text-sm placeholder:text-olive/40 focus:border-yellow focus:outline-none"
+          class="flex-1 border-b border-salt/30 bg-transparent py-2 text-sm placeholder:text-salt/40 focus:border-yellow focus:outline-none"
           aria-label="Email for newsletter"
         />
-        <button class="meta rounded-full border border-olive/30 px-3 py-2 hover:border-yellow hover:text-yellow">
+        <button class="meta rounded-full border border-salt/30 px-3 py-2 hover:border-yellow hover:text-yellow">
           Subscribe
         </button>
       </form>
@@ -57,7 +57,7 @@ const cols = [
 
     {cols.map((col) => (
       <div>
-        <p class="meta text-olive/50">{col.title}</p>
+        <p class="meta text-salt/50">{col.title}</p>
         <ul class="mt-4 space-y-2">
           {col.links.map((link) => (
             <li>
@@ -69,9 +69,9 @@ const cols = [
     ))}
   </div>
 
-  <div class="border-t border-olive/10">
+  <div class="border-t border-salt/10">
     <div class="mx-auto max-w-screen-2xl px-6 py-10">
-      <p class="meta text-olive/40">Partners</p>
+      <p class="meta text-salt/40">Partners</p>
       <div class="mt-6 flex flex-wrap items-center gap-x-12 gap-y-6">
         <img
           src="/images/logos/basi.svg"
@@ -81,19 +81,21 @@ const cols = [
         <img
           src="/images/logos/peak-performance.png"
           alt="Peak Performance"
-          class="h-6 w-auto opacity-80"
+          class="h-6 w-auto opacity-80 [filter:brightness(0)_invert(1)]"
         />
-        <img
-          src="/images/logos/douglas-elliman.jpg"
-          alt="Douglas Elliman"
-          class="h-7 w-auto opacity-90"
-        />
+        <span class="inline-flex items-center rounded-full bg-salt px-5 py-2">
+          <img
+            src="/images/logos/douglas-elliman.jpg"
+            alt="Douglas Elliman"
+            class="h-5 w-auto"
+          />
+        </span>
       </div>
     </div>
   </div>
 
-  <div class="border-t border-olive/10">
-    <div class="mx-auto flex max-w-screen-2xl flex-col gap-4 px-6 py-6 text-xs text-olive/50 md:flex-row md:items-center md:justify-between">
+  <div class="border-t border-salt/10">
+    <div class="mx-auto flex max-w-screen-2xl flex-col gap-4 px-6 py-6 text-xs text-salt/50 md:flex-row md:items-center md:justify-between">
       <p>&copy; {new Date().getFullYear()} Peak Snowsports. All rights reserved.</p>
       <div class="flex gap-6">
         <a href="/privacy" class="no-underline hover:text-yellow">Privacy</a>

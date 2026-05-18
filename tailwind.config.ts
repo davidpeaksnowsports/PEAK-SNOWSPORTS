@@ -18,6 +18,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['"Source Sans Pro"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'serif'], // editorial display — headlines, hero, big stats
         mono: ['"Courier New"', 'Courier', 'monospace'],
       },
       fontWeight: {

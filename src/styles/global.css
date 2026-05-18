@@ -27,6 +27,15 @@
     @apply underline-offset-4 hover:underline;
   }
 
+  /* Display headlines use Fraunces — variable serif with optical sizing.
+     Heavy weight + tight tracking for impact at large sizes. */
+  h1, h2 {
+    font-family: theme('fontFamily.display');
+    font-variation-settings: "opsz" 144;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
   /* Courier used for metadata: bylines, timestamps, captions, kicker text. */
   .meta {
     font-family: theme('fontFamily.mono');
