@@ -3,36 +3,205 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import Card from '../../components/ui/Card.astro';
-import { LOREM } from '../../lib/utils';
 import heroImage from '../../assets/images/hero-lessons.jpg';
 
 const products = [
-  { slug: 'private', name: 'Private lessons', kicker: 'One on one' },
-  { slug: 'group', name: 'Group lessons', kicker: 'Small groups' },
-  { slug: 'family', name: 'Family lessons', kicker: 'All ages' },
-  { slug: 'off-piste', name: 'Off-piste & freeride', kicker: 'Beyond the rope' },
-  { slug: 'race-coaching', name: 'Race coaching', kicker: 'Gates and timing' },
+  {
+    slug: 'private',
+    name: 'Private lessons',
+    kicker: 'One on one',
+    body: 'A dedicated instructor for the time you book. From two hours to a full day. All levels. All resorts.',
+  },
+  {
+    slug: 'group',
+    name: 'Group lessons',
+    kicker: 'Small groups',
+    body: 'Max six skiers per group, four in mini beginners. Coaching attention you can feel — not a head count in a queue.',
+  },
+  {
+    slug: 'family',
+    name: 'Family lessons',
+    kicker: 'All ages',
+    body: 'Everyone on the same hill. Coaching tailored to mixed levels and energy — the way family ski weeks actually go.',
+  },
+  {
+    slug: 'off-piste',
+    name: 'Off-piste & freeride',
+    kicker: 'Beyond the rope',
+    body: 'Big terrain with the right people. Avalanche awareness, route choice, and the confidence to ski it.',
+  },
+  {
+    slug: 'race-coaching',
+    name: 'Race coaching',
+    kicker: 'Gates and timing',
+    body: 'Gate training, video review, tactical coaching. Run by trainers who race and examine.',
+  },
+];
+
+// Seven skill levels — distilled from the alpine-skiing-level-guide on the current site
+const levels = [
+  {
+    label: 'Beginner',
+    self: "I am a total beginner. This is my first time. I've never skied before.",
+    skills: ['Understand how to use the equipment', 'Balance while sliding on a nursery slope', 'Snowplough shape while sliding'],
+    lifts: 'Magic carpets',
+  },
+  {
+    label: 'Lower intermediate',
+    self: 'I can make snowplough turns and stop competently on a green run.',
+    skills: ['Get up after falling', 'Snowplough traverse', "Follow instructor's tracks without cutting corners"],
+    lifts: 'Chair lifts (accompanied), bubble lifts',
+  },
+  {
+    label: 'Basic intermediate',
+    self: 'I am comfortable snowplough turning on green and easy blue runs. Keen to learn the parallel turn.',
+    skills: ['Balance on the outside ski', 'Learning side-slip', 'Parallel traverse with the lower ski gripping'],
+    lifts: 'Chair lifts',
+  },
+  {
+    label: 'Intermediate',
+    self: 'I am exploring all blue runs and easy reds. Confident skiing parallel turn on these runs.',
+    skills: ['Direct side-slip controlling both skis simultaneously', 'Ski within a corridor, controlling speed and line', 'Managing posture on steeper slopes'],
+    lifts: 'All lifts',
+  },
+  {
+    label: 'Basic advanced',
+    self: 'I ski most red runs comfortably but want to improve my technique for changing snow and steeper slopes.',
+    skills: ['Lift the inside ski at the fall line to the end of the turn', 'Diagonal side-slip controlling fore and aft', 'Learning short turns and pole plant'],
+    lifts: 'Navigate the ski area',
+  },
+  {
+    label: 'Advanced',
+    self: "I'm happy on any coloured run. Keen to improve technique — grippier short turns, learning to carve, starting to explore off-piste.",
+    skills: ['Ski a narrow corridor controlling speed and line', 'Maintain ski-to-snow contact at all times', 'Rolling edge to edge on a green slope, leaving two clean tracks', 'Ski a funnel: short → medium → long radius turns'],
+    lifts: 'Lap runs independently',
+  },
+  {
+    label: 'Expert',
+    self: 'I can ski the whole mountain on- and off-piste. Looking to push technical knowledge — moguls, off-piste, ski touring.',
+    skills: ['Linked turns in easy moguls', 'Cleanly carve red and black runs', 'Link flowing turns in off-piste snow', 'Understand avalanche danger scale and equipment', 'Lead a partner in tree runs / variable off-piste', 'Attempt green and blue freestyle features'],
+    lifts: 'Lead around the ski area',
+  },
 ];
 ---
 
 <BaseLayout title="Lessons — Peak Snowsports">
   <Hero
     kicker="Lessons"
-    headline="Five lesson products. One standard."
-    sub={LOREM}
+    headline="It's all about you."
+    sub="Private lessons, group lessons, off-piste, race coaching. Our coaches use a skills-based approach — everything we decide starts with you."
     primaryCta={{ href: '/book', label: 'Check availability' }}
+    secondaryCta={{ href: '#levels', label: 'Find your level' }}
     variant="compact"
     image={heroImage}
     imageAlt="A skier under a chairlift on a busy piste."
   />
 
-  <Section kicker="Choose your lesson" title="What kind of skier are you becoming?">
+  <!-- FREEZE27 promo band -->
+  <section class="bg-olive-deep text-salt">
+    <div class="mx-auto flex max-w-screen-2xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
+      <div>
+        <p class="meta text-yellow">2025/26 prices · paid in full by 31 May</p>
+        <p class="mt-3 max-w-2xl text-lg leading-snug md:text-xl">
+          Lock in current-season prices for next season with code <strong class="font-display tracking-tight">FREEZE27</strong>.
+        </p>
+      </div>
+      <a
+        href="/book"
+        class="inline-flex shrink-0 items-center rounded-full bg-yellow px-8 py-4 font-display text-sm font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+      >
+        Book now →
+      </a>
+    </div>
+  </section>
+
+  <!-- Lesson products -->
+  <Section kicker="Choose your lesson" title="Five products. One standard.">
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {products.map((p) => (
         <Card href={`/lessons/${p.slug}`} kicker={p.kicker} title={p.name}>
-          {LOREM}
+          {p.body}
         </Card>
       ))}
+    </div>
+  </Section>
+
+  <!-- Coaching philosophy -->
+  <Section kicker="It's all about you" title="A skills-based approach.">
+    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+      <p class="text-lg leading-relaxed text-olive/80 md:text-xl">
+        Every decision our coaches make has you at the centre. We figure out where you are, what you need next, and we teach to that — rather than running you through a script. The team is highly qualified with full French equivalence (Carte Pro) and led by BASI examiners. Real coaching, not crowd management.
+      </p>
+      <ul class="grid grid-cols-2 gap-4">
+        <li class="rounded-2xl border border-olive/15 bg-snow px-5 py-4">
+          <p class="meta text-olive/50">Group size</p>
+          <p class="mt-2 font-display text-2xl font-bold tracking-tight">6 max</p>
+        </li>
+        <li class="rounded-2xl border border-olive/15 bg-snow px-5 py-4">
+          <p class="meta text-olive/50">Mini beginners</p>
+          <p class="mt-2 font-display text-2xl font-bold tracking-tight">4 max</p>
+        </li>
+        <li class="rounded-2xl border border-olive/15 bg-snow px-5 py-4">
+          <p class="meta text-olive/50">Carte Pro</p>
+          <p class="mt-2 font-display text-2xl font-bold tracking-tight">Every coach</p>
+        </li>
+        <li class="rounded-2xl border border-olive/15 bg-snow px-5 py-4">
+          <p class="meta text-olive/50">Trained by</p>
+          <p class="mt-2 font-display text-2xl font-bold tracking-tight">BASI examiners</p>
+        </li>
+      </ul>
+    </div>
+  </Section>
+
+  <!-- Find your level — 7 skill levels -->
+  <Section id="levels" kicker="Find your level" title="Seven levels. Honest descriptions.">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
+      Not sure where you sit? Read the self-description for each level — pick the one that sounds most like you. If you're between two, we'll calibrate in the first ten minutes of your lesson.
+    </p>
+
+    <ol class="mt-16 space-y-12">
+      {levels.map((l, i) => (
+        <li class="border-t border-olive/10 pt-10">
+          <div class="grid gap-6 md:grid-cols-[7rem_1fr]">
+            <div>
+              <span class="meta text-olive/40">Level {String(i + 1).padStart(2, '0')}</span>
+              <p class="mt-1 font-display text-lg font-bold tracking-tight text-yellow-700 md:text-xl">{l.label}</p>
+            </div>
+            <div>
+              <p class="text-lg leading-relaxed text-olive md:text-xl">"{l.self}"</p>
+              <div class="mt-6 grid gap-6 md:grid-cols-[1fr_minmax(0,260px)]">
+                <ul class="space-y-2">
+                  {l.skills.map((skill) => (
+                    <li class="flex gap-3 text-base text-olive/75"><span class="text-yellow">·</span><span>{skill}</span></li>
+                  ))}
+                </ul>
+                <div class="rounded-2xl border border-olive/15 bg-snow px-5 py-4 md:self-start">
+                  <p class="meta text-olive/50">Lifts</p>
+                  <p class="mt-2 text-sm">{l.lifts}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <!-- Closing CTA -->
+  <Section>
+    <div class="border-t border-olive/10 pt-16">
+      <h2 class="max-w-3xl text-4xl leading-tight md:text-6xl">Got a question?</h2>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-olive/80">
+        WhatsApp us, email <a href="mailto:hello@peaksnowsports.com" class="underline-offset-4 hover:text-yellow hover:underline">hello@peaksnowsports.com</a>, or call <a href="tel:+441483616522" class="underline-offset-4 hover:text-yellow hover:underline">+44 1483 616 522</a>. Replies usually within 30 minutes.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a href="/book" class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt">
+          Book a lesson →
+        </a>
+        <a href="https://wa.me/?text=Hi%20Peak" class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep">
+          WhatsApp us
+        </a>
+      </div>
     </div>
   </Section>
 </BaseLayout>
