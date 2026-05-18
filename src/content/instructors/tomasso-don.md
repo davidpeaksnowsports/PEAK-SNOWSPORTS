@@ -11,7 +11,7 @@ photo: ""
 likes: "Good food, powder days, travel and discovering the world."
 dislikes: "Traffic in the cities, pineapple on pizza, bad wines."
 favouriteKit: "My tecnica zero g tour pro, the most versatile ski boots I’ve ever had."
-order: 7
+order: 9
 ---
 
 I started skiing when I was three in Sestriere, Italy. I became an instructor in 2012 and started working in a ski school in Sestriere. I always loved big powder days and from some years I started exploring the mountains doing ski alpinism in the Italian alps. The best days for me are out in the mountains with some friends and my skis on.

@@ -15,7 +15,7 @@ likes: "Obvi skiing, Triathlons (ish), stollen"
 dislikes: "Brexit, traffic and grapefruit"
 favouriteKit: "A really good pair of Googles, makes you feel like you’re in your own world! Or my lovely little short johns that have padded knee and bum patches, toasty on those really cold days!"
 topTip: "You need to look ahead further than you think! In the physical and metaphorical sense. Ha."
-order: 4
+order: 1
 ---
 
 I was a whippersnapper when I started on the glacier of Kaprun. An enthusiastic bunch of trainee Belgian instructors had the unfortunate task of using me, my sister and my brothers as guinea pigs for their teacher training. They were clearly good teachers as by the end of our lessons we were less bamby on ice and more graceful gazelles.

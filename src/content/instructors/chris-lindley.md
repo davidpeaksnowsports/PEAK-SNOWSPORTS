@@ -1,6 +1,6 @@
 ---
 name: "Chris Lindley"
-role: "Instructor | Co-Founder"
+role: "Instructor"
 resorts: ["Morzine"]
 languages: ["EN"]
 specialities: []
@@ -11,7 +11,7 @@ qualifications:
   - "Professional Yacht Master Offshore"
   - "Sports Science & Outdoor Adventure"
 photo: ""
-order: 2
+order: 10
 ---
 
 I started skiing at the age of 3 and have always been extremely passionate about it! During the summer I work as a sailing instructor and in the winter the skiing takes over. My work has taken me all over Europe and I have experience teaching people of all ages and abilities.

@@ -11,7 +11,7 @@ qualifications:
   - "European mountain safety"
   - "Level 2: Avalanche Processes and Mindset (AvRec2)"
 photo: "/images/instructors/huw.jpg"
-order: 9
+order: 5
 ---
 
 I got into skiing a little later than most but its become my favourite sport and I have enjoyed teaching it so much over the past 10 years. I feel very lucky to be able to pass on my enthusiasm for it to all ages and abilities, and be able to do that in some really beautiful places. Sharing these experiences is a big part as to why I enjoy it so much.

@@ -11,7 +11,7 @@ likes: "Sunset BBQs All sports / outdoor activities Wine (I know nothing but I a
 dislikes: "Truffle Oil Hot chocolates that aren’t chocolatey enough My feet during the February half term"
 favouriteKit: "My heated socks. Can’t do winter without them!"
 topTip: "Buy your own ski boots and get them fitted properly (usually better to try and do it in the resort so adjustments can be made whilst you are on holiday!)"
-order: 3
+order: 4
 ---
 
 I started skiing just before I turned 2! My parents attached me to the dog lead and used this to stop me from blowing away on Cairngorm in the Scottish Highlands. It is true, if you can ski in Scotland you can ski anywhere… My love for the sport continued through school and was incredibly fortunate to pursue a dream of ski racing full-time when I left. One too many injuries sent me in a different direction to University where I studied Geography and I discovered my passion for ski coaching whilst working in both Scotland and Switzerland between studies.

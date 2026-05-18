@@ -11,7 +11,7 @@ qualifications:
 photo: "/images/instructors/george.jpg"
 likes: "Funky socks, my dog, burgers, pretty much every sport, American trucks, snow, the smell of the mountains when it’s just rained, baths"
 dislikes: "Queuing, Brexit, Maths, Techno Music"
-order: 5
+order: 2
 ---
 
 _Story coming soon._
