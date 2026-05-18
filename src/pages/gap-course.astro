@@ -47,7 +47,7 @@ const coaches = [
     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
       {coaches.map((c) => (
         <div>
-          <div class="aspect-[3/4] bg-brown" aria-hidden="true" />
+          <div class="aspect-[3/4] overflow-hidden rounded-3xl bg-brown" aria-hidden="true" />
           <p class="meta mt-4 text-yellow">{c.role}</p>
           <h3 class="mt-2 text-xl font-semibold">{c.name}</h3>
         </div>

@@ -11,7 +11,7 @@ const { title, category, author, date, href = '#' } = Astro.props;
 ---
 
 <a href={href} class="group block no-underline">
-  <div class="aspect-[16/10] w-full bg-brown" aria-hidden="true" />
+  <div class="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-brown" aria-hidden="true" />
   <div class="mt-6">
     <p class="meta text-yellow">{category ?? 'Journal'}</p>
     <h3 class="mt-3 text-xl font-semibold leading-snug group-hover:text-yellow md:text-2xl">{title}</h3>
