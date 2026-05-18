@@ -31,11 +31,13 @@ const stats = [
   </Section>
 
   <Section kicker="By the numbers" title="A network, not a sole trader.">
-    <div class="grid gap-8 md:grid-cols-4">
+    <div class="grid gap-y-10 gap-x-8 md:grid-cols-4">
       {stats.map((s) => (
-        <div class="border-t border-olive/10 pt-6">
-          <p class="text-5xl font-semibold text-yellow">{s.value}</p>
-          <p class="meta mt-3 text-olive/60">{s.label}</p>
+        <div>
+          <span class="inline-flex items-center rounded-full bg-yellow px-6 py-3 font-display text-3xl font-bold tracking-tight text-olive-deep md:text-4xl">
+            {s.value}
+          </span>
+          <p class="meta mt-4 text-olive/60">{s.label}</p>
         </div>
       ))}
     </div>
