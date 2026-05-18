@@ -52,6 +52,37 @@ const included = [
   },
 ];
 
+const faqs = [
+  {
+    q: 'What do I need to do to pass?',
+    a: "Trust the training. We've built a tested programme of technical and teaching sessions, off-snow workshops, and weekly benchmarking. The assessment criteria are set by BASI — for Level 1 and Level 2 — and our curriculum is designed to get you above the required standard for both. Attendance at every session is what gets students through.",
+  },
+  {
+    q: 'What’s the training system?',
+    a: 'Learner-centred. We use a benchmarking approach so the wider curriculum stays consistent across the cohort, but every student gets personalised sessions within it. Open and closed skills are tested at regular intervals so you always know where you are.',
+  },
+  {
+    q: 'What do I pack?',
+    a: "Avoriaz hits -20°C with a -30 wind chill in deep winter — bring warm, waterproof, layerable kit. The essentials: skis + boots + poles (or rent through our hire partners), helmet (mandatory), goggles, Gore-Tex jacket + pants, merino base layers, two sets of gloves and beanies, five pairs of ski socks, a 15L pack. A team down jacket is included with the course. You'll get the full checklist on enrolment.",
+  },
+  {
+    q: 'What insurance do I need?',
+    a: "At minimum: travel insurance covering medical and evacuation, accident/personal accident insurance for ski-related injury, and equipment cover. Liability insurance for instructing comes free with your BASI membership once you qualify. World Nomads, Allianz and AXA all cover sports professionals — confirm geographical scope (France + Switzerland) and off-piste coverage if applicable.",
+  },
+  {
+    q: 'Where can I work after qualifying?',
+    a: "Level 1 lets you teach at UK snow centres and dry slopes. Level 2 is the first mountain-based qualification — you can teach parallel on marked pistes. We've a partnership with a Champéry ski school that interviews on-course and takes BASI L2s directly. The winter intake finishes just before February half-term, so you can be working a full week post-course. New Zealand, Switzerland, USA, Italy and Andorra all require work permits and have country-specific routes — we cover all of this in career workshops on course.",
+  },
+  {
+    q: 'What if I fail an assessment?',
+    a: "Rare, but it happens. If you fail Level 1, we organise a reassessment within your six-week window (small additional BASI fee, possibly extra training fees). If you fail Level 2, the official GAP programme has concluded — you book a standalone reassessment with BASI directly. Either way, reassessments must be taken within two years. We continue coaching at an additional fee if you need it.",
+  },
+  {
+    q: 'What is the Peak community like?',
+    a: "Important to us. You join the Peak alumni from day one — private Slack channels for trainees, instructors and mentors, ongoing workshops, mentorship pairings with seasoned coaches, peer learning groups. The community runs well past graduation: alumni stay in touch, share work opportunities, and there's always a space on our chairlifts for you.",
+  },
+];
+
 const reasons = [
   {
     title: 'Coached by the examiners.',
@@ -200,6 +231,26 @@ const reasons = [
         </li>
       ))}
     </ol>
+  </Section>
+
+  <!-- FAQs -->
+  <Section kicker="FAQ" title="The big ones.">
+    <ul class="divide-y divide-olive/10 border-y border-olive/10">
+      {faqs.map((f) => (
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer items-baseline gap-6 py-6 list-none [&::-webkit-details-marker]:hidden">
+              <span class="font-display text-xl font-bold tracking-tight md:text-2xl">{f.q}</span>
+              <span class="ml-auto font-display text-2xl text-olive/40 transition group-open:rotate-45">+</span>
+            </summary>
+            <p class="pb-8 pr-12 text-base leading-relaxed text-olive/75 md:text-lg">{f.a}</p>
+          </details>
+        </li>
+      ))}
+    </ul>
+    <p class="meta mt-8 text-olive/50">
+      For the full detail — packing checklists, working rights by country, BASI criteria — download the brochure or get in touch.
+    </p>
   </Section>
 
   <!-- Closing CTA: book a call -->
