@@ -1,106 +1,173 @@
 ---
 const cols = [
   {
-    title: 'Peak',
+    title: 'Explore',
     links: [
-      { href: '/about', label: 'About' },
-      { href: '/journal', label: 'Journal' },
+      { href: '/lessons', label: 'Lessons' },
+      { href: '/gap-course', label: 'GAP Course' },
+      { href: '/resorts', label: 'Resorts' },
       { href: '/instructors', label: 'Instructors' },
+      { href: '/journal', label: 'Journal' },
+      { href: '/about', label: 'About' },
     ],
   },
   {
     title: 'Book',
     links: [
-      { href: '/lessons', label: 'Lessons' },
-      { href: '/gap-course', label: 'GAP Course' },
-      { href: '/book', label: 'Booking widget' },
+      { href: '/lessons/private', label: 'Private lessons' },
+      { href: '/lessons/group', label: 'Group lessons' },
+      { href: '/lessons/family', label: 'Family lessons' },
+      { href: '/lessons/off-piste', label: 'Off-piste & freeride' },
+      { href: '/lessons/race-coaching', label: 'Race coaching' },
+      { href: 'https://app.peaksnowsports.com', label: 'My account' },
     ],
   },
   {
     title: 'Resorts',
     links: [
-      { href: '/resorts/morzine', label: 'Morzine' },
+      { href: '/resorts/morzine', label: 'Morzine-Avoriaz' },
       { href: '/resorts/chatel', label: 'Chatel' },
       { href: '/resorts/les-gets', label: 'Les Gets' },
     ],
   },
   {
-    title: 'Help',
+    title: 'Follow',
     links: [
-      { href: '/contact', label: 'Contact' },
-      { href: '/faqs', label: 'FAQs' },
-      { href: '/partners', label: 'Partner enquiries' },
+      { href: 'https://instagram.com/peaksnowsports', label: 'Instagram' },
+      { href: 'https://www.youtube.com/@peaksnowsports9355', label: 'YouTube' },
     ],
   },
 ];
 ---
 
 <footer class="mt-32 bg-olive-deep text-salt">
-  <div class="mx-auto grid max-w-screen-2xl gap-12 px-6 py-16 md:grid-cols-5">
-    <div class="md:col-span-2">
-      <p class="meta text-yellow">peak snowsports</p>
-      <p class="mt-4 max-w-sm text-sm text-salt/70">
-        Morzine · Chatel · Les Gets. We don't run lessons. We build skiers.
+  <!-- Newsletter -->
+  <section class="border-b border-salt/10">
+    <div class="mx-auto max-w-screen-2xl px-6 py-20 md:py-24">
+      <h2 class="max-w-2xl text-4xl md:text-6xl">Get on the chairlift.</h2>
+      <p class="mt-4 max-w-xl text-base text-salt/70 md:text-lg">
+        A short email each month. Conditions, kit, technique notes, and first access to next season's bookings. No spam.
       </p>
-      <form class="mt-8 flex max-w-sm gap-2">
+      <form class="mt-10 flex max-w-2xl flex-col gap-3 sm:flex-row">
         <input
           type="email"
-          placeholder="email@example.com"
-          class="flex-1 border-b border-salt/30 bg-transparent py-2 text-sm placeholder:text-salt/40 focus:border-yellow focus:outline-none"
-          aria-label="Email for newsletter"
+          placeholder="Email address"
+          aria-label="Email address"
+          class="flex-1 rounded-full border border-salt/20 bg-salt/5 px-6 py-3 text-sm placeholder:text-salt/40 focus:border-yellow focus:outline-none"
         />
-        <button class="meta rounded-full border border-salt/30 px-3 py-2 hover:border-yellow hover:text-yellow">
-          Subscribe
+        <button
+          type="submit"
+          class="rounded-full bg-yellow px-8 py-3 font-display text-sm font-bold uppercase tracking-tight text-olive-deep transition hover:bg-salt"
+        >
+          Submit →
         </button>
       </form>
     </div>
+  </section>
 
-    {cols.map((col) => (
+  <!-- Site nav -->
+  <section class="border-b border-salt/10">
+    <div class="mx-auto grid max-w-screen-2xl gap-10 px-6 py-16 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+      {cols.map((col) => (
+        <div>
+          <p class="meta text-salt/40">{col.title}</p>
+          <ul class="mt-5 space-y-2.5">
+            {col.links.map((link) => (
+              <li>
+                <a href={link.href} class="text-sm no-underline hover:text-yellow">{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
       <div>
-        <p class="meta text-salt/50">{col.title}</p>
-        <ul class="mt-4 space-y-2">
-          {col.links.map((link) => (
-            <li>
-              <a href={link.href} class="text-sm no-underline hover:text-yellow">{link.label}</a>
-            </li>
-          ))}
+        <p class="meta text-salt/40">Contact</p>
+        <ul class="mt-5 space-y-2.5 text-sm">
+          <li>
+            <a href="https://wa.me/?text=Hi%20Peak" class="block no-underline hover:text-yellow">
+              <span>WhatsApp us</span>
+              <span class="meta mt-1 block text-salt/40">replies in ~30 min</span>
+            </a>
+          </li>
+          <li>
+            <a href="mailto:hello@peaksnowsports.com" class="no-underline hover:text-yellow">hello@peaksnowsports.com</a>
+          </li>
+          <li><a href="/faqs" class="no-underline hover:text-yellow">FAQs</a></li>
+          <li><a href="/contact" class="no-underline hover:text-yellow">Contact</a></li>
         </ul>
       </div>
-    ))}
-  </div>
+    </div>
+  </section>
 
-  <div class="border-t border-salt/10">
-    <div class="mx-auto max-w-screen-2xl px-6 py-10">
-      <p class="meta text-salt/40">Partners</p>
-      <div class="mt-6 flex flex-wrap items-center gap-x-12 gap-y-6">
-        <img
-          src="/images/logos/basi.svg"
-          alt="BASI — British Association of Snowsport Instructors"
-          class="h-8 w-auto opacity-80"
-        />
-        <img
-          src="/images/logos/peak-performance.png"
-          alt="Peak Performance"
-          class="h-6 w-auto opacity-80 [filter:brightness(0)_invert(1)]"
-        />
-        <span class="inline-flex items-center rounded-full bg-salt px-5 py-2">
-          <img
-            src="/images/logos/douglas-elliman.jpg"
-            alt="Douglas Elliman"
-            class="h-5 w-auto"
-          />
-        </span>
+  <!-- Partners (light band) -->
+  <section class="bg-salt text-olive">
+    <div class="mx-auto max-w-screen-2xl px-6 py-12">
+      <p class="meta text-olive/50">Partners</p>
+      <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        <div class="flex h-20 items-center justify-center rounded-2xl border border-olive/10 bg-snow px-6">
+          <img src="/images/logos/douglas-elliman.jpg" alt="Douglas Elliman France" class="max-h-8 w-auto" />
+        </div>
+        <div class="flex h-20 items-center justify-center rounded-2xl border border-olive/10 bg-snow px-6">
+          <img src="/images/logos/peak-performance.png" alt="Peak Performance" class="max-h-6 w-auto" />
+        </div>
+        <div class="flex h-20 items-center justify-center rounded-2xl border border-olive/10 bg-snow px-6">
+          <span class="text-base font-medium tracking-tight text-olive">Le Crepu</span>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="border-t border-salt/10">
-    <div class="mx-auto flex max-w-screen-2xl flex-col gap-4 px-6 py-6 text-xs text-salt/50 md:flex-row md:items-center md:justify-between">
-      <p>&copy; {new Date().getFullYear()} Peak Snowsports. All rights reserved.</p>
-      <div class="flex gap-6">
+  <!-- Accreditations (light band, continues from partners) -->
+  <section class="bg-salt text-olive">
+    <div class="mx-auto max-w-screen-2xl px-6 pb-12">
+      <p class="meta text-olive/50">Accredited &middot; Awarded</p>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        <div class="flex items-center gap-5 rounded-2xl border border-olive/10 bg-snow px-6 py-5">
+          <img src="/images/logos/basi.svg" alt="" class="h-9 w-auto shrink-0" aria-hidden="true" />
+          <div>
+            <p class="text-sm font-semibold leading-tight">BASI Member School</p>
+            <p class="meta mt-1 text-olive/60">British Association of Snowsport Instructors</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-5 rounded-2xl border border-olive/10 bg-snow px-6 py-5">
+          <span class="meta inline-flex h-9 shrink-0 items-center rounded-full bg-yellow px-3 text-olive-deep">★</span>
+          <div>
+            <p class="text-sm font-semibold leading-tight">Tripadvisor</p>
+            <p class="meta mt-1 text-olive/60">Travellers' Choice Winner 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partner with Peak CTA -->
+  <section class="border-y border-salt/10 bg-olive-deep">
+    <div class="mx-auto flex max-w-screen-2xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
+      <p class="max-w-2xl text-lg text-salt md:text-xl">
+        Run a ski school? We're opening the platform to other operators in 2027.
+      </p>
+      <a
+        href="/partners"
+        class="inline-flex shrink-0 items-center rounded-full border border-salt/40 px-6 py-3 font-display text-sm font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+      >
+        Partner with Peak →
+      </a>
+    </div>
+  </section>
+
+  <!-- Sub-footer (the only place we use base black) -->
+  <section class="bg-black text-salt/60">
+    <div class="mx-auto flex max-w-screen-2xl flex-col gap-4 px-6 py-6 text-xs md:flex-row md:items-center md:justify-between">
+      <p>
+        &copy; {new Date().getFullYear()} Peak Snowsports &middot; Morzine, France
+      </p>
+      <div class="flex flex-wrap gap-6">
         <a href="/privacy" class="no-underline hover:text-yellow">Privacy</a>
-        <a href="/terms" class="no-underline hover:text-yellow">T&amp;Cs</a>
+        <a href="/cookies" class="no-underline hover:text-yellow">Cookies</a>
+        <a href="/terms" class="no-underline hover:text-yellow">Terms</a>
+        <a href="/accessibility" class="no-underline hover:text-yellow">Accessibility</a>
       </div>
+      <p class="meta">English &middot; Français</p>
     </div>
-  </div>
+  </section>
 </footer>
