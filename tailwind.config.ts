@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import typography from '@tailwindcss/typography';
 
 // Locked palette per CLAUDE.md §3 / project brief.
 // Do not introduce new brand colours here without an explicit decision.
@@ -27,7 +28,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [typography()],
 };
 
 export default config;

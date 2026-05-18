@@ -26,7 +26,16 @@ const { title, description, category, author, date } = Astro.props;
 
     <div class="mx-auto mt-16 aspect-[16/9] max-w-5xl overflow-hidden rounded-3xl bg-brown" aria-hidden="true" />
 
-    <div class="prose-invert mx-auto mt-16 max-w-2xl space-y-6 text-lg leading-relaxed text-olive/80">
+    <div class="prose prose-lg mx-auto mt-16 max-w-2xl
+      prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-olive
+      prose-h2:mt-12 prose-h2:text-3xl md:prose-h2:text-4xl
+      prose-h3:text-2xl
+      prose-p:text-olive/80
+      prose-li:text-olive/80 prose-li:marker:text-olive/40
+      prose-strong:text-olive
+      prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:text-yellow
+      prose-blockquote:border-l-yellow prose-blockquote:not-italic prose-blockquote:font-display prose-blockquote:font-semibold prose-blockquote:text-olive
+      prose-img:rounded-2xl">
       <slot />
     </div>
   </article>

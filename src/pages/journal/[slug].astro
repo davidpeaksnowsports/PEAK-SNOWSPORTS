@@ -1,53 +1,48 @@
 ---
+import { getCollection, render } from 'astro:content';
 import JournalLayout from '../../layouts/JournalLayout.astro';
 import Section from '../../components/ui/Section.astro';
 import PostCard from '../../components/journal/PostCard.astro';
-import { LOREM, LOREM_LONG } from '../../lib/utils';
+import { formatDate } from '../../lib/utils';
 
-export function getStaticPaths() {
-  const categories = ['Resort guides', 'Kit reviews', 'Season updates', 'Technique', 'GAP stories', 'Instructor profiles'];
-  return Array.from({ length: 9 }, (_, i) => ({
-    params: { slug: `post-${i + 1}` },
-    props: {
-      index: i + 1,
-      category: categories[i % categories.length],
-      author: ['George Walton', 'Marc Walton', 'Tom Peek'][i % 3],
-    },
+export async function getStaticPaths() {
+  const posts = await getCollection('journal', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post, allPosts: posts },
   }));
 }
 
-const { slug } = Astro.params;
-const { index, category, author } = Astro.props;
+const { post, allPosts } = Astro.props;
+const { Content } = await render(post);
 
-const moreFromAuthor = [1, 2, 3].map((n) => ({
-  slug: `post-${((index + n - 1) % 9) + 1}`,
-  title: `Lorem ipsum ${index + n}`,
-  category,
-  date: '04 Feb 2026',
-}));
+const moreFromAuthor = allPosts
+  .filter((p) => p.data.author === post.data.author && p.id !== post.id)
+  .slice(0, 3);
 ---
 
 <JournalLayout
-  title={`Lorem ipsum dolor sit amet ${index}`}
-  description="Lorem ipsum journal post."
-  category={category}
-  author={author}
-  date="12 Mar 2026"
+  title={post.data.title}
+  description={post.data.seoDescription ?? post.data.excerpt}
+  category={post.data.category}
+  author={post.data.author}
+  date={formatDate(post.data.publishedAt)}
 >
-  <p>{LOREM_LONG}</p>
-  <p>{LOREM}</p>
-  <h2 class="mt-8 text-3xl font-semibold leading-tight text-olive">Section heading lorem.</h2>
-  <p>{LOREM_LONG}</p>
-  <blockquote class="border-l border-yellow pl-6 text-xl">
-    "Lorem ipsum dolor sit amet — pulled quote."
-  </blockquote>
-  <p>{LOREM}</p>
+  <Content />
 </JournalLayout>
 
-<Section kicker={`More from ${author}`} title="Keep reading.">
-  <div class="grid gap-12 md:grid-cols-3">
-    {moreFromAuthor.map((p) => (
-      <PostCard title={p.title} category={p.category} author={author} date={p.date} href={`/journal/${p.slug}`} />
-    ))}
-  </div>
-</Section>
+{moreFromAuthor.length > 0 && (
+  <Section kicker={`More from ${post.data.author}`} title="Keep reading.">
+    <div class="grid gap-12 md:grid-cols-3">
+      {moreFromAuthor.map((p) => (
+        <PostCard
+          title={p.data.title}
+          category={p.data.category}
+          author={p.data.author}
+          date={formatDate(p.data.publishedAt)}
+          href={`/journal/${p.id}`}
+        />
+      ))}
+    </div>
+  </Section>
+)}

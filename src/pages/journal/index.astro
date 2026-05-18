@@ -1,26 +1,25 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import PostCard from '../../components/journal/PostCard.astro';
 import heroImage from '../../assets/images/hero-journal.jpg';
+import { formatDate } from '../../lib/utils';
 
 const categories = ['All', 'Resort guides', 'Kit reviews', 'Season updates', 'Technique', 'GAP stories', 'Instructor profiles'];
 
-const posts = Array.from({ length: 9 }, (_, i) => ({
-  slug: `post-${i + 1}`,
-  title: `Lorem ipsum dolor sit amet ${i + 1}`,
-  category: categories[(i % (categories.length - 1)) + 1],
-  author: ['George Walton', 'Marc Walton', 'Tom Peek'][i % 3],
-  date: '12 Mar 2026',
-}));
+const allPosts = await getCollection('journal', ({ data }) => !data.draft);
+const posts = allPosts.sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+);
 ---
 
 <BaseLayout title="Journal — Peak Snowsports">
   <Hero
     kicker="Journal"
     headline="Words from the team."
-    sub="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    sub="Resort guides, kit reviews, technique notes, season updates — written by the people teaching."
     variant="compact"
     image={heroImage}
     imageAlt="Snow-laden pine forest against a pale alpine sky."
@@ -38,13 +37,17 @@ const posts = Array.from({ length: 9 }, (_, i) => ({
     <div class="mt-16 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
       {posts.map((p) => (
         <PostCard
-          title={p.title}
-          category={p.category}
-          author={p.author}
-          date={p.date}
-          href={`/journal/${p.slug}`}
+          title={p.data.title}
+          category={p.data.category}
+          author={p.data.author}
+          date={formatDate(p.data.publishedAt)}
+          href={`/journal/${p.id}`}
         />
       ))}
     </div>
+
+    {posts.length === 0 && (
+      <p class="mt-16 text-olive/60">No posts yet. Check back soon.</p>
+    )}
   </Section>
 </BaseLayout>
