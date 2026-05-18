@@ -1,27 +1,97 @@
 ---
+// Styled placeholder for the Arch booking widget — design reference
+// for the embed. Final integration TBC with Rachel Vaclik (Arch PM) and
+// Jake Charlton (Arch designer). See CLAUDE.md §7.
 interface Props {
   productId?: string;
+  product?: string;       // display name e.g. "private lesson"
+  basePrice?: string;     // display only, e.g. "€180"
   variant?: 'full' | 'product';
 }
 
-const { productId, variant = 'product' } = Astro.props;
+const {
+  productId,
+  product = 'lesson',
+  basePrice = '€180',
+  variant = 'product',
+} = Astro.props;
 ---
 
-<!--
-  Placeholder for the Arch booking widget embed.
-  Final integration TBC with Rachel Vaclik (Arch PM) and Jake Charlton (Arch designer).
-  See CLAUDE.md §7.
--->
 <div
-  class="flex min-h-[480px] flex-col items-center justify-center rounded-3xl border border-dashed border-olive/30 bg-brown/10 p-8 text-center"
+  class="rounded-3xl bg-olive-deep p-6 text-salt shadow-lg md:p-8"
   data-arch-widget
   data-product={productId}
   data-variant={variant}
 >
-  <p class="meta text-yellow">arch booking widget</p>
-  <p class="mt-4 max-w-md text-sm text-salt/70">
-    {variant === 'full'
-      ? 'Full Arch widget mounts here on /book. Coordinate visual tokens with Jake (Arch).'
-      : `Inline availability for product ${productId ?? '<set product id>'} mounts here.`}
+  <h3 class="font-display text-2xl font-bold tracking-tight">Book a {product}</h3>
+
+  <div class="mt-6 space-y-5">
+    <div>
+      <p class="meta text-salt/50">Resort</p>
+      <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/15 bg-salt/5 px-4 py-3 text-sm">
+        <span>Morzine-Avoriaz</span>
+        <span class="text-salt/40">▾</span>
+      </div>
+    </div>
+
+    <div>
+      <p class="meta text-salt/50">Duration</p>
+      <div class="mt-2 grid grid-cols-2 gap-2">
+        <span class="rounded-full bg-yellow px-4 py-2 text-center text-sm font-medium text-olive-deep">2 hours</span>
+        <span class="rounded-full border border-salt/20 px-4 py-2 text-center text-sm text-salt/80">Half-day</span>
+      </div>
+    </div>
+
+    <div>
+      <p class="meta text-salt/50">Date</p>
+      <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/15 bg-salt/5 px-4 py-3 text-sm">
+        <span class="text-salt/60">Pick a date</span>
+        <span class="text-salt/40">▾</span>
+      </div>
+    </div>
+
+    <div>
+      <p class="meta text-salt/50">Time</p>
+      <div class="mt-2 grid grid-cols-2 gap-2">
+        <span class="rounded-full bg-yellow px-4 py-2 text-center text-sm font-medium text-olive-deep">9am – 11am</span>
+        <span class="rounded-full border border-salt/20 px-4 py-2 text-center text-sm text-salt/80">1pm – 3pm</span>
+      </div>
+    </div>
+
+    <div>
+      <p class="meta text-salt/50">Preferred instructor</p>
+      <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/15 bg-salt/5 px-4 py-3 text-sm">
+        <span>Any available</span>
+        <span class="text-salt/40">▾</span>
+      </div>
+      <span class="meta mt-3 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">2 left on this date</span>
+    </div>
+
+    <div>
+      <p class="meta text-salt/50">Skiers</p>
+      <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/15 bg-salt/5 px-4 py-3 text-sm">
+        <span>1 skier</span>
+        <span class="text-salt/40">▾</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-7 border-t border-salt/10 pt-5">
+    <div class="flex items-baseline justify-between">
+      <span class="meta text-salt/60">Total</span>
+      <span class="font-display text-3xl font-bold tracking-tight">{basePrice}</span>
+    </div>
+    <p class="meta mt-1 text-salt/40">or €36 deposit — settle 14 days before</p>
+  </div>
+
+  <button
+    type="button"
+    class="mt-6 w-full rounded-full bg-yellow px-6 py-4 font-display text-sm font-bold uppercase tracking-tight text-olive-deep transition hover:bg-salt"
+  >
+    Continue to checkout →
+  </button>
+
+  <p class="meta mt-4 text-center text-salt/30">
+    Arch booking widget · design reference
   </p>
 </div>

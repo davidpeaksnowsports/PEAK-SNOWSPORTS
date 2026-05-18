@@ -1,34 +1,173 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Hero from '../../components/hero/Hero.astro';
-import Section from '../../components/ui/Section.astro';
 import BookingWidget from '../../components/booking/BookingWidget.astro';
-import { LOREM, LOREM_LONG } from '../../lib/utils';
+
+const whoItsFor = {
+  group: ['Solo', 'Couples', 'Small groups'],
+  level: ['Beginner', 'Intermediate', 'Advanced'],
+};
+
+const pricing = [
+  { label: '2 hours', price: '€180' },
+  { label: 'Half day (4h)', price: '€340' },
+  { label: 'Full day (6h)', price: '€480' },
+];
+
+const meetingPoints = [
+  { resort: 'Morzine', points: 'Pleney, Super Morzine, Prodains' },
+  { resort: 'Chatel', points: 'Linga, Pré-la-Joux, Super Chatel' },
+  { resort: 'Les Gets', points: 'Les Chavannes, Chavannes Express' },
+];
+
+const instructors = [
+  { name: 'Tom Peek', seasons: 12, langs: 'EN/FR', specs: ['Off-piste', 'Advanced', 'Race'] },
+  { name: 'Eilidh', seasons: 8, langs: 'EN/FR', specs: ['Freeride', 'Intermediate', 'Family'] },
+  { name: 'George', seasons: 10, langs: 'EN', specs: ['Family', 'Beginner', 'Kids'] },
+];
 ---
 
 <BaseLayout title="Private lessons — Peak Snowsports">
-  <Hero
-    kicker="Lessons / Private"
-    headline="One instructor. One goal. Yours."
-    sub={LOREM}
-    primaryCta={{ href: '#availability', label: 'Check availability' }}
-    secondaryCta={{ href: '/instructors', label: 'Request an instructor' }}
-    variant="compact"
-  />
+  <!-- Breadcrumb + Hero -->
+  <section id="top" class="bg-olive-deep text-salt">
+    <div class="mx-auto max-w-screen-2xl px-6 pt-10 md:pt-12">
+      <p class="meta text-salt/40">
+        <a href="/lessons" class="no-underline hover:text-yellow">Lessons</a>
+        <span class="px-2">/</span>
+        <span>Private lessons</span>
+      </p>
+    </div>
 
-  <Section kicker="Who it's for" title="Lorem ipsum dolor sit amet.">
-    <p class="max-w-2xl text-lg text-olive/80">{LOREM_LONG}</p>
-  </Section>
+    <div class="mx-auto max-w-screen-2xl px-6 pb-20 pt-10 md:pb-24 md:pt-14">
+      <p class="meta text-yellow">Private lessons</p>
+      <h1 class="mt-6 max-w-3xl text-5xl md:text-7xl">
+        One instructor.<br />You, or your people.
+      </h1>
+      <p class="mt-6 max-w-2xl text-lg text-salt/80 md:text-xl">
+        2 hours minimum. Up to a full day. All levels. All resorts.
+      </p>
 
-  <Section kicker="What's included" title="Everything in the lesson.">
-    <ul class="grid gap-4 md:grid-cols-2">
-      {Array.from({ length: 6 }, (_, i) => (
-        <li class="border-l border-yellow pl-6 text-olive/80">Lorem ipsum dolor sit amet {i + 1}.</li>
-      ))}
-    </ul>
-  </Section>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">From €180 &middot; 2h</span>
+        <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">All resorts</span>
+        <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">All levels</span>
+      </div>
+    </div>
+  </section>
 
-  <Section id="availability" kicker="Availability" title="Book a private lesson.">
-    <BookingWidget productId="private-lesson" variant="product" />
-  </Section>
+  <!-- Two-column: details + sticky widget -->
+  <section class="px-6 py-20 md:py-24">
+    <div class="mx-auto grid max-w-screen-2xl gap-12 lg:grid-cols-[1fr_400px] lg:gap-16">
+
+      <!-- LEFT: details -->
+      <div class="space-y-14">
+
+        <div>
+          <h2 class="text-3xl md:text-4xl">What you get</h2>
+          <p class="mt-5 max-w-2xl text-lg leading-relaxed text-olive/80">
+            A dedicated instructor for the time you book. They'll meet you at a fixed point, ski with you, and tailor the lesson to what you want to get out of it.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-3xl md:text-4xl">Who it's for</h2>
+          <div class="mt-6 flex flex-wrap gap-2">
+            {whoItsFor.group.map((g, i) => (
+              <span class={`meta rounded-full border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-olive-deep' : 'border-olive/20 text-olive/70'}`}>
+                {g}
+              </span>
+            ))}
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {whoItsFor.level.map((l, i) => (
+              <span class={`meta rounded-full border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-olive-deep' : 'border-olive/20 text-olive/70'}`}>
+                {l}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-3xl md:text-4xl">Duration &amp; pricing</h2>
+          <ul class="mt-6 max-w-xl divide-y divide-olive/10 overflow-hidden rounded-2xl border border-olive/10">
+            {pricing.map((p) => (
+              <li class="flex items-center justify-between bg-snow px-6 py-4">
+                <span class="text-sm">{p.label}</span>
+                <span class="font-display text-lg font-bold tracking-tight">{p.price}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-3xl md:text-4xl">Meeting points</h2>
+          <ul class="meta mt-6 space-y-2 text-olive/70">
+            {meetingPoints.map((m) => (
+              <li>
+                <span class="text-olive">{m.resort}</span>
+                <span class="px-2 text-olive/40">—</span>
+                <span>{m.points}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: sticky widget -->
+      <aside class="lg:sticky lg:top-24 lg:self-start">
+        <BookingWidget product="private lesson" productId="private-lesson" basePrice="€180" />
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- Trust strip on brown -->
+  <section class="bg-brown text-salt">
+    <div class="mx-auto max-w-screen-2xl px-6 py-20 md:py-24">
+      <h2 class="text-3xl md:text-5xl">Your instructor in Morzine.</h2>
+      <p class="mt-4 max-w-2xl text-lg text-salt/70">
+        Browse, or let us match you. All Peak instructors are BASI-qualified.
+      </p>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {instructors.map((i) => (
+          <a
+            href={`/instructors/${i.name.toLowerCase().replace(/[^a-z]+/g, '-')}`}
+            class="group block rounded-3xl border border-salt/10 p-6 no-underline transition hover:border-yellow"
+          >
+            <div class="flex items-center gap-4">
+              <div class="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-olive-deep" aria-hidden="true"></div>
+              <div>
+                <p class="font-display text-lg font-bold tracking-tight">{i.name}</p>
+                <p class="meta mt-1 text-salt/60">{i.seasons} seasons &middot; {i.langs}</p>
+              </div>
+            </div>
+            <p class="meta mt-5 text-salt/50">{i.specs.join(' · ')}</p>
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-10">
+        <a
+          href="/instructors?resort=morzine"
+          class="meta inline-flex items-center gap-2 rounded-full border border-salt/20 px-5 py-3 no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+        >
+          Browse all Morzine instructors →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Return-to-booking strip -->
+  <section class="border-t border-olive/10 bg-snow">
+    <div class="mx-auto flex max-w-screen-2xl flex-col items-start justify-between gap-4 px-6 py-8 md:flex-row md:items-center">
+      <p class="text-lg">Ready to book a private lesson?</p>
+      <a
+        href="#top"
+        class="inline-flex items-center rounded-full bg-yellow px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+      >
+        Back to booking ↑
+      </a>
+    </div>
+  </section>
 </BaseLayout>
