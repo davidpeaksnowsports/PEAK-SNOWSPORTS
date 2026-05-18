@@ -21,11 +21,11 @@ const secondary = [
       <img src="/images/logos/peak-mark.png" alt="Peak Snowsports" class="h-10 w-auto md:h-12" />
     </a>
 
-    <nav class="hidden items-center gap-8 md:flex">
+    <nav class="hidden items-center gap-2 md:flex">
       {primary.map((item) => (
         <a
           href={item.href}
-          class="font-display text-base font-bold tracking-tight no-underline transition hover:text-yellow"
+          class="rounded-full px-4 py-2 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:bg-yellow hover:text-olive-deep"
         >
           {item.label}
         </a>
