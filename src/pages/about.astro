@@ -2,14 +2,34 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
-import { LOREM, LOREM_LONG } from '../lib/utils';
 import heroImage from '../assets/images/hero-about.jpg';
 
 const stats = [
   { value: '20,000+', label: 'Clients taught' },
-  { value: '25+', label: 'Instructors' },
-  { value: '3', label: 'Resorts' },
+  { value: '17', label: 'Instructors' },
+  { value: '4', label: 'Resorts' },
   { value: '12+', label: 'Seasons' },
+];
+
+const brothers = [
+  {
+    name: 'George',
+    photo: '/images/instructors/george.jpg',
+    body:
+      "George is the one who'll have you laughing halfway down your first run and somehow skiing better by the bottom of it. Endlessly patient, properly encouraging, and unfussed about whether you're six years old on a magic carpet or a nervous adult finally giving it a proper go — he meets you where you are. Off the clock, you'll find him deep in the Portes du Soleil somewhere, usually on a ski tour, usually with a camera.",
+  },
+  {
+    name: 'Marc',
+    photo: '/images/instructors/marc.jpg',
+    body:
+      "Marc is the coach people keep coming back for. He's got a knack for spotting the one small thing that's been holding your skiing back for years and quietly fixing it without making a fuss. Calm on the hill, sharp eye, and the kind of dry humour that makes a three-hour lesson feel like an hour. He's the brother most likely to push you a little further than you thought you could go — and most likely to be right about it.",
+  },
+  {
+    name: 'David',
+    photo: '/images/instructors/david.jpg',
+    body:
+      "David is the one who keeps the wheels turning behind the scenes. Building the business, looking after the team, and making sure that when you turn up for a lesson, everything from the booking to the boots to the coach standing in front of you is exactly as it should be. He's also out on the snow plenty — and if you've ever had a lesson with him, you'll know he treats every client like they're the only one on his books that week.",
+  },
 ];
 ---
 
@@ -17,17 +37,44 @@ const stats = [
   <Hero
     kicker="About"
     headline="We don't run lessons. We build skiers."
-    sub={LOREM}
+    sub="Founded by three brothers obsessed with the mountains. Built around coaching that actually cares."
     variant="full"
     image={heroImage}
     imageAlt="A snow-laden ridge in the Portes du Soleil under a clear winter sky."
   />
 
-  <Section kicker="The story" title="How Peak started.">
-    <div class="grid gap-8 text-lg leading-relaxed text-olive/80 md:grid-cols-2">
-      <p>{LOREM_LONG}</p>
-      <p>{LOREM_LONG}</p>
+  <Section kicker="The story" title="Three brothers. One ski school.">
+    <div class="space-y-8 text-lg leading-relaxed text-olive/80 md:text-xl">
+      <p class="max-w-3xl">
+        Peak is a British-owned ski school in the Portes du Soleil, founded by three brothers — George, Marc and David Walton — who grew up obsessed with the mountains and turned that obsession into a business.
+      </p>
+      <p class="max-w-3xl">
+        We started Peak to build the ski school we wished existed. One where the coaching is genuinely excellent, the team actually cares, and a week with us feels less like a transaction and more like a few days spent with friends who happen to be very good at skiing.
+      </p>
     </div>
+  </Section>
+
+  <Section kicker="Why we built it" title="Experiences. Not transactions.">
+    <div class="space-y-8 text-lg leading-relaxed text-olive/80">
+      <p class="max-w-3xl">
+        We also started it to do things a bit differently. Peak isn't here to churn out lessons — we're here to create experiences. The kind of mornings on the mountain you talk about for years.
+      </p>
+      <p class="max-w-3xl">
+        And we want to build a business that can keep doing that for the long run, which means taking sustainability seriously: how we operate, what gear we recommend, the partners we work with, and the footprint we leave on the resorts we love.
+      </p>
+    </div>
+  </Section>
+
+  <Section kicker="Where we ski" title="Morzine. Avoriaz. Les Gets. Chatel.">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
+      Based across four resorts in the Portes du Soleil, we run lessons for every level — first-timers finding their feet, families, kids, intermediates breaking out of a rut, and stronger skiers chasing off-piste and ski touring. We also run our <a href="/gap-course" class="underline-offset-4 hover:text-yellow hover:underline">BASI Level 1 and 2 GAP instructor course</a> out of Avoriaz for the next generation of coaches coming through.
+    </p>
+  </Section>
+
+  <Section kicker="How we coach" title="You at the centre.">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
+      What ties it all together is a coaching philosophy that puts you at the centre. Our team — alongside Tom, Eilidh and a wider crew of fully qualified instructors — works to a skills-based approach. Which is a fancy way of saying we figure out what you actually need and teach to that, rather than running you through a script.
+    </p>
   </Section>
 
   <Section kicker="By the numbers" title="A network, not a sole trader.">
@@ -43,10 +90,39 @@ const stats = [
     </div>
   </Section>
 
-  <Section kicker="Philosophy" title="Time. Team. Experience.">
-    <div class="grid gap-8 text-lg leading-relaxed text-olive/80 md:grid-cols-2">
-      <p>{LOREM_LONG}</p>
-      <p>{LOREM_LONG}</p>
+  <Section kicker="The brothers" title="George. Marc. David.">
+    <div class="grid gap-12 md:grid-cols-3">
+      {brothers.map((b) => (
+        <div>
+          <div class="aspect-[3/4] w-full overflow-hidden rounded-3xl bg-brown">
+            <img src={b.photo} alt={b.name} class="h-full w-full object-cover" loading="lazy" />
+          </div>
+          <h3 class="mt-6 font-display text-3xl font-bold tracking-tight">{b.name}</h3>
+          <p class="mt-4 text-base leading-relaxed text-olive/80">{b.body}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section>
+    <div class="border-t border-olive/10 pt-16">
+      <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
+        We're a small, growing business and we like it that way. It means we know our clients, we know our team, and we can keep the standard high. Whether you're booking your first lesson or your fifteenth, the goal is the same — memorable moments on snow.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a
+          href="/book"
+          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+        >
+          Come and ski with us →
+        </a>
+        <a
+          href="/instructors"
+          class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+        >
+          Meet the team
+        </a>
+      </div>
     </div>
   </Section>
 </BaseLayout>
