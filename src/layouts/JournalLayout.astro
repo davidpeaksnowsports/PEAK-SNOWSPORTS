@@ -7,16 +7,22 @@ interface Props {
   category?: string;
   author?: string;
   date?: string;
+  hero?: string;       // path under /public, e.g. "/images/journal/foo.jpg"
+  heroAlt?: string;
 }
 
-const { title, description, category, author, date } = Astro.props;
+const { title, description, category, author, date, hero, heroAlt = '' } = Astro.props;
 ---
 
 <BaseLayout title={`${title} — Peak Journal`} description={description}>
   <article class="px-6 pb-24 pt-16 md:pb-32 md:pt-24">
     <header class="mx-auto max-w-3xl">
-      {category && <p class="meta text-yellow">{category}</p>}
-      <h1 class="mt-6 text-4xl font-semibold leading-tight md:text-6xl">{title}</h1>
+      {category && (
+        <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">
+          {category}
+        </span>
+      )}
+      <h1 class="mt-6 text-4xl leading-tight md:text-6xl">{title}</h1>
       <p class="meta mt-6 text-olive/60">
         {author && <span>{author}</span>}
         {author && date && <span class="px-2">·</span>}
@@ -24,7 +30,15 @@ const { title, description, category, author, date } = Astro.props;
       </p>
     </header>
 
-    <div class="mx-auto mt-16 aspect-[16/9] max-w-5xl overflow-hidden rounded-3xl bg-brown" aria-hidden="true" />
+    {hero ? (
+      <img
+        src={hero}
+        alt={heroAlt}
+        class="mx-auto mt-16 aspect-[16/9] max-w-5xl rounded-3xl object-cover"
+      />
+    ) : (
+      <div class="mx-auto mt-16 aspect-[16/9] max-w-5xl overflow-hidden rounded-3xl bg-brown" aria-hidden="true" />
+    )}
 
     <div class="prose prose-lg mx-auto mt-16 max-w-2xl
       prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-olive
