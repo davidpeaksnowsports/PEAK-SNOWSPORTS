@@ -11,6 +11,8 @@ interface Props {
   variant?: 'full' | 'compact';
   image?: ImageMetadata;
   imageAlt?: string;
+  video?: string;        // path under /public, e.g. "/videos/hero-home.mp4"
+  videoPoster?: string;  // poster image path under /public
 }
 
 const {
@@ -22,13 +24,28 @@ const {
   variant = 'full',
   image,
   imageAlt = '',
+  video,
+  videoPoster,
 } = Astro.props;
 
 const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
 ---
 
 <section class={`relative flex ${height} items-end overflow-hidden bg-brown`}>
-  {image && (
+  {video ? (
+    <video
+      class="absolute inset-0 h-full w-full object-cover"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster={videoPoster}
+      aria-label={imageAlt}
+    >
+      <source src={video} type="video/mp4" />
+    </video>
+  ) : image && (
     <Image
       src={image}
       alt={imageAlt}
