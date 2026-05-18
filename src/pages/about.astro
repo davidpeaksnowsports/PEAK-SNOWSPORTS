@@ -11,6 +11,40 @@ const stats = [
   { value: '12+', label: 'Seasons' },
 ];
 
+const whyPeak = [
+  {
+    title: 'Small groups, proper attention.',
+    body:
+      "We cap our group sizes so every client gets real coaching time — not a head count in a queue.",
+  },
+  {
+    title: 'Coaches who can actually teach.',
+    body:
+      "Our team understands ski technique well enough to break it down into bite-sized pieces, demonstrate it cleanly, and adapt it to how you learn. Patience, humility and a bit of fun sit at the centre of how we deliver — because that's what makes lessons stick.",
+  },
+  {
+    title: 'A team that shares the values.',
+    body:
+      "Every coach at Peak is a top-class professional who shares our passion for adventure and the way we like to do things. No phoning it in.",
+  },
+  {
+    title: 'Taught in English.',
+    body:
+      "All our lessons are delivered by fluent English speakers, so nothing gets lost in translation.",
+  },
+  {
+    title: 'We care about the mountains we work in.',
+    body:
+      "We're passionate about preserving the places we ski and making sure what we do does no harm. That isn't a marketing line — it shows up in the small decisions.",
+    commitments: [
+      'Our uniform is made without water-based dyes',
+      'We car-share when moving instructors around the valley',
+      'We launched the Sustainable Ski Lesson — a session designed to raise awareness and give clients practical actions they can take for the climate',
+      'We donate to Montagne Verte, supporting their work protecting the Alps we love',
+    ],
+  },
+];
+
 const brothers = [
   {
     name: 'George',
@@ -54,17 +88,6 @@ const brothers = [
     </div>
   </Section>
 
-  <Section kicker="Why we built it" title="Experiences. Not transactions.">
-    <div class="space-y-8 text-lg leading-relaxed text-olive/80">
-      <p class="max-w-3xl">
-        We also started it to do things a bit differently. Peak isn't here to churn out lessons — we're here to create experiences. The kind of mornings on the mountain you talk about for years.
-      </p>
-      <p class="max-w-3xl">
-        And we want to build a business that can keep doing that for the long run, which means taking sustainability seriously: how we operate, what gear we recommend, the partners we work with, and the footprint we leave on the resorts we love.
-      </p>
-    </div>
-  </Section>
-
   <Section kicker="Where we ski" title="Morzine. Avoriaz. Les Gets. Chatel.">
     <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
       Based across four resorts in the Portes du Soleil, we run lessons for every level — first-timers finding their feet, families, kids, intermediates breaking out of a rut, and stronger skiers chasing off-piste and ski touring. We also run our <a href="/gap-course" class="underline-offset-4 hover:text-yellow hover:underline">BASI Level 1 and 2 GAP instructor course</a> out of Avoriaz for the next generation of coaches coming through.
@@ -75,6 +98,40 @@ const brothers = [
     <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
       What ties it all together is a coaching philosophy that puts you at the centre. Our team — alongside Tom, Eilidh and a wider crew of fully qualified instructors — works to a skills-based approach. Which is a fancy way of saying we figure out what you actually need and teach to that, rather than running you through a script.
     </p>
+  </Section>
+
+  <Section kicker="Why Peak" title="The short version.">
+    <div class="space-y-4 font-display text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl">
+      <p>Time. Team. Experience.</p>
+      <p>We don't run lessons. We build skiers.</p>
+      <p>Experiences, not transactions.</p>
+    </div>
+
+    <p class="meta mt-16 text-olive/50">And here's the longer one.</p>
+
+    <ol class="mt-12 space-y-16">
+      {whyPeak.map((r, i) => (
+        <li class="border-t border-olive/10 pt-10">
+          <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
+            <span class="meta text-olive/40">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3 class="font-display text-2xl font-bold tracking-tight md:text-3xl">{r.title}</h3>
+              <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/80">{r.body}</p>
+              {r.commitments && (
+                <ul class="mt-6 max-w-2xl space-y-3">
+                  {r.commitments.map((c) => (
+                    <li class="flex gap-3 text-base text-olive/70">
+                      <span class="meta mt-1 shrink-0 text-yellow">&middot;</span>
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
   </Section>
 
   <Section kicker="By the numbers" title="A network, not a sole trader.">
