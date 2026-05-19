@@ -1,0 +1,128 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/ui/Section.astro';
+
+export async function getStaticPaths() {
+  const providers = await getCollection('accommodation', ({ data }) => !data.draft);
+  return providers.map((p) => ({
+    params: { slug: p.id },
+    props: { provider: p, allProviders: providers },
+  }));
+}
+
+const { provider, allProviders } = Astro.props;
+const { Content } = await render(provider);
+const d = provider.data;
+
+const otherProviders = allProviders
+  .filter((p) => p.id !== provider.id)
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
+  .slice(0, 3);
+---
+
+<BaseLayout title={`${d.name} — Accommodation partner — Peak Snowsports`} description={d.tagline}>
+  <article class="px-6 pb-24 pt-16 md:pb-32 md:pt-24">
+    <div class="mx-auto max-w-screen-2xl">
+      <p class="meta text-olive/40">
+        <a href="/accommodation" class="no-underline hover:text-yellow">Accommodation</a>
+        <span class="px-2">/</span>
+        <span>{d.name}</span>
+      </p>
+
+      <div class="mt-10 grid gap-12 md:grid-cols-12">
+        <div class="md:col-span-5">
+          <div class="aspect-[4/5] overflow-hidden rounded-3xl bg-brown">
+            {d.photo ? (
+              <img src={d.photo} alt={d.name} class="h-full w-full object-cover" loading="eager" />
+            ) : (
+              <div class="flex h-full w-full items-center justify-center">
+                <span class="meta text-salt/30">image pending</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div class="md:col-span-7">
+          {d.style && (
+            <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{d.style}</span>
+          )}
+          <h1 class="mt-4 text-5xl leading-tight md:text-7xl">{d.name}</h1>
+          <p class="mt-4 text-lg text-olive/70 md:text-xl">{d.tagline}</p>
+
+          <div class="article-prose prose prose-lg mt-10 max-w-2xl
+            prose-p:text-olive/80 prose-strong:text-olive
+            prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:text-yellow">
+            <Content />
+          </div>
+
+          <dl class="mt-12 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-olive/10 pt-12 text-sm">
+            {d.locations.length > 0 && (
+              <div>
+                <dt class="meta text-olive/50">{d.locations.length === 1 ? 'Location' : 'Locations'}</dt>
+                <dd class="mt-2">{d.locations.join(' · ')}</dd>
+              </div>
+            )}
+            {d.style && (
+              <div>
+                <dt class="meta text-olive/50">Style</dt>
+                <dd class="mt-2">{d.style}</dd>
+              </div>
+            )}
+            {d.website && (
+              <div class="col-span-2">
+                <dt class="meta text-olive/50">Website</dt>
+                <dd class="mt-2">
+                  <a href={d.website} rel="noopener" target="_blank" class="underline-offset-4 hover:text-yellow hover:underline">
+                    {d.website.replace(/^https?:\/\//, '').replace(/\/$/, '')} ↗
+                  </a>
+                </dd>
+              </div>
+            )}
+          </dl>
+
+          <div class="mt-12 flex flex-wrap gap-3">
+            <a
+              href={`/accommodation#enquire?provider=${encodeURIComponent(d.name)}`}
+              class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+            >
+              Enquire about {d.name} →
+            </a>
+            {d.website && (
+              <a
+                href={d.website}
+                rel="noopener"
+                target="_blank"
+                class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+              >
+                Visit website
+              </a>
+            )}
+          </div>
+          <p class="meta mt-4 text-olive/40">
+            Enquiries route to {d.name} and a copy comes to us for tracking.
+          </p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  {otherProviders.length > 0 && (
+    <Section kicker="Other partners" title="Compare across the list.">
+      <ul class="divide-y divide-olive/10 border-y border-olive/10">
+        {otherProviders.map((p) => (
+          <li>
+            <a
+              href={`/accommodation/${p.id}`}
+              class="group flex items-baseline gap-4 py-6 no-underline transition md:gap-8"
+            >
+              <span class="font-display text-3xl font-bold tracking-tight transition group-hover:text-yellow md:text-5xl">{p.data.name}.</span>
+              <span class="meta hidden text-olive/50 md:inline">{p.data.tagline}</span>
+              <span class="ml-auto font-display text-2xl transition group-hover:translate-x-2 group-hover:text-yellow md:text-3xl">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )}
+</BaseLayout>

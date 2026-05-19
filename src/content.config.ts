@@ -68,4 +68,19 @@ const resortCollection = defineCollection({
   }),
 });
 
-export const collections = { journal, instructors, resorts: resortCollection };
+const accommodation = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/accommodation' }),
+  schema: z.object({
+    name: z.string(),
+    tagline: z.string(),
+    style: z.string().optional(),         // "Luxury hosted", "Self-catered", "Mixed"
+    locations: z.array(z.string()).default([]),
+    photo: z.string().optional(),
+    website: z.string().url().optional(),
+    email: z.string().email().optional(),  // for enquiry routing
+    order: z.number().optional(),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
+export const collections = { journal, instructors, resorts: resortCollection, accommodation };
