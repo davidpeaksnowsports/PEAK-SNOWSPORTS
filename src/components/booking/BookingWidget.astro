@@ -1,97 +1,208 @@
 ---
-// Styled placeholder for the Arch booking widget — design reference
-// for the embed. Final integration TBC with Rachel Vaclik (Arch PM) and
-// Jake Charlton (Arch designer). See CLAUDE.md §7.
+// Arch booking embed — Secure Mode, Option B (server-to-server token).
+// ARCH_SECURE_API_KEY is used server-side only and never reaches the browser.
+// Token is refreshed client-side via /api/embed-token before expiry.
+// See CLAUDE.md §7 and the Arch embed documentation.
+
 interface Props {
   productId?: string;
-  product?: string;       // display name e.g. "private lesson"
-  basePrice?: string;     // display only, e.g. "€180"
+  resort?: string;        // filters the product listing, e.g. "morzine"
+  successUrl?: string;    // override the post-payment return URL (default: current page + ?booking=confirmed)
   variant?: 'full' | 'product';
+  height?: string;
 }
 
 const {
   productId,
-  product = 'lesson',
-  basePrice = '€180',
+  resort,
+  successUrl,
   variant = 'product',
+  height = variant === 'full' ? '900px' : '800px',
 } = Astro.props;
+
+const BOOKING_URL = import.meta.env.ARCH_BOOKING_URL;
+const SECURE_KEY  = import.meta.env.ARCH_SECURE_API_KEY;
+const DOMAIN      = import.meta.env.SITE_URL;
+
+// Detect payment return state from URL params (set by Arch redirect or by us below)
+const paymentState = Astro.url.searchParams.get('booking') as 'confirmed' | 'cancelled' | null;
+
+// Build the success return URL: current page + ?booking=confirmed
+// Arch will redirect here after a successful Stripe payment.
+const returnUrl = (() => {
+  if (successUrl) return successUrl;
+  const u = new URL(Astro.url.href);
+  u.searchParams.set('booking', 'confirmed');
+  return u.toString();
+})();
+
+const cancelUrl = (() => {
+  const u = new URL(Astro.url.href);
+  u.searchParams.set('booking', 'cancelled');
+  return u.toString();
+})();
+
+const basePath  = productId ? `/products/${productId}` : '/products';
+const embedPath = resort ? `${basePath}?resort=${encodeURIComponent(resort)}` : basePath;
+
+let iframeSrc: string | null = null;
+let tokenError: string | null = null;
+
+// Only fetch a token if we're not already showing a post-payment state
+if (!paymentState) {
+  try {
+    const res = await fetch(`${BOOKING_URL}/api/v1/embed/token/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secure_api_key: SECURE_KEY, domain: DOMAIN }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const qs = embedPath.includes('?') ? '&' : '?';
+      iframeSrc = `${BOOKING_URL}${embedPath}${qs}embed=1&embed_token=${data.token}&embed_parent_url=${encodeURIComponent(returnUrl)}`;
+    } else {
+      tokenError = `${res.status} ${res.statusText}`;
+    }
+  } catch {
+    tokenError = 'Could not reach booking system';
+  }
+}
+
+const widgetId = `arch-embed-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
-<div
-  class="rounded-3xl bg-olive-deep p-6 text-salt shadow-lg md:p-8"
-  data-arch-widget
-  data-product={productId}
-  data-variant={variant}
->
-  <h3 class="font-display text-2xl font-bold tracking-tight">Book a {product}</h3>
-
-  <div class="mt-6 space-y-5">
-    <div>
-      <p class="meta text-salt/50">Resort</p>
-      <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/15 bg-salt/5 px-4 py-3 text-sm">
-        <span>Morzine-Avoriaz</span>
-        <span class="text-salt/40">▾</span>
-      </div>
-    </div>
-
-    <div>
-      <p class="meta text-salt/50">Duration</p>
-      <div class="mt-2 grid grid-cols-2 gap-2">
-        <span class="rounded-full bg-yellow px-4 py-2 text-center text-sm font-medium text-olive-deep">2 hours</span>
-        <span class="rounded-full border border-salt/20 px-4 py-2 text-center text-sm text-salt/80">Half-day</span>
-      </div>
-    </div>
-
-    <div>
-      <p class="meta text-salt/50">Date</p>
-      <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/15 bg-salt/5 px-4 py-3 text-sm">
-        <span class="text-salt/60">Pick a date</span>
-        <span class="text-salt/40">▾</span>
-      </div>
-    </div>
-
-    <div>
-      <p class="meta text-salt/50">Time</p>
-      <div class="mt-2 grid grid-cols-2 gap-2">
-        <span class="rounded-full bg-yellow px-4 py-2 text-center text-sm font-medium text-olive-deep">9am – 11am</span>
-        <span class="rounded-full border border-salt/20 px-4 py-2 text-center text-sm text-salt/80">1pm – 3pm</span>
-      </div>
-    </div>
-
-    <div>
-      <p class="meta text-salt/50">Preferred instructor</p>
-      <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/15 bg-salt/5 px-4 py-3 text-sm">
-        <span>Any available</span>
-        <span class="text-salt/40">▾</span>
-      </div>
-      <span class="meta mt-3 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">2 left on this date</span>
-    </div>
-
-    <div>
-      <p class="meta text-salt/50">Skiers</p>
-      <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/15 bg-salt/5 px-4 py-3 text-sm">
-        <span>1 skier</span>
-        <span class="text-salt/40">▾</span>
-      </div>
+{paymentState === 'confirmed' ? (
+  <!-- Payment confirmed — shown after Arch redirects back to this page -->
+  <div class="flex flex-col items-center rounded-3xl bg-olive-deep px-8 py-16 text-center text-salt">
+    <span class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-yellow text-3xl text-olive-deep">✓</span>
+    <h2 class="font-display text-3xl font-bold tracking-tight md:text-4xl">Booking confirmed.</h2>
+    <p class="mt-4 max-w-md text-lg text-salt/75">
+      You'll receive a confirmation email shortly. See you on the mountain.
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a
+        href="/book"
+        class="inline-flex items-center rounded-full bg-yellow px-7 py-3 font-display text-sm font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+      >
+        Book another lesson →
+      </a>
+      <a
+        href="/instructors"
+        class="inline-flex items-center rounded-full border border-salt/30 px-7 py-3 font-display text-sm font-bold uppercase tracking-tight text-salt no-underline transition hover:border-yellow hover:text-yellow"
+      >
+        Meet your instructors
+      </a>
     </div>
   </div>
 
-  <div class="mt-7 border-t border-salt/10 pt-5">
-    <div class="flex items-baseline justify-between">
-      <span class="meta text-salt/60">Total</span>
-      <span class="font-display text-3xl font-bold tracking-tight">{basePrice}</span>
+) : paymentState === 'cancelled' ? (
+  <!-- Payment cancelled — shown if Arch redirects with ?booking=cancelled -->
+  <div class="flex flex-col items-center rounded-3xl border border-olive/15 bg-snow px-8 py-16 text-center">
+    <span class="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-olive/20 text-2xl text-olive/50">✕</span>
+    <h2 class="font-display text-3xl font-bold tracking-tight text-olive md:text-4xl">Payment cancelled.</h2>
+    <p class="mt-4 max-w-md text-lg text-olive/70">
+      No charge was made. You can try again whenever you're ready.
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a
+        href={Astro.url.pathname}
+        class="inline-flex items-center rounded-full bg-olive-deep px-7 py-3 font-display text-sm font-bold uppercase tracking-tight text-salt no-underline transition hover:bg-olive"
+      >
+        Try again →
+      </a>
+      <a
+        href="/contact"
+        class="inline-flex items-center rounded-full border border-olive/30 px-7 py-3 font-display text-sm font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+      >
+        Contact us
+      </a>
     </div>
-    <p class="meta mt-1 text-salt/40">or €36 deposit — settle 14 days before</p>
   </div>
 
-  <button
-    type="button"
-    class="mt-6 w-full rounded-full bg-yellow px-6 py-4 font-display text-sm font-bold uppercase tracking-tight text-olive-deep transition hover:bg-salt"
+) : iframeSrc ? (
+  <div
+    id={widgetId}
+    class="arch-embed-wrapper w-full overflow-hidden rounded-3xl"
+    data-product-id={productId ?? ''}
+    data-embed-path={embedPath}
   >
-    Continue to checkout →
-  </button>
+    <iframe
+      src={iframeSrc}
+      width="100%"
+      height={height}
+      frameborder="0"
+      allow="payment"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+      style="border: none; display: block;"
+      title="Peak Snowsports booking"
+    />
+  </div>
 
-  <p class="meta mt-4 text-center text-salt/30">
-    Arch booking widget · design reference
-  </p>
-</div>
+  <script define:vars={{ widgetId, embedPath, embedSuccessUrl: returnUrl, bookingUrl: BOOKING_URL }}>
+    (function () {
+      const REFRESH_MS = 8 * 60 * 1000;
+
+      function getIframe() {
+        return document.getElementById(widgetId)?.querySelector('iframe');
+      }
+
+      // ── Token refresh ────────────────────────────────────────────────────
+      function refreshToken() {
+        fetch('/api/embed-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ embedPath, successUrl: embedSuccessUrl }),
+        })
+          .then((r) => r.ok ? r.json() : null)
+          .then((data) => {
+            if (!data?.iframe_src) return;
+            const iframe = getIframe();
+            if (iframe) iframe.src = data.iframe_src;
+          })
+          .catch(() => {});
+      }
+
+      // ── Payment callback — session_id in URL (Arch may pass this in future) ──
+      // If present, swap the iframe to show the Arch success page directly.
+      (function checkSessionId() {
+        const params    = new URLSearchParams(window.location.search);
+        const sessionId = params.get('session_id');
+        if (!sessionId) return;
+
+        const iframe = getIframe();
+        if (iframe) {
+          iframe.src = bookingUrl + '/checkout/success?session_id=' + encodeURIComponent(sessionId);
+        }
+
+        // Clean session_id from the URL bar without a reload
+        const clean = location.pathname +
+          location.search.replace(/[?&]session_id=[^&]*/g, '').replace(/^&/, '?');
+        if (window.history.replaceState) {
+          window.history.replaceState({}, '', clean || location.pathname);
+        }
+      })();
+
+      // ── postMessage redirect (Stripe popup / Arch postMessage) ───────────
+      window.addEventListener('message', function (event) {
+        if (event.data && event.data.type === 'PEAK_SNOW_REDIRECT') {
+          window.location.href = event.data.url;
+        }
+      });
+
+      setInterval(refreshToken, REFRESH_MS);
+    })();
+  </script>
+
+) : (
+  <div class="flex min-h-[200px] flex-col items-center justify-center rounded-3xl border border-olive/15 bg-snow p-8 text-center">
+    <p class="text-olive/60">Booking system unavailable right now.</p>
+    {tokenError && <p class="meta mt-2 text-olive/30 text-xs">{tokenError}</p>}
+    <a
+      href="/contact"
+      class="mt-6 inline-flex items-center rounded-full bg-olive-deep px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-salt no-underline transition hover:bg-olive"
+    >
+      Contact us instead →
+    </a>
+  </div>
+)}

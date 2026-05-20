@@ -1,17 +1,12 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/ui/Section.astro';
 
-export async function getStaticPaths() {
-  const instructors = await getCollection('instructors', ({ data }) => !data.draft);
-  return instructors.map((instructor) => ({
-    params: { slug: instructor.id },
-    props: { instructor },
-  }));
-}
+const { slug } = Astro.params;
+const instructor = await getEntry('instructors', slug!);
+if (!instructor) return Astro.redirect('/404');
 
-const { instructor } = Astro.props;
 const { Content } = await render(instructor);
 const d = instructor.data;
 ---

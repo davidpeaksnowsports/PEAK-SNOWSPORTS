@@ -9,18 +9,14 @@ import { formatDate, readingTime } from '../../../lib/utils';
 
 const toSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-export async function getStaticPaths() {
-  const posts = await getCollection('journal', ({ data }) => !data.draft);
-  const uniqueCategories = [...new Set(posts.map((p) => p.data.category))];
-  return uniqueCategories.map((category) => ({
-    params: { category: category.toLowerCase().replace(/[^a-z0-9]+/g, '-') },
-    props: { categoryName: category },
-  }));
-}
-
-const { categoryName } = Astro.props;
+const { category: categorySlug } = Astro.params;
 
 const allPosts = await getCollection('journal', ({ data }) => !data.draft);
+const uniqueCategories = [...new Set(allPosts.map((p) => p.data.category))];
+const categoryName = uniqueCategories.find(
+  (c) => c.toLowerCase().replace(/[^a-z0-9]+/g, '-') === categorySlug,
+);
+if (!categoryName) return Astro.redirect('/journal');
 const posts = allPosts
   .filter((p) => p.data.category === categoryName)
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());

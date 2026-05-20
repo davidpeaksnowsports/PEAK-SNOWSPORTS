@@ -1,18 +1,15 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
+import BookingWidget from '../../components/booking/BookingWidget.astro';
 
-export async function getStaticPaths() {
-  const resorts = await getCollection('resorts', ({ data }) => !data.draft);
-  return resorts.map((resort) => ({
-    params: { slug: resort.id },
-    props: { resort, allResorts: resorts },
-  }));
-}
+const { slug } = Astro.params;
+const resort = await getEntry('resorts', slug!);
+if (!resort) return Astro.redirect('/404');
 
-const { resort, allResorts } = Astro.props;
+const allResorts = await getCollection('resorts', ({ data }) => !data.draft);
 const { Content } = await render(resort);
 const d = resort.data;
 
@@ -98,25 +95,12 @@ const otherResorts = allResorts
     </Section>
   )}
 
-  {/* CTAs */}
-  <Section>
-    <div class="border-t border-olive/10 pt-12">
-      <div class="flex flex-wrap gap-3">
-        <a
-          href="/book"
-          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
-        >
-          {d.type === 'product' ? `Enquire about ${d.product}` : `Book a lesson in ${d.name}`} →
-        </a>
-        <a
-          href="/lessons"
-          class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
-        >
-          See all lessons
-        </a>
-      </div>
-    </div>
-  </Section>
+  {/* Booking embed — home resorts only */}
+  {d.type === 'home' && (
+    <Section kicker="Book a lesson" title={`Ski in ${d.name}.`}>
+      <BookingWidget variant="full" resort={slug} />
+    </Section>
+  )}
 
   {/* Other resorts of the same type */}
   {otherResorts.length > 0 && (

@@ -1,17 +1,13 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/ui/Section.astro';
 
-export async function getStaticPaths() {
-  const providers = await getCollection('accommodation', ({ data }) => !data.draft);
-  return providers.map((p) => ({
-    params: { slug: p.id },
-    props: { provider: p, allProviders: providers },
-  }));
-}
+const { slug } = Astro.params;
+const provider = await getEntry('accommodation', slug!);
+if (!provider) return Astro.redirect('/404');
 
-const { provider, allProviders } = Astro.props;
+const allProviders = await getCollection('accommodation', ({ data }) => !data.draft);
 const { Content } = await render(provider);
 const d = provider.data;
 

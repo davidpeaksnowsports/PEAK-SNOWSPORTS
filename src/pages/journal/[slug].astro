@@ -1,19 +1,15 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import JournalLayout from '../../layouts/JournalLayout.astro';
 import Section from '../../components/ui/Section.astro';
 import PostCard from '../../components/journal/PostCard.astro';
 import { formatDate, readingTime } from '../../lib/utils';
 
-export async function getStaticPaths() {
-  const posts = await getCollection('journal', ({ data }) => !data.draft);
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post, allPosts: posts },
-  }));
-}
+const { slug } = Astro.params;
+const post = await getEntry('journal', slug!);
+if (!post) return Astro.redirect('/404');
 
-const { post, allPosts } = Astro.props;
+const allPosts = await getCollection('journal', ({ data }) => !data.draft);
 const { Content } = await render(post);
 
 const moreFromAuthor = allPosts
