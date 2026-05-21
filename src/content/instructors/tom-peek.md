@@ -5,7 +5,7 @@ resorts: ["Morzine"]
 languages: ["EN", "FR"]
 specialities: ["Off-piste", "Advanced", "Race"]
 qualifications: []
-photo: ""
+photo: "/images/instructors/placeholder.jpg"
 order: 6
 ---
 

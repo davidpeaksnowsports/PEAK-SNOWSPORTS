@@ -5,7 +5,7 @@ resorts: ["Morzine"]
 languages: ["EN"]
 specialities: []
 qualifications: []
-photo: ""
+photo: "/images/instructors/placeholder.jpg"
 order: 11
 ---
 
