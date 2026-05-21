@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import { Content } from '../data/cookies.md';
+---
+
+<BaseLayout
+  title="Cookie Policy — Peak Snowsports"
+  description="How Peak Snowsports uses cookies and similar technologies, the types of cookies we use, and how you can control them."
+>
+  <Hero
+    kicker="Legal"
+    headline="Cookie Policy"
+    sub="What cookies are, why we use them, and how you can control them. Read alongside our Privacy Notice."
+    variant="compact"
+  />
+
+  <article class="px-6 py-24 md:py-32">
+    <div
+      class="prose prose-lg mx-auto max-w-3xl
+             prose-headings:font-display prose-headings:tracking-tight prose-headings:text-olive
+             prose-h2:mt-20 prose-h2:text-3xl prose-h2:font-bold md:prose-h2:text-4xl
+             prose-h3:mt-12 prose-h3:text-2xl prose-h3:font-bold
+             prose-p:text-olive/80 prose-li:text-olive/80
+             prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:text-yellow
+             prose-strong:text-olive"
+    >
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
