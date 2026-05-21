@@ -5,7 +5,7 @@ resorts: ["Morzine"]
 languages: ["EN"]
 specialities: []
 qualifications: []
-photo: ""
+photo: "/images/instructors/will-peek.jpg"
 order: 14
 ---
 

@@ -7,7 +7,7 @@ specialities: []
 qualifications:
   - "Carte Professionale ski alpin #03817ED0123"
   - "European Mountain Safety"
-photo: ""
+photo: "/images/instructors/tomasso.jpg"
 likes: "Good food, powder days, travel and discovering the world."
 dislikes: "Traffic in the cities, pineapple on pizza, bad wines."
 favouriteKit: "My tecnica zero g tour pro, the most versatile ski boots I’ve ever had."

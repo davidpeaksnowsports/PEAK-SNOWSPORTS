@@ -8,7 +8,7 @@ qualifications:
   - "Carte Professionale ski alpin #03816ED0113"
   - "Osteopath and Physiotherapist for the Italian ski team"
   - "European Mountain Safety"
-photo: ""
+photo: "/images/instructors/paolo.jpg"
 likes: "Good wine, winter time, running at the seaside Three dislikes To be late, fog, wet gloves"
 favouriteKit: "My new yellow head i-speed pro ski’s!"
 order: 8

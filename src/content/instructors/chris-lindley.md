@@ -10,7 +10,7 @@ qualifications:
   - "European Mountain Safety"
   - "Professional Yacht Master Offshore"
   - "Sports Science & Outdoor Adventure"
-photo: ""
+photo: "/images/instructors/chris.jpg"
 order: 10
 ---
 
