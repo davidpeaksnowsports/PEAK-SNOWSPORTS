@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import Section from '../components/ui/Section.astro';
+import heroImage from '../assets/images/hero-instructors.jpg';
+
+const applyHref = 'mailto:hello@peaksnowsports.com?subject=Instructor%20application';
+
+const reasons = [
+  {
+    title: 'Proper hours, properly paid.',
+    body:
+      "Consistent, well-paid teaching across four resorts in the Portes du Soleil. We keep our team busy through the season — not scrambling for the odd lesson.",
+  },
+  {
+    title: 'Teach the way it should be taught.',
+    body:
+      "Small groups, learner-centered coaching, the client at the centre of every decision. You'll have the time to actually teach — not run people through a script.",
+  },
+  {
+    title: 'A team that backs you.',
+    body:
+      "We invest in our instructors the way we invest in our clients. Mentoring, CPD, a route to BASI Level 3 and 4, and a crew that shares the same standards and the same humour.",
+  },
+  {
+    title: 'Room to grow.',
+    body:
+      "Instructors here go on to lead, coach on the GAP course, and help build new mountain ventures under the Peak umbrella. Show us what you've got and we'll make room for it.",
+  },
+];
+
+const resorts = [
+  { name: 'Morzine', tag: 'Family-friendly Alpine village' },
+  { name: 'Avoriaz', tag: 'Car-free, ski-in / ski-out' },
+  { name: 'Les Gets', tag: 'Quieter, gentler, family-leaning' },
+  { name: 'Chatel', tag: 'Linga snow, Super Chatel relaxed' },
+];
+
+const looking = [
+  'BASI (or equivalent) qualified, Level 2 and up',
+  'Fluent English — all our lessons are taught in English',
+  'A genuine coach: patient, sharp-eyed, good with people',
+  'Available for all or part of the winter season',
+];
+---
+
+<BaseLayout
+  title="Join the team — Peak Snowsports"
+  description="We're hiring qualified ski instructors across Morzine, Avoriaz, Les Gets and Chatel. Proper hours, proper coaching, a team that backs you."
+>
+  <Hero
+    kicker="Join the team"
+    headline="Teach on the best snow in the Alps."
+    sub="We're hiring qualified instructors across the Portes du Soleil for the season ahead. Proper hours, proper coaching, a team that shares your standards."
+    variant="full"
+    image={heroImage}
+    imageAlt="A Peak instructor leading a lesson on a sunlit Alpine piste."
+    primaryCta={{ href: applyHref, label: 'Apply now' }}
+    secondaryCta={{ href: '/about', label: 'Why Peak' }}
+  />
+
+  <Section kicker="The role" title="We're hiring instructors. Now.">
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-20">
+      <div class="space-y-6 text-lg leading-relaxed text-olive/80 md:text-xl">
+        <p>
+          Peak is a British-owned ski school running lessons across Morzine, Avoriaz, Les Gets and Chatel. We don't run lessons — we build skiers. To do that, we need instructors who can actually teach.
+        </p>
+        <p>
+          If you're chasing your first full winter or you're a seasoned pro, there's a place on the team for you. We'll keep you busy, back you to get better, and treat the season like the best job in the world — because it is.
+        </p>
+      </div>
+      <div class="rounded-3xl bg-brown p-8 text-salt md:p-10">
+        <p class="meta text-yellow">Ready to go?</p>
+        <p class="mt-4 text-2xl font-semibold leading-tight md:text-3xl">
+          Spots fill fast as the season approaches.
+        </p>
+        <div class="mt-8 flex flex-col gap-3">
+          <a
+            href={applyHref}
+            class="inline-flex items-center justify-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+          >
+            Apply now →
+          </a>
+          <a
+            href="https://wa.me/?text=Hi%20Peak%2C%20I%27d%20like%20to%20apply%20to%20instruct"
+            class="inline-flex items-center justify-center rounded-full border border-salt/40 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+          >
+            Ask us on WhatsApp
+          </a>
+        </div>
+        <p class="meta mt-6 text-salt/50">
+          Or email hello@peaksnowsports.com &middot; +44 1483 616 522
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section kicker="Why instructors choose Peak" title="The short version.">
+    <ol class="space-y-16">
+      {reasons.map((r, i) => (
+        <li class="border-t border-olive/10 pt-10">
+          <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
+            <span class="meta text-olive/40">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3 class="font-display text-2xl font-bold tracking-tight md:text-3xl">{r.title}</h3>
+              <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/80">{r.body}</p>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <Section kicker="Where you'll teach" title="Four resorts. One ski school.">
+    <ul class="divide-y divide-olive/10 border-y border-olive/10">
+      {resorts.map((r) => (
+        <li class="flex items-baseline gap-4 py-8 md:gap-8 md:py-10">
+          <span class="font-display text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+            {r.name}.
+          </span>
+          <span class="meta hidden text-olive/50 md:inline">{r.tag}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section kicker="Who we're looking for" title="The basics.">
+    <ul class="max-w-2xl space-y-4">
+      {looking.map((item) => (
+        <li class="flex gap-3 text-lg leading-relaxed text-olive/80">
+          <span class="meta mt-1.5 shrink-0 text-yellow">&middot;</span>
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+    <p class="mt-10 max-w-2xl text-base leading-relaxed text-olive/60">
+      Not sure you tick every box? Tell us about yourself anyway — we'd rather hear from a great coach than miss one.
+    </p>
+  </Section>
+
+  <Section>
+    <div class="rounded-3xl bg-olive-deep px-8 py-16 text-salt md:px-16 md:py-20">
+      <p class="meta text-yellow">Next step</p>
+      <h2 class="mt-6 max-w-3xl text-4xl font-semibold leading-[1.0] tracking-tight md:text-6xl">
+        Come and teach a winter with us.
+      </h2>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-salt/80">
+        Send us a line about who you are, what you've taught, and your qualifications. We read every application and reply to all of them.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a
+          href={applyHref}
+          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+        >
+          Apply now →
+        </a>
+        <a
+          href="/instructors"
+          class="inline-flex items-center rounded-full border border-salt/40 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+        >
+          Meet the team
+        </a>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
