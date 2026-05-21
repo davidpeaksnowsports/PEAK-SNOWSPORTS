@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import { Content } from '../data/terms.md';
+---
+
+<BaseLayout
+  title="Terms & Conditions — Peak Snowsports"
+  description="Booking terms and conditions and website terms of use for Peak Snowsports, in English and French."
+>
+  <Hero
+    kicker="Legal"
+    headline="Terms & Conditions"
+    sub="Our booking conditions (English and French) and website terms of use. By booking a lesson or course, you agree to these terms."
+    variant="compact"
+  />
+
+  <article class="px-6 py-24 md:py-32">
+    <div
+      class="prose prose-lg mx-auto max-w-3xl
+             prose-headings:font-display prose-headings:tracking-tight prose-headings:text-olive
+             prose-h2:mt-20 prose-h2:text-3xl prose-h2:font-bold md:prose-h2:text-4xl
+             prose-h3:mt-12 prose-h3:text-2xl prose-h3:font-bold
+             prose-p:text-olive/80 prose-li:text-olive/80
+             prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:text-yellow
+             prose-strong:text-olive"
+    >
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
