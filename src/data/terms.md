@@ -24,7 +24,7 @@ Les références à "nous", "notre" ou similaires font références au syndicat 
 
 Peak Snowsports Morzine est un syndicat local de moniteurs de ski ayant son siège social au 1469, Route des Grandes Alpes - 74110 MORZINE et enregistré sous le numéro SIRET français 923 849 095 00016
 
-Peak Snowsports Chatel est un syndicat local de moniteurs de ski ayant son siège social au 320 route du petit Châtel - 74390 CHATEL et enregistré sous le numéro SIRET français.
+Peak Snowsports Chatel est un syndicat local de moniteurs de ski ayant son siège social au 320 route du petit Châtel - 74390 CHATEL et enregistré sous le numéro SIRET français 924 314 461 00014.
 
 2.     Confirmation
 
@@ -50,7 +50,7 @@ Les prix comprennent uniquement le(les) cours de ski ou le(s) stage(s) pour la p
 
 8.     Annulations
 
-Nous avons inclus une nouvelle politique de Covid-19 pour les annulations résultant du Covid-19, vous trouverez ces conditions à l’article 25. Pour toutes les autres annulations, veuillez lire les conditions suivantes :
+Nous avons inclus une nouvelle politique de Covid-19 pour les annulations résultant du Covid-19, vous trouverez ces conditions à l’article 28. Pour toutes les autres annulations, veuillez lire les conditions suivantes :
 
 Les annulations doivent être faites par écrit, par courriel à l'adresse hello@peaksnowsports.com, avec pour objet: "Annulation" afin que nous puissions traiter l'e-mail avec la plus grande importance. En cas d'annulation, le remboursement des cours annulés sera calculé en pourcentage du coût total des cours ou des stages concernés, comme suit :
 
@@ -118,20 +118,20 @@ Les cours collectifs requièrent un minimum de 3 skieurs pour pouvoir se déroul
 
 Les enfants mineurs participant aux cours et aux stages doivent être déposés et récupérés par leurs parents ou un adulte responsable désigné, au point de rencontre désigné.
 
-25.   Vos données
+24.   Vos données
 
 Peak Snowsports France stocke en toute sécurité des informations sensibles vous concernant dans son système de réservation afin de s'assurer que Peak Snowsports France puisse fournir ses produits et services comme prévu. Peak Snowsports France ne partage pas ces données avec des tiers et elles ne sont partagées qu'à travers le système de réservation de la société avec l'administration des réservations et l'équipe des moniteurs.
 
 Notre politique de protection et de confidentialité des données est accessible sur le lien suivant : www.peaksnowsports.com/privacy-notice
 
-26.   Clarification
+25.   Clarification
  Si vous souhaitez obtenir des précisions sur les conditions de réservation, vous pouvez contacter la direction de Peak Snow Sports en envoyant un courriel à hello@peaksnowsports.com ou en appelant le +44 1483 616 522.
 
-27.   Langue
+26.   Langue
 
 Les présentes conditions de réservation sont rédigées en anglais et en français. En cas de litige, la version engageante sera celle que vous avez acceptée lors de votre réservation.
 
-28.   Litiges - droit applicable et "médiation"
+27.   Litiges - droit applicable et "médiation"
 
 Les présentes conditions générales ainsi que votre réservation sont régies et soumises au droit français.
 
@@ -143,7 +143,7 @@ Si le litige doit être porté devant les tribunaux, il est rappelé que, confor
 
 Nous vous rappelons également que, conformément à l'article 14 du règlement (UE) n° 524/2013, la Commission européenne a mis en place une plateforme de résolution des litiges en ligne afin de faciliter le règlement extrajudiciaire indépendant des litiges en ligne entre consommateurs et professionnels dans l'Union européenne : Résolution des litiges en ligne | Commission européenne (europa.eu).
 
-29.   COVID-19 Politique
+28.   COVID-19 Politique
 
 Vous avez changé d'avis - Toutes les réservations effectuées peuvent être annulées et remboursées intégralement si vous nous donnez un préavis de 45 jours. Ceci inclut les acomptes.
 
@@ -203,7 +203,7 @@ L'ensemble du domaine skiable où vos cours ou votre stage doivent être effectu
 
 Cette politique Covid-19 a pour but de soutenir et de protéger nos clients. Vous devez toujours vérifier les conditions de votre assurance voyage en ce qui concerne le remboursement d'activités telles que les cours de ski si nous ne sommes pas en mesure de vous rembourser intégralement.
 
-Vous pouvez télécharger les conditions générales de réservation ici. N'hésitez pas à nous contacter si vous souhaitez discuter de l'une ou l'autre de ces conditions :
+Vous pouvez télécharger les conditions générales de réservation [ici](/peak-snowsports-terms-and-conditions.pdf). N'hésitez pas à nous contacter si vous souhaitez discuter de l'une ou l'autre de ces conditions :
  hello@peaksnowsports.com ou +44 1483 616 522
 
 On this page you will find the following terms and conditions:
@@ -223,7 +223,7 @@ References to “we”, “us” or similar are references to the relevant syndi
 
 Peak Snowsports Morzine is a French “syndicat local de moniteurs de ski” having its registered address at 1469, Route des Grandes Alpes – 74110 MORZINE and registered under the French SIRET number 923 849 095 00016.
 
-Peak Snowsports Châtel is a French “syndicat local de moniteurs de ski” having its registered address at 320 route du petit Châtel – 74390 CHÂTEL and registered under the French SIRET number  .
+Peak Snowsports Châtel is a French “syndicat local de moniteurs de ski” having its registered address at 320 route du petit Châtel – 74390 CHÂTEL and registered under the French SIRET number 924 314 461 00014.
 
 2.     Confirmation States
  Provisional Bookings or lesson slots will be held for 3 days unless the booking enquiry is made within the same week as the lesson start date, then they will be held for 24 hours.
@@ -246,7 +246,7 @@ Full payment or a deposit is required at the time of booking. Balances are paid 
 Prices only include ski lessons and courses for the period mentioned in the booking. They do not include ski passes, insurance, or ski equipment. It’s your responsibility to have a valid ski pass for the duration of the lesson is the relevant ski resort.
 
 8.     Cancellations
- We have included a new Covid-19 policy for cancellations because of Covid-19, you can find these terms at point 25. For all other cancellations, please read the following terms:
+ We have included a new Covid-19 policy for cancellations because of Covid-19, you can find these terms at point 28. For all other cancellations, please read the following terms:
 
 Cancellations must be made in writing via email to hello@peaksnowsports.com with the subject line: “Cancellation” so we can treat the email with high importance. In the event of a cancellation, reimbursement will be calculated as a percentage of the total cost of the subject lessons or courses, as follows:
 
@@ -304,16 +304,16 @@ During your lessons, Peak Snowsports France staff or instructors may take photos
 23.   Under 18 Responsibility
 Under 18’s and children partaking in courses and lessons, must be dropped off and picked up by their parents or a designated responsible adult, from the designated meeting point.
 
-25.   Your Data
+24.   Your Data
 Peak Snowsports France securely stores sensitive information about you on its booking system to ensure Peak Snowsports France can deliver its products and services as intended. Peak Snowsports France does not share this data with third parties and is only shared through the company’s booking system with the booking administration and instructing team. Our data protection policy is available here: www.peaksnowsports.com/privacy-notice
 
-26.   Clarification
+25.   Clarification
  If clarification of these booking terms and conditions is required please contact Peak Snow Sports management by emailing hello@peaksnowsports.com or calling +44 1483 616 522
 
-27.   Binding version
+26.   Binding version
  These booking conditions are drafted in English and French. In case of litigation, the binding version will be the one that you accepted at your booking.
 
-28.   Litigation – applicable law and “mediation”
+27.   Litigation – applicable law and “mediation”
 
 These terms and conditions as well as your booking are governed by and subject to French law.
 
@@ -325,7 +325,7 @@ If the dispute has to be brought before the courts, you are reminded that pursua
 
 You are also reminded that, in accordance with Article 14 of Regulation (EU) No. 524/2013, the European Commission has set up an Online Dispute Resolution platform to facilitate the independent out-of-court settlement of online disputes between consumers and professionals in the European Union: Online Dispute Resolution | European Commission (europa.eu).
 
-29.   COVID-19 Policy
+28.   COVID-19 Policy
 
 Changed your mind - Any bookings confirmed and paid may be cancelled and fully refunded if you give us 45 days’ notice. This includes deposits.
 
@@ -381,7 +381,7 @@ Ski area closed due to a government-mandated COVID-19 policy
 
 This Covid-19 policy is set out to give support and protection to our customers. You should always check your travel insurance terms and conditions regarding reimbursing you for activities like ski lessons should we not be able to refund you in full.
 
-You can download these booking terms and conditions here. Please do contact us should you wish to discuss any of the terms and conditions:
+You can download these booking terms and conditions [here](/peak-snowsports-terms-and-conditions.pdf). Please do contact us should you wish to discuss any of the terms and conditions:
  hello@peaksnowsports.com or +44 1483 616 522
 
 ## General Terms and Conditions for PEAK Snowsports France
@@ -462,7 +462,7 @@ Reference to any products, services, processes, or other information by trade na
 
 THE INFORMATION, CONTENT, AND DOCUMENTS FROM OR THROUGH OUR WEBSITE ARE PROVIDED ‘AS-IS’, ‘AS AVAILABLE’, WITH ‘ALL FAULTS’, AND ALL EXPRESS OR IMPLIED WARRANTIES ARE DISCLAIMED (INCLUDING, BUT NOT LIMITED TO, THE DISCLAIMER OF ANY IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE). OUR WEBSITE AND SERVICES MAY CONTAIN BUGS, ERRORS, PROBLEMS, OR OTHER LIMITATIONS.
 
-PEAK SNOWSPORTS, INCLUDING ALL OUR AFFILIATES, HAS NO LIABILITY WHATSOEVER FOR YOUR USE OF OUR WEBSITE OR SERVICES. PEAK SNOWSPORTS CANNOT GUARANTEE AND DOES NOT PROMISE ANY SPECIFIC RESULTS FROM THE USE OF OUR WEBSITE OR SERVICES, INCLUDING, BUT NOT LIMITED TO, RELATED SOFTWARE. [OUR COMPANY] DOES NOT REPRESENT OR WARRANT THAT OUR CONTENT, SERVICES, OR ANY SOFTWARE FOUND WITHIN ARE ACCURATE, COMPLETE, RELIABLE, CURRENT, ERROR-FREE, OR FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS. THEREFORE, YOU SHOULD EXERCISE CAUTION IN THE USE AND DOWNLOADING OF ANY SUCH CONTENT OR SOFTWARE AND USE INDUSTRY-RECOGNIZED SOFTWARE TO DETECT AND REMOVE VIRUSES. ALL RESPONSIBILITY OR LIABILITY FOR ANY DAMAGES CAUSED BY VIRUSES SOMEHOW ATTRIBUTED TO OUR CONTENT, SERVICES, AND RELATED SOFTWARE IS DISCLAIMED.
+PEAK SNOWSPORTS, INCLUDING ALL OUR AFFILIATES, HAS NO LIABILITY WHATSOEVER FOR YOUR USE OF OUR WEBSITE OR SERVICES. PEAK SNOWSPORTS CANNOT GUARANTEE AND DOES NOT PROMISE ANY SPECIFIC RESULTS FROM THE USE OF OUR WEBSITE OR SERVICES, INCLUDING, BUT NOT LIMITED TO, RELATED SOFTWARE. PEAK SNOWSPORTS DOES NOT REPRESENT OR WARRANT THAT OUR CONTENT, SERVICES, OR ANY SOFTWARE FOUND WITHIN ARE ACCURATE, COMPLETE, RELIABLE, CURRENT, ERROR-FREE, OR FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS. THEREFORE, YOU SHOULD EXERCISE CAUTION IN THE USE AND DOWNLOADING OF ANY SUCH CONTENT OR SOFTWARE AND USE INDUSTRY-RECOGNIZED SOFTWARE TO DETECT AND REMOVE VIRUSES. ALL RESPONSIBILITY OR LIABILITY FOR ANY DAMAGES CAUSED BY VIRUSES SOMEHOW ATTRIBUTED TO OUR CONTENT, SERVICES, AND RELATED SOFTWARE IS DISCLAIMED.
 
 WITHOUT LIMITING THE FOREGOING, YOU UNDERSTAND AND AGREE THAT YOU DOWNLOAD OR OTHERWISE OBTAIN CONTENT AND RELATED SOFTWARE FROM OR THROUGH OUR WEBSITE OR SERVICES AT YOUR OWN RISK AND THAT YOU WILL BE SOLELY RESPONSIBLE FOR YOUR USE THEREOF AND ANY DAMAGES TO YOUR MOBILE DEVICE OR COMPUTER SYSTEM, LOSS OF DATA, OR OTHER HARM OF ANY KIND THAT MAY RESULT. WE AND ALL OUR AFFILIATES ARE NOT LIABLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES (INCLUDING DAMAGES FOR LOSS OF BUSINESS, LOSS OF PROFITS, LITIGATION, OR THE LIKE), WHETHER BASED ON BREACH OF CONTRACT, BREACH OF WARRANTY, TORT (INCLUDING NEGLIGENCE), PRODUCT LIABILITY, OR OTHERWISE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THE NEGATION AND LIMITATION OF DAMAGES SET FORTH ABOVE ARE FUNDAMENTAL ELEMENTS OF THE BASIS OF THE BARGAIN BETWEEN YOU AND PEAK SNOWSPORTS.
 
@@ -484,7 +484,7 @@ You may provide links to our Website provided that (a) you do not remove or obsc
 Links to Other Websites
 
 Our Website may from time to time contain links to third-party websites. Inclusion of links for any website on our Website does not mean that we endorse, guarantee, warrant, or recommend the services, information, content, and/or data of such third-party websites.
-[Our Company] has no control over the legal documents and privacy practices of third-party websites; you access any third-party websites at your own risk. We recommend that you review the privacy notice and terms and conditions of those websites to fully understand what information is collected and how it is used.
+Peak Snowsports has no control over the legal documents and privacy practices of third-party websites; you access any third-party websites at your own risk. We recommend that you review the privacy notice and terms and conditions of those websites to fully understand what information is collected and how it is used.
 
 Payments
 
