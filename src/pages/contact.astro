@@ -26,8 +26,8 @@ const routes = [
         <ul class="mt-8 space-y-4">
           {routes.map((r) => (
             <li>
-              <a href={r.href} class="group flex items-baseline gap-4 border-b border-olive/10 py-4 no-underline hover:text-yellow">
-                <span class="meta text-olive/50 group-hover:text-yellow">{r.kicker}</span>
+              <a href={r.href} class="group -mx-3 flex items-baseline gap-4 border-b border-olive/10 px-3 py-4 no-underline transition-colors hover:bg-yellow">
+                <span class="meta text-olive/50 group-hover:text-olive-deep">{r.kicker}</span>
                 <span class="flex-1 text-xl font-semibold">{r.label}</span>
                 <span aria-hidden="true">→</span>
               </a>
