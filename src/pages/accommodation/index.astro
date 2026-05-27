@@ -65,7 +65,7 @@ const providers = all.sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 99
             {p.data.style && (
               <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{p.data.style}</span>
             )}
-            <h3 class="mt-3 font-display text-2xl font-bold tracking-tight transition group-hover:text-yellow md:text-3xl">{p.data.name}</h3>
+            <h3 class="mt-3 font-display text-2xl font-bold tracking-tight transition-colors group-hover:bg-yellow md:text-3xl">{p.data.name}</h3>
             <p class="mt-3 text-base leading-relaxed text-olive/75">{p.data.tagline}</p>
             <p class="meta mt-4 text-olive/50">{p.data.locations.join(' · ')}</p>
           </div>

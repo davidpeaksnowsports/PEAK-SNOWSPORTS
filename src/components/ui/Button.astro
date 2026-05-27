@@ -10,8 +10,8 @@ const { href, variant = 'primary', class: className = '', ...rest } = Astro.prop
 const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline transition';
 const variants = {
   primary: 'bg-yellow text-olive-deep hover:bg-salt',
-  secondary: 'border border-olive/40 text-olive hover:border-yellow hover:text-yellow',
-  ghost: 'text-olive hover:text-yellow',
+  secondary: 'border border-olive/40 text-olive hover:border-yellow hover:bg-yellow',
+  ghost: 'text-olive hover:bg-yellow',
 };
 
 const cls = `${base} ${variants[variant]} ${className}`;

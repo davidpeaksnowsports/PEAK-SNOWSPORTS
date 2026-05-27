@@ -79,7 +79,7 @@ const otherResorts = allResorts
     <div class="prose prose-lg max-w-3xl
       prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-olive
       prose-p:text-olive/80 prose-strong:text-olive
-      prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:text-yellow">
+      prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:bg-yellow">
       <Content />
     </div>
   </Section>
@@ -126,13 +126,13 @@ const otherResorts = allResorts
           <li>
             <a
               href={`/resorts/${r.id}`}
-              class="group flex items-baseline gap-4 py-6 no-underline transition md:gap-8"
+              class="group -mx-3 flex items-baseline gap-4 px-3 py-6 no-underline transition-colors hover:bg-yellow md:gap-8"
             >
-              <span class="font-display text-3xl font-bold tracking-tight transition group-hover:text-yellow md:text-5xl">
+              <span class="font-display text-3xl font-bold tracking-tight md:text-5xl">
                 {r.data.name}.
               </span>
               <span class="meta hidden text-olive/50 md:inline">{r.data.knownFor}</span>
-              <span class="ml-auto font-display text-2xl transition group-hover:translate-x-2 group-hover:text-yellow md:text-3xl">→</span>
+              <span class="ml-auto font-display text-2xl transition group-hover:translate-x-2 md:text-3xl">→</span>
             </a>
           </li>
         ))}
