@@ -1,0 +1,354 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import Section from '../components/ui/Section.astro';
+
+const levels = [
+  {
+    name: 'Intermediate',
+    forWhom:
+      "Comfortable on blues and easy reds. Ready to step up to parallel turns across varied terrain, steeper reds, changing snow, bumps and the edges of off-piste.",
+    outcome:
+      'Build solid foundations, then push past the intermediate plateau.',
+  },
+  {
+    name: 'Advanced',
+    forWhom:
+      "Confident on red and black runs. Refining performance, efficiency and control across off-piste, steeps, bumps and variable snow. Ideal if you've plateaued or already done an intermediate camp.",
+    outcome:
+      'Sharpen your skiing with precision and control in all-mountain conditions.',
+  },
+];
+
+const lodging = ['Coaching only', 'Shared room · The Fat Fox Lodge', 'Private room · The Fat Fox Lodge'];
+
+const onSnow = [
+  'Five+ hours coaching per day — breaks when the group needs them',
+  'Full Portes du Soleil lift pass',
+  'Performance video analysis sessions',
+  'Technical ski-system workshop',
+  'Equipment check workshop',
+  "The best lunch spots, found and tested",
+];
+
+const offSnow = [
+  'Half-board at The Fat Fox Lodge',
+  'Breakfast and dinner using local ingredients',
+  'Daily yoga after skiing',
+  'Barista-style in-house coffee',
+  'Hot tub and ice bath',
+  'Team dinner at a traditional local restaurant',
+];
+
+const lodgeTiles = [
+  {
+    label: 'Food',
+    body: 'Served around a big shared table in the Haberdashery — the central hub of the lodge.',
+  },
+  {
+    label: 'Rooms',
+    body: 'Twin or queen, all four with private bathrooms across the landing. Big windows over the Montriond forest.',
+  },
+  {
+    label: 'Hosts',
+    body: "Tess and Joe — snow-lovers who've roamed the globe and landed in Morzine.",
+  },
+];
+
+const avoriazFacts = [
+  { label: 'Pistes', value: '291' },
+  { label: 'Resort altitude', value: '1,800 m' },
+  { label: 'Highest lift', value: '2,254 m' },
+  { label: 'From Geneva', value: '1.5 hr by car' },
+];
+
+const content = [
+  {
+    title: 'Eight building blocks',
+    body: 'The six essentials behind every good skier. Master the basics that let everything else click into place.',
+  },
+  {
+    title: 'Ski fit',
+    body: "Top tips for getting fit before the camp. What gym work transfers to snow — and what doesn't.",
+  },
+  {
+    title: 'Performance analysis',
+    body: 'Video review on every camp. Set benchmarks, fix the right things, see your motor skills improve fast.',
+  },
+  {
+    title: 'Terrain',
+    body: 'How to adjust the building blocks for piste, bumps, off-piste and steeps. Different ground, same fundamentals.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What if the weather turns?',
+    a: "We only stop skiing if the mountain is officially closed.",
+  },
+  {
+    q: 'Cancellation policy?',
+    a: 'Refunds on a sliding scale depending on the notice you give us. Full details in our terms and conditions.',
+  },
+  {
+    q: 'Equipment rental?',
+    a: 'We work with local hire partners and can sort you a discount. Email us before you arrive.',
+  },
+  {
+    q: 'Insurance?',
+    a: 'Yes — make sure yours covers winter sports, and skiing into Switzerland (the Portes du Soleil crosses the border).',
+  },
+  {
+    q: 'What if I turn out not to be the right level?',
+    a: "We'll move you into another group, or offer the equivalent in private lessons — subject to availability.",
+  },
+  {
+    q: 'How big are the groups?',
+    a: '8 skiers max per group. We often run multiple groups, so we can move skiers around to the right level on day one. Half-board is limited to the first 8 bookings — after that, self-accommodate.',
+  },
+  {
+    q: 'Where do we meet?',
+    a: 'Châtel: Pre la Joux chairlift (bottom). Avoriaz: Prodains bubble (top). If you book accommodation, you travel with the group each morning. If you self-accommodate, we send full meeting-point instructions with your booking.',
+  },
+  {
+    q: 'Is the lift pass included?',
+    a: 'Yes — full Portes du Soleil pass.',
+  },
+  {
+    q: 'Who actually teaches?',
+    a: 'Current, fully-qualified BASI instructors. The same coaches who run our performance courses and instructor exams.',
+  },
+];
+---
+
+<BaseLayout
+  title="Adult ski camps — Morzine-Avoriaz — Peak Snowsports"
+  description="Five-day small-group ski camps for intermediate and advanced skiers, coached by BASI Level 4 ISTD and Trainers. Half-board at The Fat Fox Lodge or coaching only."
+>
+  <Hero
+    kicker="Adult ski camps · Morzine-Avoriaz"
+    headline="Five days on snow. One serious step up."
+    sub="Small-group ski camps for intermediate and advanced skiers. Coached by BASI Level 4 ISTD and BASI Trainers. Half-board at The Fat Fox Lodge — or coaching only."
+    primaryCta={{ href: '#book', label: 'Reserve your place' }}
+    secondaryCta={{ href: '#camps', label: 'See the camps' }}
+    variant="full"
+    video="/videos/carving.mp4"
+    videoPoster="/videos/carving-poster.jpg"
+    imageAlt="A skier carving an arc through soft snow above Avoriaz."
+  />
+
+  <!-- Welcome / overview -->
+  <Section kicker="Welcome" title="Five days. Eight skiers. One real step up.">
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-20">
+      <div class="space-y-10">
+        <p class="text-xl font-medium leading-snug text-olive md:text-2xl">
+          Coached by the people who train other instructors. Eight skiers max per group. We meet you at the level you're at and take you to the one you want.
+        </p>
+
+        <dl class="grid gap-x-6 gap-y-6 border-y border-olive/10 py-6 sm:grid-cols-3">
+          <div>
+            <dt class="meta text-olive/50">On snow</dt>
+            <dd class="mt-1 font-display text-2xl font-bold tracking-tight">5 days</dd>
+          </div>
+          <div>
+            <dt class="meta text-olive/50">Group size</dt>
+            <dd class="mt-1 font-display text-2xl font-bold tracking-tight">8 max</dd>
+          </div>
+          <div>
+            <dt class="meta text-olive/50">Coaches</dt>
+            <dd class="mt-1 font-display text-2xl font-bold tracking-tight">BASI L4 / Trainers</dd>
+          </div>
+        </dl>
+
+        <div class="space-y-5 text-base leading-relaxed text-olive/75 md:text-lg">
+          <p>
+            Camps run across the Portes du Soleil — 600+ km of linked terrain, with Avoriaz as your home mountain. Two levels: intermediate (stuck on blues and easy reds, ready to step up) and advanced (confident on red and black, want to refine).
+          </p>
+          <p>
+            Half-board at The Fat Fox Lodge: shared dinners, decent coffee, a hot tub, daily yoga, and a team that knows the area. Coaching only is also an option if you've already got somewhere to stay.
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive">Camp dates</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Released for the 2026/27 season</p>
+          <p class="mt-1 text-sm text-olive/70">Check live availability below or email us for the next available run.</p>
+        </div>
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive">Booking</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Refundable deposit</p>
+          <p class="mt-1 text-sm text-olive/70">Confirm your place with a small deposit. We confirm camps 6 weeks ahead.</p>
+        </div>
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive">Travel</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">You cover your own</p>
+          <p class="mt-1 text-sm text-olive/70">1.5 hr from Geneva by car, or train to Thonon then transfer.</p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Pick your level -->
+  <Section id="camps" kicker="Two levels" title="Pick your level.">
+    <div class="grid gap-6 md:grid-cols-2">
+      {levels.map((l) => (
+        <article class="rounded-3xl border border-olive/15 bg-snow p-8 md:p-10">
+          <p class="meta text-olive/50">Ski camp</p>
+          <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{l.name}</h3>
+          <p class="mt-5 text-base leading-relaxed text-olive/80 md:text-lg">{l.forWhom}</p>
+          <p class="mt-4 text-base leading-relaxed text-olive/65 md:text-lg">{l.outcome}</p>
+
+          <p class="meta mt-8 text-olive/50">Three ways to join</p>
+          <ul class="mt-3 space-y-2">
+            {lodging.map((opt) => (
+              <li class="flex items-center gap-3 text-sm text-olive md:text-base">
+                <span aria-hidden="true" class="text-olive/40">·</span>
+                <span>{opt}</span>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href="#book"
+            class="meta mt-8 inline-flex items-center gap-2 text-olive transition-colors hover:bg-yellow"
+          >
+            Check availability →
+          </a>
+        </article>
+      ))}
+    </div>
+  </Section>
+
+  <!-- What's included -->
+  <Section kicker="What you get" title="On the mountain. Off it.">
+    <div class="grid gap-12 md:grid-cols-2 md:gap-16">
+      <div>
+        <p class="meta text-olive/50">On snow</p>
+        <ul class="mt-6 space-y-4">
+          {onSnow.map((item) => (
+            <li class="flex gap-3 border-b border-olive/10 pb-4 text-base leading-relaxed text-olive/80 md:text-lg">
+              <span aria-hidden="true" class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-yellow" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <p class="meta text-olive/50">Off snow (with Fat Fox Lodge)</p>
+        <ul class="mt-6 space-y-4">
+          {offSnow.map((item) => (
+            <li class="flex gap-3 border-b border-olive/10 pb-4 text-base leading-relaxed text-olive/80 md:text-lg">
+              <span aria-hidden="true" class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-yellow" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Where you stay -->
+  <Section kicker="Where you stay" title="The Fat Fox Lodge, Montriond.">
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-20">
+      <div class="space-y-5 text-base leading-relaxed text-olive/80 md:text-lg">
+        <p>
+          Tess and Joe built The Fat Fox Lodge for people who actually live the mountains. Nutritious food, a vibrant shared space, and beds you'll be glad to come home to after a hard day on the snow.
+        </p>
+        <p>
+          Big windows. Balconies. The forests of Montriond outside. Choose a twin or queen room — all four have private bathrooms across the landing. There's a quiet, communal desk if you need to work between days on the hill.
+        </p>
+        <p>
+          The Fat Fox Lodge prioritises the planet. Natural, local, resourceful.
+        </p>
+      </div>
+      <ul class="space-y-4">
+        {lodgeTiles.map((t) => (
+          <li class="rounded-3xl border border-olive/15 bg-snow p-6">
+            <p class="meta text-olive/50">{t.label}</p>
+            <p class="mt-2 text-base leading-relaxed text-olive/80 md:text-lg">{t.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Section>
+
+  <!-- Where you ski -->
+  <Section kicker="Where you ski" title="Avoriaz — the heart of the Portes du Soleil.">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80 md:text-xl">
+      Europe's largest cross-border resort. A huge mix of slopes and off-piste for every level — and an easy meeting point from anywhere in the Portes du Soleil.
+    </p>
+    <dl class="mt-12 grid gap-x-6 gap-y-6 border-y border-olive/10 py-8 sm:grid-cols-2 lg:grid-cols-4">
+      {avoriazFacts.map((f) => (
+        <div>
+          <dt class="meta text-olive/50">{f.label}</dt>
+          <dd class="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl">{f.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </Section>
+
+  <!-- What we cover -->
+  <Section kicker="Camp content" title="What we'll cover.">
+    <ol class="space-y-16">
+      {content.map((c, i) => (
+        <li class="border-t border-olive/10 pt-10">
+          <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
+            <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full bg-yellow text-olive-deep">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3 class="font-display text-2xl font-bold tracking-tight md:text-4xl">{c.title}</h3>
+              <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/80">{c.body}</p>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <!-- FAQs -->
+  <Section kicker="FAQs" title="The usual questions.">
+    <div class="max-w-3xl">
+      <dl class="divide-y divide-olive/10 border-y border-olive/10">
+        {faqs.map((f) => (
+          <div class="py-6">
+            <dt class="font-display text-xl font-bold tracking-tight md:text-2xl">{f.q}</dt>
+            <dd class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">{f.a}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="meta mt-10 text-olive/55">
+        Still not sure?
+        <a href="tel:+441483616522" class="underline-offset-4 hover:bg-yellow hover:underline">+44 1483 616 522</a>
+        or
+        <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">drop us a line</a>.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Ready to book -->
+  <Section id="book" kicker="Ready to book" title="Pick a camp. Hold your place.">
+    <div class="rounded-3xl bg-brown p-8 text-salt md:p-12">
+      <p class="text-lg leading-relaxed text-salt/85 md:text-xl">
+        Check live availability and confirm your place with a small refundable deposit. We confirm each camp 6 weeks before it runs.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a
+          href="/book?product=ski-camps"
+          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+        >
+          Check availability →
+        </a>
+        <a
+          href="/contact"
+          class="inline-flex items-center rounded-full border border-salt/40 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+        >
+          Talk to us first
+        </a>
+      </div>
+      <p class="meta mt-6 text-salt/85">
+        Half-board limited to the first 8 bookings per camp.
+      </p>
+    </div>
+  </Section>
+</BaseLayout>

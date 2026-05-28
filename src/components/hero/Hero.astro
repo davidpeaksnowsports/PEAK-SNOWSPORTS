@@ -8,6 +8,7 @@ interface Props {
   sub?: string;
   primaryCta?: { href: string; label: string };
   secondaryCta?: { href: string; label: string };
+  tertiaryCta?: { href: string; label: string };
   variant?: 'full' | 'compact';
   image?: ImageMetadata;
   imageAlt?: string;
@@ -21,6 +22,7 @@ const {
   sub,
   primaryCta,
   secondaryCta,
+  tertiaryCta,
   variant = 'full',
   image,
   imageAlt = '',
@@ -63,7 +65,7 @@ const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
       {headline}
     </h1>
     {sub && <p class="mt-6 max-w-2xl text-lg text-salt/80 md:text-xl">{sub}</p>}
-    {(primaryCta || secondaryCta) && (
+    {(primaryCta || secondaryCta || tertiaryCta) && (
       <div class="mt-10 flex flex-wrap gap-4">
         {primaryCta && (
           <a
@@ -79,6 +81,14 @@ const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
             class="inline-flex items-center rounded-full border border-salt/40 px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline hover:border-yellow hover:text-yellow"
           >
             {secondaryCta.label}
+          </a>
+        )}
+        {tertiaryCta && (
+          <a
+            href={tertiaryCta.href}
+            class="inline-flex items-center rounded-full border border-salt/40 px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline hover:border-yellow hover:text-yellow"
+          >
+            {tertiaryCta.label}
           </a>
         )}
       </div>
