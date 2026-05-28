@@ -2,22 +2,24 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
-import BookingWidget from '../components/booking/BookingWidget.astro';
-import { LOREM } from '../lib/utils';
+import ArchEmbed from '../components/booking/ArchEmbed.astro';
 ---
 
-<BaseLayout title="Book — Peak Snowsports">
+<BaseLayout
+  title="Book a lesson — Peak Snowsports"
+  description="Book private lessons, group lessons, and ski camps across Morzine, Avoriaz, Les Gets and Chatel."
+>
   <Hero
     kicker="Book"
     headline="Pick a date. Pick an instructor."
-    sub={LOREM}
+    sub="Live availability across all Peak products. Pay a small deposit to secure your slot."
     variant="compact"
   />
 
   <Section>
-    <BookingWidget variant="full" />
-    <p class="meta mt-6 text-olive/40">
-      Widget delivered by Arch. Visual continuity coordinated with Jake Charlton.
+    <ArchEmbed path="/products" height="900px" />
+    <p class="meta mt-6 text-olive/55">
+      Booking delivered by Arch. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">Get in touch</a> and we'll book you in directly.
     </p>
   </Section>
 </BaseLayout>

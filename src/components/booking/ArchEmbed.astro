@@ -1,0 +1,94 @@
+---
+/**
+ * Real Arch booking embed.
+ *
+ * Flow:
+ *  1. Browser POSTs to our /api/booking-token endpoint.
+ *  2. That endpoint, server-side, hits Arch with the secret API key and
+ *     returns a short-lived token.
+ *  3. We build the iframe URL from ARCH_BASE_URL + path + embed_token and
+ *     mount it.
+ *
+ * The secret key never reaches the browser. ARCH_BASE_URL is not sensitive
+ * (it's the same host the iframe loads from), so we inline it at build time
+ * via Astro's define:vars.
+ *
+ * For the legacy / styled placeholder, see BookingWidget.astro.
+ */
+interface Props {
+  /**
+   * Path on the Arch site, e.g. '/products' or '/products?resort=morzine'.
+   * Defaults to '/products' (full catalogue).
+   */
+  path?: string;
+  /** Initial iframe height. Arch may resize via postMessage; this is the floor. */
+  height?: string;
+  /** Optional Tailwind classes for the outer wrapper. */
+  class?: string;
+}
+
+const { path = '/products', height = '800px', class: className = '' } = Astro.props;
+
+// Available at build time only (no PUBLIC_ prefix on the env var, by design —
+// keeps ARCH_API_KEY adjacent in .env without leaking). We inline the value
+// into the page below via define:vars.
+const ARCH_BASE_URL = import.meta.env.ARCH_BASE_URL ?? '';
+
+// Unique container ID per component instance so multiple embeds on one page
+// don't collide. Generated at build time.
+const containerId = `arch-embed-${Math.random().toString(36).slice(2, 10)}`;
+---
+
+<div id={containerId} class={`arch-embed ${className}`} data-min-height={height}>
+  <p class="meta py-12 text-center text-olive/50">Loading booking…</p>
+</div>
+
+<script is:inline define:vars={{ ARCH_BASE_URL, containerId, path, height }}>
+  (async function () {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!ARCH_BASE_URL) {
+      container.innerHTML =
+        '<p class="meta py-12 text-center text-olive/60">Booking system not configured.</p>';
+      return;
+    }
+
+    try {
+      const resp = await fetch('/api/booking-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!resp.ok) {
+        throw new Error('token-request-failed:' + resp.status);
+      }
+
+      const data = await resp.json();
+      const token = data && data.token;
+      if (!token) throw new Error('no-token-in-response');
+
+      const iframe = document.createElement('iframe');
+      const sep = path.indexOf('?') === -1 ? '?' : '&';
+      iframe.src = `${ARCH_BASE_URL}${path}${sep}embed=1&embed_token=${encodeURIComponent(token)}`;
+      iframe.style.width = '100%';
+      iframe.style.height = height;
+      iframe.style.border = '0';
+      iframe.style.display = 'block';
+      iframe.setAttribute('frameborder', '0');
+      iframe.setAttribute('allow', 'payment');
+      iframe.setAttribute(
+        'sandbox',
+        'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox'
+      );
+      iframe.title = 'Peak Snowsports booking';
+
+      container.innerHTML = '';
+      container.appendChild(iframe);
+    } catch (err) {
+      console.error('Arch embed error:', err);
+      container.innerHTML =
+        '<p class="meta py-12 text-center text-olive/60">Couldn\'t load the booking widget. Refresh, or <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">get in touch</a>.</p>';
+    }
+  })();
+</script>
