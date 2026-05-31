@@ -109,9 +109,9 @@ const faqs = [
           <h2 class="text-3xl md:text-4xl">What we cover</h2>
           <div class="mt-8 grid gap-5 sm:grid-cols-2">
             {skills.map((s) => (
-              <div class="rounded-2xl border border-olive bg-snow p-6">
-                <p class="meta text-olive/50">{s.title}</p>
-                <p class="mt-3 text-base leading-relaxed text-olive/80">{s.body}</p>
+              <div class="rounded-2xl border border-olive bg-cream p-6">
+                <h3 class="font-display text-xl font-bold tracking-tight text-olive md:text-2xl">{s.title}</h3>
+                <p class="mt-3 text-base leading-relaxed text-olive/85">{s.body}</p>
               </div>
             ))}
           </div>
@@ -121,7 +121,7 @@ const faqs = [
           <h2 class="text-3xl md:text-4xl">Who it's for</h2>
           <div class="mt-6 flex flex-wrap gap-2">
             {prerequisites.map((p) => (
-              <span class="meta rounded-full border border-olive/20 px-4 py-2 text-olive/70">{p}</span>
+              <span class="rounded-full border border-olive bg-cream px-4 py-2 text-sm font-semibold text-olive">{p}</span>
             ))}
           </div>
           <p class="mt-6 max-w-2xl text-base leading-relaxed text-olive/75">
