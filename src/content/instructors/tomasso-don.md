@@ -1,7 +1,7 @@
 ---
 name: "Tomasso Don"
-role: "Instructor"
-resorts: ["Morzine"]
+role: "Instructor | Physio"
+resorts: ["Morzine", "Avoriaz", "Les Gets"]
 languages: ["EN"]
 specialities: []
 qualifications:

@@ -1,7 +1,7 @@
 ---
 name: "Rachael Hallewell"
-role: "Instructor"
-resorts: ["Morzine"]
+role: "Instructor | Personal Trainer"
+resorts: ["Morzine", "Avoriaz", "Les Gets"]
 languages: ["EN"]
 specialities: []
 qualifications: []

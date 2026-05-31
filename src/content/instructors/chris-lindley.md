@@ -1,7 +1,7 @@
 ---
 name: "Chris Lindley"
 role: "Instructor"
-resorts: ["Morzine"]
+resorts: ["Morzine", "Avoriaz", "Les Gets"]
 languages: ["EN"]
 specialities: []
 qualifications:

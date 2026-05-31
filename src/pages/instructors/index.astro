@@ -7,8 +7,12 @@ import InstructorCard from '../../components/instructors/InstructorCard.astro';
 import heroImage from '../../assets/images/hero-instructors.jpg';
 
 const allInstructors = await getCollection('instructors', ({ data }) => !data.draft);
+// Surname alphabetical (use the last token of the name; works for 'Eilidh
+// McLeod' and 'Will Peek' alike). If a name is a single token, that token
+// stands in for both.
+const surname = (n: string) => n.trim().split(/\s+/).slice(-1)[0] ?? n;
 const instructors = allInstructors.sort((a, b) =>
-  a.data.name.split(' ')[0].localeCompare(b.data.name.split(' ')[0])
+  surname(a.data.name).localeCompare(surname(b.data.name))
 );
 
 const joinFormUrl = 'https://forms.gle/MU1wVdNeRmoAK6AW8';
@@ -21,8 +25,8 @@ const languages = [...new Set(instructors.flatMap((i) => i.data.languages))].sor
 <BaseLayout title="Instructors · Peak Snowsports">
   <Hero
     kicker="The team"
-    headline="No anonymous ESF badges."
-    sub="Every Peak instructor is BASI-qualified and holds a full French Carte Pro. Browse, or let us match you."
+    headline="Real coaches. Real names."
+    sub="Every Peak instructor is fully qualified, holds a full French Carte Professionelle, and is handpicked by our founders to showcase our premium, personal, and professional values. Browse, or let us match you."
     variant="compact"
     image={heroImage}
     imageAlt="Skiers and instructors spread across a piste in long afternoon shadow."
@@ -62,7 +66,7 @@ const languages = [...new Set(instructors.flatMap((i) => i.data.languages))].sor
         <InstructorCard
           name={i.data.name}
           role={i.data.role}
-          resort={i.data.resorts[0]}
+          resorts={i.data.resorts}
           photo={i.data.photo}
           href={`/instructors/${i.id}`}
         />

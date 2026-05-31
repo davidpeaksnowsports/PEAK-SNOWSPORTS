@@ -1,7 +1,7 @@
 ---
 name: "Tom Peek"
 role: "Instructor / GAP Course Coach"
-resorts: ["Morzine"]
+resorts: ["Verbier"]
 languages: ["EN", "FR"]
 specialities: ["Off-piste", "Advanced", "Race"]
 qualifications: []

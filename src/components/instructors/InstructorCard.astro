@@ -2,13 +2,18 @@
 interface Props {
   name: string;
   role?: string;
-  resort?: string;
+  resort?: string;          // deprecated, kept for back-compat
+  resorts?: string[];       // preferred: full list of resorts this instructor works at
   speciality?: string;
   photo?: string;
   href?: string;
 }
 
-const { name, role, resort, speciality, photo, href = '#' } = Astro.props;
+const { name, role, resort, resorts, speciality, photo, href = '#' } = Astro.props;
+
+// Build the resort label. Prefer `resorts` array; fall back to single `resort` prop.
+const resortList = resorts && resorts.length ? resorts : (resort ? [resort] : []);
+const resortLabel = resortList.join(' · ');
 ---
 
 <a href={href} class="group block no-underline">
@@ -27,10 +32,12 @@ const { name, role, resort, speciality, photo, href = '#' } = Astro.props;
     )}
   </div>
   <div class="mt-4">
-    {resort && <p class="meta text-olive/50">{resort}</p>}
-    <h3 class="mt-1 text-lg font-semibold leading-tight group-hover:underline">{name}</h3>
+    {resortLabel && (
+      <span class="meta inline-block rounded-sm bg-pink px-2 py-1 text-snow">{resortLabel}</span>
+    )}
+    <h3 class="mt-3 text-lg font-semibold leading-tight group-hover:underline">{name}</h3>
     {(role || speciality) && (
-      <p class="mt-1 text-sm text-olive/60">{speciality ?? role}</p>
+      <p class="mt-1 text-sm text-olive/65">{speciality ?? role}</p>
     )}
   </div>
 </a>

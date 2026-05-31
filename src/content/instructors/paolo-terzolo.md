@@ -1,7 +1,7 @@
 ---
 name: "Paolo Terzolo"
-role: "Instructor / Federal Coach"
-resorts: ["Morzine"]
+role: "Instructor | Physio"
+resorts: ["Morzine", "Avoriaz", "Les Gets"]
 languages: ["EN"]
 specialities: []
 qualifications:

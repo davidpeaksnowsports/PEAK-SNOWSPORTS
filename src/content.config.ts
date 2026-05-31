@@ -25,7 +25,7 @@ const journal = defineCollection({
   }),
 });
 
-const resorts = ['Morzine', 'Chatel', 'Les Gets', 'Avoriaz'] as const;
+const resorts = ['Morzine', 'Chatel', 'Les Gets', 'Avoriaz', 'Verbier'] as const;
 
 const instructors = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/instructors' }),

@@ -1,7 +1,7 @@
 ---
 name: "Will Peek"
 role: "Instructor"
-resorts: ["Morzine"]
+resorts: ["Verbier"]
 languages: ["EN"]
 specialities: []
 qualifications: []

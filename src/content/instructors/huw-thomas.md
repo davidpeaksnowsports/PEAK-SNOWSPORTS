@@ -1,7 +1,7 @@
 ---
 name: "Huw Thomas"
 role: "Instructor / Trainer"
-resorts: ["Morzine"]
+resorts: ["Morzine", "Avoriaz", "Les Gets"]
 languages: ["EN"]
 specialities: []
 qualifications:

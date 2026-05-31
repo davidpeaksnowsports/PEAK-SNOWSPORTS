@@ -1,7 +1,7 @@
 ---
 name: "Isla Marsh"
-role: "Instructor"
-resorts: ["Morzine"]
+role: "Race Coach"
+resorts: ["Chatel"]
 languages: ["EN"]
 specialities: []
 qualifications: []

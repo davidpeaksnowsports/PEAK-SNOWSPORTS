@@ -1,7 +1,7 @@
 ---
 name: "Marc Walton"
 role: "Instructor | Co-Founder"
-resorts: ["Morzine"]
+resorts: ["Morzine", "Avoriaz", "Les Gets"]
 languages: ["EN"]
 specialities: []
 qualifications:

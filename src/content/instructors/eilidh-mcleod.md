@@ -1,6 +1,6 @@
 ---
 name: "Eilidh McLeod"
-role: "Instructor | Founder"
+role: "Instructor | Co-Founder"
 resorts: ["Chatel"]
 languages: ["EN"]
 specialities: []
