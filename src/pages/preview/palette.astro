@@ -1,137 +1,162 @@
 ---
 /**
- * Throwaway palette preview — comparing peach-tan vs hot-pink as the new
- * 'summer' accent against olive-deep type on snow.
+ * Throwaway palette preview — strict 3-colour palette.
+ * Pure white surface, true black type, one accent (peach vs pink).
+ * No olive, no brown, no salt, no yellow — full rebrand.
  *
  * Delete this file once a palette decision is made.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
+const WHITE = '#FFFFFF';
+const BLACK = '#0A0A0A';
+
 const swatches = [
   {
     name: 'Peach-tan',
     hex: '#f0bd7c',
-    note: 'Warm, premium, analogous to olive. Editorial.',
+    note: 'Warm, premium, sophisticated. Lower brand-shift risk.',
   },
   {
     name: 'Hot pink',
     hex: '#eb437f',
-    note: 'Bold, modern, high-contrast. Energetic.',
+    note: 'Bold, modern, anti-bland. Higher brand-shift but more 2026.',
   },
 ];
-
-// Composite the type-on-snow contrast push too — sample uses olive-deep for body.
 ---
 
 <BaseLayout title="Palette preview — Peak Snowsports">
-  <article class="bg-snow px-6 py-16 md:py-24">
+  <article class="px-6 py-16 md:py-24" style={`background-color:${WHITE}; color:${BLACK};`}>
     <div class="mx-auto max-w-screen-2xl">
-      <p class="meta text-olive-deep/55">Internal · palette preview</p>
-      <h1 class="mt-4 font-display text-4xl font-bold leading-tight tracking-tight text-olive-deep md:text-6xl">
-        Summer accent · two contenders.
+      <p class="meta" style={`color:${BLACK}; opacity:0.55;`}>Internal · palette preview · strict 3-colour</p>
+      <h1 class="mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-6xl">
+        Summer collection · pick the accent.
       </h1>
-      <p class="mt-6 max-w-3xl text-lg leading-relaxed text-olive-deep/80 md:text-xl">
-        Each panel below renders real Peak components — hero / kicker / button / hover-link / card — in the proposed accent. Body type is pushed to <strong class="font-semibold">olive-deep</strong> for the editorial bite from pavillon Carré de Baudouin.
+      <p class="mt-6 max-w-3xl text-lg leading-relaxed md:text-xl" style="opacity:0.85;">
+        Strict palette: <strong class="font-semibold">accent + true white + true black</strong>. No olive, no brown, no salt, no yellow. Every surface is one of three colours. The accent does all the lifting that the old olive + yellow used to do together.
       </p>
 
       <div class="mt-16 grid gap-10 lg:grid-cols-2">
         {swatches.map((s) => (
-          <section class="overflow-hidden rounded-3xl border border-olive-deep/15">
+          <section class="overflow-hidden rounded-3xl" style={`border:1px solid ${BLACK};`}>
 
             <!-- Swatch header -->
-            <header class="flex items-center justify-between gap-6 border-b border-olive-deep/10 bg-snow px-8 py-6">
+            <header class="flex items-center justify-between gap-6 px-8 py-6" style={`border-bottom:1px solid ${BLACK}; background-color:${WHITE};`}>
               <div>
-                <p class="meta text-olive-deep/50">Option</p>
-                <h2 class="mt-1 font-display text-2xl font-bold tracking-tight text-olive-deep md:text-3xl">{s.name}</h2>
-                <p class="meta mt-1 text-olive-deep/60">{s.hex}</p>
+                <p class="meta" style={`color:${BLACK}; opacity:0.5;`}>Option</p>
+                <h2 class="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl">{s.name}</h2>
+                <p class="meta mt-1" style={`color:${BLACK}; opacity:0.6;`}>{s.hex} · white · black</p>
               </div>
-              <span class="block h-16 w-16 rounded-full" style={`background-color: ${s.hex};`}></span>
+              <span class="block h-16 w-16 rounded-full" style={`background-color:${s.hex};`}></span>
             </header>
 
-            <!-- Hero mock (dark surface, accent kicker, accent button) -->
-            <div class="relative bg-olive-deep px-8 py-12 text-salt md:px-10 md:py-16">
-              <p class="meta" style={`color: ${s.hex};`}>Adult ski camps · Morzine-Avoriaz</p>
+            <!-- Hero mock (black surface, accent kicker, accent button) -->
+            <div class="relative px-8 py-12 md:px-10 md:py-16" style={`background-color:${BLACK}; color:${WHITE};`}>
+              <p class="meta" style={`color:${s.hex};`}>Adult ski camps · Morzine-Avoriaz</p>
               <h3 class="mt-3 font-display text-3xl font-semibold leading-[0.95] tracking-tight md:text-5xl">
                 Five days on snow.<br/>One serious step up.
               </h3>
-              <p class="mt-5 max-w-md text-base text-salt/85 md:text-lg">
+              <p class="mt-5 max-w-md text-base md:text-lg" style="opacity:0.85;">
                 Small-group ski camps for intermediate and advanced skiers.
               </p>
               <div class="mt-8 flex flex-wrap gap-3">
                 <a
                   href="#"
-                  class="inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold uppercase tracking-wider text-olive-deep no-underline"
-                  style={`background-color: ${s.hex};`}
+                  class="inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold uppercase tracking-wider no-underline"
+                  style={`background-color:${s.hex}; color:${BLACK};`}
                 >
                   Reserve your place
                 </a>
                 <a
                   href="#"
-                  class="inline-flex items-center rounded-full border border-salt/40 px-5 py-3 text-sm font-semibold uppercase tracking-wider no-underline"
-                  style={`--accent: ${s.hex};`}
+                  class="inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold uppercase tracking-wider no-underline"
+                  style={`border:1px solid ${WHITE}; color:${WHITE};`}
                   onmouseover={`this.style.borderColor='${s.hex}'; this.style.color='${s.hex}';`}
-                  onmouseout="this.style.borderColor=''; this.style.color='';"
+                  onmouseout={`this.style.borderColor='${WHITE}'; this.style.color='${WHITE}';`}
                 >
                   See the camps
                 </a>
               </div>
             </div>
 
-            <!-- Body section (snow surface, olive-deep type, accent details) -->
-            <div class="bg-snow px-8 py-12 md:px-10 md:py-16">
-              <p class="meta" style={`color: ${s.hex};`}>Welcome</p>
-              <h3 class="mt-3 font-display text-2xl font-bold leading-tight tracking-tight text-olive-deep md:text-4xl">
+            <!-- Body section (white surface, black type, accent details) -->
+            <div class="px-8 py-12 md:px-10 md:py-16" style={`background-color:${WHITE}; color:${BLACK};`}>
+              <p class="meta" style={`color:${s.hex};`}>Welcome</p>
+              <h3 class="mt-3 font-display text-2xl font-bold leading-tight tracking-tight md:text-4xl">
                 Coached by the people who train other instructors.
               </h3>
-              <p class="mt-6 max-w-2xl text-base leading-relaxed text-olive-deep/85 md:text-lg">
+              <p class="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style="opacity:0.85;">
                 Real progression through seven levels. Eight skiers max. You learn faster because we never lose track of you.
               </p>
 
-              <!-- Yellow circle badge replacement -->
+              <!-- Numbered badge -->
               <div class="mt-10 flex items-start gap-5">
                 <span
-                  class="meta inline-flex h-14 w-14 items-center justify-center rounded-full text-olive-deep"
-                  style={`background-color: ${s.hex};`}
+                  class="meta inline-flex h-14 w-14 items-center justify-center rounded-full"
+                  style={`background-color:${s.hex}; color:${BLACK};`}
                 >01</span>
                 <div>
-                  <h4 class="font-display text-xl font-bold tracking-tight text-olive-deep md:text-2xl">Eight building blocks</h4>
-                  <p class="mt-2 max-w-md text-base text-olive-deep/80">The six essentials behind every good skier.</p>
+                  <h4 class="font-display text-xl font-bold tracking-tight md:text-2xl">Eight building blocks</h4>
+                  <p class="mt-2 max-w-md text-base" style="opacity:0.8;">The six essentials behind every good skier.</p>
                 </div>
               </div>
 
-              <!-- Hover-highlight link -->
-              <p class="meta mt-10 text-olive-deep/60">
-                And the on-hover yellow-highlight pattern becomes
+              <!-- Hover highlight link -->
+              <p class="meta mt-10" style={`color:${BLACK}; opacity:0.6;`}>
+                Hover-link pattern:
                 <a
                   href="#"
                   class="ml-1 inline-block px-1 transition-colors"
+                  style="text-decoration:none; color:inherit;"
                   onmouseover={`this.style.backgroundColor='${s.hex}';`}
                   onmouseout="this.style.backgroundColor='';"
-                  style="color: inherit; text-decoration: none;"
-                >this colour</a>
-                on hover.
+                >hover this text</a>
+                · the highlight is the accent.
               </p>
             </div>
 
+            <!-- Inverted card example (black-on-white card → white-on-black variant) -->
+            <div class="px-8 py-12 md:px-10 md:py-16" style={`background-color:${WHITE};`}>
+              <p class="meta" style={`color:${BLACK}; opacity:0.5;`}>Inverted card</p>
+              <article class="mt-3 rounded-3xl p-8 md:p-10" style={`background-color:${BLACK}; color:${WHITE};`}>
+                <p class="meta" style={`color:${s.hex};`}>Ready to book</p>
+                <h4 class="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
+                  Pick a camp. Hold your place.
+                </h4>
+                <p class="mt-4 text-base md:text-lg" style="opacity:0.85;">
+                  Check live availability and confirm with a small refundable deposit.
+                </p>
+                <a
+                  href="#"
+                  class="mt-6 inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold uppercase tracking-wider no-underline"
+                  style={`background-color:${s.hex}; color:${BLACK};`}
+                >
+                  Check availability →
+                </a>
+              </article>
+            </div>
+
             <!-- Footnote -->
-            <footer class="border-t border-olive-deep/10 bg-snow px-8 py-4">
-              <p class="meta text-olive-deep/55">{s.note}</p>
+            <footer class="px-8 py-4" style={`border-top:1px solid ${BLACK}; background-color:${WHITE};`}>
+              <p class="meta" style={`color:${BLACK}; opacity:0.6;`}>{s.note}</p>
             </footer>
           </section>
         ))}
       </div>
 
-      <div class="mt-20 max-w-3xl border-t border-olive-deep/10 pt-12">
-        <p class="meta text-olive-deep/55">Reference</p>
-        <h2 class="mt-2 font-display text-2xl font-bold tracking-tight text-olive-deep md:text-3xl">
-          What changes site-wide if we ship this
-        </h2>
-        <ul class="mt-6 space-y-3 text-base text-olive-deep/85 md:text-lg">
-          <li>· <strong class="font-semibold">yellow</strong> token in tailwind.config.ts swaps to the chosen hex</li>
-          <li>· Default body type colour shifts from <strong class="font-semibold">olive</strong> (#3B4131) to <strong class="font-semibold">olive-deep</strong> (#1B1F17)</li>
+      <div class="mt-20 max-w-3xl pt-12" style={`border-top:1px solid ${BLACK}; border-color:rgba(10,10,10,0.15);`}>
+        <p class="meta" style={`color:${BLACK}; opacity:0.55;`}>What changes site-wide if we ship this</p>
+        <ul class="mt-6 space-y-3 text-base md:text-lg" style="opacity:0.85;">
+          <li>· <strong class="font-semibold">olive</strong> (#3B4131, brand signature green) → removed</li>
+          <li>· <strong class="font-semibold">olive-deep</strong> (#1B1F17, dark surface) → true black #0A0A0A</li>
+          <li>· <strong class="font-semibold">brown</strong> (#2D291E, card surface) → true black #0A0A0A</li>
+          <li>· <strong class="font-semibold">snow</strong> (#F7F7F7, light surface) → true white #FFFFFF</li>
+          <li>· <strong class="font-semibold">salt</strong> (#EFEEE7, type on dark) → true white #FFFFFF</li>
+          <li>· <strong class="font-semibold">yellow</strong> (#EFFDA4, accent) → chosen summer accent</li>
+          <li>· Tailwind tokens keep their names so all existing classes still work; only hex values change</li>
+          <li>· Site-and-team uniform diverge (uniform is still olive on the mountain)</li>
           <li>· 'Summer collection' tag added to footer fine print + About page</li>
-          <li>· CLAUDE.md palette table updated</li>
-          <li>· This preview page deleted</li>
+          <li>· CLAUDE.md palette table fully rewritten</li>
         </ul>
       </div>
     </div>
