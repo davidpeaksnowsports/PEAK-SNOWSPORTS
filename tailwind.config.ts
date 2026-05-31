@@ -3,35 +3,39 @@ import typography from '@tailwindcss/typography';
 
 // Summer Collection palette — see CLAUDE.md §3.
 //
-// Pink-led vibrant system. Pink is the dominant accent; blue and green
-// appear sparingly for specific signals (level coding, success states).
+// Four-colour system: white + cream + pink + navy. White is the clean
+// surface, cream is the warm buffer, pink is the bold accent, navy is
+// the deep voice (type, mood surfaces, outlines).
 //
 // Historic token names (snow / olive / olive-deep / brown / salt / yellow)
 // are preserved so every existing `text-olive`, `bg-yellow`, etc. class
-// keeps working. Their hex values have been swapped to the new palette:
+// keeps working. Their hex values now point to the new palette:
 //
 //   snow + salt                → true white  (#FFFFFF)
-//   olive + olive-deep + brown → true black  (#0A0A0A)
-//   yellow                     → pink (#EB437F) — same primary-accent role
+//   olive + olive-deep + brown → navy        (#1A2647)  — was black, was olive green
+//   yellow                     → pink        (#EB437F)
 //
-// New explicit-name tokens (`pink`, `blue`, `green`) are added for new
-// code. Prefer them going forward — `yellow` is a legacy alias.
+// New explicit-name tokens (`cream`, `navy`, `pink`) are the preferred
+// names for new code. `blue` and `green` remain defined for level-coding
+// and success-state use, but are not actively deployed.
 const config: Config = {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
   theme: {
     extend: {
       colors: {
         // Surfaces + type
-        snow: '#FFFFFF',      // primary surface (was #F7F7F7 off-white)
+        snow: '#FFFFFF',      // bright clean surface
+        cream: '#F1ECE0',     // Pantone 11-4201 Cloud Dancer — warm buffer
         olive: {
-          DEFAULT: '#0A0A0A', // body type (was #3B4131 olive green)
-          deep: '#0A0A0A',    // dark surface (was #1B1F17, now matches olive)
+          DEFAULT: '#1A2647', // body type (now navy — was #0A0A0A black, originally olive)
+          deep: '#1A2647',    // dark surface (matches navy)
         },
-        brown: '#0A0A0A',     // card dark surface (was #2D291E warm brown)
-        salt: '#FFFFFF',      // type on dark surfaces (was #EFEEE7 cream)
+        brown: '#1A2647',     // card dark surface (matches navy)
+        salt: '#FFFFFF',      // type on dark surfaces (white)
 
         // Summer Collection accents
-        pink: '#EB437F',      // primary accent · CTAs, kickers, highlights, hover
+        navy: '#1A2647',      // deep voice — type, mood surfaces, outlines
+        pink: '#EB437F',      // bold accent — CTAs, kickers, highlights, hover
         blue: '#2E55E2',      // sparingly · level / category coding only
         green: '#1FB089',     // sparingly · success / confirmation only
 

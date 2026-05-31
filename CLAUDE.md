@@ -50,23 +50,27 @@ Examples:
 ### Palette — Summer Collection (locked)
 Defined in [`tailwind.config.ts`](./tailwind.config.ts). Do not introduce hex codes outside that file.
 
-The "Summer Collection" is the active palette. The system is **pink-led** — pink is the dominant accent everywhere. Blue and green appear sparingly, each with one specific job.
+The "Summer Collection" is the active palette. **Four-colour system**: white + cream + pink + navy. Each has a defined role and a defined surface. The rhythm — white → cream → pink → navy — is how sections breathe.
 
 | Token | Hex | Role |
 |---|---|---|
-| `snow` | `#FFFFFF` | Primary surface — body bg, nav, footer. True white. |
-| `olive` | `#0A0A0A` | Default text colour. True near-black. (Name kept for class-compat — see migration note below.) |
-| `olive-deep` | `#0A0A0A` | Dark surface for hero overlays. Same value as `olive` — both render as black. |
-| `brown` | `#0A0A0A` | Card dark surface. Same value as `olive` / `olive-deep`. |
+| `snow` | `#FFFFFF` | Bright clean surface. Default body bg, nav, sub-footer. |
+| `cream` | `#F1ECE0` | Pantone 11-4201 Cloud Dancer. Warm buffer surface — side cards, alternating sections, partner/accreditation bands. |
+| `pink` | `#EB437F` | Bold accent — CTAs, kickers, hero highlights, hover-bgs, badges, link underlines. The brand's punch. |
+| `navy` | `#1A2647` | Deep voice — body type, mood surfaces (hero overlays, dark bands), outlines, secondary buttons. Replaces pure black. |
 | `salt` | `#FFFFFF` | Type on dark surfaces. Same value as `snow` — both render as white. |
-| `pink` | `#EB437F` | **Primary accent** — CTAs, kickers, hero highlights, hover-bgs, badges, underlines. Used everywhere. |
-| `blue` | `#2E55E2` | Sparingly — **level / category coding only**. Never as a CTA, never as a kicker. |
-| `green` | `#1FB089` | Sparingly — **success / confirmation only** (e.g. "Place confirmed" chips). |
-| `yellow` | `#EB437F` | **Legacy alias** for `pink` (same hex). Existing `bg-yellow` / `text-yellow` classes keep working; prefer `pink` in new code. |
+| `olive` | `#1A2647` | Legacy alias for `navy`. Existing `text-olive` classes keep working. |
+| `olive-deep` | `#1A2647` | Legacy alias for `navy`. Existing `bg-olive-deep` classes keep working. |
+| `brown` | `#1A2647` | Legacy alias for `navy`. Existing `bg-brown` classes keep working. |
+| `yellow` | `#EB437F` | Legacy alias for `pink`. Existing `bg-yellow` / `text-yellow` classes keep working. |
+| `blue` | `#2E55E2` | Reserved for level / category coding. Not currently deployed. |
+| `green` | `#1FB089` | Reserved for confirmation / success states. Not currently deployed. |
 
-**Discipline:** each colour stays in its lane. Pink does ~80% of accent work. Blue is reserved for level coding (e.g. "Intermediate" level card). Green is reserved for confirmation moments. This is what keeps a multi-colour system disciplined rather than chaotic.
+**Rhythm**: alternate sections between white (clean), cream (warm calm), pink (bold). Navy handles the deep moments — type, hero overlays, mood bands. The cream is what stops the white→pink jump from feeling harsh.
 
-**Migration note:** the previous palette (olive `#3B4131`, yellow `#EFFDA4`, brown `#2D291E`, etc.) was retired in the Summer Collection rebrand. Token names were preserved so the ~700 existing class references keep working — the hex values just changed. New code should use the explicit names (`pink`, `blue`, `green`) rather than the legacy `yellow` alias. The site visual no longer matches the green team uniform — that's an accepted divergence per the rebrand.
+**Migration history**: the original palette (olive `#3B4131` + yellow `#EFFDA4` + brown `#2D291E`) was retired in the Summer Collection rebrand. Token names were preserved so the ~700 existing class references keep working — the hex values were swapped. Then pure-black-on-white was replaced by navy-on-white to soften the contrast against hot pink. The site visual no longer matches the olive-green team uniform — that's an accepted brand divergence for the Summer Collection. The mountain uniform stays olive.
+
+**Recommended for new code**: use the explicit names — `bg-cream`, `text-navy`, `bg-pink` — rather than the legacy aliases (`bg-brown`, `text-olive`, `bg-yellow`).
 
 ### Aspirational references
 - **barrys.com** — the lifestyle/brand-led model. Confident type, full-bleed video, booking tucked behind a single CTA.
