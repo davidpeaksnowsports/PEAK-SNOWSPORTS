@@ -5,42 +5,45 @@ import Section from '../../components/ui/Section.astro';
 import Card from '../../components/ui/Card.astro';
 import heroImage from '../../assets/images/hero-lessons.jpg';
 
+// Lesson product cards, in the order specified in the review.
+// Each product has an explicit href so we can mix /lessons/* sub-pages with
+// the top-level /ski-camps page in the same listing.
 const products = [
   {
-    slug: 'private',
+    href: '/lessons/family',
+    name: "Kids' ski school",
+    kicker: 'School holidays · 5,12',
+    body: 'Holiday-week kids groups. Max 6 (or 4 in mini groups). PEAK-level system with medals when they pass.',
+  },
+  {
+    href: '/lessons/private',
     name: 'Private lessons',
     kicker: 'One on one',
     body: 'A dedicated instructor for the time you book. From two hours to a full day. All levels. All resorts.',
   },
   {
-    slug: 'group',
-    name: 'Group lessons',
-    kicker: 'Small groups',
-    body: 'Max six skiers per group, four in mini beginners. Coaching attention you can feel, not a head count in a queue.',
-  },
-  {
-    slug: 'family',
-    name: 'Kids group lessons',
-    kicker: 'School holidays · 5–12',
-    body: 'Holiday-week kids groups. Max 6 (or 4 in mini groups). PEAK-level system with medals when they pass.',
-  },
-  {
-    slug: 'off-piste',
+    href: '/lessons/off-piste',
     name: 'Off-piste & freeride',
     kicker: 'Beyond the rope',
     body: 'Big terrain with the right people. Avalanche awareness, route choice, and the confidence to ski it.',
   },
   {
-    slug: 'race-coaching',
+    href: '/lessons/kids-club',
+    name: "Local kids' club",
+    kicker: 'For local kids · 7+',
+    body: 'A season-long programme for in-resort kids. Wednesday and Saturday afternoons. 30 sessions. PEAK levels, medals, all-mountain skills.',
+  },
+  {
+    href: '/lessons/race-coaching',
     name: 'Race coaching',
     kicker: 'Gates and timing',
     body: 'Gate training, video review, tactical coaching. Run by trainers who race and examine.',
   },
   {
-    slug: 'kids-club',
-    name: 'Local Kids Club',
-    kicker: 'For local kids · 7+',
-    body: 'A season-long program for in-resort kids. Wednesday and Saturday afternoons. 30 sessions. PEAK levels, medals, all-mountain skills.',
+    href: '/ski-camps',
+    name: 'Ski camps',
+    kicker: 'Adult camps · 5 days',
+    body: 'Five-day small-group camps for intermediate and advanced skiers. BASI Trainers. Half-board at The Fat Fox Lodge, or coaching only.',
   },
 ];
 
@@ -95,7 +98,7 @@ const levels = [
   <Hero
     kicker="Lessons"
     headline="It's all about you."
-    sub="Private lessons, group lessons, off-piste, race coaching. Our coaches use a skills-based approach, everything we decide starts with you."
+    sub="Private lessons, kids' groups, off-piste, race coaching, ski camps. Our coaches use a skills-based approach, everything we decide starts with you."
     primaryCta={{ href: '/book', label: 'Check availability' }}
     secondaryCta={{ href: '#levels', label: 'Find your level' }}
     variant="compact"
@@ -122,10 +125,10 @@ const levels = [
   </section>
 
   <!-- Lesson products -->
-  <Section kicker="Choose your lesson" title="Five products. One standard.">
+  <Section kicker="Choose your lesson" title="Six products. One standard.">
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {products.map((p) => (
-        <Card href={`/lessons/${p.slug}`} kicker={p.kicker} title={p.name}>
+        <Card href={p.href} kicker={p.kicker} title={p.name}>
           {p.body}
         </Card>
       ))}
@@ -134,26 +137,71 @@ const levels = [
 
   <!-- Coaching philosophy -->
   <Section kicker="It's all about you" title="A skills-based approach.">
-    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-      <p class="text-lg leading-relaxed text-olive/80 md:text-xl">
-        Every decision our coaches make has you at the centre. We figure out where you are, what you need next, and we teach to that, rather than running you through a script. The team is highly qualified with full French equivalence (Carte Pro) and led by BASI examiners. Real coaching, not crowd management.
-      </p>
+    <div class="grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
+      <div class="space-y-6 text-lg leading-relaxed text-olive/85 md:text-xl">
+        <p>
+          Every decision our coaches make has you at the centre. We figure out where you are, what you need next, and we teach to that, rather than running you through a script.
+        </p>
+        <p>
+          The team is highly qualified with full French equivalence (Carte Professionelle) and led by BASI trainers/examiners. Real coaching, not crowd management.
+        </p>
+      </div>
       <ul class="grid grid-cols-2 gap-4">
-        <li class="rounded-2xl border border-olive bg-snow px-5 py-4">
-          <p class="meta text-olive/50">Group size</p>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Group size</p>
           <p class="mt-2 font-display text-2xl font-bold tracking-tight">6 max</p>
         </li>
-        <li class="rounded-2xl border border-olive bg-snow px-5 py-4">
-          <p class="meta text-olive/50">Mini beginners</p>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Mini beginners</p>
           <p class="mt-2 font-display text-2xl font-bold tracking-tight">4 max</p>
         </li>
-        <li class="rounded-2xl border border-olive bg-snow px-5 py-4">
-          <p class="meta text-olive/50">Carte Pro</p>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Carte Pro</p>
           <p class="mt-2 font-display text-2xl font-bold tracking-tight">Every coach</p>
         </li>
-        <li class="rounded-2xl border border-olive bg-snow px-5 py-4">
-          <p class="meta text-olive/50">Trained by</p>
-          <p class="mt-2 font-display text-2xl font-bold tracking-tight">BASI examiners</p>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Trained by</p>
+          <p class="mt-2 font-display text-2xl font-bold tracking-tight">BASI trainers</p>
+        </li>
+      </ul>
+    </div>
+  </Section>
+
+  <!-- Peak Progress, new technology section -->
+  <Section kicker="New for 2026/27" title="Peak Progress. Your skiing on record.">
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,440px)] lg:gap-20">
+      <div class="space-y-6 text-lg leading-relaxed text-olive/85 md:text-xl">
+        <p>
+          After every lesson, your instructor records a score across the things that actually matter. Posture. Movements. Balance. Steering. Control. The system places you on the PEAK level system and recommends what to book next.
+        </p>
+        <p>
+          Hyper-personalised. Direct from the coach who taught you. Remembered forever, a bit like a skiing IQ that builds with every season you spend with us.
+        </p>
+        <p>
+          Log into your Peak account to see the feedback, any video analysis, and your full learning journey with us. We call it Peak Progress.
+        </p>
+        <p class="meta text-olive/60">Powered by SkiOperator.</p>
+      </div>
+      <ul class="grid grid-cols-2 gap-3">
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Assessed</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Posture</p>
+        </li>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Assessed</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Movements</p>
+        </li>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Assessed</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Balance</p>
+        </li>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Assessed</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Steering</p>
+        </li>
+        <li class="col-span-2 rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Assessed</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Control</p>
         </li>
       </ul>
     </div>
@@ -167,22 +215,22 @@ const levels = [
 
     <ol class="mt-16 space-y-12">
       {levels.map((l, i) => (
-        <li class="border-t border-olive/10 pt-10">
+        <li class="border-t border-olive/15 pt-10">
           <div class="grid gap-6 md:grid-cols-[7rem_1fr]">
             <div>
-              <span class="meta text-olive/40">Level {String(i + 1).padStart(2, '0')}</span>
-              <p class="mt-1 font-display text-lg font-bold tracking-tight text-yellow-700 md:text-xl">{l.label}</p>
+              <span class="meta-pill">Level {String(i + 1).padStart(2, '0')}</span>
+              <p class="mt-3 font-display text-xl font-bold tracking-tight text-olive md:text-2xl">{l.label}</p>
             </div>
             <div>
               <p class="text-lg leading-relaxed text-olive md:text-xl">"{l.self}"</p>
               <div class="mt-6 grid gap-6 md:grid-cols-[1fr_minmax(0,260px)]">
                 <ul class="space-y-2">
                   {l.skills.map((skill) => (
-                    <li class="flex gap-3 text-base text-olive/75"><span class="text-yellow">·</span><span>{skill}</span></li>
+                    <li class="flex gap-3 text-base text-olive/80"><span class="text-pink">·</span><span>{skill}</span></li>
                   ))}
                 </ul>
-                <div class="rounded-2xl border border-olive bg-snow px-5 py-4 md:self-start">
-                  <p class="meta text-olive/50">Lifts</p>
+                <div class="rounded-2xl border border-olive bg-cream px-5 py-4 md:self-start">
+                  <p class="meta text-olive/55">Lifts</p>
                   <p class="mt-2 text-sm">{l.lifts}</p>
                 </div>
               </div>
@@ -195,7 +243,7 @@ const levels = [
 
   <!-- Closing CTA -->
   <Section>
-    <div class="border-t border-olive/10 pt-16">
+    <div class="border-t border-olive/15 pt-16">
       <h2 class="max-w-3xl text-4xl leading-tight md:text-6xl">Got a question?</h2>
       <p class="mt-6 max-w-2xl text-lg leading-relaxed text-olive/80">
         WhatsApp us, email <a href="mailto:hello@peaksnowsports.com" class="underline-offset-4 hover:bg-yellow hover:underline">hello@peaksnowsports.com</a>, or call <a href="tel:+441483616522" class="underline-offset-4 hover:bg-yellow hover:underline">+44 1483 616 522</a>. Replies usually within 30 minutes.
