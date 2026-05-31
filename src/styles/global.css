@@ -44,6 +44,14 @@
     @apply text-xs uppercase tracking-widest;
   }
 
+  /* Highlighted-pill kicker variant. Used in place of plain pink-on-bg
+     kickers (which had poor legibility on both light and dark surfaces).
+     Pink fill + white type reads cleanly on both snow and black grounds. */
+  .meta-pill {
+    font-family: theme('fontFamily.mono');
+    @apply inline-block text-xs uppercase tracking-widest bg-pink text-snow px-2 py-1 rounded-sm;
+  }
+
   /* Drop cap on the first paragraph of journal articles. Editorial touch. */
   .article-prose > p:first-of-type::first-letter {
     font-family: theme('fontFamily.display');
