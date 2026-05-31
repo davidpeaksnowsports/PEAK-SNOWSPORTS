@@ -1,206 +1,204 @@
 ---
 /**
- * Throwaway palette preview — strict 3-colour palette, accent-forward.
- * Mostly white surface. Accent used boldly: display type, full-width
- * panels, large shapes, generous deployment. Black used minimally
- * (just type on white).
+ * Throwaway palette preview — vibrant multi-colour system.
+ * Inspired by the FIGMENT card-game reference: hot pink + electric blue +
+ * jade green as a triad, plus white + black + wine for surfaces.
  *
  * Delete this file once a palette decision is made.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
+// Proposed Summer Collection palette
 const WHITE = '#FFFFFF';
 const BLACK = '#0A0A0A';
+const WINE  = '#4A1518'; // alternative dark surface, mood option
 
-const swatches = [
-  {
-    name: 'Peach-tan',
-    hex: '#f0bd7c',
-    note: 'Warm, premium, sophisticated.',
-  },
-  {
-    name: 'Hot pink',
-    hex: '#eb437f',
-    note: 'Bold, modern, anti-bland.',
-  },
+const PINK  = '#EB437F'; // primary accent — CTAs, kickers, hero highlights
+const BLUE  = '#2E55E2'; // secondary — categories, info chips, secondary CTAs
+const GREEN = '#1FB089'; // tertiary — success states, decoration
+
+const palette = [
+  { name: 'White',  hex: WHITE,  role: 'Primary surface' },
+  { name: 'Black',  hex: BLACK,  role: 'Body type' },
+  { name: 'Pink',   hex: PINK,   role: 'Primary accent · CTAs, kickers, highlights' },
+  { name: 'Blue',   hex: BLUE,   role: 'Secondary accent · categories, info' },
+  { name: 'Green',  hex: GREEN,  role: 'Tertiary accent · success, decoration' },
+  { name: 'Wine',   hex: WINE,   role: 'Alternative dark surface · mood' },
 ];
 ---
 
-<BaseLayout title="Palette preview — Peak Snowsports">
+<BaseLayout title="Palette preview — Summer Collection">
   <article class="px-6 py-12 md:py-16" style={`background-color:${WHITE}; color:${BLACK};`}>
     <div class="mx-auto max-w-screen-2xl">
-      <p class="meta" style="opacity:0.5;">Internal · palette preview · accent-forward · summer collection</p>
+      <p class="meta" style="opacity:0.5;">Internal · palette preview · vibrant multi-colour · summer collection</p>
       <h1 class="mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-        Two contenders. Pick one.
+        Six colours. <span style={`color:${PINK};`}>One brand.</span>
       </h1>
       <p class="mt-6 max-w-3xl text-lg leading-relaxed md:text-xl" style="opacity:0.85;">
-        Strict 3-colour palette, but the accent does <em class="italic">real</em> work — display headlines, full-width bands, big shapes, generous panels. Mostly white surface. Black is reserved for body type. No olive, no yellow, no brown, no salt.
+        A vibrant triad — <strong style={`color:${PINK};`}>pink</strong>, <strong style={`color:${BLUE};`}>blue</strong>, <strong style={`color:${GREEN};`}>green</strong> — sitting on white and black, with <strong style={`color:${WINE};`}>wine</strong> as an alternative dark surface for mood moments. Each colour has a job. They combine in single compositions when it earns its keep.
       </p>
 
-      <div class="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-10">
-        {swatches.map((s) => (
-          <section class="overflow-hidden rounded-3xl" style={`border:1px solid ${BLACK};`}>
-
-            <!-- Swatch header -->
-            <header class="flex items-center justify-between gap-6 px-8 py-6" style={`border-bottom:1px solid ${BLACK}; background-color:${WHITE};`}>
-              <div>
-                <p class="meta" style="opacity:0.5;">Option</p>
-                <h2 class="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl">{s.name}</h2>
-                <p class="meta mt-1" style="opacity:0.6;">{s.hex} · white · black</p>
-              </div>
-              <span class="block h-16 w-16 rounded-full" style={`background-color:${s.hex};`}></span>
-            </header>
-
-            <!-- 1. Hero (WHITE bg, BLACK display headline, ACCENT massive accent shape behind it) -->
-            <div class="relative overflow-hidden px-8 py-16 md:px-10 md:py-20" style={`background-color:${WHITE}; color:${BLACK};`}>
-              <!-- Big accent circle in corner — accent at scale -->
-              <span
-                class="absolute -right-24 -top-24 block h-72 w-72 rounded-full md:-right-16 md:-top-16 md:h-96 md:w-96"
-                style={`background-color:${s.hex};`}
-                aria-hidden="true"
-              ></span>
-              <div class="relative">
-                <p class="meta" style={`color:${s.hex}; background-color:${BLACK}; display:inline-block; padding:0.25rem 0.5rem;`}>Adult ski camps</p>
-                <h3 class="mt-4 font-display text-4xl font-bold leading-[0.95] tracking-tight md:text-6xl">
-                  Five days on snow.<br/>
-                  <span style={`color:${s.hex}; background-color:${BLACK}; padding:0 0.3em;`}>One serious step up.</span>
-                </h3>
-                <p class="mt-6 max-w-md text-base md:text-lg" style="opacity:0.8;">
-                  Small-group ski camps for intermediate and advanced skiers. Coached by BASI Trainers.
-                </p>
-                <div class="mt-8 flex flex-wrap gap-3">
-                  <a
-                    href="#"
-                    class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline"
-                    style={`background-color:${s.hex}; color:${BLACK};`}
-                  >
-                    Reserve your place
-                  </a>
-                  <a
-                    href="#"
-                    class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline"
-                    style={`border:2px solid ${s.hex}; color:${BLACK};`}
-                    onmouseover={`this.style.backgroundColor='${s.hex}';`}
-                    onmouseout="this.style.backgroundColor='';"
-                  >
-                    See the camps
-                  </a>
-                </div>
-              </div>
+      <!-- Swatches strip -->
+      <ul class="mt-12 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+        {palette.map((c) => (
+          <li class="rounded-2xl overflow-hidden" style={`border:1px solid ${BLACK};`}>
+            <div class="h-24" style={`background-color:${c.hex};`}></div>
+            <div class="p-4">
+              <p class="meta" style="opacity:0.5;">{c.name}</p>
+              <p class="mt-1 font-display text-base font-bold tracking-tight">{c.hex}</p>
+              <p class="meta mt-2" style="opacity:0.75;">{c.role}</p>
             </div>
-
-            <!-- 2. FULL-WIDTH ACCENT BAND — accent at maximum scale -->
-            <div class="px-8 py-14 md:px-10 md:py-20" style={`background-color:${s.hex}; color:${BLACK};`}>
-              <p class="meta" style={`color:${BLACK}; opacity:0.7;`}>What you get</p>
-              <h3 class="mt-3 font-display text-3xl font-bold leading-[0.95] tracking-tight md:text-5xl">
-                Eight skiers max.<br/>Five hours on snow.<br/>BASI Trainers.
-              </h3>
-              <ul class="mt-8 grid gap-3 text-base md:grid-cols-2 md:text-lg">
-                <li>· Performance video analysis</li>
-                <li>· Full Portes du Soleil pass</li>
-                <li>· Equipment workshops</li>
-                <li>· Lunches in the best spots</li>
-              </ul>
-            </div>
-
-            <!-- 3. White section with accent kickers, accent badge, accent inline highlights -->
-            <div class="px-8 py-14 md:px-10 md:py-20" style={`background-color:${WHITE}; color:${BLACK};`}>
-              <p class="meta" style={`color:${s.hex};`}>Why students choose Peak</p>
-              <h3 class="mt-3 font-display text-2xl font-bold leading-tight tracking-tight md:text-4xl">
-                Real progression through seven levels.
-              </h3>
-              <p class="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style="opacity:0.85;">
-                You learn faster because we never lose track of you. Eight skiers max — and the same coaches who train other instructors are coaching you. <a href="#" class="underline-offset-4 hover:underline" style={`color:${BLACK}; text-decoration-color:${s.hex}; text-decoration-thickness:3px;`}>Read more about how we coach.</a>
-              </p>
-
-              <!-- Numbered badge + heading -->
-              <div class="mt-10 flex items-start gap-5">
-                <span
-                  class="meta inline-flex h-14 w-14 items-center justify-center rounded-full"
-                  style={`background-color:${s.hex}; color:${BLACK};`}
-                >01</span>
-                <div>
-                  <h4 class="font-display text-xl font-bold tracking-tight md:text-2xl">Eight building blocks</h4>
-                  <p class="mt-2 max-w-md text-base" style="opacity:0.8;">The six essentials behind every good skier.</p>
-                </div>
-              </div>
-
-              <!-- Hover highlight -->
-              <p class="meta mt-10" style="opacity:0.6;">
-                Hover-link pattern:
-                <a
-                  href="#"
-                  class="ml-1 inline-block px-1 transition-colors"
-                  style="text-decoration:none; color:inherit;"
-                  onmouseover={`this.style.backgroundColor='${s.hex}';`}
-                  onmouseout="this.style.backgroundColor='';"
-                >hover this text</a>
-                · highlight in the accent.
-              </p>
-            </div>
-
-            <!-- 4. Card-grid moment — accent cards on white -->
-            <div class="px-8 py-12 md:px-10 md:py-16" style={`background-color:${WHITE};`}>
-              <p class="meta" style={`color:${s.hex};`}>Two durations</p>
-              <h3 class="mt-3 font-display text-2xl font-bold tracking-tight md:text-3xl">Pick the right length.</h3>
-              <div class="mt-8 grid gap-4 sm:grid-cols-2">
-                <article class="rounded-2xl p-6" style={`background-color:${s.hex}; color:${BLACK};`}>
-                  <p class="meta" style="opacity:0.7;">Ages 5–7</p>
-                  <p class="mt-2 font-display text-2xl font-bold tracking-tight">3 hours</p>
-                  <p class="mt-2 text-sm" style="opacity:0.85;">Right length for shorter attention spans.</p>
-                </article>
-                <article class="rounded-2xl p-6" style={`background-color:${WHITE}; color:${BLACK}; border:2px solid ${s.hex};`}>
-                  <p class="meta" style={`color:${s.hex};`}>Ages 7–12</p>
-                  <p class="mt-2 font-display text-2xl font-bold tracking-tight">4 hours</p>
-                  <p class="mt-2 text-sm" style="opacity:0.85;">A full half-day on snow.</p>
-                </article>
-              </div>
-            </div>
-
-            <!-- 5. Inverted card (accent type on black surface — testing accent visibility on dark too) -->
-            <div class="px-8 py-12 md:px-10 md:py-16" style={`background-color:${WHITE};`}>
-              <article class="rounded-3xl p-8 md:p-10" style={`background-color:${BLACK}; color:${WHITE};`}>
-                <p class="meta" style={`color:${s.hex};`}>Ready to book</p>
-                <h4 class="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
-                  Pick a camp. Hold your place.
-                </h4>
-                <p class="mt-4 text-base md:text-lg" style="opacity:0.85;">
-                  Confirm with a small refundable deposit.
-                </p>
-                <a
-                  href="#"
-                  class="mt-6 inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline"
-                  style={`background-color:${s.hex}; color:${BLACK};`}
-                >
-                  Check availability →
-                </a>
-              </article>
-            </div>
-
-            <!-- Footnote -->
-            <footer class="px-8 py-4" style={`border-top:1px solid ${BLACK}; background-color:${WHITE};`}>
-              <p class="meta" style="opacity:0.6;">{s.note}</p>
-            </footer>
-          </section>
+          </li>
         ))}
-      </div>
+      </ul>
 
-      <div class="mt-20 max-w-3xl pt-12" style={`border-top:1px solid ${BLACK};`}>
-        <p class="meta" style="opacity:0.55;">Where the accent now lives</p>
-        <h2 class="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
-          The accent does real work
-        </h2>
-        <ul class="mt-6 space-y-2 text-base md:text-lg" style="opacity:0.85;">
-          <li>· Full-width accent bands as section dividers</li>
-          <li>· Big accent shapes behind hero headlines (the circle in the corner)</li>
-          <li>· Inline accent backgrounds inside the headline itself (the "step up" highlight)</li>
-          <li>· Accent kickers everywhere they used to be faded grey/olive</li>
-          <li>· Accent-coloured borders on outline buttons and cards (replacing dark borders)</li>
-          <li>· Accent decoration on links (3px underline)</li>
-          <li>· Numbered badges and pill chips</li>
-          <li>· Hover-highlight on inline links</li>
-          <li>· Card surfaces in the accent (vs the old dark-brown cards)</li>
+      <!-- 1. HERO — pink primary, blue + green decoration -->
+      <section class="mt-16 overflow-hidden rounded-3xl" style={`border:1px solid ${BLACK};`}>
+        <div class="relative overflow-hidden px-8 py-16 md:px-12 md:py-24" style={`background-color:${WHITE}; color:${BLACK};`}>
+          <!-- Large pink shape -->
+          <span class="absolute -right-32 -top-32 block h-96 w-96 rounded-full" style={`background-color:${PINK};`} aria-hidden="true"></span>
+          <!-- Blue accent stripe -->
+          <span class="absolute right-0 top-0 block h-2 w-1/2" style={`background-color:${BLUE};`} aria-hidden="true"></span>
+          <!-- Green dot -->
+          <span class="absolute left-4 top-4 block h-8 w-8 rounded-full" style={`background-color:${GREEN};`} aria-hidden="true"></span>
+
+          <div class="relative">
+            <p class="meta" style={`background-color:${BLACK}; color:${PINK}; display:inline-block; padding:0.25rem 0.6rem;`}>Adult ski camps</p>
+            <h2 class="mt-4 font-display text-4xl font-bold leading-[0.95] tracking-tight md:text-7xl">
+              Five days on snow.<br/>
+              <span style={`color:${WHITE}; background-color:${BLACK}; padding:0 0.3em;`}>One serious</span><br/>
+              <span style={`color:${PINK};`}>step up.</span>
+            </h2>
+            <p class="mt-6 max-w-md text-base md:text-lg" style="opacity:0.85;">
+              Small-group camps for intermediate and advanced skiers.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href="#" class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline" style={`background-color:${PINK}; color:${WHITE};`}>Reserve your place</a>
+              <a href="#" class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline" style={`border:2px solid ${BLACK}; color:${BLACK};`}>See the camps</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. CATEGORY CARDS — each level a different colour -->
+      <section class="mt-16">
+        <p class="meta" style={`color:${PINK};`}>Pick your level</p>
+        <h2 class="mt-3 font-display text-3xl font-bold tracking-tight md:text-5xl">Where are you on the mountain?</h2>
+        <p class="mt-4 max-w-2xl text-base md:text-lg" style="opacity:0.85;">Each colour codes a tier. Skiers can scan-find their level fast.</p>
+
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <li class="rounded-2xl p-6" style={`background-color:${PINK}; color:${WHITE};`}>
+            <p class="meta" style="opacity:0.85;">Level 01</p>
+            <h3 class="mt-2 font-display text-2xl font-bold tracking-tight">Beginner</h3>
+            <p class="mt-2 text-sm" style="opacity:0.9;">Never skied before.</p>
+          </li>
+          <li class="rounded-2xl p-6" style={`background-color:${BLUE}; color:${WHITE};`}>
+            <p class="meta" style="opacity:0.85;">Level 02</p>
+            <h3 class="mt-2 font-display text-2xl font-bold tracking-tight">Improver</h3>
+            <p class="mt-2 text-sm" style="opacity:0.9;">Snowplough on green.</p>
+          </li>
+          <li class="rounded-2xl p-6" style={`background-color:${GREEN}; color:${WHITE};`}>
+            <p class="meta" style="opacity:0.85;">Level 03</p>
+            <h3 class="mt-2 font-display text-2xl font-bold tracking-tight">Intermediate</h3>
+            <p class="mt-2 text-sm" style="opacity:0.9;">Parallel on blues.</p>
+          </li>
+          <li class="rounded-2xl p-6" style={`background-color:${BLACK}; color:${WHITE};`}>
+            <p class="meta" style={`color:${PINK};`}>Level 04</p>
+            <h3 class="mt-2 font-display text-2xl font-bold tracking-tight">Advanced</h3>
+            <p class="mt-2 text-sm" style="opacity:0.9;">Any colour run.</p>
+          </li>
         </ul>
+      </section>
+
+      <!-- 3. COMBINED-COMPOSITION SECTION — the FIGMENT card vibe -->
+      <section class="mt-16 overflow-hidden rounded-3xl p-10 md:p-16" style={`background-color:${WINE}; color:${WHITE};`}>
+        <p class="meta" style={`color:${PINK};`}>The numbers</p>
+        <h2 class="mt-3 font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+          Twenty thousand <span style={`color:${BLUE};`}>clients</span>.<br/>
+          Twenty-five <span style={`color:${GREEN};`}>instructors</span>.<br/>
+          One <span style={`color:${PINK};`}>school</span>.
+        </h2>
+
+        <!-- Stats with colour-coded chips -->
+        <div class="mt-12 grid gap-4 sm:grid-cols-3">
+          <div class="rounded-2xl p-6" style={`background-color:${WHITE}; color:${BLACK};`}>
+            <p class="meta" style={`color:${PINK};`}>Coaching ratio</p>
+            <p class="mt-2 font-display text-3xl font-bold tracking-tight">8:1 max</p>
+          </div>
+          <div class="rounded-2xl p-6" style={`background-color:${WHITE}; color:${BLACK};`}>
+            <p class="meta" style={`color:${BLUE};`}>Length</p>
+            <p class="mt-2 font-display text-3xl font-bold tracking-tight">5 days</p>
+          </div>
+          <div class="rounded-2xl p-6" style={`background-color:${WHITE}; color:${BLACK};`}>
+            <p class="meta" style={`color:${GREEN};`}>Qualification</p>
+            <p class="mt-2 font-display text-3xl font-bold tracking-tight">BASI Trainers</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. BODY SECTION — accent inline highlights, multi-colour underlines -->
+      <section class="mt-16 px-2 md:px-0">
+        <p class="meta" style={`color:${PINK};`}>Why students choose Peak</p>
+        <h2 class="mt-3 font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+          Coached by the people who train other instructors.
+        </h2>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style="opacity:0.85;">
+          You learn faster because we never lose track of you. The same coaches who run our
+          <a href="#" class="px-1" style={`background-color:${PINK}; color:${WHITE}; text-decoration:none;`}>BASI courses</a>
+          are coaching you. Eight skiers max. Read more about
+          <a href="#" class="ml-1 underline-offset-4 underline" style={`color:${BLACK}; text-decoration-color:${BLUE}; text-decoration-thickness:3px;`}>how we coach</a>
+          and
+          <a href="#" class="ml-1 underline-offset-4 underline" style={`color:${BLACK}; text-decoration-color:${GREEN}; text-decoration-thickness:3px;`}>what's included</a>.
+        </p>
+
+        <!-- Numbered badges in rotating colour -->
+        <ol class="mt-10 space-y-8">
+          {[
+            { n: '01', t: 'Eight building blocks', c: PINK },
+            { n: '02', t: 'Ski-fit', c: BLUE },
+            { n: '03', t: 'Performance analysis', c: GREEN },
+          ].map((row) => (
+            <li class="flex items-start gap-5">
+              <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full" style={`background-color:${row.c}; color:${WHITE};`}>{row.n}</span>
+              <div>
+                <h4 class="font-display text-xl font-bold tracking-tight md:text-2xl">{row.t}</h4>
+                <p class="mt-2 max-w-md text-base" style="opacity:0.8;">A line of supporting copy that explains the thing.</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <!-- 5. CTA BAND -->
+      <section class="mt-16 overflow-hidden rounded-3xl p-10 md:p-16" style={`background-color:${PINK}; color:${WHITE};`}>
+        <p class="meta" style={`color:${WHITE}; opacity:0.85;`}>Ready to book</p>
+        <h2 class="mt-3 font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+          Pick a camp. Hold your place.
+        </h2>
+        <p class="mt-4 max-w-md text-base md:text-lg" style="opacity:0.9;">
+          Live availability. Refundable deposit. We confirm 6 weeks ahead.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#" class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline" style={`background-color:${WHITE}; color:${BLACK};`}>Check availability →</a>
+          <a href="#" class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline" style={`border:2px solid ${WHITE}; color:${WHITE};`}>Talk to us first</a>
+        </div>
+      </section>
+
+      <!-- Notes / what changes -->
+      <div class="mt-20 max-w-3xl pt-12" style={`border-top:1px solid ${BLACK};`}>
+        <p class="meta" style="opacity:0.55;">How each colour gets used</p>
+        <h2 class="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">Disciplined-but-vibrant</h2>
+        <ul class="mt-6 space-y-3 text-base md:text-lg" style="opacity:0.85;">
+          <li>· <strong style={`color:${PINK};`}>Pink</strong> — primary brand accent. Hero highlights, CTAs, kickers, hover backgrounds. The first colour your eye lands on.</li>
+          <li>· <strong style={`color:${BLUE};`}>Blue</strong> — category / informational. Level chips, secondary tags, info underlines.</li>
+          <li>· <strong style={`color:${GREEN};`}>Green</strong> — success / progression / decoration. Confirmation states, "what's included" markers, tertiary highlights.</li>
+          <li>· <strong style={`color:${BLACK}; opacity:1;`}>Black</strong> — body type. Still does the heavy lifting on text.</li>
+          <li>· <strong>White</strong> — surface. Most of the page is white.</li>
+          <li>· <strong style={`color:${WINE};`}>Wine</strong> — optional dark mood surface (vs black). Used on the 'numbers' band above. Skip if it feels too much.</li>
+        </ul>
+        <p class="mt-6 max-w-2xl text-base md:text-lg" style="opacity:0.7;">
+          The constraint is <em class="italic">each colour has a job</em>. Pink doesn't get used for category tags. Blue doesn't get used for CTAs. That's how a multi-colour system stays disciplined rather than chaotic.
+        </p>
       </div>
     </div>
   </article>
