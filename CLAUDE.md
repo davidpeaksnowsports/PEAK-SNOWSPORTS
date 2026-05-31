@@ -47,17 +47,26 @@ Examples:
 - **Layout:** Full-bleed everywhere. Generous vertical rhythm. Mobile-first (majority of traffic is mobile per Arch discovery).
 - **No stock photo clichés.** No corporate-handshake imagery, no generic-skier-in-action stock.
 
-### Palette (locked)
+### Palette — Summer Collection (locked)
 Defined in [`tailwind.config.ts`](./tailwind.config.ts). Do not introduce hex codes outside that file.
+
+The "Summer Collection" is the active palette. The system is **pink-led** — pink is the dominant accent everywhere. Blue and green appear sparingly, each with one specific job.
 
 | Token | Hex | Role |
 |---|---|---|
-| `snow` | `#F7F7F7` | Primary surface — body bg, nav, footer. |
-| `olive` | `#3B4131` | Default text colour. Matches the team uniform — brand signature. |
-| `olive-deep` | `#1B1F17` | Dark surface for hero overlays + button text on yellow. |
-| `brown` | `#2D291E` | Card surface — warm dark contrast against snow. Cards use `text-salt` inside. |
-| `salt` | `#EFEEE7` | Type on dark surfaces (cards, hero overlay). |
-| `yellow` | `#EFFDA4` | Single signature accent — kickers, CTAs, hover. Used sparingly. |
+| `snow` | `#FFFFFF` | Primary surface — body bg, nav, footer. True white. |
+| `olive` | `#0A0A0A` | Default text colour. True near-black. (Name kept for class-compat — see migration note below.) |
+| `olive-deep` | `#0A0A0A` | Dark surface for hero overlays. Same value as `olive` — both render as black. |
+| `brown` | `#0A0A0A` | Card dark surface. Same value as `olive` / `olive-deep`. |
+| `salt` | `#FFFFFF` | Type on dark surfaces. Same value as `snow` — both render as white. |
+| `pink` | `#EB437F` | **Primary accent** — CTAs, kickers, hero highlights, hover-bgs, badges, underlines. Used everywhere. |
+| `blue` | `#2E55E2` | Sparingly — **level / category coding only**. Never as a CTA, never as a kicker. |
+| `green` | `#1FB089` | Sparingly — **success / confirmation only** (e.g. "Place confirmed" chips). |
+| `yellow` | `#EB437F` | **Legacy alias** for `pink` (same hex). Existing `bg-yellow` / `text-yellow` classes keep working; prefer `pink` in new code. |
+
+**Discipline:** each colour stays in its lane. Pink does ~80% of accent work. Blue is reserved for level coding (e.g. "Intermediate" level card). Green is reserved for confirmation moments. This is what keeps a multi-colour system disciplined rather than chaotic.
+
+**Migration note:** the previous palette (olive `#3B4131`, yellow `#EFFDA4`, brown `#2D291E`, etc.) was retired in the Summer Collection rebrand. Token names were preserved so the ~700 existing class references keep working — the hex values just changed. New code should use the explicit names (`pink`, `blue`, `green`) rather than the legacy `yellow` alias. The site visual no longer matches the green team uniform — that's an accepted divergence per the rebrand.
 
 ### Aspirational references
 - **barrys.com** — the lifestyle/brand-led model. Confident type, full-bleed video, booking tucked behind a single CTA.
