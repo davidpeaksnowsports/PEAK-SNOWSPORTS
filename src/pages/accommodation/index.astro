@@ -9,11 +9,11 @@ const all = await getCollection('accommodation', ({ data }) => !data.draft);
 const providers = all.sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
 ---
 
-<BaseLayout title="Accommodation — Peak Snowsports" description="Hand-picked accommodation partners we trust. One enquiry, the right team in touch.">
+<BaseLayout title="Accommodation · Peak Snowsports" description="Hand-picked accommodation partners we trust. One enquiry, the right team in touch.">
   <Hero
     kicker="Accommodation"
     headline="Accommodation you can trust."
-    sub="A hand-picked list of operators we work with. Tell us where, when, and what kind of place. We pass the brief to the right partner — and stay on hand if anything needs sorting."
+    sub="A hand-picked list of operators we work with. Tell us where, when, and what kind of place. We pass the brief to the right partner, and stay on hand if anything needs sorting."
     primaryCta={{ href: '#enquire', label: 'Make an enquiry' }}
     secondaryCta={{ href: '#partners', label: 'Browse partners' }}
     variant="compact"
@@ -116,7 +116,7 @@ const providers = all.sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 99
           <label class="block">
             <span class="meta text-salt/60">Preferred partner</span>
             <select name="provider" class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 text-salt focus:border-yellow focus:outline-none [&>option]:bg-olive-deep">
-              <option value="">No preference — match me</option>
+              <option value="">No preference, match me</option>
               {providers.map((p) => (
                 <option value={p.data.name}>{p.data.name}</option>
               ))}

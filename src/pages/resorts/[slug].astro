@@ -30,7 +30,7 @@ const otherResorts = allResorts
   .slice(0, 3);
 ---
 
-<BaseLayout title={`${d.name} — Peak Snowsports`} description={d.knownFor}>
+<BaseLayout title={`${d.name}, Peak Snowsports`} description={d.knownFor}>
   <!-- Hero -->
   <section class="relative flex min-h-[60vh] items-end overflow-hidden bg-brown text-salt">
     {d.hero && (
@@ -84,7 +84,7 @@ const otherResorts = allResorts
     </div>
   </Section>
 
-  {/* Meeting points — home resorts only */}
+  {/* Meeting points, home resorts only */}
   {d.type === 'home' && d.meetingPoints && d.meetingPoints.length > 0 && (
     <Section kicker="Meeting points" title="Where you'll find us.">
       <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">

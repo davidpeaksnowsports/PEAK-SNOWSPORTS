@@ -13,6 +13,6 @@ hero: ""
 order: 7
 ---
 
-A traditional Austrian village at the foot of the Kitzsteinhorn glacier — the only year-round ski area in Austria. Snow from October through to early summer makes Kaprun the natural base for pre-season race training and instructor development.
+A traditional Austrian village at the foot of the Kitzsteinhorn glacier, the only year-round ski area in Austria. Snow from October through to early summer makes Kaprun the natural base for pre-season race training and instructor development.
 
-We run an **autumn week of our GAP Course** out of Kaprun in October–November, on glacier terrain before the European season opens — and our **race-coaching training weeks** come here for early-season form.
+We run an **autumn week of our GAP Course** out of Kaprun in October–November, on glacier terrain before the European season opens, and our **race-coaching training weeks** come here for early-season form.

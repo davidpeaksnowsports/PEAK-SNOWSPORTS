@@ -10,8 +10,8 @@
  * server-side; we return only the token. The secret never reaches the client.
  *
  * Required env vars (Vercel + local .env, both Preview and Production):
- *   ARCH_API_KEY    — the sec_… key (NO PUBLIC_ prefix, never expose)
- *   ARCH_BASE_URL   — e.g. https://peaksnowsports.com
+ *   ARCH_API_KEY   , the sec_… key (NO PUBLIC_ prefix, never expose)
+ *   ARCH_BASE_URL  , e.g. https://peaksnowsports.com
  */
 import type { APIRoute } from 'astro';
 
@@ -21,7 +21,7 @@ export const POST: APIRoute = async ({ request }) => {
   // Read at runtime via process.env (not import.meta.env, which would
   // substitute the value at build time and bake it into the function
   // bundle). With process.env, Vercel injects the secret fresh per
-  // invocation from project env vars — so rotating the key needs no rebuild.
+  // invocation from project env vars, so rotating the key needs no rebuild.
   const ARCH_API_KEY = process.env.ARCH_API_KEY;
   const ARCH_BASE_URL = process.env.ARCH_BASE_URL;
 
@@ -32,7 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  // The domain we're embedding on — Arch uses this to validate the request
+  // The domain we're embedding on, Arch uses this to validate the request
   // against allowed domains configured in their dashboard.
   const origin = new URL(request.url).origin;
 
@@ -66,7 +66,7 @@ export const POST: APIRoute = async ({ request }) => {
   const data = await archResp.json();
 
   // Forward whatever Arch returns (presumably `{ token: "…" }`); browser-side
-  // code can pick out what it needs. Don't cache — tokens are short-lived.
+  // code can pick out what it needs. Don't cache, tokens are short-lived.
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {

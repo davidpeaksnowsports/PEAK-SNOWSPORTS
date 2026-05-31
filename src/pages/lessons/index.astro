@@ -16,7 +16,7 @@ const products = [
     slug: 'group',
     name: 'Group lessons',
     kicker: 'Small groups',
-    body: 'Max six skiers per group, four in mini beginners. Coaching attention you can feel — not a head count in a queue.',
+    body: 'Max six skiers per group, four in mini beginners. Coaching attention you can feel, not a head count in a queue.',
   },
   {
     slug: 'family',
@@ -44,7 +44,7 @@ const products = [
   },
 ];
 
-// Seven skill levels — distilled from the alpine-skiing-level-guide on the current site
+// Seven skill levels, distilled from the alpine-skiing-level-guide on the current site
 const levels = [
   {
     label: 'Beginner',
@@ -78,24 +78,24 @@ const levels = [
   },
   {
     label: 'Advanced',
-    self: "I'm happy on any coloured run. Keen to improve technique — grippier short turns, learning to carve, starting to explore off-piste.",
+    self: "I'm happy on any coloured run. Keen to improve technique, grippier short turns, learning to carve, starting to explore off-piste.",
     skills: ['Ski a narrow corridor controlling speed and line', 'Maintain ski-to-snow contact at all times', 'Rolling edge to edge on a green slope, leaving two clean tracks', 'Ski a funnel: short → medium → long radius turns'],
     lifts: 'Lap runs independently',
   },
   {
     label: 'Expert',
-    self: 'I can ski the whole mountain on- and off-piste. Looking to push technical knowledge — moguls, off-piste, ski touring.',
+    self: 'I can ski the whole mountain on- and off-piste. Looking to push technical knowledge, moguls, off-piste, ski touring.',
     skills: ['Linked turns in easy moguls', 'Cleanly carve red and black runs', 'Link flowing turns in off-piste snow', 'Understand avalanche danger scale and equipment', 'Lead a partner in tree runs / variable off-piste', 'Attempt green and blue freestyle features'],
     lifts: 'Lead around the ski area',
   },
 ];
 ---
 
-<BaseLayout title="Lessons — Peak Snowsports">
+<BaseLayout title="Lessons · Peak Snowsports">
   <Hero
     kicker="Lessons"
     headline="It's all about you."
-    sub="Private lessons, group lessons, off-piste, race coaching. Our coaches use a skills-based approach — everything we decide starts with you."
+    sub="Private lessons, group lessons, off-piste, race coaching. Our coaches use a skills-based approach, everything we decide starts with you."
     primaryCta={{ href: '/book', label: 'Check availability' }}
     secondaryCta={{ href: '#levels', label: 'Find your level' }}
     variant="compact"
@@ -107,7 +107,7 @@ const levels = [
   <section class="bg-olive-deep text-salt">
     <div class="mx-auto flex max-w-screen-2xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
       <div>
-        <p class="meta-pill">2025/26 prices · paid in full by 31 May</p>
+        <p class="meta-pill">2025/26 prices · paid in full by 30 June</p>
         <p class="mt-3 max-w-2xl text-lg leading-snug md:text-xl">
           Lock in current-season prices for next season with code <strong class="font-display tracking-tight">FREEZE27</strong>.
         </p>
@@ -136,7 +136,7 @@ const levels = [
   <Section kicker="It's all about you" title="A skills-based approach.">
     <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
       <p class="text-lg leading-relaxed text-olive/80 md:text-xl">
-        Every decision our coaches make has you at the centre. We figure out where you are, what you need next, and we teach to that — rather than running you through a script. The team is highly qualified with full French equivalence (Carte Pro) and led by BASI examiners. Real coaching, not crowd management.
+        Every decision our coaches make has you at the centre. We figure out where you are, what you need next, and we teach to that, rather than running you through a script. The team is highly qualified with full French equivalence (Carte Pro) and led by BASI examiners. Real coaching, not crowd management.
       </p>
       <ul class="grid grid-cols-2 gap-4">
         <li class="rounded-2xl border border-olive bg-snow px-5 py-4">
@@ -159,10 +159,10 @@ const levels = [
     </div>
   </Section>
 
-  <!-- Find your level — 7 skill levels -->
+  <!-- Find your level, 7 skill levels -->
   <Section id="levels" kicker="Find your level" title="Seven levels. Honest descriptions.">
     <p class="max-w-3xl text-lg leading-relaxed text-olive/80">
-      Not sure where you sit? Read the self-description for each level — pick the one that sounds most like you. If you're between two, we'll calibrate in the first ten minutes of your lesson.
+      Not sure where you sit? Read the self-description for each level, pick the one that sounds most like you. If you're between two, we'll calibrate in the first ten minutes of your lesson.
     </p>
 
     <ol class="mt-16 space-y-12">

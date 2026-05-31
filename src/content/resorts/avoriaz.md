@@ -17,6 +17,6 @@ order: 2
 
 Built directly into the cliffside above Morzine, Avoriaz is a snowy, car-free pedestrian town. Step out of your accommodation, click into your skis, and you're on the lift.
 
-High altitude means more snow-sure conditions, and a wider open beginner zone makes it an ideal spot for families. Avoriaz is also home to The Lil' Stash — a hidden tree-run park — and the freestyle parks that draw riders from across Europe.
+High altitude means more snow-sure conditions, and a wider open beginner zone makes it an ideal spot for families. Avoriaz is also home to The Lil' Stash, a hidden tree-run park, and the freestyle parks that draw riders from across Europe.
 
 It's where we run our **GAP instructor course**, and our cohort calls it home for six weeks each winter.

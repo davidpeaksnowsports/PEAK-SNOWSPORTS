@@ -14,7 +14,7 @@ export const sanity = createClient(config);
 const builder = imageUrlBuilder(sanity);
 export const urlFor = (source: SanityImageSource) => builder.image(source);
 
-// Query helpers — add typed GROQ queries here as schemas are wired up.
+// Query helpers, add typed GROQ queries here as schemas are wired up.
 export const queries = {
   allInstructors: `*[_type == "instructor"] | order(name asc){ _id, name, slug, photo, resorts[]-> }`,
   allResorts: `*[_type == "resort"] | order(name asc){ _id, name, slug, hero }`,

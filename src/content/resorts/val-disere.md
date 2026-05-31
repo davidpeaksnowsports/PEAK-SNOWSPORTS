@@ -13,6 +13,6 @@ hero: ""
 order: 5
 ---
 
-Linked with Tignes to form the Espace Killy — one of the most reliable ski areas in the Alps. The high altitude keeps conditions strong from December through May, the glacier at Pissaillas extends the season further, and the off-piste terrain is the stuff of legend.
+Linked with Tignes to form the Espace Killy, one of the most reliable ski areas in the Alps. The high altitude keeps conditions strong from December through May, the glacier at Pissaillas extends the season further, and the off-piste terrain is the stuff of legend.
 
-We're running our first **Val d'Isère ski camp** in 2027 — a high-altitude week for intermediate-plus skiers looking to ski big mountain terrain with proper coaching.
+We're running our first **Val d'Isère ski camp** in 2027, a high-altitude week for intermediate-plus skiers looking to ski big mountain terrain with proper coaching.

@@ -16,7 +16,7 @@ We also use other similar technologies such as web beacons, pixels, and local st
 
 ## Why do we use cookies?
 
-We use first-party and third-party cookies for several reasons. Some cookies are required for technical reasons in order for our website to operate — we refer to these as 'essential' or 'strictly necessary' cookies. Others enable us to understand how our website is used, to remember your preferences, and to improve your experience. You can find more detail about the categories we use below.
+We use first-party and third-party cookies for several reasons. Some cookies are required for technical reasons in order for our website to operate, we refer to these as 'essential' or 'strictly necessary' cookies. Others enable us to understand how our website is used, to remember your preferences, and to improve your experience. You can find more detail about the categories we use below.
 
 ## The types of cookies we use
 

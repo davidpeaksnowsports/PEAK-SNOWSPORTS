@@ -29,7 +29,7 @@ interface Props {
 
 const { path = '/products', height = '800px', class: className = '' } = Astro.props;
 
-// Available at build time only (no PUBLIC_ prefix on the env var, by design —
+// Available at build time only (no PUBLIC_ prefix on the env var, by design ,
 // keeps ARCH_API_KEY adjacent in .env without leaking). We inline the value
 // into the page below via define:vars.
 const ARCH_BASE_URL = import.meta.env.ARCH_BASE_URL ?? '';

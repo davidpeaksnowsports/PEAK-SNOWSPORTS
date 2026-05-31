@@ -12,7 +12,7 @@ const posts = allPosts.sort(
   (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
 );
 
-// Categories with counts — only show categories that have at least one post.
+// Categories with counts, only show categories that have at least one post.
 const categoryCounts = new Map<string, number>();
 posts.forEach((p) => {
   categoryCounts.set(p.data.category, (categoryCounts.get(p.data.category) ?? 0) + 1);
@@ -29,11 +29,11 @@ const categories = [{ label: 'All', href: '/journal', count: posts.length }];
 const [featured, ...rest] = posts;
 ---
 
-<BaseLayout title="Journal — Peak Snowsports">
+<BaseLayout title="Journal · Peak Snowsports">
   <Hero
     kicker="Journal"
     headline="Words from the team."
-    sub="Resort guides, kit reviews, technique notes, season updates — written by the people teaching."
+    sub="Resort guides, kit reviews, technique notes, season updates, written by the people teaching."
     variant="compact"
     image={heroImage}
     imageAlt="Snow-laden pine forest against a pale alpine sky."

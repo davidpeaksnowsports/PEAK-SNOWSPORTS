@@ -15,6 +15,6 @@ hero: "/images/resorts/les-gets.jpg"
 order: 3
 ---
 
-A traditional Savoyard village ten minutes from Morzine and directly linked by lifts. Quieter than its twin, with a gentle layout that suits families and beginners — the Chavannes plateau is one of the best learning zones in the area.
+A traditional Savoyard village ten minutes from Morzine and directly linked by lifts. Quieter than its twin, with a gentle layout that suits families and beginners, the Chavannes plateau is one of the best learning zones in the area.
 
 Mont Chéry, on the opposite side of the village, gives stronger skiers a quieter mountain to themselves with rewarding red and black runs.
