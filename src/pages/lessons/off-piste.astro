@@ -3,23 +3,99 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import BookingWidget from '../../components/booking/BookingWidget.astro';
-import { LOREM, LOREM_LONG } from '../../lib/utils';
+
+const clinicContent = [
+  'Develop ski touring technique, flat, steep and turning',
+  'Learn mountain navigation',
+  'Develop climbing with ski crampons, using kick turns and managing exposed slopes',
+  'Understand avalanche safety, terrain traps, reading the mountain and action planning',
+  'Develop route planning, decision making and lead sections',
+  'Explore the fantastic Portes du Soleil',
+];
+
+const equipment = [
+  'Good layering of lightweight clothing for snowy environments',
+  'Avalanche transceiver, shovel and probe',
+  'Ski touring skis, bindings, skins and ski crampons',
+  'A backpack of around 30L',
+];
 ---
 
-<BaseLayout title="Off-piste & freeride · Peak Snowsports">
+<BaseLayout
+  title="Off-piste & freeride · Peak Snowsports"
+  description="Half-day and full-day off-piste and ski touring clinics in the Portes du Soleil. Avalanche safety, navigation, route planning. Up to six per instructor."
+>
   <Hero
-    kicker="Lessons / Off-piste"
+    kicker="Lessons · Off-piste & freeride"
     headline="Past the rope. With the right people."
-    sub={LOREM}
+    sub="Half-day or full-day clinics covering ski touring technique, avalanche safety, navigation and route planning. Lift-access or skinning, your call."
     primaryCta={{ href: '#availability', label: 'Check availability' }}
+    secondaryCta={{ href: '#what-we-cover', label: 'See the content' }}
     variant="compact"
   />
 
-  <Section kicker="Who it's for" title="Lorem ipsum dolor sit amet.">
-    <p class="max-w-2xl text-lg text-olive/80">{LOREM_LONG}</p>
+  <!-- Intro -->
+  <Section kicker="Who it's for" title="Adventures, big or small.">
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-20">
+      <div class="space-y-6 text-lg leading-relaxed text-olive/85 md:text-xl">
+        <p>
+          We're passionate about experiencing adventures with you. No matter how big or small. Our touring and off-piste clinics are perfect for someone interested in venturing away from the pistes. It's a jam-packed half-day or full-day giving you a solid understanding of the basic principles around skiing off-piste, either lift access or ski touring.
+        </p>
+        <p>
+          Guests should have a good level of fitness and be comfortable skiing red and black runs. Off-piste experience not essential.
+        </p>
+      </div>
+
+      <ul class="grid grid-cols-2 gap-3">
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Format</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">½ or full day</p>
+        </li>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Group size</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">6 max</p>
+        </li>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Start</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">09:00 or 12:00</p>
+        </li>
+        <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <p class="meta text-olive/55">Where</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Portes du Soleil</p>
+        </li>
+      </ul>
+    </div>
   </Section>
 
-  <Section id="availability" kicker="Availability" title="Book an off-piste guide.">
+  <!-- Clinic content -->
+  <Section id="what-we-cover" kicker="What we cover" title="The clinic content.">
+    <ul class="grid gap-4 md:grid-cols-2">
+      {clinicContent.map((item) => (
+        <li class="flex gap-4 rounded-2xl border border-olive bg-snow p-5">
+          <span class="mt-2 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-pink" aria-hidden="true" />
+          <span class="text-base leading-relaxed text-olive md:text-lg">{item}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <!-- Kit list -->
+  <Section kicker="What to bring" title="Ski touring kit.">
+    <p class="max-w-2xl text-lg leading-relaxed text-olive/85 md:text-xl">
+      Guests will require ski touring equipment. We work with local rental partners if you need to hire, email us before you arrive.
+    </p>
+    <ul class="mt-10 grid gap-3 md:grid-cols-2">
+      {equipment.map((item) => (
+        <li class="flex gap-4 rounded-2xl bg-cream p-5">
+          <span class="mt-2 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-pink" aria-hidden="true" />
+          <span class="text-base leading-relaxed text-olive md:text-lg">{item}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <!-- Availability widget -->
+  <Section id="availability" kicker="Availability" title="Book an off-piste clinic.">
     <BookingWidget productId="off-piste" variant="product" />
   </Section>
 </BaseLayout>
