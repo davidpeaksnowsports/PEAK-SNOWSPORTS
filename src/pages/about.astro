@@ -28,9 +28,9 @@ const whyPeak = [
       "Every coach at Peak is a top-class professional who shares our passion for adventure and the way we like to do things. No phoning it in.",
   },
   {
-    title: 'Taught in English.',
+    title: 'Taught in French and English.',
     body:
-      "All our lessons are delivered by fluent English speakers, so nothing gets lost in translation.",
+      "All our lessons are delivered by fluent English and French speakers, so nothing gets lost in translation.",
   },
   {
     title: 'We care about the mountains we work in.',
@@ -80,33 +80,40 @@ const brothers = [
 <BaseLayout title="About · Peak Snowsports">
   <Hero
     kicker="About"
-    headline="We don't run lessons. We build skiers."
+    headline="Experiences, not transactions."
     sub="Founded by three brothers obsessed with the mountains. Built around coaching that actually cares."
     variant="full"
     image={heroImage}
     imageAlt="A snow-laden ridge in the Portes du Soleil under a clear winter sky."
   />
 
-  <Section kicker="The story" title="Three brothers. One ski school.">
-    <div class="grid items-center gap-12 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-20">
-      <div class="space-y-6 text-lg leading-relaxed text-olive/80 md:text-xl">
-        <p>
-          Peak is a British-owned ski school in the Portes du Soleil, founded by three brothers, George, Marc and David Walton, who grew up obsessed with the mountains and turned that obsession into a business.
-        </p>
-        <p>
-          We started Peak to build the ski school we wished existed. One where the coaching is genuinely excellent, the team actually cares, and a week with us feels less like a transaction and more like a few days spent with friends who happen to be very good at skiing.
-        </p>
+  <!-- The story: tightened spacing so heading, copy and image sit together -->
+  <section class="px-6 py-16 md:py-20">
+    <div class="mx-auto max-w-screen-2xl">
+      <div class="grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-16">
+        <div>
+          <p class="meta-pill">The story</p>
+          <h2 class="mt-5 text-4xl font-semibold leading-tight md:text-6xl">Three brothers. One ski school.</h2>
+          <div class="mt-6 space-y-5 text-lg leading-relaxed text-olive/85 md:text-xl">
+            <p>
+              Peak is a British-owned ski school in the Portes du Soleil, founded by three brothers, George, Marc and David Walton, who grew up obsessed with the mountains and turned that obsession into a business.
+            </p>
+            <p>
+              We started Peak to build the ski school we wished existed. One where the coaching is genuinely excellent, the team actually cares, and a week with us feels less like a transaction and more like a few days spent with friends who happen to be very good at skiing.
+            </p>
+          </div>
+        </div>
+        <figure class="overflow-hidden rounded-3xl bg-brown aspect-[4/5]">
+          <img
+            src="/images/about/three-brothers-image.jpg"
+            alt="A lone Peak skier carving deep powder."
+            loading="lazy"
+            class="h-full w-full object-cover"
+          />
+        </figure>
       </div>
-      <figure class="overflow-hidden rounded-3xl bg-brown aspect-[4/5]">
-        <img
-          src="/images/about/three-brothers-image.jpg"
-          alt="A lone Peak skier carving deep powder."
-          loading="lazy"
-          class="h-full w-full object-cover"
-        />
-      </figure>
     </div>
-  </Section>
+  </section>
 
   <Section>
     <p class="meta-pill">Where we ski</p>
@@ -141,21 +148,28 @@ const brothers = [
     </ul>
   </Section>
 
-  <Section kicker="How we coach" title="You at the centre.">
-    <div class="grid items-center gap-12 lg:grid-cols-[minmax(0,520px)_1fr] lg:gap-20">
-      <figure class="overflow-hidden rounded-3xl bg-brown lg:order-first">
-        <img
-          src="/images/about/you-at-the-centre.jpg"
-          alt="A Peak instructor and client pause on piste, an Alpine peak rising behind them."
-          loading="lazy"
-          class="aspect-[4/5] h-full w-full object-cover"
-        />
-      </figure>
-      <p class="text-lg leading-relaxed text-olive/80 md:text-xl">
-        What ties it all together is a coaching philosophy that puts you at the centre. Our team, alongside Tom, Eilidh and a wider crew of fully qualified instructors, works to a skills-based approach. Which is a fancy way of saying we figure out what you actually need and teach to that, rather than running you through a script.
-      </p>
+  <!-- You at the centre: kicker + heading + copy + image grouped tightly -->
+  <section class="px-6 py-16 md:py-20">
+    <div class="mx-auto max-w-screen-2xl">
+      <div class="grid items-center gap-10 lg:grid-cols-[minmax(0,520px)_1fr] lg:gap-16">
+        <figure class="overflow-hidden rounded-3xl bg-brown lg:order-first">
+          <img
+            src="/images/about/you-at-the-centre.jpg"
+            alt="A Peak instructor and client pause on piste, an Alpine peak rising behind them."
+            loading="lazy"
+            class="aspect-[4/5] h-full w-full object-cover"
+          />
+        </figure>
+        <div>
+          <p class="meta-pill">How we coach</p>
+          <h2 class="mt-5 text-4xl font-semibold leading-tight md:text-6xl">You at the centre.</h2>
+          <p class="mt-6 text-lg leading-relaxed text-olive/85 md:text-xl">
+            What ties it all together is a coaching philosophy that puts you at the centre. Our team work to a skills-based approach. Which is a fancy way of saying we figure out what you actually need and how you need it and teach you that, rather than running you through a script.
+          </p>
+        </div>
+      </div>
     </div>
-  </Section>
+  </section>
 
   <Section kicker="Why Peak" title="The short version.">
     <div class="space-y-4 font-display text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl">
@@ -164,30 +178,43 @@ const brothers = [
       <p>Experiences, not transactions.</p>
     </div>
 
-    <p class="meta mt-16 text-olive/50">And here's the longer one.</p>
+    <p class="mt-16"><span class="meta-pill">And here's the longer one.</span></p>
 
     <ol class="mt-12 space-y-16">
-      {whyPeak.map((r, i) => (
-        <li class="border-t border-olive/10 pt-10">
-          <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
-            <span class="meta text-olive/40">{String(i + 1).padStart(2, '0')}</span>
-            <div>
-              <h3 class="font-display text-2xl font-bold tracking-tight md:text-3xl">{r.title}</h3>
-              <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/80">{r.body}</p>
-              {r.commitments && (
-                <ul class="mt-6 max-w-2xl space-y-3">
-                  {r.commitments.map((c) => (
-                    <li class="flex gap-3 text-base text-olive/70">
-                      <span class="meta mt-1 shrink-0 text-yellow">&middot;</span>
-                      <span>{c}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
+      {whyPeak.map((r, i) => {
+        const isSustainability = !!r.commitments;
+        return (
+          <li class="border-t border-olive/15 pt-10">
+            <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
+              <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full bg-pink text-snow">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h3 class="font-display text-2xl font-bold tracking-tight md:text-3xl">
+                  {isSustainability && (
+                    <span aria-hidden="true" class="mr-2 inline-block align-middle">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1A2647" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block">
+                        <path d="M11 20A7 7 0 0 1 4 13H1c0-6.075 4.925-11 11-11s11 4.925 11 11h-3a7 7 0 0 1-7 7Z" />
+                        <path d="M12 22V11" />
+                      </svg>
+                    </span>
+                  )}
+                  {r.title}
+                </h3>
+                <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/85">{r.body}</p>
+                {r.commitments && (
+                  <ul class="mt-6 max-w-2xl space-y-3">
+                    {r.commitments.map((c) => (
+                      <li class="flex gap-4 text-base leading-relaxed text-olive/85 md:text-lg">
+                        <span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
+                        <span>{c}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
-          </div>
-        </li>
-      ))}
+          </li>
+        );
+      })}
     </ol>
   </Section>
 
@@ -254,10 +281,14 @@ const brothers = [
       </div>
 
       <!-- Colophon: current visual palette -->
-      <div class="mt-20 border-t border-olive/10 pt-8">
-        <p class="meta text-olive/55">Colophon</p>
-        <p class="mt-3 max-w-xl text-sm leading-relaxed text-olive/75">
-          The site you're reading is dressed in our <span class="text-pink">Summer Collection</span>, white + Cloud Dancer cream + hot pink + navy, built around Pantone's 2026 Colour of the Year. The mountain uniform stays olive green.
+      <div class="mt-20 rounded-3xl border border-olive bg-cream p-8 md:p-12">
+        <p class="meta-pill">Colophon</p>
+        <h3 class="mt-5 font-display text-2xl font-bold tracking-tight md:text-3xl">Our colours change with the season.</h3>
+        <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive md:text-xl">
+          The site you're reading is dressed in our <span class="font-semibold text-pink">Summer Collection</span>, white + Cloud Dancer cream + hot pink + navy, built around Pantone's 2026 Colour of the Year.
+        </p>
+        <p class="mt-3 max-w-2xl text-base leading-relaxed text-olive/75 md:text-lg">
+          A winter collection drops with the first snow. The mountain uniform stays olive green either way.
         </p>
       </div>
     </div>
