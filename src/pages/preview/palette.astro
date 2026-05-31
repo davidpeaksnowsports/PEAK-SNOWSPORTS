@@ -1,0 +1,207 @@
+---
+/**
+ * Throwaway palette preview — Pantone 2026 Cloud Dancer.
+ *
+ * Tonal pastel palette. Cream surface, black type + actionable moments,
+ * five soft Pantone colours for surfaces / decoration / level coding.
+ *
+ * Delete this file once a palette decision is made.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Pantone Cloud Dancer 2026 palette (approximations from screen reference)
+const CLOUD     = '#F1ECE0'; // 11-4201 Cloud Dancer — primary cream surface
+const LEMON     = '#F1E6B2'; // 11-0515 Lemon Icing — pale buttery yellow
+const NIMBUS    = '#C9C9C4'; // 13-4108 Nimbus Cloud — warm cool gray
+const RAINDROPS = '#E8D2CE'; // 11-1400 Raindrops on Roses — dusty pink
+const ICE       = '#C9D6DD'; // 13-4306 Ice Melt — pale icy blue
+
+const BLACK = '#0A0A0A';
+const WHITE = '#FFFFFF';
+
+const palette = [
+  { name: 'Cloud Dancer',         pantone: '11-4201', hex: CLOUD,     role: 'Primary surface (replaces white)' },
+  { name: 'Lemon Icing',          pantone: '11-0515', hex: LEMON,     role: 'Soft warm panels · kickers' },
+  { name: 'Raindrops on Roses',   pantone: '11-1400', hex: RAINDROPS, role: 'Soft pink · cards, pull-quotes' },
+  { name: 'Ice Melt',             pantone: '13-4306', hex: ICE,       role: 'Cool accent · level coding' },
+  { name: 'Nimbus Cloud',         pantone: '13-4108', hex: NIMBUS,    role: 'Neutral · dividers, supporting surfaces' },
+  { name: 'Black',                pantone: '—',       hex: BLACK,     role: 'Type + actionable (CTAs, key contrast)' },
+];
+---
+
+<BaseLayout title="Palette preview — Pantone 2026">
+  <article class="px-6 py-12 md:py-16" style={`background-color:${CLOUD}; color:${BLACK};`}>
+    <div class="mx-auto max-w-screen-2xl">
+      <p class="meta" style="opacity:0.5;">Internal · palette preview · pantone cloud dancer 2026</p>
+      <h1 class="mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-6xl">
+        Tonal pastel. Calm, premium, editorial.
+      </h1>
+      <p class="mt-6 max-w-3xl text-lg leading-relaxed md:text-xl" style="opacity:0.85;">
+        Built around Pantone's <strong>Cloud Dancer</strong> Colour of the Year 2026. Surface goes cream; black handles type and any moment that needs real contrast (CTAs, key buttons). Soft Pantone supporting tones — <span style={`background-color:${LEMON}; padding:0 0.3em;`}>lemon</span>, <span style={`background-color:${RAINDROPS}; padding:0 0.3em;`}>dusty pink</span>, <span style={`background-color:${ICE}; padding:0 0.3em;`}>icy blue</span>, <span style={`background-color:${NIMBUS}; padding:0 0.3em;`}>warm gray</span> — do the decoration and category-coding jobs.
+      </p>
+
+      <!-- Swatches -->
+      <ul class="mt-12 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+        {palette.map((c) => (
+          <li class="rounded-2xl overflow-hidden" style={`background-color:${WHITE}; border:1px solid ${BLACK};`}>
+            <div class="h-24" style={`background-color:${c.hex};`}></div>
+            <div class="p-4">
+              <p class="meta" style="opacity:0.55;">PANTONE {c.pantone}</p>
+              <p class="mt-1 font-display text-base font-bold tracking-tight">{c.name}</p>
+              <p class="meta mt-1" style="opacity:0.65;">{c.hex}</p>
+              <p class="meta mt-2" style="opacity:0.75;">{c.role}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <!-- 1. HERO — cream surface, black type, soft pink shape, black CTA -->
+      <section class="mt-16 overflow-hidden rounded-3xl" style={`border:1px solid ${BLACK};`}>
+        <div class="relative overflow-hidden px-8 py-16 md:px-12 md:py-24" style={`background-color:${CLOUD}; color:${BLACK};`}>
+          <span class="absolute -right-32 -top-32 block h-96 w-96 rounded-full" style={`background-color:${RAINDROPS};`} aria-hidden="true"></span>
+
+          <div class="relative">
+            <p class="inline-block px-2 py-1 text-xs uppercase tracking-widest" style={`font-family:'Courier New',Courier,monospace; background-color:${LEMON}; color:${BLACK};`}>Adult ski camps</p>
+            <h2 class="mt-4 font-display text-4xl font-bold leading-[0.95] tracking-tight md:text-7xl">
+              Five days on snow.<br/>
+              One serious step up.
+            </h2>
+            <p class="mt-6 max-w-md text-base md:text-lg" style="opacity:0.85;">
+              Small-group camps for intermediate and advanced skiers.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href="#" class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline" style={`background-color:${BLACK}; color:${CLOUD};`}>Reserve your place</a>
+              <a href="#" class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline" style={`border:2px solid ${BLACK}; color:${BLACK};`}>See the camps</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. LEVEL CARDS — each level a different soft pastel tone -->
+      <section class="mt-16">
+        <p class="inline-block px-2 py-1 text-xs uppercase tracking-widest" style={`font-family:'Courier New',Courier,monospace; background-color:${LEMON}; color:${BLACK};`}>Pick your level</p>
+        <h2 class="mt-4 font-display text-3xl font-bold tracking-tight md:text-5xl">Where are you on the mountain?</h2>
+        <p class="mt-4 max-w-2xl text-base md:text-lg" style="opacity:0.85;">
+          Soft pastel coding for the seven levels — warmth at the bottom (beginner / improver), cooler as you progress (intermediate / advanced).
+        </p>
+
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <li class="rounded-2xl p-6" style={`background-color:${RAINDROPS}; color:${BLACK}; border:1px solid ${BLACK};`}>
+            <p class="meta" style="opacity:0.65;">Level 01</p>
+            <h3 class="mt-2 font-display text-2xl font-bold tracking-tight">Beginner</h3>
+            <p class="mt-2 text-sm" style="opacity:0.85;">Never skied before.</p>
+          </li>
+          <li class="rounded-2xl p-6" style={`background-color:${LEMON}; color:${BLACK}; border:1px solid ${BLACK};`}>
+            <p class="meta" style="opacity:0.65;">Level 02</p>
+            <h3 class="mt-2 font-display text-2xl font-bold tracking-tight">Improver</h3>
+            <p class="mt-2 text-sm" style="opacity:0.85;">Snowplough on green.</p>
+          </li>
+          <li class="rounded-2xl p-6" style={`background-color:${ICE}; color:${BLACK}; border:1px solid ${BLACK};`}>
+            <p class="meta" style="opacity:0.65;">Level 03</p>
+            <h3 class="mt-2 font-display text-2xl font-bold tracking-tight">Intermediate</h3>
+            <p class="mt-2 text-sm" style="opacity:0.85;">Parallel on blues.</p>
+          </li>
+          <li class="rounded-2xl p-6" style={`background-color:${BLACK}; color:${CLOUD};`}>
+            <p class="meta" style={`color:${CLOUD}; opacity:0.65;`}>Level 04</p>
+            <h3 class="mt-2 font-display text-2xl font-bold tracking-tight">Advanced</h3>
+            <p class="mt-2 text-sm" style="opacity:0.9;">Any colour run.</p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 3. NUMBERS BAND — black surface, cream type, soft pastel chips -->
+      <section class="mt-16 overflow-hidden rounded-3xl p-10 md:p-16" style={`background-color:${BLACK}; color:${CLOUD};`}>
+        <p class="inline-block px-2 py-1 text-xs uppercase tracking-widest" style={`font-family:'Courier New',Courier,monospace; background-color:${LEMON}; color:${BLACK};`}>The numbers</p>
+        <h2 class="mt-4 font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+          Twenty thousand clients.<br/>
+          Twenty-five instructors.<br/>
+          One school.
+        </h2>
+
+        <div class="mt-12 grid gap-4 sm:grid-cols-3">
+          <div class="rounded-2xl p-6" style={`background-color:${CLOUD}; color:${BLACK};`}>
+            <p class="meta" style="opacity:0.6;">Coaching ratio</p>
+            <p class="mt-2 font-display text-3xl font-bold tracking-tight">8:1 max</p>
+          </div>
+          <div class="rounded-2xl p-6" style={`background-color:${RAINDROPS}; color:${BLACK};`}>
+            <p class="meta" style="opacity:0.6;">Length</p>
+            <p class="mt-2 font-display text-3xl font-bold tracking-tight">5 days</p>
+          </div>
+          <div class="rounded-2xl p-6" style={`background-color:${ICE}; color:${BLACK};`}>
+            <p class="meta" style="opacity:0.6;">Qualification</p>
+            <p class="mt-2 font-display text-3xl font-bold tracking-tight">BASI Trainers</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. BODY SECTION — black type on cream, lemon kicker, soft pink highlight -->
+      <section class="mt-16 px-2 md:px-0">
+        <p class="inline-block px-2 py-1 text-xs uppercase tracking-widest" style={`font-family:'Courier New',Courier,monospace; background-color:${LEMON}; color:${BLACK};`}>Why students choose Peak</p>
+        <h2 class="mt-4 font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+          Coached by the people who train other instructors.
+        </h2>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style="opacity:0.85;">
+          You learn faster because we never lose track of you. The same coaches who run our
+          <a href="#" class="px-1" style={`background-color:${RAINDROPS}; color:${BLACK}; text-decoration:none;`}>BASI courses</a>
+          are coaching you. Eight skiers max. Read more about
+          <a href="#" class="ml-1 underline-offset-4 underline" style={`color:${BLACK}; text-decoration-color:${BLACK}; text-decoration-thickness:2px;`}>how we coach</a>.
+        </p>
+
+        <!-- Success/confirmation in lemon -->
+        <p class="mt-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold" style={`background-color:${LEMON}; color:${BLACK}; border:1px solid ${BLACK};`}>
+          <span aria-hidden="true">✓</span>
+          Place confirmed
+        </p>
+
+        <!-- Numbered badges all soft pink -->
+        <ol class="mt-10 space-y-8">
+          {[
+            { n: '01', t: 'Eight building blocks' },
+            { n: '02', t: 'Ski-fit' },
+            { n: '03', t: 'Performance analysis' },
+          ].map((row) => (
+            <li class="flex items-start gap-5">
+              <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full" style={`background-color:${RAINDROPS}; color:${BLACK}; border:1px solid ${BLACK};`}>{row.n}</span>
+              <div>
+                <h4 class="font-display text-xl font-bold tracking-tight md:text-2xl">{row.t}</h4>
+                <p class="mt-2 max-w-md text-base" style="opacity:0.8;">A line of supporting copy that explains the thing.</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <!-- 5. CTA BAND — black surface (vs the pink one we had) -->
+      <section class="mt-16 overflow-hidden rounded-3xl p-10 md:p-16" style={`background-color:${BLACK}; color:${CLOUD};`}>
+        <p class="inline-block px-2 py-1 text-xs uppercase tracking-widest" style={`font-family:'Courier New',Courier,monospace; background-color:${LEMON}; color:${BLACK};`}>Ready to book</p>
+        <h2 class="mt-4 font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl">
+          Pick a camp. Hold your place.
+        </h2>
+        <p class="mt-4 max-w-md text-base md:text-lg" style="opacity:0.9;">
+          Live availability. Refundable deposit. We confirm 6 weeks ahead.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#" class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline" style={`background-color:${CLOUD}; color:${BLACK};`}>Check availability →</a>
+          <a href="#" class="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline" style={`border:2px solid ${CLOUD}; color:${CLOUD};`}>Talk to us first</a>
+        </div>
+      </section>
+
+      <!-- Notes -->
+      <div class="mt-20 max-w-3xl pt-12" style={`border-top:1px solid ${BLACK};`}>
+        <p class="meta" style="opacity:0.55;">How each tone gets used</p>
+        <h2 class="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">Soft tonal, black-anchored</h2>
+        <ul class="mt-6 space-y-3 text-base md:text-lg" style="opacity:0.85;">
+          <li>· <strong>Cloud Dancer</strong> — surface for everything. Calmer than pure white, lower glare, warmer.</li>
+          <li>· <strong>Black</strong> — type AND primary action surface. CTAs are black-on-cream (vs pink-on-white). Mood bands are black with cream type. Where the brand says "now".</li>
+          <li>· <strong>Raindrops on Roses</strong> — dusty pink for soft surfaces (cards, badges, pull-quote backgrounds). Replaces the hot pink's role with the same warm-feminine cue but at gallery volume.</li>
+          <li>· <strong>Lemon Icing</strong> — used for kickers (replacing the pink pill) and confirmation chips. Warm, optimistic, summery.</li>
+          <li>· <strong>Ice Melt</strong> — cool tonal counterpoint. Level coding, info chips, occasional accent.</li>
+          <li>· <strong>Nimbus Cloud</strong> — warm gray for dividers and supporting neutral surfaces.</li>
+        </ul>
+        <p class="mt-6 max-w-2xl text-base md:text-lg" style="opacity:0.7;">
+          The discipline shifts: instead of "one bold accent everywhere," it's "many calm tones, each in their own quiet lane, with black doing all the loud talking." Closer to a Pantone-led editorial / gallery brand than a 2026-Behance-vibrant brand.
+        </p>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
