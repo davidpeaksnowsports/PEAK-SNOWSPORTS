@@ -2,24 +2,359 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
-import BookingWidget from '../../components/booking/BookingWidget.astro';
-import { LOREM, LOREM_LONG } from '../../lib/utils';
+import ArchEmbed from '../../components/booking/ArchEmbed.astro';
+
+// Same 7-level system as /lessons/group — we grade kids on the same ladder.
+const levels = [
+  {
+    name: 'Beginner',
+    headline: 'Total beginner — never skied before.',
+    bullets: [
+      'Learn how to use the equipment',
+      'Balance and slide on a nursery slope',
+      'Make a snowplough shape',
+      'Use magic carpets',
+    ],
+  },
+  {
+    name: 'Improver',
+    headline: 'Can snowplough turn and stop on a green run.',
+    bullets: [
+      'Get up after falling',
+      'Snowplough traverse',
+      'Follow the coach without cutting corners',
+      'Use chairlifts (accompanied) and bubble lifts',
+    ],
+  },
+  {
+    name: 'Basic Intermediate',
+    headline: 'Comfortable snowploughing on greens and easy blues. Ready for parallel.',
+    bullets: [
+      'Balance on the outside ski',
+      'Side-slip (may leave the uphill ski behind)',
+      'Parallel traverse with the lower ski gripping',
+      'Use chairlifts independently',
+    ],
+  },
+  {
+    name: 'Intermediate',
+    headline: 'All blue runs and easy reds. Parallel-turning with confidence.',
+    bullets: [
+      'Direct side-slip, controlling both skis',
+      'Ski a corridor — speed and line under control',
+      'Hold posture on steeper slopes',
+      'Use all lifts',
+    ],
+  },
+  {
+    name: 'Basic Advanced',
+    headline: 'Comfortable on most reds. Wants to handle changing snow and steeper slopes.',
+    bullets: [
+      'Lift inside ski at the fall line',
+      'Diagonal side-slip with fore-and-aft control',
+      'Learning short turns and pole plant',
+      'Navigates the ski area',
+    ],
+  },
+  {
+    name: 'Advanced',
+    headline: 'Happy on any colour. Working on grippy short turns and long carved turns.',
+    bullets: [
+      'Narrow corridor, speed and line under control',
+      'Ski-to-snow contact maintained',
+      'Roll edge-to-edge on a green — two clean tracks',
+      'Funnel from short to medium to long radius',
+      'Laps runs independently and leads around the area',
+    ],
+  },
+  {
+    name: 'Expert',
+    headline: 'All-mountain confidence. Pushing technique on piste, off-piste, moguls, touring.',
+    bullets: [
+      'Linked turns in easy moguls',
+      'Clean carving on reds and blacks',
+      'Flowing turns in off-piste snow',
+      'Avalanche scale and equipment',
+      'Navigates variables; leads in trees or off-piste',
+      'Deals with emergencies; tries green and blue freestyle features',
+    ],
+  },
+];
+
+const tiers = [
+  {
+    age: '5 – 7',
+    duration: '3 hours',
+    max: 'Max 6 skiers',
+    note: 'Three hours of focused, playful coaching — the right length for shorter attention spans.',
+  },
+  {
+    age: '7 – 12',
+    duration: '4 hours',
+    max: 'Max 6 skiers',
+    note: 'A full half-day on snow. Time to explore, learn properly and make friends.',
+  },
+];
+
+const whyJoin = [
+  {
+    label: 'Tiny groups',
+    body: 'Max 4 in mini groups and 6 in everything else. Real attention, no being lost in the crowd.',
+  },
+  {
+    label: 'PEAK levels & medals',
+    body: 'Sustainably-made medals when your child passes a PEAK level. Progression they can show off.',
+  },
+  {
+    label: 'Built around fun',
+    body: 'Activities, exploration and games. Empathy, teamwork and a little healthy competition.',
+  },
+  {
+    label: 'Properly qualified',
+    body: 'Every coach holds the highest qualification in their country and a full French Carte Pro.',
+  },
+  {
+    label: 'Ski-school lift lanes',
+    body: 'Skip the queues. More time on snow, less time standing around.',
+  },
+  {
+    label: 'Long sessions for older kids',
+    body: 'Four-hour groups for 8+ — among the longest around. Real progression, not a token slot.',
+  },
+];
+
+const bring = [
+  'Gloves or mittens — mittens are warmer',
+  'A waterproof for windy or snowy days',
+  'A contact card in their pocket — the lift area gets busy',
+  'A few euros for hot chocolate or juice',
+  'Layers (one pair of socks only — more = colder feet)',
+  'Helmet (compulsory), goggles and sunglasses',
+  'Make sure they know where their lift pass lives',
+  'Boots comfortable and skis at chin height — no poles for beginners',
+  'SPF 30+ suncream and lip balm',
+  'Slow-release energy snacks',
+];
+
+const faqs = [
+  {
+    q: 'What ages do you take?',
+    a: "If they can walk, they can give it a go — though we wouldn't go below 3 in practice. Check kit sizes go small enough at our rental partners before you commit.",
+  },
+  {
+    q: 'How big are the groups?',
+    a: "Four max in mini groups, six max in everything 5+. We hold those numbers strictly — it's the whole point.",
+  },
+  {
+    q: 'Are helmets compulsory?',
+    a: 'Yes, for every child on a course with us. Bring goggles and sunglasses too.',
+  },
+  {
+    q: "What if my child isn't the right level?",
+    a: "We usually run several groups alongside so we can shuffle on day one. If that doesn't work, we offer the equivalent time as private lessons.",
+  },
+  {
+    q: 'Lift pass?',
+    a: 'Not included — buy at the lift office or through your tour operator. Kids 5 and under ski free.',
+  },
+  {
+    q: 'Where do we drop off and pick up?',
+    a: "Meeting points are in our locations section, and we send full details with your booking. You'll have direct contact with the coordinator or coach. Lost? Ring +44 1483 616 522.",
+  },
+  {
+    q: 'Equipment hire?',
+    a: "We work with a few trusted local partners — see the Partners section, and you'll get a discount when you book through us.",
+  },
+  {
+    q: 'Do your coaches speak English?',
+    a: "Yes — they're either from the UK or fluent.",
+  },
+  {
+    q: 'Cancellation?',
+    a: "Give us a month's notice and you're 100% refunded. Inside a month, we issue lesson credit for you or a gifted family member to use later.",
+  },
+  {
+    q: 'What if the weather turns?',
+    a: 'We run lessons in all weather. If the lifts and pistes are officially closed, we send a statement of fact you can take to your insurer.',
+  },
+];
 ---
 
-<BaseLayout title="Family lessons — Peak Snowsports">
+<BaseLayout
+  title="Kids group lessons — Peak Snowsports"
+  description="Small-group kids ski lessons during the school holidays. Mini groups (max 4) and kids groups (max 6) for ages 5–12. Seven-level PEAK system with medals."
+>
   <Hero
-    kicker="Lessons / Family"
-    headline="Everyone on the same hill."
-    sub={LOREM}
-    primaryCta={{ href: '#availability', label: 'Check availability' }}
-    variant="compact"
+    kicker="Lessons · Kids group"
+    headline="Small groups. Big confidence."
+    sub="School-holiday ski lessons for kids 5–12. Six max per group (four in minis). Sustainably-made medals when they pass a PEAK level."
+    primaryCta={{ href: '#book', label: 'Check availability' }}
+    secondaryCta={{ href: '#levels', label: "Find their level" }}
+    variant="full"
+    video="/videos/technique-hands-on-hips.mp4"
+    videoPoster="/videos/technique-hands-on-hips-poster.jpg"
+    imageAlt="A young skier working a posture drill above Morzine."
   />
 
-  <Section kicker="Who it's for" title="Lorem ipsum dolor sit amet.">
-    <p class="max-w-2xl text-lg text-olive/80">{LOREM_LONG}</p>
+  <!-- Welcome / overview -->
+  <Section kicker="Welcome" title="Made for the school holidays.">
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-20">
+      <div class="space-y-10">
+        <p class="text-xl font-medium leading-snug text-olive md:text-2xl">
+          Kids learn through activities, exploration and games. Small groups, patient coaches, the same instructors who train the next generation of teachers. Medals when they earn them.
+        </p>
+
+        <dl class="grid gap-x-6 gap-y-6 border-y border-olive/10 py-6 sm:grid-cols-3">
+          <div>
+            <dt class="meta text-olive/50">Group size</dt>
+            <dd class="mt-1 font-display text-2xl font-bold tracking-tight">6 max</dd>
+          </div>
+          <div>
+            <dt class="meta text-olive/50">Ages</dt>
+            <dd class="mt-1 font-display text-2xl font-bold tracking-tight">5 – 12</dd>
+          </div>
+          <div>
+            <dt class="meta text-olive/50">When</dt>
+            <dd class="mt-1 font-display text-2xl font-bold tracking-tight">School hols</dd>
+          </div>
+        </dl>
+
+        <div class="space-y-5 text-base leading-relaxed text-olive/75 md:text-lg">
+          <p>
+            Strict on group sizes — six max in regular kids groups, four in our mini groups for the youngest. It's the only way to give every child the 1-to-1 moments that actually move the needle. First come, first served.
+          </p>
+          <p>
+            All on the PEAK 7-level system: every child gets graded honestly and earns a medal when they pass a level. Sustainably made, properly earned.
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive">5 – 7 year olds</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">3 hours · max 6</p>
+          <p class="mt-1 text-sm text-olive/70">Right length for shorter attention spans.</p>
+        </div>
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive">7 – 12 year olds</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">4 hours · max 6</p>
+          <p class="mt-1 text-sm text-olive/70">Among the longest kids groups in the area.</p>
+        </div>
+        <div class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive">Mini group</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Max 4</p>
+          <p class="mt-1 text-sm text-olive/70">For the youngest — tiny groups, lots of attention.</p>
+        </div>
+      </div>
+    </div>
   </Section>
 
-  <Section id="availability" kicker="Availability" title="Book a family lesson.">
-    <BookingWidget productId="family-lesson" variant="product" />
+  <!-- Why join -->
+  <Section kicker="Why join" title="What makes our kids groups different.">
+    <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {whyJoin.map((w) => (
+        <li class="rounded-3xl border border-olive/15 bg-snow p-6">
+          <p class="meta text-olive/50">{w.label}</p>
+          <p class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">{w.body}</p>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <!-- Two tiers -->
+  <Section kicker="Two durations" title="Pick the right length.">
+    <div class="grid gap-6 md:grid-cols-2">
+      {tiers.map((t) => (
+        <article class="rounded-3xl border border-olive/15 bg-snow p-8 md:p-10">
+          <p class="meta text-olive/50">Ages {t.age}</p>
+          <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{t.duration}</h3>
+          <p class="meta mt-3 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{t.max}</p>
+          <p class="mt-6 text-base leading-relaxed text-olive/80 md:text-lg">{t.note}</p>
+          <a
+            href="#book"
+            class="meta mt-8 inline-flex items-center gap-2 text-olive transition-colors hover:bg-yellow"
+          >
+            Check availability →
+          </a>
+        </article>
+      ))}
+    </div>
+  </Section>
+
+  <!-- Find their level -->
+  <Section id="levels" kicker="Find their level" title="Where are they on the mountain?">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80 md:text-xl">
+      Read down until something sounds like your child. If they're between two, pick the lower — we move kids up on day one when it's a clear fit.
+    </p>
+    <ol class="mt-16 space-y-16">
+      {levels.map((l, i) => (
+        <li class="border-t border-olive/10 pt-10">
+          <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
+            <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full bg-yellow text-olive-deep">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <p class="meta text-olive/50">Level {i + 1}</p>
+              <h3 class="mt-1 font-display text-2xl font-bold tracking-tight md:text-4xl">{l.name}</h3>
+              <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/80">{l.headline}</p>
+              <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+                {l.bullets.map((b) => (
+                  <li class="flex gap-3 text-base leading-relaxed text-olive/80">
+                    <span aria-hidden="true" class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-yellow" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <!-- What to bring -->
+  <Section kicker="On the day" title="What to bring.">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80 md:text-xl">
+      Pack the night before. A cold or hungry kid won't remember the skiing.
+    </p>
+    <ul class="mt-12 grid gap-3 md:grid-cols-2">
+      {bring.map((item) => (
+        <li class="flex gap-3 border-b border-olive/10 pb-4 text-base leading-relaxed text-olive/80 md:text-lg">
+          <span aria-hidden="true" class="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-yellow" />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <!-- Ready to book -->
+  <Section id="book" kicker="Ready to book" title="Holiday weeks fill fast.">
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/80 md:text-xl">
+      First come, first served on group sizes. Hold your child's place with a small deposit.
+    </p>
+    <div class="mt-12">
+      <ArchEmbed path="/products" height="900px" />
+    </div>
+    <p class="meta mt-6 text-olive/55">
+      Booking delivered by Arch. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">Get in touch</a> and we'll book you in directly.
+    </p>
+  </Section>
+
+  <!-- FAQs -->
+  <Section kicker="FAQs" title="The questions parents actually ask.">
+    <div class="max-w-3xl">
+      <dl class="divide-y divide-olive/10 border-y border-olive/10">
+        {faqs.map((f) => (
+          <div class="py-6">
+            <dt class="font-display text-xl font-bold tracking-tight md:text-2xl">{f.q}</dt>
+            <dd class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">{f.a}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="meta mt-10 text-olive/55">
+        Still not sure?
+        <a href="tel:+441483616522" class="underline-offset-4 hover:bg-yellow hover:underline">+44 1483 616 522</a>
+        or
+        <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">drop us a line</a>.
+      </p>
+    </div>
   </Section>
 </BaseLayout>
