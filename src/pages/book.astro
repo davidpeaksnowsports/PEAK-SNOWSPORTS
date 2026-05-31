@@ -1,25 +1,102 @@
 ---
+/**
+ * Temporary holding page for /book and the Account nav link.
+ *
+ * Both 'Book' and 'Account' in the main nav land here while the Arch
+ * booking widget + account portal are being finalised. All other 'Book a
+ * lesson' / 'Reserve your place' CTAs across the site also point to
+ * /book, so they pick this up automatically.
+ *
+ * When booking is ready, restore the ArchEmbed-based booking page from
+ * git history (the commit before this holding page).
+ */
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
-import ArchEmbed from '../components/booking/ArchEmbed.astro';
 ---
 
 <BaseLayout
-  title="Book a lesson · Peak Snowsports"
-  description="Book private lessons, group lessons, and ski camps across Morzine, Avoriaz, Les Gets and Chatel."
+  title="Coming soon · Peak Snowsports"
+  description="Online booking and account access are coming soon. In the meantime, get in touch on WhatsApp, by phone or email."
 >
-  <Hero
-    kicker="Book"
-    headline="Pick a date. Pick an instructor."
-    sub="Live availability across all Peak products. Pay a small deposit to secure your slot."
-    variant="compact"
-  />
+  <!-- Coming-soon hero (custom, cream surface so it feels held, not down) -->
+  <section class="bg-cream text-olive">
+    <div class="mx-auto max-w-screen-2xl px-6 py-24 md:py-40">
+      <p><span class="meta-pill">Coming soon</span></p>
+      <h1 class="mt-6 max-w-4xl text-5xl font-semibold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
+        Booking, on its way.
+      </h1>
+      <p class="mt-8 max-w-2xl text-lg leading-relaxed text-olive/85 md:text-xl">
+        We're finalising the new online booking system. In the meantime, get in touch any of the ways below and we'll book you in directly, the way we've always done it.
+      </p>
+    </div>
+  </section>
 
-  <Section>
-    <ArchEmbed path="/products" height="900px" />
-    <p class="meta mt-6 text-olive/55">
-      Booking delivered by Arch. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">Get in touch</a> and we'll book you in directly.
+  <!-- Direct lines (mirrors the contact page pattern) -->
+  <Section kicker="In the meantime" title="Talk to us.">
+    <ul class="max-w-3xl border-y border-olive/10">
+      <li>
+        <a
+          href="https://wa.me/?text=Hi%20Peak"
+          class="group -mx-3 flex items-baseline gap-4 border-b border-olive/10 px-3 py-5 no-underline transition-colors hover:bg-pink hover:text-snow"
+        >
+          <span class="meta text-olive/60 group-hover:text-snow">WhatsApp</span>
+          <span class="flex-1 text-xl font-semibold">Message us</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="tel:+441483616522"
+          class="group -mx-3 flex items-baseline gap-4 border-b border-olive/10 px-3 py-5 no-underline transition-colors hover:bg-pink hover:text-snow"
+        >
+          <span class="meta text-olive/60 group-hover:text-snow">Phone</span>
+          <span class="flex-1 text-xl font-semibold">+44 1483 616 522</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="mailto:hello@peaksnowsports.com"
+          class="group -mx-3 flex items-baseline gap-4 px-3 py-5 no-underline transition-colors hover:bg-pink hover:text-snow"
+        >
+          <span class="meta text-olive/60 group-hover:text-snow">Email</span>
+          <span class="flex-1 text-xl font-semibold">hello@peaksnowsports.com</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      </li>
+    </ul>
+
+    <p class="meta mt-10 text-olive/65">
+      Or
+      <a href="/contact" class="-mx-1 rounded px-1 underline-offset-4 transition-colors hover:bg-pink hover:text-snow hover:underline">drop us a line via the contact form</a>.
+      Replies usually within 30 minutes during office hours.
     </p>
+  </Section>
+
+  <!-- Closing nav back to the site -->
+  <Section>
+    <div class="border-t border-olive/15 pt-12">
+      <p class="meta text-olive/65">While you're here</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a
+          href="/lessons"
+          class="inline-flex items-center rounded-full bg-pink px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-olive"
+        >
+          Browse lessons →
+        </a>
+        <a
+          href="/ski-camps"
+          class="inline-flex items-center rounded-full border border-olive bg-snow px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-olive no-underline transition hover:bg-olive hover:text-snow"
+        >
+          Adult ski camps
+        </a>
+        <a
+          href="/gap-course"
+          class="inline-flex items-center rounded-full border border-olive bg-snow px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-olive no-underline transition hover:bg-olive hover:text-snow"
+        >
+          GAP Course
+        </a>
+      </div>
+    </div>
   </Section>
 </BaseLayout>
