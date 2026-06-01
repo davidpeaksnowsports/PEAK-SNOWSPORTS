@@ -6,7 +6,7 @@ languages: ["EN"]
 specialities: []
 qualifications: []
 photo: "/images/instructors/rachael.jpg"
-order: 12
+order: 5
 ---
 
 _Bio coming soon._

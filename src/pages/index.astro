@@ -6,7 +6,7 @@ import Section from '../components/ui/Section.astro';
 import Card from '../components/ui/Card.astro';
 import InstructorCard from '../components/instructors/InstructorCard.astro';
 import PostCard from '../components/journal/PostCard.astro';
-import { LOREM, formatDate, readingTime } from '../lib/utils';
+import { formatDate, readingTime } from '../lib/utils';
 import heroImage from '../assets/images/hero-home.jpg';
 
 const allInstructors = await getCollection('instructors', ({ data }) => !data.draft);
@@ -20,9 +20,24 @@ const latestPosts = allPosts
   .slice(0, 3);
 
 const resorts = [
-  { name: 'Morzine', href: '/resorts/morzine', kicker: 'Resort 01' },
-  { name: 'Chatel', href: '/resorts/chatel', kicker: 'Resort 02' },
-  { name: 'Les Gets', href: '/resorts/les-gets', kicker: 'Resort 03' },
+  {
+    name: 'Morzine',
+    href: '/resorts/morzine',
+    kicker: 'Resort 01',
+    body: 'The home of Peak. A proper alpine town with bars, restaurants and direct access to Avoriaz and the 600+ km Portes du Soleil. Family-friendly, with terrain for every level.',
+  },
+  {
+    name: 'Châtel',
+    href: '/resorts/chatel',
+    kicker: 'Resort 02',
+    body: 'The quieter end of the Portes du Soleil. Linga snow gets it early, Super Châtel stays mellow for learners. A working alpine village with the kind of pace you actually want on holiday.',
+  },
+  {
+    name: 'Les Gets',
+    href: '/resorts/les-gets',
+    kicker: 'Resort 03',
+    body: 'Gentle, pretty, family-leaning. Tree-lined runs, a long-standing race scene, and easy access to the wider Portes du Soleil. The friendly door into the linked area.',
+  },
 ];
 
 const pillars = [
@@ -49,7 +64,7 @@ const pillars = [
   <Hero
     kicker="Moments on snow"
     headline="Learn to ski. Properly."
-    sub="Experiences, not transactions. Across Morzine, Chatel and Les Gets."
+    sub="Experiences, not transactions. Across Morzine, Châtel and Les Gets."
     primaryCta={{ href: '/book', label: 'Book a lesson' }}
     secondaryCta={{ href: '/gap-course', label: 'Explore the GAP Course' }}
     tertiaryCta={{ href: '/ski-camps', label: 'Adult ski camps' }}
@@ -64,7 +79,7 @@ const pillars = [
     <div class="grid gap-6 md:grid-cols-3">
       {resorts.map((resort) => (
         <Card href={resort.href} kicker={resort.kicker} title={resort.name}>
-          {LOREM}
+          {resort.body}
         </Card>
       ))}
     </div>
@@ -80,7 +95,7 @@ const pillars = [
     </div>
   </Section>
 
-  <Section kicker="The team" title="25+ instructors. No anonymous ESF badges.">
+  <Section kicker="The team" title="17+ instructors. No anonymous badges.">
     <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
       {instructorStrip.map((i) => (
         <InstructorCard

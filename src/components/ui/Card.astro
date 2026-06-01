@@ -12,11 +12,11 @@ const Tag = href ? 'a' : 'div';
 
 <Tag
   href={href}
-  class={`group block rounded-3xl border border-salt/10 bg-brown p-8 text-salt no-underline transition hover:border-yellow ${className}`}
+  class={`group block rounded-3xl border border-salt/10 bg-brown p-8 text-salt no-underline transition hover:border-pink hover:no-underline ${className}`}
 >
   {kicker && <p class="meta text-salt">{kicker}</p>}
   <h3 class="mt-4 text-2xl font-semibold leading-tight">{title}</h3>
-  <div class="mt-4 text-sm text-salt/70">
+  <div class="mt-4 text-sm text-salt/70 [text-decoration:none]">
     <slot />
   </div>
 </Tag>

@@ -6,7 +6,7 @@ languages: ["EN"]
 specialities: []
 qualifications: []
 photo: "/images/instructors/yann.jpg"
-order: 13
+order: 6
 ---
 
 _Bio coming soon._

@@ -6,7 +6,7 @@ languages: ["EN", "FR"]
 specialities: ["Off-piste", "Advanced", "Race"]
 qualifications: []
 photo: "/images/instructors/placeholder.jpg"
-order: 6
+order: 13
 ---
 
 _Story coming soon._
