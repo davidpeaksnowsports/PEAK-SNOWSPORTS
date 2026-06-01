@@ -6,5 +6,25 @@
   "installCommand": "npm install",
   "devCommand": "npm run dev",
   "trailingSlash": false,
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/adult-group-lessons",       "destination": "/lessons/group",         "permanent": true },
+    { "source": "/kids-group-lessons",        "destination": "/lessons/family",        "permanent": true },
+    { "source": "/race-training-chatel",      "destination": "/lessons/race-coaching", "permanent": true },
+    { "source": "/private-lessons",           "destination": "/lessons/private",       "permanent": true },
+    { "source": "/off-piste",                 "destination": "/lessons/off-piste",     "permanent": true },
+    { "source": "/the-team",                  "destination": "/instructors",           "permanent": true },
+    { "source": "/our-team",                  "destination": "/instructors",           "permanent": true },
+    { "source": "/book-a-lesson",             "destination": "/book",                  "permanent": true },
+    { "source": "/book-a-ski-lesson",         "destination": "/book",                  "permanent": true },
+    { "source": "/gap-course-morzine",        "destination": "/gap-course",            "permanent": true },
+    { "source": "/gap",                       "destination": "/gap-course",            "permanent": true },
+    { "source": "/terms-and-conditions",      "destination": "/terms",                 "permanent": true },
+    { "source": "/privacy-policy",            "destination": "/privacy",               "permanent": true },
+    { "source": "/lessons-morzine",           "destination": "/lessons",               "permanent": true },
+    { "source": "/ski-lessons-morzine",       "destination": "/lessons",               "permanent": true },
+    { "source": "/ski-lessons",               "destination": "/lessons",               "permanent": true },
+    { "source": "/accommodation-morzine",     "destination": "/accommodation",         "permanent": true },
+    { "source": "/contact-us",               "destination": "/contact",               "permanent": true }
+  ]
 }
