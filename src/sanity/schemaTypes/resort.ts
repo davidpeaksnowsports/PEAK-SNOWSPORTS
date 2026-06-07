@@ -1,0 +1,52 @@
+import { defineType, defineField } from 'sanity';
+import { EarthGlobeIcon } from '@sanity/icons';
+
+export const resort = defineType({
+  name: 'resort',
+  title: 'Resort',
+  type: 'document',
+  icon: EarthGlobeIcon,
+  fields: [
+    defineField({ name: 'name', type: 'string', validation: (r) => r.required() }),
+    defineField({
+      name: 'slug',
+      type: 'slug',
+      options: { source: 'name', maxLength: 96 },
+      validation: (r) => r.required(),
+    }),
+    defineField({ name: 'hero', type: 'image', options: { hotspot: true },
+      fields: [defineField({ name: 'alt', type: 'string', title: 'Alt text' })],
+    }),
+    defineField({ name: 'description', type: 'array', of: [{ type: 'block' }] }),
+    defineField({
+      name: 'meetingPoints',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'meetingPoint',
+          fields: [
+            { name: 'name', type: 'string' },
+            { name: 'lat', type: 'number' },
+            { name: 'lng', type: 'number' },
+            { name: 'notes', type: 'text', rows: 2 },
+          ],
+        },
+      ],
+    }),
+    defineField({ name: 'goodFor', type: 'array', of: [{ type: 'string' }] }),
+    defineField({
+      name: 'relatedLessons',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'lesson' }] }],
+    }),
+    defineField({
+      name: 'relatedInstructors',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'instructor' }] }],
+    }),
+    defineField({ name: 'seoTitle', type: 'string' }),
+    defineField({ name: 'seoDescription', type: 'text', rows: 2 }),
+  ],
+  preview: { select: { title: 'name', media: 'hero' } },
+});

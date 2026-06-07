@@ -3,6 +3,7 @@
   "include": ["src", ".astro/types.d.ts"],
   "exclude": ["dist", "sanity"],
   "compilerOptions": {
+    "types": ["@sanity/astro/module"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
