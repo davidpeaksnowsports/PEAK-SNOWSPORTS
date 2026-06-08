@@ -280,7 +280,48 @@ const faqs = [
   </Section>
 
   <!-- Where you stay -->
-  <Section kicker="Where you stay" title="The Fat Fox Lodge, Montriond.">
+  <Section kicker="Where you stay · Morzine-Avoriaz camps" title="The Fat Fox Lodge, Montriond.">
+    <p class="meta -mt-6 mb-10 text-olive/55">
+      Accommodation for our Morzine-Avoriaz camps. Other camp locations · accommodation TBC.
+    </p>
+
+    <!-- Lodge logo -->
+    <div class="mb-8 flex justify-center">
+      <img
+        src="/images/fat-fox-lodge/logo.webp"
+        alt="The Fat Fox Lodge"
+        class="h-28 w-auto rounded-2xl md:h-36"
+      />
+    </div>
+
+    <!-- Lodge gallery -->
+    <div class="mb-12 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+      <figure class="col-span-2 overflow-hidden rounded-3xl bg-brown md:col-span-1">
+        <img
+          src="/images/fat-fox-lodge/bedroom.webp"
+          alt="A wood-panelled bedroom with fireplace and mountain view at The Fat Fox Lodge"
+          loading="lazy"
+          class="h-full w-full object-cover aspect-[3/2]"
+        />
+      </figure>
+      <figure class="overflow-hidden rounded-3xl bg-brown">
+        <img
+          src="/images/fat-fox-lodge/living.webp"
+          alt="The Haberdashery living room at The Fat Fox Lodge"
+          loading="lazy"
+          class="h-full w-full object-cover aspect-[3/2]"
+        />
+      </figure>
+      <figure class="overflow-hidden rounded-3xl bg-brown">
+        <img
+          src="/images/fat-fox-lodge/dining.webp"
+          alt="Dinner laid out on the shared dining table at The Fat Fox Lodge"
+          loading="lazy"
+          class="h-full w-full object-cover aspect-[3/2]"
+        />
+      </figure>
+    </div>
+
     <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-20">
       <div class="space-y-5 text-base leading-relaxed text-olive/80 md:text-lg">
         <p>
@@ -325,7 +366,7 @@ const faqs = [
       {content.map((c, i) => (
         <li class="border-t border-olive/10 pt-10">
           <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
-            <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full bg-yellow text-olive-deep">{String(i + 1).padStart(2, '0')}</span>
+            <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-pink font-display text-xl font-bold tracking-tight text-snow">{String(i + 1).padStart(2, '0')}</span>
             <div>
               <h3 class="font-display text-2xl font-bold tracking-tight md:text-4xl">{c.title}</h3>
               <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/80">{c.body}</p>
