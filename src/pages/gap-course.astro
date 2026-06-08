@@ -291,7 +291,7 @@ const reasons = [
       {reasons.map((r, i) => (
         <li class="border-t border-olive/15 pt-10">
           <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
-            <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full bg-pink text-snow">{String(i + 1).padStart(2, '0')}</span>
+            <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-pink font-display text-xl font-bold tracking-tight text-snow">{String(i + 1).padStart(2, '0')}</span>
             <div>
               <h3 class="font-display text-2xl font-bold tracking-tight md:text-4xl">{r.title}</h3>
               <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive/85">{r.body}</p>
