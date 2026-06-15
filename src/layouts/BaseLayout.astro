@@ -6,12 +6,91 @@ import Footer from '../components/nav/Footer.astro';
 interface Props {
   title?: string;
   description?: string;
+  /** Path or absolute URL for the page's Open Graph / Twitter image. Defaults to /images/og/default.jpg */
+  image?: string;
+  /** og:type — "website" for most pages, "article" for journal posts, "profile" for instructors */
+  type?: 'website' | 'article' | 'profile';
+  /** Override the canonical URL. Defaults to Astro.url against site. */
+  canonical?: string;
+  /** If true, emits <meta name="robots" content="noindex, follow"> — used on holding pages like /book */
+  noindex?: boolean;
+  /** Optional JSON-LD objects to inject in <head> (in addition to the sitewide Organization + WebSite blocks). */
+  jsonLd?: object | object[];
 }
 
 const {
-  title = 'Peak Snowsports · Ski school in Morzine, Châtel & Les Gets',
-  description = 'Premium ski instruction across the Portes du Soleil. Private lessons, kids\' groups, ski camps and the BASI GAP Course. Real coaches. Real names.',
+  title = 'Peak Snowsports · Ski school in Morzine, Avoriaz, Châtel & Les Gets',
+  description = "Premium ski lessons across the Portes du Soleil. Private lessons, kids' groups, adult ski camps and the BASI GAP Course. Real coaches. Real names.",
+  image = '/images/og/default.jpg',
+  type = 'website',
+  canonical,
+  noindex = false,
+  jsonLd,
 } = Astro.props;
+
+const SITE_URL = 'https://peaksnowsports.com';
+const SITE_NAME = 'Peak Snowsports';
+
+const canonicalUrl = canonical
+  ? new URL(canonical, SITE_URL).toString()
+  : new URL(Astro.url.pathname, SITE_URL).toString();
+
+const ogImage = image.startsWith('http') ? image : new URL(image, SITE_URL).toString();
+
+// Sitewide JSON-LD: Organization + WebSite (with SearchAction).
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['Organization', 'SportsActivityLocation', 'LocalBusiness'],
+  '@id': `${SITE_URL}/#organization`,
+  name: SITE_NAME,
+  alternateName: 'Peak Snowsports Ski School',
+  url: SITE_URL,
+  logo: `${SITE_URL}/images/logos/peak-menu-logo.png`,
+  description:
+    "Premium British-run ski school operating across Morzine, Avoriaz, Châtel and Les Gets in the Portes du Soleil. 20,000+ clients, 25+ instructors.",
+  email: 'hello@peaksnowsports.com',
+  telephone: '+44-1483-616522',
+  areaServed: [
+    { '@type': 'Place', name: 'Morzine, France' },
+    { '@type': 'Place', name: 'Avoriaz, France' },
+    { '@type': 'Place', name: 'Châtel, France' },
+    { '@type': 'Place', name: 'Les Gets, France' },
+    { '@type': 'Place', name: 'Portes du Soleil' },
+  ],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Morzine',
+    addressRegion: 'Haute-Savoie',
+    addressCountry: 'FR',
+  },
+  sameAs: [
+    'https://instagram.com/peaksnowsports',
+    'https://www.youtube.com/@peaksnowsports9355',
+  ],
+  award: ["Tripadvisor Travellers' Choice 2026"],
+  memberOf: {
+    '@type': 'Organization',
+    name: 'British Association of Snowsport Instructors',
+    alternateName: 'BASI',
+    url: 'https://www.basi.org.uk/',
+  },
+  knowsLanguage: ['en', 'fr'],
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${SITE_URL}/#website`,
+  url: SITE_URL,
+  name: SITE_NAME,
+  description:
+    "Peak Snowsports — premium British-run ski school in Morzine, Avoriaz, Châtel and Les Gets. Private lessons, kids' groups, adult ski camps and the BASI GAP Course.",
+  publisher: { '@id': `${SITE_URL}/#organization` },
+  inLanguage: ['en', 'fr'],
+};
+
+const pageJsonLdArray = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+const allJsonLd = [orgJsonLd, websiteJsonLd, ...pageJsonLdArray];
 ---
 
 <!doctype html>
@@ -20,20 +99,48 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description} />
-    <title>{title}</title>
 
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={title} />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Icons -->
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..900&family=Source+Sans+Pro:wght@400;600&display=swap"
       rel="stylesheet"
     />
+
+    <!-- JSON-LD structured data -->
+    {allJsonLd.map((data) => (
+      <script type="application/ld+json" set:html={JSON.stringify(data)} />
+    ))}
   </head>
   <body class="bg-snow font-sans text-olive">
     <Nav />

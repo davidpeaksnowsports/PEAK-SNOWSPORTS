@@ -3,28 +3,99 @@ import BaseLayout from './BaseLayout.astro';
 
 interface Props {
   title: string;
+  /** Optional SEO-tuned title; falls back to display title */
+  seoTitle?: string;
   description?: string;
   category?: string;
   author?: string;
+  /** ISO date string for structured data */
+  publishedAt?: Date | string;
+  /** Human-readable date for display */
   date?: string;
   hero?: string;       // path under /public, e.g. "/images/journal/foo.jpg"
   heroAlt?: string;
   readingMinutes?: number;
+  /** Permalink slug used in canonical + breadcrumbs */
+  slug?: string;
 }
 
 const {
   title,
+  seoTitle,
   description,
   category,
   author,
+  publishedAt,
   date,
   hero,
   heroAlt = '',
   readingMinutes,
+  slug,
 } = Astro.props;
+
+const SITE = 'https://peaksnowsports.com';
+const pageTitle = seoTitle ?? `${title} · Peak Journal`;
+const pageDescription = description ?? `${title} — written by ${author ?? 'the Peak Snowsports team'} for the Peak Journal.`;
+const heroUrl = hero ? new URL(hero, SITE).toString() : `${SITE}/images/og/journal.jpg`;
+const canonical = slug ? `${SITE}/journal/${slug}` : undefined;
+
+const publishedIso = publishedAt
+  ? (publishedAt instanceof Date ? publishedAt.toISOString() : new Date(publishedAt).toISOString())
+  : undefined;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description: pageDescription,
+    image: [heroUrl],
+    author: author
+      ? {
+          '@type': 'Person',
+          name: author,
+          // If the author matches an instructor slug we can't resolve it here; leave URL undefined.
+        }
+      : { '@id': `${SITE}/#organization` },
+    publisher: { '@id': `${SITE}/#organization` },
+    datePublished: publishedIso,
+    dateModified: publishedIso,
+    mainEntityOfPage: canonical,
+    articleSection: category,
+  },
+  ...(slug
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Journal', item: `${SITE}/journal` },
+            ...(category
+              ? [
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: category,
+                    item: `${SITE}/journal/category/${category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+                  },
+                ]
+              : []),
+            { '@type': 'ListItem', position: category ? 3 : 2, name: title, item: canonical },
+          ],
+        },
+      ]
+    : []),
+];
 ---
 
-<BaseLayout title={`${title}, Peak Journal`} description={description}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  image={hero ?? '/images/og/journal.jpg'}
+  type="article"
+  canonical={canonical}
+  jsonLd={jsonLd}
+>
   <article class="px-6 pb-24 pt-16 md:pb-32 md:pt-24">
     <header class="mx-auto max-w-3xl">
       {category && (

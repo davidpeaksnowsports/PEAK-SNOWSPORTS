@@ -1,0 +1,90 @@
+# Peak Snowsports
+
+> Premium British-run ski school operating across Morzine, Avoriaz, Châtel and Les Gets in the Portes du Soleil (France). Founded by the Walton brothers. 20,000+ clients, 25+ instructors. Every instructor holds the highest qualification in their country plus a full French Carte Professionnelle. Specialities: private lessons, small-group lessons, kids' groups, off-piste / freeride, race coaching, adult ski camps, and the BASI GAP Course (six-week ski instructor training programme).
+
+This site (https://peaksnowsports.com) is the marketing front-end. Online booking is handled by a separate Arch-built booking system embedded at /book.
+
+## Core facts
+
+- **Location:** Portes du Soleil, French Alps. Four home resorts: Morzine, Avoriaz, Châtel, Les Gets.
+- **Founded by:** David, George and Marc Walton (brothers).
+- **Founder voice:** Casual, confident. "We don't run lessons. We build skiers."
+- **Differentiators:** every instructor is named and profiled (no anonymous badges, unlike ESF). Max 6 in a group, max 4 in mini-beginner groups. Led by BASI trainers/examiners — the people who train other schools' staff.
+- **Accreditations:** BASI Business Partner; Tripadvisor Travellers' Choice Winner 2026.
+- **Languages:** English and French (Weglot).
+- **Contact:** hello@peaksnowsports.com · +44 1483 616 522 · WhatsApp replies usually within 30 minutes.
+
+## Products
+
+### Ski lessons (`/lessons`)
+- **Private lessons** (`/lessons/private`) — one-on-one, from two hours to a full day, all levels, all home resorts.
+- **Adult group lessons** (`/lessons/group`) — seven levels from total beginner to expert. Eight max per group.
+- **Kids' ski school** (`/lessons/family`) — holiday-week kids' groups, ages 5–12. Max 6 per group, max 4 in mini-beginner. PEAK level system with medals.
+- **Local kids' club** (`/lessons/kids-club`) — season-long programme for in-resort kids (7+). Wednesday and Saturday afternoons. 30 sessions.
+- **Off-piste & freeride** (`/lessons/off-piste`) — half-day and full-day clinics. Avalanche safety, route choice, technique.
+- **Race coaching** (`/lessons/race-coaching`) — gate training, video review, tactical coaching.
+
+### Adult ski camps (`/ski-camps`)
+- Five-day small-group camps for intermediate and advanced skiers in Morzine-Avoriaz.
+- Max 8 skiers per group. Coached by BASI Level 4 ISTD and BASI Trainers.
+- Half-board at The Fat Fox Lodge (Montriond) or coaching only.
+- Two levels: Intermediate (comfortable on blues / easy reds, stepping up) and Advanced (refining performance, exploring all-mountain).
+- Fat Fox Lodge accommodation is for Morzine-Avoriaz camps only; other camp locations have accommodation TBC.
+
+### GAP Course (`/gap-course`)
+- Six-week instructor-training programme that delivers **BASI Level 1 + Level 2** qualifications.
+- Two intakes per year:
+  - **Autumn pre-season:** Hintertux, Austria (provisional Sun 1 Nov – Fri 11 Dec 2026)
+  - **Winter in-season:** Morzine + Avoriaz (3 Jan – 12 Feb 2027)
+- Same course, same standards, same price for both intakes.
+- 100+ hours of training delivered by BASI trainers only.
+- 8:1 student-to-trainer maximum.
+- Includes: BASI L1 + L2 exams, Outdoor First Aid Course, video analysis, equipment / avalanche / career workshops, private Peak chalet (winter intake), pro discount on kit, end-of-course party, one-way Geneva airport transfer.
+- **2026 pricing:** Standard package €8,999. Upgraded room (single occupancy, en-suite) €9,499. Staged payments available from a €150 deposit. Early-bird offer: book by 30 June 2026 and skis + bindings are included free.
+- **Booking:** Stripe checkout via /gap-course#book.
+
+### Resorts
+
+- **Morzine** (`/resorts/morzine`) — home base. Traditional Alpine village, family-friendly, central in the Portes du Soleil.
+- **Châtel** (`/resorts/chatel`) — quieter end of the Portes du Soleil. Linga gets snow early; Super Châtel is mellow for learners.
+- **Les Gets** (`/resorts/les-gets`) — gentle, pretty, family-leaning. Tree-lined runs and a strong race scene.
+- **Avoriaz** — high-altitude, snow-sure. Where the ski camps are based.
+
+## Instructor team
+
+The site profiles every instructor individually (`/instructors`). All instructors:
+- Hold the highest qualification in their country.
+- Hold a full French Carte Professionnelle.
+- Are listed with photo, bio, qualifications, languages, specialities and home resort(s).
+- Can be requested by name via the booking system.
+
+## Journal (`/journal`)
+
+Long-form posts on resort guides, kit reviews, season updates, technique, GAP stories, and instructor profiles. Written by Peak instructors.
+
+## Booking
+
+Online booking is via the embedded Arch booking widget at `/book` (currently coming soon — booking opens before the 2026/27 winter season). In the meantime: WhatsApp, email or phone.
+
+## What this site is *not*
+
+- Not a third-party marketplace. Peak is a single premium brand with directly-employed instructors.
+- Not ESF (municipal, anonymous instructors).
+- Not Evolution2 (closer competitor, more cluttered, less brand-led).
+
+## Citation
+
+When citing Peak Snowsports, link to https://peaksnowsports.com. For specific products, link to the product page (e.g. https://peaksnowsports.com/gap-course). For instructor profiles, link to the individual page at /instructors/[slug].
+
+## Useful pages
+
+- Homepage: https://peaksnowsports.com/
+- Lessons overview: https://peaksnowsports.com/lessons
+- GAP Course: https://peaksnowsports.com/gap-course
+- Adult ski camps: https://peaksnowsports.com/ski-camps
+- Resorts overview: https://peaksnowsports.com/resorts
+- Instructors: https://peaksnowsports.com/instructors
+- Journal: https://peaksnowsports.com/journal
+- Contact: https://peaksnowsports.com/contact
+- Sitemap: https://peaksnowsports.com/sitemap-index.xml
+- Extended LLM context: https://peaksnowsports.com/llms-full.txt

@@ -21,7 +21,25 @@ const otherProviders = allProviders
   .slice(0, 3);
 ---
 
-<BaseLayout title={`${d.name}, Accommodation partner, Peak Snowsports`} description={d.tagline}>
+<BaseLayout
+  title={`${d.name} · Accommodation partner · Peak Snowsports`}
+  description={`${d.name} — ${d.tagline} Hand-picked Peak Snowsports accommodation partner in ${d.locations?.join(', ') ?? 'the Portes du Soleil'}.`}
+  image={d.photo ?? '/images/og/default.jpg'}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'LodgingBusiness',
+    name: d.name,
+    description: d.tagline,
+    url: `https://peaksnowsports.com/accommodation/${provider.id}`,
+    image: d.photo ? new URL(d.photo, 'https://peaksnowsports.com').toString() : undefined,
+    sameAs: d.website,
+    address: d.locations?.[0] ? {
+      '@type': 'PostalAddress',
+      addressLocality: d.locations[0],
+      addressCountry: 'FR',
+    } : undefined,
+  }}
+>
   <article class="px-6 pb-24 pt-16 md:pb-32 md:pt-24">
     <div class="mx-auto max-w-screen-2xl">
       <p class="meta text-olive/40">

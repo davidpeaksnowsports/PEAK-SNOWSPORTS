@@ -28,9 +28,40 @@ const otherResorts = allResorts
   .filter((r) => r.id !== resort.id && r.data.type === d.type)
   .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
   .slice(0, 3);
+
+const seoTitle = `Ski lessons in ${d.name}${d.parentArea ? `, ${d.parentArea}` : ''} · Peak Snowsports`;
+const seoDescription = `${d.knownFor} Ski lessons, kids' groups, off-piste and private instruction with Peak Snowsports.`;
+const heroImageUrl = d.hero
+  ? new URL(d.hero, 'https://peaksnowsports.com').toString()
+  : 'https://peaksnowsports.com/images/og/resorts.jpg';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': d.type === 'home' ? 'SkiResort' : 'TouristDestination',
+    name: d.name,
+    description: d.knownFor,
+    image: heroImageUrl,
+    url: `https://peaksnowsports.com/resorts/${resort.id}`,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: d.name,
+      addressCountry: d.country === 'Austria' ? 'AT' : d.country === 'Switzerland' ? 'CH' : 'FR',
+    },
+    containedInPlace: d.parentArea ? { '@type': 'Place', name: d.parentArea } : undefined,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Resorts', item: 'https://peaksnowsports.com/resorts' },
+      { '@type': 'ListItem', position: 2, name: d.name, item: `https://peaksnowsports.com/resorts/${resort.id}` },
+    ],
+  },
+];
 ---
 
-<BaseLayout title={`${d.name}, Peak Snowsports`} description={d.knownFor}>
+<BaseLayout title={seoTitle} description={seoDescription} image={d.hero ?? '/images/og/resorts.jpg'} jsonLd={jsonLd}>
   <!-- Hero -->
   <section class="relative flex min-h-[60vh] items-end overflow-hidden bg-brown text-salt">
     {d.hero && (

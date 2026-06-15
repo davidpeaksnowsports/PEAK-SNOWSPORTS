@@ -58,9 +58,61 @@ const pillars = [
   },
 ];
 
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SkiResort',
+    name: 'Peak Snowsports',
+    description:
+      'Premium British-run ski school operating across Morzine, Avoriaz, Châtel and Les Gets in the Portes du Soleil.',
+    url: 'https://peaksnowsports.com/',
+    image: 'https://peaksnowsports.com/images/og/default.jpg',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Morzine',
+      addressRegion: 'Haute-Savoie',
+      addressCountry: 'FR',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Where does Peak Snowsports run ski lessons?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Peak Snowsports runs ski lessons across Morzine, Avoriaz, Châtel and Les Gets in the Portes du Soleil, France — one of the largest connected ski areas in the world.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What makes Peak different from ESF or other ski schools?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Every instructor is named, photographed and individually bookable — no anonymous badges. Group sizes are small (max 6, max 4 in mini-beginners). The team is led by BASI trainers and examiners — the people who train other schools’ staff.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How do I book a ski lesson with Peak?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Book online through the embedded booking system at /book. You can also request a specific instructor by name from their profile page. For complex group requests, WhatsApp or email hello@peaksnowsports.com.',
+        },
+      },
+    ],
+  },
+];
 ---
 
-<BaseLayout>
+<BaseLayout
+  title="Peak Snowsports · Ski lessons in Morzine, Avoriaz, Châtel & Les Gets"
+  description="Premium ski school in the Portes du Soleil. Private lessons, kids' groups, adult ski camps and the BASI GAP Course. 25+ named instructors, max 6 per group."
+  image="/images/og/default.jpg"
+  jsonLd={jsonLd}
+>
   <Hero
     kicker="Moments on snow"
     headline="Learn to ski. Properly."

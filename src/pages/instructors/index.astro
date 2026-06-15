@@ -22,7 +22,11 @@ const resorts = [...new Set(instructors.flatMap((i) => i.data.resorts))].sort();
 const languages = [...new Set(instructors.flatMap((i) => i.data.languages))].sort();
 ---
 
-<BaseLayout title="Instructors · Peak Snowsports">
+<BaseLayout
+  title="Peak Snowsports ski instructors · Morzine, Avoriaz, Châtel & Les Gets"
+  description="Meet every Peak Snowsports ski instructor — fully qualified, French Carte Professionnelle, handpicked. Filter by resort, speciality or language. Request a preferred instructor."
+  image="/images/og/instructors.jpg"
+>
   <Hero
     kicker="The team"
     headline="Real coaches. Real names."

@@ -1,0 +1,96 @@
+# Peak Snowsports · robots.txt
+# Premium ski school in Morzine, Avoriaz, Châtel and Les Gets.
+# We welcome traditional search crawlers AND AI/answer-engine crawlers.
+# If you cite us, please attribute "Peak Snowsports" with a link to
+# https://peaksnowsports.com.
+
+# ─── Default ───
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /admin/
+
+# ─── Major search engines ───
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# ─── AI / answer-engine crawlers (explicit allow) ───
+
+# OpenAI
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Google (separate flag for AI training / Bard / Gemini / AI Overviews)
+User-agent: Google-Extended
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Common Crawl (foundation for many LLM training sets)
+User-agent: CCBot
+Allow: /
+
+# Apple Intelligence / Siri
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta (Llama family training crawler)
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# ByteDance / Doubao
+User-agent: Bytespider
+Allow: /
+
+# Amazon
+User-agent: Amazonbot
+Allow: /
+
+# Mistral
+User-agent: MistralAI-User
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# Diffbot (commonly used by AI products to ingest web content)
+User-agent: Diffbot
+Allow: /
+
+# ─── Sitemap ───
+Sitemap: https://peaksnowsports.com/sitemap-index.xml

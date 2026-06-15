@@ -23,13 +23,16 @@ const moreFromAuthor = allPosts
 
 <JournalLayout
   title={post.data.title}
+  seoTitle={post.data.seoTitle ?? `${post.data.title} · Peak Journal`}
   description={post.data.seoDescription ?? post.data.excerpt}
   category={post.data.category}
   author={post.data.author}
+  publishedAt={post.data.publishedAt}
   date={formatDate(post.data.publishedAt)}
   hero={post.data.hero}
   heroAlt={post.data.title}
   readingMinutes={readingTime(post.body ?? '')}
+  slug={post.id}
 >
   <Content />
 </JournalLayout>

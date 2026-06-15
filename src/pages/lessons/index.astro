@@ -94,7 +94,32 @@ const levels = [
 ];
 ---
 
-<BaseLayout title="Lessons · Peak Snowsports">
+<BaseLayout
+  title="Ski lessons in Morzine, Avoriaz, Châtel & Les Gets · Peak Snowsports"
+  description="Private ski lessons, adult group lessons, kids' ski school, off-piste clinics, race coaching and adult ski camps across the Portes du Soleil. Seven levels. Real coaches. Real names."
+  image="/images/og/lessons.jpg"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Ski lessons',
+    name: 'Peak Snowsports Ski Lessons',
+    description: 'Private and small-group ski lessons across Morzine, Avoriaz, Châtel and Les Gets. Seven skill levels from total beginner to expert.',
+    provider: { '@id': 'https://peaksnowsports.com/#organization' },
+    areaServed: ['Morzine', 'Avoriaz', 'Châtel', 'Les Gets', 'Portes du Soleil'],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Lesson products',
+      itemListElement: [
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Private ski lessons', url: 'https://peaksnowsports.com/lessons/private' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Adult group ski lessons', url: 'https://peaksnowsports.com/lessons/group' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: "Kids' ski school", url: 'https://peaksnowsports.com/lessons/family' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Local kids club', url: 'https://peaksnowsports.com/lessons/kids-club' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Off-piste & freeride', url: 'https://peaksnowsports.com/lessons/off-piste' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Race coaching', url: 'https://peaksnowsports.com/lessons/race-coaching' } },
+      ],
+    },
+  }}
+>
   <Hero
     kicker="Lessons"
     headline="It's all about you."

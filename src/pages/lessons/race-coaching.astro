@@ -112,8 +112,17 @@ const faqs = [
 ---
 
 <BaseLayout
-  title="Race coaching · Peak Snowsports"
-  description="Slalom and GS race coaching for kids and adults. Avoriaz weekly camps, Austria pre-season camps, Châtel FIS / Eurotest / Masters training."
+  title="Ski race coaching · Slalom, GS & FIS training · Peak Snowsports"
+  description="Slalom and GS ski race coaching for kids and adults. Avoriaz weekly camps, Austria pre-season camps, Châtel FIS / Eurotest / Masters training."
+  image="/images/og/lessons.jpg"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Ski race coaching',
+    name: 'Race coaching · Peak Snowsports',
+    description: 'Slalom and GS race coaching. Weekly Avoriaz camps, pre-season Austria camps, FIS / Eurotest / Masters training in Châtel.',
+    provider: { '@id': 'https://peaksnowsports.com/#organization' },
+  }}
 >
   <Hero
     kicker="Lessons · Race coaching"

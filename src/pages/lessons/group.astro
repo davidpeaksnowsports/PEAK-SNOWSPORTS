@@ -133,8 +133,18 @@ const faqs = [
 ---
 
 <BaseLayout
-  title="Adult group lessons · Peak Snowsports"
-  description="Small-group adult ski lessons across Morzine, Avoriaz, Les Gets and Chatel. Seven levels from total beginner to expert. Eight max per group."
+  title="Adult group ski lessons in Morzine, Avoriaz, Châtel & Les Gets · Peak Snowsports"
+  description="Small-group adult ski lessons across Morzine, Avoriaz, Châtel and Les Gets. Seven levels from total beginner to expert. Eight max per group."
+  image="/images/og/lessons.jpg"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Adult group ski lessons',
+    name: 'Adult group ski lessons · Peak Snowsports',
+    description: 'Small-group adult ski lessons across the Portes du Soleil. Seven levels, eight max per group.',
+    provider: { '@id': 'https://peaksnowsports.com/#organization' },
+    areaServed: ['Morzine', 'Avoriaz', 'Châtel', 'Les Gets'],
+  }}
 >
   <Hero
     kicker="Lessons · Adult group"

@@ -197,8 +197,18 @@ const faqs = [
 ---
 
 <BaseLayout
-  title="Kids group lessons · Peak Snowsports"
-  description="Small-group kids ski lessons during the school holidays. Mini groups (max 4) and kids groups (max 6) for ages 5–12. Seven-level PEAK system with medals."
+  title="Kids ski school in Morzine, Avoriaz, Châtel & Les Gets · Peak Snowsports"
+  description="School-holiday kids' ski lessons across the Portes du Soleil for ages 5–12. Max 6 per group, max 4 in mini-beginners. PEAK level system with medals."
+  image="/images/og/lessons.jpg"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Children ski lessons',
+    name: "Peak Snowsports Kids' Ski School",
+    description: "Holiday-week kids' ski groups for ages 5–12 across Morzine, Avoriaz, Châtel and Les Gets. Max 6 per group, max 4 in mini-beginners.",
+    provider: { '@id': 'https://peaksnowsports.com/#organization' },
+    audience: { '@type': 'PeopleAudience', suggestedMinAge: 5, suggestedMaxAge: 12 },
+  }}
 >
   <Hero
     kicker="Lessons · Kids group"

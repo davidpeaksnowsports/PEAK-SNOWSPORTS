@@ -122,8 +122,36 @@ const faqs = [
 ---
 
 <BaseLayout
-  title="Adult ski camps, Morzine-Avoriaz · Peak Snowsports"
-  description="Five-day small-group ski camps for intermediate and advanced skiers, coached by BASI Level 4 ISTD and Trainers. Half-board at The Fat Fox Lodge or coaching only."
+  title="Adult ski camps in Morzine-Avoriaz · 5-day performance camps · Peak Snowsports"
+  description="Five-day small-group ski camps in Morzine-Avoriaz for intermediate and advanced skiers. Coached by BASI L4 ISTD and Trainers. 8 max per group. Half-board at The Fat Fox Lodge or coaching only."
+  image="/images/og/ski-camps.jpg"
+  jsonLd={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: 'Peak Snowsports Adult Ski Camps · Morzine-Avoriaz',
+      description: 'Five-day small-group adult ski camps for intermediate and advanced skiers in Morzine-Avoriaz. Eight max per group, coached by BASI Level 4 ISTD and Trainers.',
+      brand: { '@type': 'Organization', name: 'Peak Snowsports' },
+      image: 'https://peaksnowsports.com/images/og/ski-camps.jpg',
+      category: 'Adult ski performance camp',
+      offers: {
+        '@type': 'AggregateOffer',
+        priceCurrency: 'EUR',
+        availability: 'https://schema.org/InStock',
+        url: 'https://peaksnowsports.com/ski-camps#book',
+        offerCount: 3,
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ]}
 >
   <Hero
     kicker="Adult ski camps · Morzine-Avoriaz"

@@ -22,8 +22,18 @@ const equipment = [
 ---
 
 <BaseLayout
-  title="Off-piste & freeride · Peak Snowsports"
-  description="Half-day and full-day off-piste and ski touring clinics in the Portes du Soleil. Avalanche safety, navigation, route planning. Up to six per instructor."
+  title="Off-piste skiing & freeride lessons in the Portes du Soleil · Peak Snowsports"
+  description="Half-day and full-day off-piste, ski-touring and freeride clinics in Morzine, Avoriaz, Châtel and Les Gets. Avalanche safety, navigation, route planning. Up to six per instructor."
+  image="/images/og/lessons.jpg"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Off-piste skiing instruction',
+    name: 'Off-piste & freeride · Peak Snowsports',
+    description: 'Off-piste, ski-touring and freeride clinics in the Portes du Soleil. Avalanche awareness, route choice, technique.',
+    provider: { '@id': 'https://peaksnowsports.com/#organization' },
+    areaServed: ['Morzine', 'Avoriaz', 'Châtel', 'Les Gets', 'Portes du Soleil'],
+  }}
 >
   <Hero
     kicker="Lessons · Off-piste & freeride"

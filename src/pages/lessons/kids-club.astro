@@ -59,7 +59,20 @@ const faqs = [
 ];
 ---
 
-<BaseLayout title="Local Kids Club · Peak Snowsports">
+<BaseLayout
+  title="Local Kids Club · Season-long ski programme for Morzine kids · Peak Snowsports"
+  description="A season-long ski programme for in-resort kids (7+). Wednesday and Saturday afternoons across 30 sessions. PEAK levels, medals, all-mountain skills."
+  image="/images/og/lessons.jpg"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Children ski lessons',
+    name: 'Peak Snowsports Local Kids Club',
+    description: '30-session season-long ski programme for in-resort kids aged 7+. Wednesday and Saturday afternoons.',
+    provider: { '@id': 'https://peaksnowsports.com/#organization' },
+    audience: { '@type': 'PeopleAudience', suggestedMinAge: 7 },
+  }}
+>
   <!-- Breadcrumb + Hero -->
   <section id="top" class="bg-olive-deep text-salt">
     <div class="mx-auto max-w-screen-2xl px-6 pt-10 md:pt-12">

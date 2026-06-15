@@ -83,6 +83,86 @@ const faqs = [
   },
 ];
 
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: 'BASI GAP Course · Six-week ski instructor training',
+    description:
+      'Six-week ski instructor training programme covering BASI Level 1 and Level 2 qualifications. 100+ hours of on-snow training delivered by BASI trainers only, 8:1 student-to-trainer maximum. Two intakes per year: autumn pre-season in Hintertux, Austria, and winter in-season in Morzine + Avoriaz.',
+    provider: {
+      '@type': 'Organization',
+      '@id': 'https://peaksnowsports.com/#organization',
+      name: 'Peak Snowsports',
+      sameAs: 'https://peaksnowsports.com',
+    },
+    educationalCredentialAwarded: 'BASI Level 1 and Level 2 (British Association of Snowsport Instructors)',
+    timeRequired: 'P6W',
+    inLanguage: 'en',
+    teaches: [
+      'BASI Level 1 and Level 2 assessment standard',
+      'Teaching skiing technique on-piste',
+      'Off-piste skiing and avalanche awareness',
+      'Outdoor First Aid',
+      'Career routes for newly-qualified ski instructors',
+    ],
+    hasCourseInstance: [
+      {
+        '@type': 'CourseInstance',
+        name: 'Autumn pre-season intake · Hintertux, Austria',
+        startDate: '2026-11-01',
+        endDate: '2026-12-11',
+        courseMode: 'In person',
+        location: {
+          '@type': 'Place',
+          name: 'Hintertux, Austria',
+          address: { '@type': 'PostalAddress', addressCountry: 'AT' },
+        },
+        offers: [
+          {
+            '@type': 'Offer',
+            name: 'Standard package',
+            price: '8999',
+            priceCurrency: 'EUR',
+            availability: 'https://schema.org/InStock',
+            url: 'https://peaksnowsports.com/gap-course#book',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Upgraded room',
+            price: '9499',
+            priceCurrency: 'EUR',
+            availability: 'https://schema.org/LimitedAvailability',
+            url: 'https://peaksnowsports.com/gap-course#book',
+          },
+        ],
+      },
+      {
+        '@type': 'CourseInstance',
+        name: 'Winter in-season intake · Morzine + Avoriaz',
+        startDate: '2027-01-03',
+        endDate: '2027-02-12',
+        courseMode: 'In person',
+        location: {
+          '@type': 'Place',
+          name: 'Morzine, France',
+          address: { '@type': 'PostalAddress', addressLocality: 'Morzine', addressCountry: 'FR' },
+        },
+        offers: [
+          {
+            '@type': 'Offer',
+            name: 'Standard package',
+            price: '8999',
+            priceCurrency: 'EUR',
+            availability: 'https://schema.org/InStock',
+            url: 'https://peaksnowsports.com/gap-course#book',
+          },
+        ],
+      },
+    ],
+  },
+];
+
 const reasons = [
   {
     title: 'Coached by the examiners.',
@@ -101,9 +181,25 @@ const reasons = [
     body: "Every Peak student joins the alumni network. There's always a space for you on our chairlifts.",
   },
 ];
+
+// FAQ structured data — must come after `faqs` is declared
+jsonLd.push({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+});
 ---
 
-<BaseLayout title="GAP Course · Peak Snowsports">
+<BaseLayout
+  title="BASI GAP Course · Become a ski instructor in 6 weeks · Peak Snowsports"
+  description="Six-week BASI Level 1 + 2 ski instructor course. Coached by BASI Trainers, 8:1 max, two intakes a year (Hintertux autumn / Morzine winter). From €8,999. Early-bird kit deal."
+  image="/images/og/gap-course.jpg"
+  jsonLd={jsonLd}
+>
   <Hero
     kicker="GAP Course · Autumn in Hintertux or winter in Morzine"
     headline="Six weeks. From skier to instructor."
