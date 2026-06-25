@@ -49,7 +49,7 @@
      Pink fill + white type reads cleanly on both snow and black grounds. */
   .meta-pill {
     font-family: theme('fontFamily.mono');
-    @apply inline-block text-xs uppercase tracking-widest bg-pink text-snow px-2 py-1 rounded-sm;
+    @apply inline-block text-xs font-bold uppercase tracking-widest bg-pink text-snow px-2 py-1 rounded-sm;
   }
 
   /* Drop cap on the first paragraph of journal articles. Editorial touch. */

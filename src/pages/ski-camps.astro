@@ -7,7 +7,7 @@ const levels = [
   {
     name: 'Intermediate',
     forWhom:
-      "Comfortable on blues and easy reds. Ready to step up to parallel turns across varied terrain, steeper reds, changing snow, bumps and the edges of off-piste.",
+      "Comfortable on blues and easy reds controlling your speed with parallel turns. You're now ready to refine those parallel turns on steeper reds, changing snow, bumps and the edges of off-piste. Still in a snow-plough? Check out our improver camp.",
     outcome:
       'Build solid foundations, then push past the intermediate plateau.',
   },
@@ -62,7 +62,7 @@ const pricing = [
   },
   {
     location: "Val d'Isère",
-    accommodation: 'In line with The Fat Fox Lodge · provider being finalised',
+    accommodation: 'Accommodation provider being finalised',
     tiers: [
       { name: 'Coaching only', price: 799 },
       { name: 'Shared accommodation', price: 1959 },
@@ -151,6 +151,10 @@ const faqs = [
   {
     q: 'Cancellation policy?',
     a: 'Refunds on a sliding scale depending on the notice you give us. Full details in our terms and conditions.',
+  },
+  {
+    q: "What if a camp doesn't get confirmed?",
+    a: "In the unlikely event that we don't hit minimum numbers, we convert your booked coaching hours into private lessons of the same value across the same week. You still ski with us, you still get coached — just in a different format.",
   },
   {
     q: 'Equipment rental?',
@@ -366,6 +370,13 @@ const faqs = [
       ))}
     </ul>
     <p class="meta mt-8 text-olive/55">All camps run Monday to Friday. We confirm each camp 6 weeks before it starts.</p>
+
+    <div class="mt-10 rounded-3xl border border-olive bg-cream p-6 md:p-8">
+      <p class="meta font-bold text-olive">If a camp doesn't run</p>
+      <p class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">
+        Each camp goes ahead once we hit minimum numbers — we confirm as soon as we do. In the unlikely event that a camp doesn't get confirmed, we convert your booked coaching hours into private lessons of the same value across the same week, so you still ski and we still coach.
+      </p>
+    </div>
   </Section>
 
   <!-- Pricing -->
@@ -376,7 +387,7 @@ const faqs = [
     <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {pricing.map((p) => (
         <article class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
-          <p class="meta text-olive/50">{p.accommodation}</p>
+          <p class="meta font-bold text-olive">{p.accommodation}</p>
           <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{p.location}</h3>
           {p.tbc ? (
             <>
@@ -418,7 +429,7 @@ const faqs = [
   <Section kicker="What you get" title="On the mountain. Off it.">
     <div class="grid gap-12 md:grid-cols-2 md:gap-16">
       <div>
-        <p class="meta text-olive/50">On snow</p>
+        <p class="meta font-bold text-olive">On snow</p>
         <ul class="mt-6 space-y-4">
           {onSnow.map((item) => (
             <li class="flex gap-3 border-b border-olive/10 pb-4 text-base leading-relaxed text-olive/80 md:text-lg">
@@ -429,7 +440,7 @@ const faqs = [
         </ul>
       </div>
       <div>
-        <p class="meta text-olive/50">Off snow (with Fat Fox Lodge)</p>
+        <p class="meta font-bold text-olive">Off snow (accommodation packages)</p>
         <ul class="mt-6 space-y-4">
           {offSnow.map((item) => (
             <li class="flex gap-3 border-b border-olive/10 pb-4 text-base leading-relaxed text-olive/80 md:text-lg">
@@ -449,73 +460,44 @@ const faqs = [
     </p>
 
     <!-- Morzine-Avoriaz · The Fat Fox Lodge -->
-    <div class="mb-6">
-      <p class="meta text-olive/55">Morzine-Avoriaz</p>
-      <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">The Fat Fox Lodge, Montriond.</h3>
-    </div>
-
-    <!-- Lodge logo -->
-    <div class="mb-8 flex justify-center">
+    <div class="mb-8 flex flex-wrap items-center gap-6">
       <img
         src="/images/fat-fox-lodge/logo.webp"
         alt="The Fat Fox Lodge"
-        class="h-28 w-auto rounded-2xl md:h-36"
+        class="h-20 w-auto rounded-2xl md:h-24"
       />
-    </div>
-
-    <!-- Lodge gallery -->
-    <div class="mb-12 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-      <figure class="col-span-2 overflow-hidden rounded-3xl bg-brown md:col-span-1">
-        <img
-          src="/images/fat-fox-lodge/bedroom.webp"
-          alt="A wood-panelled bedroom with fireplace and mountain view at The Fat Fox Lodge"
-          loading="lazy"
-          class="h-full w-full object-cover aspect-[3/2]"
-        />
-      </figure>
-      <figure class="overflow-hidden rounded-3xl bg-brown">
-        <img
-          src="/images/fat-fox-lodge/living.webp"
-          alt="The Haberdashery living room at The Fat Fox Lodge"
-          loading="lazy"
-          class="h-full w-full object-cover aspect-[3/2]"
-        />
-      </figure>
-      <figure class="overflow-hidden rounded-3xl bg-brown">
-        <img
-          src="/images/fat-fox-lodge/dining.webp"
-          alt="Dinner laid out on the shared dining table at The Fat Fox Lodge"
-          loading="lazy"
-          class="h-full w-full object-cover aspect-[3/2]"
-        />
-      </figure>
-    </div>
-
-    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-20">
-      <div class="space-y-5 text-base leading-relaxed text-olive/80 md:text-lg">
-        <p>
-          Tess and Joe built The Fat Fox Lodge for people who actually live the mountains. Nutritious food, a vibrant shared space, and beds you'll be glad to come home to after a hard day on the snow.
-        </p>
-        <p>
-          Big windows. Balconies. The forests of Montriond outside. Choose a twin or queen room, all four have private bathrooms across the landing. There's a quiet, communal desk if you need to work between days on the hill.
-        </p>
-        <p>
-          The Fat Fox Lodge prioritises the planet. Natural, local, resourceful.
-        </p>
+      <div>
+        <p class="meta font-bold text-olive">Morzine-Avoriaz</p>
+        <h3 class="mt-1 font-display text-3xl font-bold tracking-tight md:text-4xl">The Fat Fox Lodge, Montriond.</h3>
       </div>
-      <ul class="space-y-4">
+    </div>
+
+    <figure class="mb-10 overflow-hidden rounded-3xl bg-brown">
+      <img
+        src="/images/fat-fox-lodge/bedroom.webp"
+        alt="A wood-panelled bedroom with fireplace and mountain view at The Fat Fox Lodge"
+        loading="lazy"
+        class="h-full w-full object-cover aspect-[16/9]"
+      />
+    </figure>
+
+    <div class="grid items-start gap-10 lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-16">
+      <p class="text-base leading-relaxed text-olive/80 md:text-lg">
+        Tess and Joe built The Fat Fox Lodge for people who actually live the mountains. Nutritious food, a vibrant shared space, twin and queen rooms with private bathrooms, big windows over the Montriond forest. Natural, local, resourceful.
+      </p>
+      <ul class="space-y-3">
         {lodgeTiles.map((t) => (
-          <li class="rounded-3xl border border-olive bg-cream p-6">
-            <p class="meta text-olive/50">{t.label}</p>
-            <p class="mt-2 text-base leading-relaxed text-olive/80 md:text-lg">{t.body}</p>
+          <li class="rounded-3xl border border-olive bg-cream p-5">
+            <p class="meta font-bold text-olive">{t.label}</p>
+            <p class="mt-2 text-base leading-relaxed text-olive/80">{t.body}</p>
           </li>
         ))}
       </ul>
     </div>
 
     <!-- Val d'Isère -->
-    <div class="mt-20 rounded-3xl border border-olive bg-cream p-8 md:p-12">
-      <p class="meta text-olive/55">Val d'Isère</p>
+    <div class="mt-16 rounded-3xl border border-olive bg-cream p-8 md:p-12">
+      <p class="meta font-bold text-olive">Val d'Isère</p>
       <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">Accommodation, in line with The Fat Fox Lodge.</h3>
       <p class="mt-5 max-w-3xl text-base leading-relaxed text-olive/80 md:text-lg">
         We're finalising our Val d'Isère accommodation partner for the 2026/27 season. The standard will match The Fat Fox Lodge: half-board, shared dinners, decent coffee, and a place you'll be glad to come back to after a hard day on the hill. Drop us a line if you want the latest update before booking.
@@ -588,23 +570,23 @@ const faqs = [
   <Section id="book" kicker="Ready to book" title="Pick a camp. Hold your place.">
     <div class="rounded-3xl bg-brown p-8 text-salt md:p-12">
       <p class="text-lg leading-relaxed text-salt/85 md:text-xl">
-        Check live availability and confirm your place with a small refundable deposit. We confirm each camp 6 weeks before it runs.
+        Online booking is coming soon. In the meantime, drop us a line — tell us your preferred camp date, level (intermediate / advanced) and package (coaching only, shared, or private), and we'll confirm your place by return.
       </p>
       <div class="mt-10 flex flex-wrap gap-3">
         <a
-          href="/book?product=ski-camps"
+          href="mailto:hello@peaksnowsports.com?subject=Ski%20camp%20booking"
           class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
         >
-          Check availability →
+          Email us to place your booking →
         </a>
         <a
-          href="/contact"
+          href="tel:+441483616522"
           class="inline-flex items-center rounded-full border border-salt/40 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
         >
-          Talk to us first
+          Or call +44 1483 616 522
         </a>
       </div>
-      <p class="meta mt-6 text-salt/85">
+      <p class="meta font-bold mt-6 text-salt">
         Half-board limited to the first 8 bookings per camp.
       </p>
     </div>
