@@ -62,7 +62,7 @@ async function seedLocations() {
   const foxImage = await uploadAsset('public/images/fat-fox-lodge/living.webp');
 
   const morzine = {
-    _id: 'campLocation.morzine-avoriaz',
+    _id: 'campLocation-morzine-avoriaz',
     _type: 'campLocation',
     name: 'Morzine-Avoriaz',
     slug: { _type: 'slug', current: 'morzine-avoriaz' },
@@ -108,7 +108,7 @@ async function seedLocations() {
   };
 
   const verbier = {
-    _id: 'campLocation.verbier',
+    _id: 'campLocation-verbier',
     _type: 'campLocation',
     name: 'Verbier',
     slug: { _type: 'slug', current: 'verbier' },
@@ -124,7 +124,7 @@ async function seedLocations() {
   };
 
   const val = {
-    _id: 'campLocation.val-disere',
+    _id: 'campLocation-val-disere',
     _type: 'campLocation',
     name: "Val d'Isère",
     slug: { _type: 'slug', current: 'val-disere' },
@@ -166,13 +166,13 @@ async function seedCamps() {
   console.log('Seeding ski camps…');
   for (const c of camps) {
     const doc = {
-      _id: `skiCamp.${c.date}`,
+      _id: `skiCamp-${c.date}`,
       _type: 'skiCamp',
       startDate: c.date,
       locations: c.locs.map((slug, i) => ({
         _type: 'reference',
         _key: `loc-${slug}-${i}`,
-        _ref: `campLocation.${slug}`,
+        _ref: `campLocation-${slug}`,
       })),
       tag: c.tag,
       confirmed: false,

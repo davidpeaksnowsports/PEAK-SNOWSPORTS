@@ -2,216 +2,162 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
+import {
+  sanity,
+  urlFor,
+  skiCampsPageQuery,
+  skiCampsScheduleQuery,
+  campLocationsQuery,
+} from '../lib/sanity';
 
-const levels = [
-  {
-    name: 'Intermediate',
-    forWhom:
-      "Comfortable on blues and easy reds controlling your speed with parallel turns. You're now ready to refine those parallel turns on steeper reds, changing snow, bumps and the edges of off-piste. Still in a snow-plough? Check out our improver camp.",
-    outcome:
-      'Build solid foundations, then push past the intermediate plateau.',
-  },
-  {
-    name: 'Advanced',
-    forWhom:
-      "Confident on red and black runs. Refining performance, efficiency and control across off-piste, steeps, bumps and variable snow. Ideal if you've plateaued or already done an intermediate camp.",
-    outcome:
-      'Sharpen your skiing with precision and control in all-mountain conditions.',
-  },
+type Cta = { label?: string; href?: string };
+type FactT = { label?: string; value?: string };
+type Tier = { name?: string; price?: number };
+type Usp = { label?: string; body?: string };
+type ImageRef = { asset?: { _ref?: string } };
+
+interface CampLocation {
+  _id: string;
+  name?: string;
+  slug?: { current?: string };
+  area?: string;
+  shortBlurb?: string;
+  facts?: FactT[];
+  pricingTbc?: boolean;
+  pricingSubtitle?: string;
+  tiers?: Tier[];
+  accommodationHeadline?: string;
+  accommodationLogo?: ImageRef;
+  accommodationImage?: ImageRef;
+  accommodationBody?: string;
+  usps?: Usp[];
+}
+
+interface ScheduleEntry {
+  _id: string;
+  startDate: string;
+  tag?: string | null;
+  confirmed?: boolean;
+  locations?: { _id: string; name?: string }[];
+}
+
+interface SkiCampsPage {
+  seoTitle?: string;
+  seoDescription?: string;
+  heroKicker?: string;
+  heroHeadline?: string;
+  heroSub?: string;
+  heroPrimaryCta?: Cta;
+  heroSecondaryCta?: Cta;
+  welcomeKicker?: string;
+  welcomeTitle?: string;
+  welcomeLead?: string;
+  welcomeBullets?: string[];
+  welcomeTiles?: { kicker?: string; headline?: string; body?: string }[];
+  levels?: { name?: string; forWhom?: string; outcome?: string }[];
+  lodgingOptions?: string[];
+  onSnowLabel?: string;
+  onSnow?: string[];
+  offSnowLabel?: string;
+  offSnow?: string[];
+  accommodationKicker?: string;
+  accommodationTitle?: string;
+  accommodationLead?: string;
+  valAccommodationCard?: { kicker?: string; headline?: string; body?: string };
+  whereYouSkiKicker?: string;
+  whereYouSkiTitle?: string;
+  whereYouSkiLead?: string;
+  whatWeCoverKicker?: string;
+  whatWeCoverTitle?: string;
+  whatWeCover?: { title?: string; body?: string }[];
+  faqsKicker?: string;
+  faqsTitle?: string;
+  faqs?: { q?: string; a?: string }[];
+  planBHeadline?: string;
+  planBBody?: string;
+  bookKicker?: string;
+  bookTitle?: string;
+  bookLead?: string;
+  bookPrimaryCta?: Cta;
+  bookSecondaryCta?: Cta;
+  bookDisclaimer?: string;
+}
+
+const [page, schedule, locations] = (await Promise.all([
+  sanity.fetch(skiCampsPageQuery),
+  sanity.fetch(skiCampsScheduleQuery),
+  sanity.fetch(campLocationsQuery),
+])) as [SkiCampsPage | null, ScheduleEntry[], CampLocation[]];
+
+// Pricing / accommodation / "Where you ski" cards all share campLocation data
+// but want a stable display order. Slugs missing from the order array fall
+// through to the end so a new location auto-appears without code changes.
+const order = ['morzine-avoriaz', 'val-disere', 'verbier'];
+const locationsBySlug = new Map(locations.map((l) => [l.slug?.current ?? '', l]));
+const isDefined = <T,>(v: T | undefined): v is T => v !== undefined;
+const orderedLocations: CampLocation[] = [
+  ...order.map((s) => locationsBySlug.get(s)).filter(isDefined),
+  ...locations.filter((l) => !order.includes(l.slug?.current ?? '')),
 ];
-
-const lodging = ['Coaching only', 'Shared accommodation', 'Private accommodation'];
-
-const onSnow = [
-  'Five+ hours coaching per day, breaks when the group needs them',
-  'Full resort lift pass',
-  'Performance video analysis sessions',
-  'Technical ski-system workshop',
-  'Equipment check workshop',
-  "The best lunch spots, found and tested",
-];
-
-const offSnow = [
-  'Half-board accommodation in resort',
-  'Breakfast and dinner using local ingredients',
-  'Daily yoga after skiing',
-  'Barista-style in-house coffee',
-  'Hot tub and ice bath',
-  'Team dinner at a traditional local restaurant',
-];
-
-const camps = [
-  { start: 'Mon 14 Dec 2026', locations: ['Verbier', 'Avoriaz'], tag: null },
-  { start: 'Mon 4 Jan 2027', locations: ['Avoriaz'], tag: null },
-  { start: 'Mon 11 Jan 2027', locations: ['Avoriaz'], tag: 'New date' },
-  { start: 'Mon 18 Jan 2027', locations: ['Avoriaz', "Val d'Isère"], tag: null },
-  { start: 'Mon 1 Mar 2027', locations: ['Avoriaz'], tag: null },
-  { start: 'Mon 15 Mar 2027', locations: ['Avoriaz'], tag: 'New date' },
-  { start: 'Mon 22 Mar 2027', locations: ['Avoriaz', "Val d'Isère"], tag: null },
-];
-
-const pricing = [
-  {
-    location: 'Morzine-Avoriaz',
-    accommodation: 'The Fat Fox Lodge, Montriond',
-    tiers: [
-      { name: 'Coaching only', price: 699 },
-      { name: 'Shared accommodation', price: 1899 },
-      { name: 'Private accommodation', price: 2494 },
-    ],
-  },
-  {
-    location: "Val d'Isère",
-    accommodation: 'Accommodation provider being finalised',
-    tiers: [
-      { name: 'Coaching only', price: 799 },
-      { name: 'Shared accommodation', price: 1959 },
-      { name: 'Private accommodation', price: 2649 },
-    ],
-  },
-  {
-    location: 'Verbier',
-    accommodation: 'Accommodation and pricing being scoped',
-    tbc: true,
-    tiers: [],
-  },
-];
+const pricing = orderedLocations;
+const resorts = orderedLocations;
+const morzine = locationsBySlug.get('morzine-avoriaz');
 
 const priceFmt = new Intl.NumberFormat('en-GB');
+const formatStart = (iso: string) =>
+  new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+const camps = schedule.map((c) => ({
+  ...c,
+  start: formatStart(c.startDate),
+  locationNames: (c.locations ?? []).map((l) => l.name).filter(isDefined),
+}));
 
-const lodgeTiles = [
-  {
-    label: 'Food',
-    body: 'Served around a big shared table in the Haberdashery, the central hub of the lodge.',
-  },
-  {
-    label: 'Rooms',
-    body: 'Twin or queen, all four with private bathrooms across the landing. Big windows over the Montriond forest.',
-  },
-  {
-    label: 'Hosts',
-    body: "Tess and Joe, snow-lovers who've roamed the globe and landed in Morzine.",
-  },
-];
+// Aggregate offer range for structured data.
+const allPrices = pricing
+  .flatMap((p) => (p.tiers ?? []).map((t) => t.price))
+  .filter(isDefined);
+const lowPrice = allPrices.length ? Math.min(...allPrices) : undefined;
+const highPrice = allPrices.length ? Math.max(...allPrices) : undefined;
+const offerCount = allPrices.length;
 
-const resorts = [
-  {
-    name: 'Morzine-Avoriaz',
-    area: 'Portes du Soleil',
-    body: "Europe's largest cross-border ski area — 600+ km linked, with Avoriaz at 1,800 m as your home mountain. Huge mix of pistes, off-piste and tree-skiing.",
-    facts: [
-      { label: 'Pistes', value: '291' },
-      { label: 'From Geneva', value: '1.5 hr' },
-    ],
-  },
-  {
-    name: 'Verbier',
-    area: 'Four Valleys',
-    body: "Switzerland's flagship freeride mountain. Big terrain, big lines, legendary off-piste. Resort altitude 1,500 m, top lift 3,330 m.",
-    facts: [
-      { label: 'Pistes', value: '410+ km' },
-      { label: 'From Geneva', value: '2 hr' },
-    ],
-  },
-  {
-    name: "Val d'Isère",
-    area: 'Espace Killy',
-    body: 'High-altitude snow-sure terrain linked with Tignes. Long descents, classic Alpine resort, world-class coaching ground at 1,850 m.',
-    facts: [
-      { label: 'Pistes', value: '300 km' },
-      { label: 'From Geneva', value: '2.5 hr' },
-    ],
-  },
-];
+const heroPrimary =
+  page?.heroPrimaryCta?.href && page.heroPrimaryCta.label
+    ? { href: page.heroPrimaryCta.href, label: page.heroPrimaryCta.label }
+    : undefined;
+const heroSecondary =
+  page?.heroSecondaryCta?.href && page.heroSecondaryCta.label
+    ? { href: page.heroSecondaryCta.href, label: page.heroSecondaryCta.label }
+    : undefined;
 
-const content = [
-  {
-    title: 'Eight building blocks',
-    body: 'The six essentials behind every good skier. Master the basics that let everything else click into place.',
-  },
-  {
-    title: 'Ski fit',
-    body: "Top tips for getting fit before the camp. What gym work transfers to snow, and what doesn't.",
-  },
-  {
-    title: 'Performance analysis',
-    body: 'Video review on every camp. Set benchmarks, fix the right things, see your motor skills improve fast.',
-  },
-  {
-    title: 'Terrain',
-    body: 'How to adjust the building blocks for piste, bumps, off-piste and steeps. Different ground, same fundamentals.',
-  },
-];
-
-const faqs = [
-  {
-    q: 'What if the weather turns?',
-    a: "We only stop skiing if the mountain is officially closed.",
-  },
-  {
-    q: 'Cancellation policy?',
-    a: 'Refunds on a sliding scale depending on the notice you give us. Full details in our terms and conditions.',
-  },
-  {
-    q: "What if a camp doesn't get confirmed?",
-    a: "In the unlikely event that we don't hit minimum numbers, we convert your booked coaching hours into private lessons of the same value across the same week. You still ski with us, you still get coached — just in a different format.",
-  },
-  {
-    q: 'Equipment rental?',
-    a: 'We work with local hire partners and can sort you a discount. Email us before you arrive.',
-  },
-  {
-    q: 'Insurance?',
-    a: 'Yes, make sure yours covers winter sports, and skiing into Switzerland (the Portes du Soleil crosses the border).',
-  },
-  {
-    q: 'What if I turn out not to be the right level?',
-    a: "We'll move you into another group, or offer the equivalent in private lessons, subject to availability.",
-  },
-  {
-    q: 'How big are the groups?',
-    a: '8 skiers max per group. We often run multiple groups, so we can move skiers around to the right level on day one. Half-board is limited to the first 8 bookings, after that, self-accommodate.',
-  },
-  {
-    q: 'Where do we meet?',
-    a: "Meeting points are resort-specific. If you book accommodation, you travel with the group each morning. If you self-accommodate, we send full meeting-point instructions with your booking confirmation.",
-  },
-  {
-    q: 'When should I arrive?',
-    a: 'Arrival to resort is the Sunday before camp starts. Camps run Monday to Friday. If you book accommodation, check-out is the Saturday after camp finishes.',
-  },
-  {
-    q: 'Is the lift pass included?',
-    a: "Yes, full lift pass for the resort area you're skiing in.",
-  },
-  {
-    q: 'Who actually teaches?',
-    a: 'Current, fully-qualified BASI instructors. The same coaches who run our performance courses and instructor exams.',
-  },
-];
+const faqs = page?.faqs ?? [];
 ---
 
 <BaseLayout
-  title="Adult ski camps · Morzine-Avoriaz, Verbier & Val d'Isère · Peak Snowsports"
-  description="Five-day small-group ski camps in Morzine-Avoriaz, Verbier and Val d'Isère for intermediate and advanced skiers. Coached by BASI L4 ISTD and Trainers. 8 max per group. From €699 coaching only."
+  title={page?.seoTitle}
+  description={page?.seoDescription}
   image="/images/og/ski-camps.jpg"
   jsonLd={[
     {
       '@context': 'https://schema.org',
       '@type': 'Product',
-      name: "Peak Snowsports Adult Ski Camps · Morzine-Avoriaz, Verbier & Val d'Isère",
-      description: "Five-day small-group adult ski camps for intermediate and advanced skiers across Morzine-Avoriaz, Verbier and Val d'Isère. Eight max per group, coached by BASI Level 4 ISTD and Trainers.",
+      name: page?.seoTitle,
+      description: page?.seoDescription,
       brand: { '@type': 'Organization', name: 'Peak Snowsports' },
       image: 'https://peaksnowsports.com/images/og/ski-camps.jpg',
       category: 'Adult ski performance camp',
       offers: {
         '@type': 'AggregateOffer',
         priceCurrency: 'EUR',
-        lowPrice: 699,
-        highPrice: 2649,
+        ...(lowPrice !== undefined && { lowPrice }),
+        ...(highPrice !== undefined && { highPrice }),
         availability: 'https://schema.org/InStock',
         url: 'https://peaksnowsports.com/ski-camps#book',
-        offerCount: 6,
+        offerCount,
       },
     },
     {
@@ -226,11 +172,11 @@ const faqs = [
   ]}
 >
   <Hero
-    kicker="Adult ski camps · Morzine-Avoriaz · Verbier · Val d'Isère"
-    headline="Five days on snow. One serious step up."
-    sub="Small-group ski camps for intermediate and advanced skiers across three resorts. Coached by BASI Level 4 ISTD and BASI Trainers. Half-board accommodation, or coaching only."
-    primaryCta={{ href: '#dates', label: 'See dates & pricing' }}
-    secondaryCta={{ href: '#book', label: 'Reserve your place' }}
+    kicker={page?.heroKicker}
+    headline={page?.heroHeadline ?? ''}
+    sub={page?.heroSub}
+    primaryCta={heroPrimary}
+    secondaryCta={heroSecondary}
     variant="full"
     video="/videos/carving.mp4"
     videoPoster="/videos/carving-poster.jpg"
@@ -238,12 +184,12 @@ const faqs = [
   />
 
   <!-- Welcome / overview -->
-  <Section kicker="Welcome" title="Five days. Eight skiers. One real step up.">
+  <Section kicker={page?.welcomeKicker} title={page?.welcomeTitle}>
     <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-20">
       <div class="space-y-10">
-        <p class="text-xl font-medium leading-snug text-olive md:text-2xl">
-          Coached by the people who train other instructors. Eight skiers max per group. We meet you at the level you're at and take you to the one you want.
-        </p>
+        {page?.welcomeLead && (
+          <p class="text-xl font-medium leading-snug text-olive md:text-2xl">{page.welcomeLead}</p>
+        )}
 
         <dl class="grid gap-x-6 gap-y-6 border-y border-olive/10 py-6 sm:grid-cols-3">
           <div>
@@ -261,31 +207,18 @@ const faqs = [
         </dl>
 
         <div class="space-y-5 text-base leading-relaxed text-olive/75 md:text-lg">
-          <p>
-            Seven camps across the 2026/27 season in Morzine-Avoriaz, Verbier and Val d'Isère. Two levels: intermediate (stuck on blues and easy reds, ready to step up) and advanced (confident on red and black, want to refine).
-          </p>
-          <p>
-            Half-board accommodation in resort: shared dinners, decent coffee, a hot tub, daily yoga, and a team that knows the area. Coaching only is also an option if you've already got somewhere to stay.
-          </p>
+          {(page?.welcomeBullets ?? []).map((p) => <p>{p}</p>)}
         </div>
       </div>
 
       <div class="space-y-4">
-        <div class="rounded-3xl border border-olive bg-cream p-6">
-          <p class="meta text-olive">Camp dates</p>
-          <p class="mt-2 font-display text-xl font-bold tracking-tight">7 camps · Dec 2026 – Mar 2027</p>
-          <p class="mt-1 text-sm text-olive/70">Full schedule and pricing below.</p>
-        </div>
-        <div class="rounded-3xl border border-olive bg-cream p-6">
-          <p class="meta text-olive">Pricing from</p>
-          <p class="mt-2 font-display text-xl font-bold tracking-tight">€699 coaching only</p>
-          <p class="mt-1 text-sm text-olive/70">Shared and private accommodation packages available.</p>
-        </div>
-        <div class="rounded-3xl border border-olive bg-cream p-6">
-          <p class="meta text-olive">Arrival</p>
-          <p class="mt-2 font-display text-xl font-bold tracking-tight">Day before · Sunday</p>
-          <p class="mt-1 text-sm text-olive/70">If you book accommodation, check-out is the Saturday after camp.</p>
-        </div>
+        {(page?.welcomeTiles ?? []).map((t) => (
+          <div class="rounded-3xl border border-olive bg-cream p-6">
+            <p class="meta text-olive">{t.kicker}</p>
+            <p class="mt-2 font-display text-xl font-bold tracking-tight">{t.headline}</p>
+            {t.body && <p class="mt-1 text-sm text-olive/70">{t.body}</p>}
+          </div>
+        ))}
       </div>
     </div>
   </Section>
@@ -323,7 +256,7 @@ const faqs = [
   <!-- Pick your level -->
   <Section id="camps" kicker="Two levels" title="Pick your level.">
     <div class="grid gap-6 md:grid-cols-2">
-      {levels.map((l) => (
+      {(page?.levels ?? []).map((l) => (
         <article class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
           <p class="meta text-olive/50">Ski camp</p>
           <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{l.name}</h3>
@@ -332,7 +265,7 @@ const faqs = [
 
           <p class="meta mt-8 text-olive/50">Three ways to join</p>
           <ul class="mt-3 space-y-2">
-            {lodging.map((opt) => (
+            {(page?.lodgingOptions ?? []).map((opt) => (
               <li class="flex items-center gap-3 text-sm text-olive md:text-base">
                 <span aria-hidden="true" class="text-olive/40">·</span>
                 <span>{opt}</span>
@@ -360,7 +293,7 @@ const faqs = [
       {camps.map((c) => (
         <li class="grid gap-3 py-5 sm:grid-cols-[minmax(0,11rem)_1fr_auto] sm:items-center sm:gap-6">
           <p class="font-display text-lg font-bold tracking-tight md:text-xl">{c.start}</p>
-          <p class="text-base leading-snug text-olive/80 md:text-lg">{c.locations.join(' · ')}</p>
+          <p class="text-base leading-snug text-olive/80 md:text-lg">{c.locationNames.join(' · ')}</p>
           {c.tag ? (
             <span class="meta inline-flex w-fit items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{c.tag}</span>
           ) : (
@@ -371,12 +304,12 @@ const faqs = [
     </ul>
     <p class="meta mt-8 text-olive/55">All camps run Monday to Friday. We confirm each camp 6 weeks before it starts.</p>
 
-    <div class="mt-10 rounded-3xl border border-olive bg-cream p-6 md:p-8">
-      <p class="meta font-bold text-olive">If a camp doesn't run</p>
-      <p class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">
-        Each camp goes ahead once we hit minimum numbers — we confirm as soon as we do. In the unlikely event that a camp doesn't get confirmed, we convert your booked coaching hours into private lessons of the same value across the same week, so you still ski and we still coach.
-      </p>
-    </div>
+    {page?.planBHeadline && (
+      <div class="mt-10 rounded-3xl border border-olive bg-cream p-6 md:p-8">
+        <p class="meta font-bold text-olive">{page.planBHeadline}</p>
+        <p class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">{page.planBBody}</p>
+      </div>
+    )}
   </Section>
 
   <!-- Pricing -->
@@ -387,9 +320,9 @@ const faqs = [
     <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {pricing.map((p) => (
         <article class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
-          <p class="meta font-bold text-olive">{p.accommodation}</p>
-          <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{p.location}</h3>
-          {p.tbc ? (
+          <p class="meta font-bold text-olive">{p.pricingSubtitle}</p>
+          <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{p.name}</h3>
+          {p.pricingTbc ? (
             <>
               <p class="mt-8 font-display text-2xl font-bold tracking-tight md:text-3xl">Pricing TBC</p>
               <p class="mt-3 text-base leading-relaxed text-olive/75 md:text-lg">
@@ -405,10 +338,10 @@ const faqs = [
           ) : (
             <>
               <dl class="mt-8 divide-y divide-olive/10 border-y border-olive/10">
-                {p.tiers.map((t) => (
+                {(p.tiers ?? []).map((t) => (
                   <div class="flex items-baseline justify-between gap-6 py-4">
                     <dt class="text-base text-olive/80 md:text-lg">{t.name}</dt>
-                    <dd class="font-display text-2xl font-bold tracking-tight md:text-3xl">€{priceFmt.format(t.price)}</dd>
+                    <dd class="font-display text-2xl font-bold tracking-tight md:text-3xl">€{priceFmt.format(t.price ?? 0)}</dd>
                   </div>
                 ))}
               </dl>
@@ -429,9 +362,9 @@ const faqs = [
   <Section kicker="What you get" title="On the mountain. Off it.">
     <div class="grid gap-12 md:grid-cols-2 md:gap-16">
       <div>
-        <p class="meta font-bold text-olive">On snow</p>
+        <p class="meta font-bold text-olive">{page?.onSnowLabel}</p>
         <ul class="mt-6 space-y-4">
-          {onSnow.map((item) => (
+          {(page?.onSnow ?? []).map((item) => (
             <li class="flex gap-3 border-b border-olive/10 pb-4 text-base leading-relaxed text-olive/80 md:text-lg">
               <span aria-hidden="true" class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-yellow" />
               <span>{item}</span>
@@ -440,9 +373,9 @@ const faqs = [
         </ul>
       </div>
       <div>
-        <p class="meta font-bold text-olive">Off snow (accommodation packages)</p>
+        <p class="meta font-bold text-olive">{page?.offSnowLabel}</p>
         <ul class="mt-6 space-y-4">
-          {offSnow.map((item) => (
+          {(page?.offSnow ?? []).map((item) => (
             <li class="flex gap-3 border-b border-olive/10 pb-4 text-base leading-relaxed text-olive/80 md:text-lg">
               <span aria-hidden="true" class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-yellow" />
               <span>{item}</span>
@@ -454,70 +387,78 @@ const faqs = [
   </Section>
 
   <!-- Where you stay -->
-  <Section kicker="Where you stay" title="Half-board accommodation by location.">
-    <p class="-mt-2 mb-10 max-w-3xl text-base leading-relaxed text-olive/75 md:text-lg">
-      Morzine-Avoriaz camps stay at The Fat Fox Lodge in Montriond. Val d'Isère accommodation is being finalised and will match the same standard. Coaching-only is available everywhere if you've got your own place sorted.
-    </p>
+  <Section kicker={page?.accommodationKicker} title={page?.accommodationTitle}>
+    {page?.accommodationLead && (
+      <p class="-mt-2 mb-10 max-w-3xl text-base leading-relaxed text-olive/75 md:text-lg">{page.accommodationLead}</p>
+    )}
 
-    <!-- Morzine-Avoriaz · The Fat Fox Lodge -->
-    <div class="mb-8 flex flex-wrap items-center gap-6">
-      <img
-        src="/images/fat-fox-lodge/logo.webp"
-        alt="The Fat Fox Lodge"
-        class="h-20 w-auto rounded-2xl md:h-24"
-      />
-      <div>
-        <p class="meta font-bold text-olive">Morzine-Avoriaz</p>
-        <h3 class="mt-1 font-display text-3xl font-bold tracking-tight md:text-4xl">The Fat Fox Lodge, Montriond.</h3>
+    {morzine && (
+      <>
+        <div class="mb-8 flex flex-wrap items-center gap-6">
+          {morzine.accommodationLogo && (
+            <img
+              src={urlFor(morzine.accommodationLogo).width(200).url()}
+              alt={`${morzine.accommodationHeadline ?? morzine.name} logo`}
+              class="h-20 w-auto rounded-2xl md:h-24"
+            />
+          )}
+          <div>
+            <p class="meta font-bold text-olive">{morzine.name}</p>
+            <h3 class="mt-1 font-display text-3xl font-bold tracking-tight md:text-4xl">{morzine.accommodationHeadline}</h3>
+          </div>
+        </div>
+
+        {morzine.accommodationBody && (
+          <p class="mb-8 max-w-3xl text-base leading-relaxed text-olive/80 md:text-lg">{morzine.accommodationBody}</p>
+        )}
+
+        <div class="grid items-start gap-6 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-8">
+          {morzine.accommodationImage && (
+            <figure class="overflow-hidden rounded-3xl bg-brown">
+              <img
+                src={urlFor(morzine.accommodationImage).width(600).height(750).fit('crop').url()}
+                alt={`Accommodation at ${morzine.accommodationHeadline ?? morzine.name}`}
+                loading="lazy"
+                class="h-full w-full object-cover aspect-[4/5]"
+              />
+            </figure>
+          )}
+          <ul class="space-y-3">
+            {(morzine.usps ?? []).map((u) => (
+              <li class="rounded-3xl border border-olive bg-cream p-5">
+                <p class="meta font-bold text-olive">{u.label}</p>
+                <p class="mt-2 text-base leading-relaxed text-olive/80">{u.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </>
+    )}
+
+    {page?.valAccommodationCard?.headline && (
+      <div class="mt-16 rounded-3xl border border-olive bg-cream p-8 md:p-12">
+        <p class="meta font-bold text-olive">{page.valAccommodationCard.kicker}</p>
+        <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{page.valAccommodationCard.headline}</h3>
+        {page.valAccommodationCard.body && (
+          <p class="mt-5 max-w-3xl text-base leading-relaxed text-olive/80 md:text-lg">{page.valAccommodationCard.body}</p>
+        )}
       </div>
-    </div>
-
-    <p class="mb-8 max-w-3xl text-base leading-relaxed text-olive/80 md:text-lg">
-      Tess and Joe built The Fat Fox Lodge for people who actually live the mountains. Nutritious food, a vibrant shared space, twin and queen rooms with private bathrooms, big windows over the Montriond forest. Natural, local, resourceful.
-    </p>
-
-    <div class="grid items-start gap-6 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-8">
-      <figure class="overflow-hidden rounded-3xl bg-brown">
-        <img
-          src="/images/fat-fox-lodge/living.webp"
-          alt="The Haberdashery communal lounge at The Fat Fox Lodge"
-          loading="lazy"
-          class="h-full w-full object-cover aspect-[4/5]"
-        />
-      </figure>
-      <ul class="space-y-3">
-        {lodgeTiles.map((t) => (
-          <li class="rounded-3xl border border-olive bg-cream p-5">
-            <p class="meta font-bold text-olive">{t.label}</p>
-            <p class="mt-2 text-base leading-relaxed text-olive/80">{t.body}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <!-- Val d'Isère -->
-    <div class="mt-16 rounded-3xl border border-olive bg-cream p-8 md:p-12">
-      <p class="meta font-bold text-olive">Val d'Isère</p>
-      <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">Accommodation, in line with The Fat Fox Lodge.</h3>
-      <p class="mt-5 max-w-3xl text-base leading-relaxed text-olive/80 md:text-lg">
-        We're finalising our Val d'Isère accommodation partner for the 2026/27 season. The standard will match The Fat Fox Lodge: half-board, shared dinners, decent coffee, and a place you'll be glad to come back to after a hard day on the hill. Drop us a line if you want the latest update before booking.
-      </p>
-    </div>
+    )}
   </Section>
 
   <!-- Where you ski -->
-  <Section kicker="Where you ski" title="Three resorts. One standard.">
-    <p class="max-w-3xl text-lg leading-relaxed text-olive/80 md:text-xl">
-      Pick the mountain that suits the camp you're after. Same coaching team, same group sizes, same five-day structure across all three.
-    </p>
+  <Section kicker={page?.whereYouSkiKicker} title={page?.whereYouSkiTitle}>
+    {page?.whereYouSkiLead && (
+      <p class="max-w-3xl text-lg leading-relaxed text-olive/80 md:text-xl">{page.whereYouSkiLead}</p>
+    )}
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       {resorts.map((r) => (
         <article class="rounded-3xl border border-olive bg-cream p-8">
           <p class="meta text-olive/50">{r.area}</p>
           <h3 class="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">{r.name}</h3>
-          <p class="mt-4 text-base leading-relaxed text-olive/80">{r.body}</p>
+          {r.shortBlurb && <p class="mt-4 text-base leading-relaxed text-olive/80">{r.shortBlurb}</p>}
           <dl class="mt-6 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-olive/10 pt-5">
-            {r.facts.map((f) => (
+            {(r.facts ?? []).map((f) => (
               <div>
                 <dt class="meta text-olive/50">{f.label}</dt>
                 <dd class="mt-1 font-display text-lg font-bold tracking-tight">{f.value}</dd>
@@ -530,9 +471,9 @@ const faqs = [
   </Section>
 
   <!-- What we cover -->
-  <Section kicker="Camp content" title="What we'll cover.">
+  <Section kicker={page?.whatWeCoverKicker} title={page?.whatWeCoverTitle}>
     <ol class="space-y-16">
-      {content.map((c, i) => (
+      {(page?.whatWeCover ?? []).map((c, i) => (
         <li class="border-t border-olive/10 pt-10">
           <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
             <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-pink font-display text-xl font-bold tracking-tight text-snow">{String(i + 1).padStart(2, '0')}</span>
@@ -547,7 +488,7 @@ const faqs = [
   </Section>
 
   <!-- FAQs -->
-  <Section kicker="FAQs" title="The usual questions.">
+  <Section kicker={page?.faqsKicker} title={page?.faqsTitle}>
     <div class="max-w-3xl">
       <dl class="divide-y divide-olive/10 border-y border-olive/10">
         {faqs.map((f) => (
@@ -567,28 +508,32 @@ const faqs = [
   </Section>
 
   <!-- Ready to book -->
-  <Section id="book" kicker="Ready to book" title="Pick a camp. Hold your place.">
+  <Section id="book" kicker={page?.bookKicker} title={page?.bookTitle}>
     <div class="rounded-3xl bg-brown p-8 text-salt md:p-12">
-      <p class="text-lg leading-relaxed text-salt/85 md:text-xl">
-        Online booking is coming soon. In the meantime, drop us a line — tell us your preferred camp date, level (intermediate / advanced) and package (coaching only, shared, or private), and we'll confirm your place by return.
-      </p>
+      {page?.bookLead && (
+        <p class="text-lg leading-relaxed text-salt/85 md:text-xl">{page.bookLead}</p>
+      )}
       <div class="mt-10 flex flex-wrap gap-3">
-        <a
-          href="mailto:hello@peaksnowsports.com?subject=Ski%20camp%20booking"
-          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
-        >
-          Email us to place your booking →
-        </a>
-        <a
-          href="tel:+441483616522"
-          class="inline-flex items-center rounded-full border border-salt/40 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
-        >
-          Or call +44 1483 616 522
-        </a>
+        {page?.bookPrimaryCta?.href && (
+          <a
+            href={page.bookPrimaryCta.href}
+            class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+          >
+            {page.bookPrimaryCta.label}
+          </a>
+        )}
+        {page?.bookSecondaryCta?.href && (
+          <a
+            href={page.bookSecondaryCta.href}
+            class="inline-flex items-center rounded-full border border-salt/40 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+          >
+            {page.bookSecondaryCta.label}
+          </a>
+        )}
       </div>
-      <p class="meta font-bold mt-6 text-salt">
-        Half-board limited to the first 8 bookings per camp.
-      </p>
+      {page?.bookDisclaimer && (
+        <p class="meta font-bold mt-6 text-salt">{page.bookDisclaimer}</p>
+      )}
     </div>
   </Section>
 </BaseLayout>
