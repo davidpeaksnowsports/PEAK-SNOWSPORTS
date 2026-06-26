@@ -7,4 +7,7 @@ export default defineCliConfig({
   },
   // Studio hostname: https://peaksnowsports.sanity.studio
   studioHost: 'peaksnowsports',
+  deployment: {
+    appId: 'on1ztz51wsjbiriefdf6waap',
+  },
 });
