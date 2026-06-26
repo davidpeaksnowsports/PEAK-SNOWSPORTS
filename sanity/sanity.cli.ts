@@ -5,4 +5,6 @@ export default defineCliConfig({
     projectId: process.env.SANITY_STUDIO_PROJECT_ID ?? 'replace-me',
     dataset: process.env.SANITY_STUDIO_DATASET ?? 'production',
   },
+  // Studio hostname: https://peaksnowsports.sanity.studio
+  studioHost: 'peaksnowsports',
 });
