@@ -1,33 +1,40 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Hero from '../../../components/hero/Hero.astro';
 import Section from '../../../components/ui/Section.astro';
 import PostCard from '../../../components/journal/PostCard.astro';
 import heroImage from '../../../assets/images/hero-journal.jpg';
-import { formatDate, readingTime } from '../../../lib/utils';
+import { formatDate, portableTextReadingTime } from '../../../lib/utils';
+import { sanity, allPostsQuery } from '../../../lib/sanity';
+
+interface Post {
+  _id: string;
+  title: string;
+  slug: string;
+  hero?: { asset?: { _ref?: string } };
+  publishedAt: string;
+  category: string;
+  author?: { name?: string; slug?: string };
+  body?: unknown;
+}
 
 const toSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 export async function getStaticPaths() {
-  const posts = await getCollection('journal', ({ data }) => !data.draft);
-  const uniqueCategories = [...new Set(posts.map((p) => p.data.category))];
+  const posts = (await sanity.fetch<Post[]>(allPostsQuery)) ?? [];
+  const uniqueCategories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
   return uniqueCategories.map((category) => ({
-    params: { category: category.toLowerCase().replace(/[^a-z0-9]+/g, '-') },
-    props: { categoryName: category },
+    params: { category: toSlug(category) },
+    props: { categoryName: category, allPosts: posts },
   }));
 }
 
-const { categoryName } = Astro.props;
-
-const allPosts = await getCollection('journal', ({ data }) => !data.draft);
-const posts = allPosts
-  .filter((p) => p.data.category === categoryName)
-  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+const { categoryName, allPosts } = Astro.props as { categoryName: string; allPosts: Post[] };
+const posts = allPosts.filter((p) => p.category === categoryName);
 
 const categoryCounts = new Map<string, number>();
 allPosts.forEach((p) => {
-  categoryCounts.set(p.data.category, (categoryCounts.get(p.data.category) ?? 0) + 1);
+  categoryCounts.set(p.category, (categoryCounts.get(p.category) ?? 0) + 1);
 });
 
 const categories = [{ label: 'All', href: '/journal', count: allPosts.length, isActive: false }];
@@ -67,13 +74,13 @@ const categories = [{ label: 'All', href: '/journal', count: allPosts.length, is
     <div class="mt-16 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
       {posts.map((p) => (
         <PostCard
-          title={p.data.title}
-          category={p.data.category}
-          author={p.data.author}
-          date={formatDate(p.data.publishedAt)}
-          href={`/journal/${p.id}`}
-          hero={p.data.hero}
-          readingMinutes={readingTime(p.body ?? '')}
+          title={p.title}
+          category={p.category}
+          author={p.author?.name}
+          date={formatDate(p.publishedAt)}
+          href={`/journal/${p.slug}`}
+          hero={p.hero}
+          readingMinutes={portableTextReadingTime(p.body)}
         />
       ))}
     </div>

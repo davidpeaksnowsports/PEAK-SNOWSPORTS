@@ -1,21 +1,30 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import PostCard from '../../components/journal/PostCard.astro';
 import heroImage from '../../assets/images/hero-journal.jpg';
-import { formatDate, readingTime } from '../../lib/utils';
+import { formatDate, portableTextReadingTime } from '../../lib/utils';
+import { sanity, allPostsQuery } from '../../lib/sanity';
 
-const allPosts = await getCollection('journal', ({ data }) => !data.draft);
-const posts = allPosts.sort(
-  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
-);
+interface Post {
+  _id: string;
+  title: string;
+  slug: string;
+  hero?: { asset?: { _ref?: string } };
+  excerpt?: string;
+  publishedAt: string;
+  category: string;
+  author?: { name?: string; slug?: string };
+  body?: unknown;
+}
+
+const posts = (await sanity.fetch<Post[]>(allPostsQuery)) ?? [];
 
 // Categories with counts, only show categories that have at least one post.
 const categoryCounts = new Map<string, number>();
 posts.forEach((p) => {
-  categoryCounts.set(p.data.category, (categoryCounts.get(p.data.category) ?? 0) + 1);
+  categoryCounts.set(p.category, (categoryCounts.get(p.category) ?? 0) + 1);
 });
 const categories = [{ label: 'All', href: '/journal', count: posts.length }];
 [...categoryCounts.keys()].sort().forEach((c) => {
@@ -59,13 +68,13 @@ const [featured, ...rest] = posts;
     {featured && (
       <div class="mt-16">
         <PostCard
-          title={featured.data.title}
-          category={featured.data.category}
-          author={featured.data.author}
-          date={formatDate(featured.data.publishedAt)}
-          href={`/journal/${featured.id}`}
-          hero={featured.data.hero}
-          readingMinutes={readingTime(featured.body ?? '')}
+          title={featured.title}
+          category={featured.category}
+          author={featured.author?.name}
+          date={formatDate(featured.publishedAt)}
+          href={`/journal/${featured.slug}`}
+          hero={featured.hero}
+          readingMinutes={portableTextReadingTime(featured.body)}
           featured
         />
       </div>
@@ -75,13 +84,13 @@ const [featured, ...rest] = posts;
       <div class="mt-16 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
         {rest.map((p) => (
           <PostCard
-            title={p.data.title}
-            category={p.data.category}
-            author={p.data.author}
-            date={formatDate(p.data.publishedAt)}
-            href={`/journal/${p.id}`}
-            hero={p.data.hero}
-            readingMinutes={readingTime(p.body ?? '')}
+            title={p.title}
+            category={p.category}
+            author={p.author?.name}
+            date={formatDate(p.publishedAt)}
+            href={`/journal/${p.slug}`}
+            hero={p.hero}
+            readingMinutes={portableTextReadingTime(p.body)}
           />
         ))}
       </div>

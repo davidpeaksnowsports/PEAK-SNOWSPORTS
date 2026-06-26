@@ -1,5 +1,8 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import { urlFor } from '../lib/sanity';
+
+type ImageRef = { asset?: { _ref?: string } } & Record<string, unknown>;
 
 interface Props {
   title: string;
@@ -12,7 +15,8 @@ interface Props {
   publishedAt?: Date | string;
   /** Human-readable date for display */
   date?: string;
-  hero?: string;       // path under /public, e.g. "/images/journal/foo.jpg"
+  // Either a Sanity image ref (preferred) or a path under /public.
+  hero?: ImageRef | string;
   heroAlt?: string;
   readingMinutes?: number;
   /** Permalink slug used in canonical + breadcrumbs */
@@ -36,7 +40,20 @@ const {
 const SITE = 'https://peaksnowsports.com';
 const pageTitle = seoTitle ?? `${title} · Peak Journal`;
 const pageDescription = description ?? `${title} — written by ${author ?? 'the Peak Snowsports team'} for the Peak Journal.`;
-const heroUrl = hero ? new URL(hero, SITE).toString() : `${SITE}/images/og/journal.jpg`;
+
+// Resolve hero — accept either a Sanity image ref or a /public path string.
+const heroDisplaySrc =
+  typeof hero === 'string'
+    ? hero
+    : hero?.asset?._ref
+      ? urlFor(hero).width(1600).height(900).fit('crop').url()
+      : undefined;
+const heroAbsoluteUrl =
+  typeof hero === 'string' && hero
+    ? new URL(hero, SITE).toString()
+    : hero && (hero as ImageRef)?.asset?._ref
+      ? (urlFor(hero as ImageRef).width(1600).height(900).fit('crop').url() ?? `${SITE}/images/og/journal.jpg`)
+      : `${SITE}/images/og/journal.jpg`;
 const canonical = slug ? `${SITE}/journal/${slug}` : undefined;
 
 const publishedIso = publishedAt
@@ -49,7 +66,7 @@ const jsonLd = [
     '@type': 'Article',
     headline: title,
     description: pageDescription,
-    image: [heroUrl],
+    image: [heroAbsoluteUrl],
     author: author
       ? {
           '@type': 'Person',
@@ -91,7 +108,7 @@ const jsonLd = [
 <BaseLayout
   title={pageTitle}
   description={pageDescription}
-  image={hero ?? '/images/og/journal.jpg'}
+  image={heroAbsoluteUrl}
   type="article"
   canonical={canonical}
   jsonLd={jsonLd}
@@ -116,9 +133,9 @@ const jsonLd = [
       </p>
     </header>
 
-    {hero ? (
+    {heroDisplaySrc ? (
       <img
-        src={hero}
+        src={heroDisplaySrc}
         alt={heroAlt}
         class="mx-auto mt-16 aspect-[16/9] w-full max-w-5xl rounded-3xl object-cover"
       />

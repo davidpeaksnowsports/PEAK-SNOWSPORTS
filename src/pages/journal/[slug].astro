@@ -1,54 +1,74 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { PortableText } from 'astro-portabletext';
 import JournalLayout from '../../layouts/JournalLayout.astro';
 import Section from '../../components/ui/Section.astro';
 import PostCard from '../../components/journal/PostCard.astro';
-import { formatDate, readingTime } from '../../lib/utils';
+import { formatDate, portableTextReadingTime } from '../../lib/utils';
+import { sanity, allPostsQuery, postBySlugQuery } from '../../lib/sanity';
 
-export async function getStaticPaths() {
-  const posts = await getCollection('journal', ({ data }) => !data.draft);
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post, allPosts: posts },
-  }));
+interface PostSummary {
+  _id: string;
+  title: string;
+  slug: string;
+  hero?: { asset?: { _ref?: string } };
+  publishedAt: string;
+  category: string;
+  author?: { name?: string; slug?: string };
+  body?: unknown;
 }
 
-const { post, allPosts } = Astro.props;
-const { Content } = await render(post);
+interface PostFull extends PostSummary {
+  excerpt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+}
 
-const moreFromAuthor = allPosts
-  .filter((p) => p.data.author === post.data.author && p.id !== post.id)
-  .slice(0, 3);
+export async function getStaticPaths() {
+  const posts = await sanity.fetch<{ slug: string }[]>(allPostsQuery);
+  return (posts ?? [])
+    .filter((p) => !!p.slug)
+    .map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+const { post, moreFromAuthor } = await sanity.fetch<{
+  post: PostFull | null;
+  moreFromAuthor: PostSummary[];
+}>(postBySlugQuery, { slug });
+
+if (!post) {
+  return Astro.redirect('/journal');
+}
 ---
 
 <JournalLayout
-  title={post.data.title}
-  seoTitle={post.data.seoTitle ?? `${post.data.title} · Peak Journal`}
-  description={post.data.seoDescription ?? post.data.excerpt}
-  category={post.data.category}
-  author={post.data.author}
-  publishedAt={post.data.publishedAt}
-  date={formatDate(post.data.publishedAt)}
-  hero={post.data.hero}
-  heroAlt={post.data.title}
-  readingMinutes={readingTime(post.body ?? '')}
-  slug={post.id}
+  title={post.title}
+  seoTitle={post.seoTitle ?? `${post.title} · Peak Journal`}
+  description={post.seoDescription ?? post.excerpt}
+  category={post.category}
+  author={post.author?.name}
+  publishedAt={post.publishedAt}
+  date={formatDate(post.publishedAt)}
+  hero={post.hero}
+  heroAlt={post.title}
+  readingMinutes={portableTextReadingTime(post.body)}
+  slug={post.slug}
 >
-  <Content />
+  <PortableText value={(post.body as any) ?? []} />
 </JournalLayout>
 
-{moreFromAuthor.length > 0 && (
-  <Section kicker={`More from ${post.data.author}`} title="Keep reading.">
+{moreFromAuthor && moreFromAuthor.length > 0 && (
+  <Section kicker={`More from ${post.author?.name ?? 'the team'}`} title="Keep reading.">
     <div class="grid gap-12 md:grid-cols-3">
       {moreFromAuthor.map((p) => (
         <PostCard
-          title={p.data.title}
-          category={p.data.category}
-          author={p.data.author}
-          date={formatDate(p.data.publishedAt)}
-          href={`/journal/${p.id}`}
-          hero={p.data.hero}
-          readingMinutes={readingTime(p.body ?? '')}
+          title={p.title}
+          category={p.category}
+          author={p.author?.name}
+          date={formatDate(p.publishedAt)}
+          href={`/journal/${p.slug}`}
+          hero={p.hero}
+          readingMinutes={portableTextReadingTime(p.body)}
         />
       ))}
     </div>

@@ -1,11 +1,16 @@
 ---
+import { urlFor } from '../../lib/sanity';
+
+type ImageRef = { asset?: { _ref?: string } } & Record<string, unknown>;
+
 interface Props {
   title: string;
   category?: string;
   author?: string;
   date?: string;
   href?: string;
-  hero?: string;
+  // Either a Sanity image ref (preferred) or a path under /public.
+  hero?: ImageRef | string;
   readingMinutes?: number;
   featured?: boolean;
 }
@@ -23,13 +28,22 @@ const {
 
 const aspect = featured ? 'aspect-[16/9] md:aspect-[2/1]' : 'aspect-[16/10]';
 const titleSize = featured ? 'text-2xl md:text-4xl' : 'text-xl md:text-2xl';
+
+const width = featured ? 1600 : 900;
+const height = featured ? 800 : 600;
+const heroSrc =
+  typeof hero === 'string'
+    ? hero
+    : hero?.asset?._ref
+      ? urlFor(hero).width(width).height(height).fit('crop').url()
+      : undefined;
 ---
 
 <a href={href} class="group block no-underline">
   <div class={`w-full overflow-hidden rounded-2xl bg-brown ${aspect}`}>
-    {hero && (
+    {heroSrc && (
       <img
-        src={hero}
+        src={heroSrc}
         alt=""
         class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         loading="lazy"

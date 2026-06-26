@@ -9,6 +9,23 @@ export function readingTime(body: string): number {
   return Math.max(1, Math.round(words / 225));
 }
 
+// Extract plain text from a Portable Text block array — used for reading-time
+// estimates and basic text fallbacks.
+export function portableTextToPlain(blocks: unknown): string {
+  if (!Array.isArray(blocks)) return '';
+  return blocks
+    .map((block: any) => {
+      if (block?._type !== 'block' || !Array.isArray(block.children)) return '';
+      return block.children.map((c: any) => c?.text ?? '').join('');
+    })
+    .filter(Boolean)
+    .join('\n\n');
+}
+
+export function portableTextReadingTime(blocks: unknown): number {
+  return readingTime(portableTextToPlain(blocks));
+}
+
 export function formatDate(input: string | Date): string {
   const date = typeof input === 'string' ? new Date(input) : input;
   return date.toLocaleDateString('en-GB', {

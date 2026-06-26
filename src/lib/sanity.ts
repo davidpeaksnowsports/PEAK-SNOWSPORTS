@@ -49,10 +49,49 @@ export const campLocationsQuery = `*[_type == "campLocation"] | order(name asc){
   usps,
 }`;
 
+// Journal listing — every published post, newest first, with author name resolved.
+export const allPostsQuery = `*[_type == "post" && defined(publishedAt)] | order(publishedAt desc){
+  _id,
+  title,
+  "slug": slug.current,
+  hero,
+  excerpt,
+  publishedAt,
+  category,
+  "author": author->{name, "slug": slug.current},
+  body
+}`;
+
+// Single post by slug, plus other posts by the same author for the
+// "Keep reading" footer.
+export const postBySlugQuery = `{
+  "post": *[_type == "post" && slug.current == $slug][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    hero,
+    excerpt,
+    publishedAt,
+    category,
+    seoTitle,
+    seoDescription,
+    "author": author->{name, "slug": slug.current},
+    body
+  },
+  "moreFromAuthor": *[_type == "post" && slug.current != $slug && author->slug.current == *[_type == "post" && slug.current == $slug][0].author->slug.current] | order(publishedAt desc)[0...3]{
+    _id,
+    title,
+    "slug": slug.current,
+    hero,
+    publishedAt,
+    category,
+    "author": author->{name, "slug": slug.current},
+    body
+  }
+}`;
+
 // Legacy / pre-existing queries (kept for forward use).
 export const queries = {
   allInstructors: `*[_type == "instructor"] | order(name asc){ _id, name, slug, photo, resorts[]-> }`,
   allResorts: `*[_type == "resort"] | order(name asc){ _id, name, slug, hero }`,
-  allPosts: `*[_type == "post"] | order(publishedAt desc){ _id, title, slug, hero, publishedAt, author->, category }`,
-  postBySlug: `*[_type == "post" && slug.current == $slug][0]{ ..., author-> }`,
 };
