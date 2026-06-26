@@ -1,39 +1,74 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { PortableText } from 'astro-portabletext';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
+import { sanity, urlFor, allResortsQuery, resortBySlugQuery } from '../../lib/sanity';
 
-export async function getStaticPaths() {
-  const resorts = await getCollection('resorts', ({ data }) => !data.draft);
-  return resorts.map((resort) => ({
-    params: { slug: resort.id },
-    props: { resort, allResorts: resorts },
-  }));
+type ImageRef = { asset?: { _ref?: string } } & Record<string, unknown>;
+
+interface ResortFull {
+  _id: string;
+  name: string;
+  slug: string;
+  type: 'home' | 'product';
+  product?: string;
+  country?: string;
+  parentArea?: string;
+  knownFor?: string;
+  hero?: ImageRef;
+  altitude?: string;
+  liftCount?: string;
+  runDistance?: string;
+  transferTime?: string;
+  meetingPoints?: string[];
+  body?: unknown;
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
-const { resort, allResorts } = Astro.props;
-const { Content } = await render(resort);
-const d = resort.data;
+interface ResortSummary {
+  _id: string;
+  name: string;
+  slug: string;
+  knownFor?: string;
+  hero?: ImageRef;
+}
 
-// Build the stats array, only include defined fields
+export async function getStaticPaths() {
+  const all = (await sanity.fetch<{ slug: string }[]>(allResortsQuery)) ?? [];
+  return all.filter((r) => !!r.slug).map((r) => ({ params: { slug: r.slug } }));
+}
+
+const { slug } = Astro.params;
+const { resort, siblings } = await sanity.fetch<{
+  resort: ResortFull | null;
+  siblings: ResortSummary[];
+}>(resortBySlugQuery, { slug });
+
+if (!resort) {
+  return Astro.redirect('/resorts');
+}
+
+const d = resort;
+
 const stats = [
   d.altitude && { label: 'Altitude', value: d.altitude },
   d.liftCount && { label: 'Lifts', value: d.liftCount },
   d.runDistance && { label: 'Pistes', value: d.runDistance },
   d.transferTime && { label: 'Transfer', value: d.transferTime },
-].filter(Boolean);
+].filter(Boolean) as { label: string; value: string }[];
 
-const otherResorts = allResorts
-  .filter((r) => r.id !== resort.id && r.data.type === d.type)
-  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
-  .slice(0, 3);
+const heroDisplay = d.hero?.asset?._ref
+  ? urlFor(d.hero).width(2400).height(1200).fit('crop').url()
+  : undefined;
+const heroAbsolute = heroDisplay ?? 'https://peaksnowsports.com/images/og/resorts.jpg';
 
-const seoTitle = `Ski lessons in ${d.name}${d.parentArea ? `, ${d.parentArea}` : ''} · Peak Snowsports`;
-const seoDescription = `${d.knownFor} Ski lessons, kids' groups, off-piste and private instruction with Peak Snowsports.`;
-const heroImageUrl = d.hero
-  ? new URL(d.hero, 'https://peaksnowsports.com').toString()
-  : 'https://peaksnowsports.com/images/og/resorts.jpg';
+const seoTitle =
+  d.seoTitle ??
+  `Ski lessons in ${d.name}${d.parentArea ? `, ${d.parentArea}` : ''} · Peak Snowsports`;
+const seoDescription =
+  d.seoDescription ??
+  `${d.knownFor ?? ''} Ski lessons, kids' groups, off-piste and private instruction with Peak Snowsports.`.trim();
 
 const jsonLd = [
   {
@@ -41,12 +76,13 @@ const jsonLd = [
     '@type': d.type === 'home' ? 'SkiResort' : 'TouristDestination',
     name: d.name,
     description: d.knownFor,
-    image: heroImageUrl,
-    url: `https://peaksnowsports.com/resorts/${resort.id}`,
+    image: heroAbsolute,
+    url: `https://peaksnowsports.com/resorts/${d.slug}`,
     address: {
       '@type': 'PostalAddress',
       addressLocality: d.name,
-      addressCountry: d.country === 'Austria' ? 'AT' : d.country === 'Switzerland' ? 'CH' : 'FR',
+      addressCountry:
+        d.country === 'Austria' ? 'AT' : d.country === 'Switzerland' ? 'CH' : 'FR',
     },
     containedInPlace: d.parentArea ? { '@type': 'Place', name: d.parentArea } : undefined,
   },
@@ -55,18 +91,18 @@ const jsonLd = [
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Resorts', item: 'https://peaksnowsports.com/resorts' },
-      { '@type': 'ListItem', position: 2, name: d.name, item: `https://peaksnowsports.com/resorts/${resort.id}` },
+      { '@type': 'ListItem', position: 2, name: d.name, item: `https://peaksnowsports.com/resorts/${d.slug}` },
     ],
   },
 ];
 ---
 
-<BaseLayout title={seoTitle} description={seoDescription} image={d.hero ?? '/images/og/resorts.jpg'} jsonLd={jsonLd}>
+<BaseLayout title={seoTitle} description={seoDescription} image={heroAbsolute} jsonLd={jsonLd}>
   <!-- Hero -->
   <section class="relative flex min-h-[60vh] items-end overflow-hidden bg-brown text-salt">
-    {d.hero && (
+    {heroDisplay && (
       <img
-        src={d.hero}
+        src={heroDisplay}
         alt={d.name}
         class="absolute inset-0 h-full w-full object-cover"
         loading="eager"
@@ -87,7 +123,9 @@ const jsonLd = [
       <h1 class="mt-6 max-w-4xl text-6xl leading-[0.95] tracking-tight md:text-8xl">
         {d.name}.
       </h1>
-      <p class="mt-6 max-w-2xl text-lg text-salt/85 md:text-xl">{d.knownFor}</p>
+      {d.knownFor && (
+        <p class="mt-6 max-w-2xl text-lg text-salt/85 md:text-xl">{d.knownFor}</p>
+      )}
     </div>
   </section>
 
@@ -105,17 +143,16 @@ const jsonLd = [
     </section>
   )}
 
-  <!-- Body content from MD -->
+  <!-- Body -->
   <Section>
     <div class="prose prose-lg max-w-3xl
       prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-olive
       prose-p:text-olive/80 prose-strong:text-olive
       prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:bg-yellow">
-      <Content />
+      <PortableText value={(d.body as any) ?? []} />
     </div>
   </Section>
 
-  {/* Meeting points, home resorts only */}
   {d.type === 'home' && d.meetingPoints && d.meetingPoints.length > 0 && (
     <Section kicker="Meeting points" title="Where you'll find us.">
       <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -129,7 +166,6 @@ const jsonLd = [
     </Section>
   )}
 
-  {/* CTAs */}
   <Section>
     <div class="border-t border-olive/10 pt-12">
       <div class="flex flex-wrap gap-3">
@@ -149,20 +185,21 @@ const jsonLd = [
     </div>
   </Section>
 
-  {/* Other resorts of the same type */}
-  {otherResorts.length > 0 && (
+  {siblings && siblings.length > 0 && (
     <Section kicker={d.type === 'home' ? 'Where else we ski' : 'Other camps'} title="Keep exploring.">
       <ul class="divide-y divide-olive/10 border-y border-olive/10">
-        {otherResorts.map((r) => (
+        {siblings.map((r) => (
           <li>
             <a
-              href={`/resorts/${r.id}`}
+              href={`/resorts/${r.slug}`}
               class="group -mx-3 flex items-baseline gap-4 px-3 py-6 no-underline transition-colors hover:bg-yellow md:gap-8"
             >
               <span class="font-display text-3xl font-bold tracking-tight md:text-5xl">
-                {r.data.name}.
+                {r.name}.
               </span>
-              <span class="meta hidden text-olive/50 md:inline">{r.data.knownFor}</span>
+              {r.knownFor && (
+                <span class="meta hidden text-olive/50 md:inline">{r.knownFor}</span>
+              )}
               <span class="ml-auto font-display text-2xl transition group-hover:translate-x-2 md:text-3xl">→</span>
             </a>
           </li>

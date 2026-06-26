@@ -1,14 +1,31 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
 import heroImage from '../../assets/images/hero-resorts.jpg';
+import { sanity, urlFor, allResortsQuery } from '../../lib/sanity';
 
-const all = await getCollection('resorts', ({ data }) => !data.draft);
-const byOrder = (a, b) => (a.data.order ?? 999) - (b.data.order ?? 999);
-const homeResorts = all.filter((r) => r.data.type === 'home').sort(byOrder);
-const productResorts = all.filter((r) => r.data.type === 'product').sort(byOrder);
+type ImageRef = { asset?: { _ref?: string } } & Record<string, unknown>;
+
+interface Resort {
+  _id: string;
+  name: string;
+  slug: string;
+  type: 'home' | 'product';
+  product?: string;
+  country?: string;
+  parentArea?: string;
+  knownFor?: string;
+  hero?: ImageRef;
+  order?: number;
+}
+
+const all = ((await sanity.fetch<Resort[]>(allResortsQuery)) ?? []) as Resort[];
+const homeResorts = all.filter((r) => r.type === 'home');
+const productResorts = all.filter((r) => r.type === 'product');
+
+const heroUrl = (h: ImageRef | undefined, w: number, hh: number) =>
+  h?.asset?._ref ? urlFor(h).width(w).height(hh).fit('crop').url() : undefined;
 ---
 
 <BaseLayout
@@ -33,12 +50,12 @@ const productResorts = all.filter((r) => r.data.type === 'product').sort(byOrder
 
     <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {homeResorts.map((r) => (
-        <a href={`/resorts/${r.id}`} class="group block no-underline">
+        <a href={`/resorts/${r.slug}`} class="group block no-underline">
           <div class="aspect-[4/5] overflow-hidden rounded-3xl bg-brown">
-            {r.data.hero ? (
+            {heroUrl(r.hero, 600, 750) ? (
               <img
-                src={r.data.hero}
-                alt={r.data.name}
+                src={heroUrl(r.hero, 600, 750)}
+                alt={r.name}
                 loading="lazy"
                 class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
               />
@@ -48,8 +65,8 @@ const productResorts = all.filter((r) => r.data.type === 'product').sort(byOrder
               </div>
             )}
           </div>
-          <h3 class="mt-5 font-display text-3xl font-bold tracking-tight transition-colors group-hover:bg-yellow md:text-4xl">{r.data.name}</h3>
-          <p class="meta mt-2 text-olive/60">{r.data.knownFor}</p>
+          <h3 class="mt-5 font-display text-3xl font-bold tracking-tight transition-colors group-hover:bg-yellow md:text-4xl">{r.name}</h3>
+          {r.knownFor && <p class="meta mt-2 text-olive/60">{r.knownFor}</p>}
         </a>
       ))}
     </div>
@@ -65,20 +82,20 @@ const productResorts = all.filter((r) => r.data.type === 'product').sort(byOrder
       {productResorts.map((r) => (
         <li>
           <a
-            href={`/resorts/${r.id}`}
+            href={`/resorts/${r.slug}`}
             class="group -mx-3 grid gap-3 px-3 py-8 no-underline transition-colors hover:bg-yellow md:grid-cols-[1fr_minmax(0,420px)_auto] md:items-baseline md:gap-8 md:py-10"
           >
             <div class="flex items-baseline gap-3 md:gap-5">
               <span class="font-display text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-                {r.data.name}.
+                {r.name}.
               </span>
-              {r.data.product && (
+              {r.product && (
                 <span class="meta hidden shrink-0 rounded-full bg-yellow px-3 py-1 text-olive-deep sm:inline">
-                  {r.data.product}
+                  {r.product}
                 </span>
               )}
             </div>
-            <span class="meta text-olive/55 md:text-right">{r.data.country}{r.data.parentArea ? ` · ${r.data.parentArea}` : ''}</span>
+            <span class="meta text-olive/55 md:text-right">{r.country}{r.parentArea ? ` · ${r.parentArea}` : ''}</span>
             <span class="hidden font-display text-2xl transition group-hover:translate-x-2 md:inline md:text-3xl">→</span>
           </a>
         </li>

@@ -103,8 +103,51 @@ export const allLessonsQuery = `*[_type == "lesson"] | order(order asc, name asc
   externalHref
 }`;
 
+// Resorts — list + detail, both used by /resorts and /resorts/[slug].
+export const allResortsQuery = `*[_type == "resort"] | order(order asc, name asc){
+  _id,
+  name,
+  "slug": slug.current,
+  type,
+  product,
+  country,
+  parentArea,
+  knownFor,
+  hero,
+  order
+}`;
+
+export const resortBySlugQuery = `{
+  "resort": *[_type == "resort" && slug.current == $slug][0]{
+    _id,
+    name,
+    "slug": slug.current,
+    type,
+    product,
+    country,
+    parentArea,
+    knownFor,
+    hero,
+    order,
+    altitude,
+    liftCount,
+    runDistance,
+    transferTime,
+    meetingPoints,
+    body,
+    seoTitle,
+    seoDescription
+  },
+  "siblings": *[_type == "resort" && slug.current != $slug && type == *[_type == "resort" && slug.current == $slug][0].type] | order(order asc, name asc)[0...3]{
+    _id,
+    name,
+    "slug": slug.current,
+    knownFor,
+    hero
+  }
+}`;
+
 // Legacy / pre-existing queries (kept for forward use).
 export const queries = {
   allInstructors: `*[_type == "instructor"] | order(name asc){ _id, name, slug, photo, resorts[]-> }`,
-  allResorts: `*[_type == "resort"] | order(name asc){ _id, name, slug, hero }`,
 };
