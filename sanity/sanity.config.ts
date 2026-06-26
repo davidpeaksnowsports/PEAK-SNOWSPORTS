@@ -7,7 +7,7 @@ export default defineConfig({
   name: 'peaksnowsports',
   title: 'Peak Snowsports',
 
-  projectId: process.env.SANITY_STUDIO_PROJECT_ID ?? 'replace-me',
+  projectId: process.env.SANITY_STUDIO_PROJECT_ID ?? 'un1s8qq9',
   dataset: process.env.SANITY_STUDIO_DATASET ?? 'production',
 
   plugins: [
