@@ -14,7 +14,42 @@ export const sanity = createClient(config);
 const builder = imageUrlBuilder(sanity);
 export const urlFor = (source: SanityImageSource) => builder.image(source);
 
-// Query helpers, add typed GROQ queries here as schemas are wired up.
+// --- GROQ queries ---------------------------------------------------------
+
+// Ski camps page reads three things: the singleton, the schedule of camps,
+// and every camp location (referenced by both pricing cards and the schedule).
+export const skiCampsPageQuery = `*[_id == "skiCampsPage"][0]`;
+
+export const skiCampsScheduleQuery = `*[_type == "skiCamp"] | order(startDate asc){
+  _id,
+  startDate,
+  tag,
+  confirmed,
+  "locations": locations[]->{
+    _id,
+    name,
+    slug,
+  }
+}`;
+
+export const campLocationsQuery = `*[_type == "campLocation"] | order(name asc){
+  _id,
+  name,
+  slug,
+  area,
+  shortBlurb,
+  facts,
+  pricingTbc,
+  pricingSubtitle,
+  tiers,
+  accommodationHeadline,
+  accommodationLogo,
+  accommodationImage,
+  accommodationBody,
+  usps,
+}`;
+
+// Legacy / pre-existing queries (kept for forward use).
 export const queries = {
   allInstructors: `*[_type == "instructor"] | order(name asc){ _id, name, slug, photo, resorts[]-> }`,
   allResorts: `*[_type == "resort"] | order(name asc){ _id, name, slug, hero }`,
