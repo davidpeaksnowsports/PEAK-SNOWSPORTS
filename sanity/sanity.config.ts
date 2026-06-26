@@ -18,6 +18,12 @@ export default defineConfig({
           .items([
             // Singletons surface as a single editable document (not a list).
             S.listItem()
+              .title('Lessons page')
+              .id('lessonsPage')
+              .child(
+                S.document().schemaType('lessonsPage').documentId(singletonIds.lessonsPage),
+              ),
+            S.listItem()
               .title('Ski camps page')
               .id('skiCampsPage')
               .child(

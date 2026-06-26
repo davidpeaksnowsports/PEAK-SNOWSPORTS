@@ -90,6 +90,19 @@ export const postBySlugQuery = `{
   }
 }`;
 
+// Lessons page reads the singleton + every lesson doc (for the card grid).
+export const lessonsPageQuery = `*[_id == "lessonsPage"][0]`;
+
+export const allLessonsQuery = `*[_type == "lesson"] | order(order asc, name asc){
+  _id,
+  name,
+  "slug": slug.current,
+  order,
+  cardKicker,
+  cardBody,
+  externalHref
+}`;
+
 // Legacy / pre-existing queries (kept for forward use).
 export const queries = {
   allInstructors: `*[_type == "instructor"] | order(name asc){ _id, name, slug, photo, resorts[]-> }`,
