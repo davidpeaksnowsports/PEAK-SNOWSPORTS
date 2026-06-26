@@ -18,9 +18,8 @@ interface Post {
   body?: unknown;
 }
 
-const toSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
 export async function getStaticPaths() {
+  const toSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const posts = (await sanity.fetch<Post[]>(allPostsQuery)) ?? [];
   const uniqueCategories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
   return uniqueCategories.map((category) => ({
@@ -28,6 +27,8 @@ export async function getStaticPaths() {
     props: { categoryName: category, allPosts: posts },
   }));
 }
+
+const toSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 const { categoryName, allPosts } = Astro.props as { categoryName: string; allPosts: Post[] };
 const posts = allPosts.filter((p) => p.category === categoryName);
