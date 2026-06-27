@@ -64,6 +64,52 @@ const lessons = [
     cardBody:
       'Big terrain with the right people. Avalanche awareness, route choice, and the confidence to ski it.',
     order: 30,
+    // Page-level content
+    seoTitle:
+      'Off-piste skiing & freeride lessons in the Portes du Soleil · Peak Snowsports',
+    seoDescription:
+      'Half-day and full-day off-piste, ski-touring and freeride clinics in Morzine, Avoriaz, Châtel and Les Gets. Avalanche safety, navigation, route planning. Up to six per instructor.',
+    heroKicker: 'Lessons · Off-piste & freeride',
+    heroHeadline: 'Past the rope. With the right people.',
+    heroSub:
+      'Half-day or full-day clinics covering ski touring technique, avalanche safety, navigation and route planning. Lift-access or skinning, your call.',
+    heroPrimaryCta: { label: 'Check availability', href: '#availability' },
+    heroSecondaryCta: { label: 'See the content', href: '#what-we-cover' },
+    introKicker: "Who it's for",
+    introTitle: 'Adventures, big or small.',
+    introBody: [
+      "We're passionate about experiencing adventures with you. No matter how big or small. Our touring and off-piste clinics are perfect for someone interested in venturing away from the pistes. It's a jam-packed half-day or full-day giving you a solid understanding of the basic principles around skiing off-piste, either lift access or ski touring.",
+      'Guests should have a good level of fitness and be comfortable skiing red and black runs. Off-piste experience not essential.',
+    ],
+    introFactTiles: [
+      { _key: 'format', label: 'Format', value: '½ or full day' },
+      { _key: 'group', label: 'Group size', value: '6 max' },
+      { _key: 'start', label: 'Start', value: '09:00 or 12:00' },
+      { _key: 'where', label: 'Where', value: 'Portes du Soleil' },
+    ],
+    contentSectionKicker: 'What we cover',
+    contentSectionTitle: 'The clinic content.',
+    contentItems: [
+      'Develop ski touring technique, flat, steep and turning',
+      'Learn mountain navigation',
+      'Develop climbing with ski crampons, using kick turns and managing exposed slopes',
+      'Understand avalanche safety, terrain traps, reading the mountain and action planning',
+      'Develop route planning, decision making and lead sections',
+      'Explore the fantastic Portes du Soleil',
+    ],
+    kitKicker: 'What to bring',
+    kitTitle: 'Ski touring kit.',
+    kitBody:
+      'Guests will require ski touring equipment. We work with local rental partners if you need to hire, email us before you arrive.',
+    kitItems: [
+      'Good layering of lightweight clothing for snowy environments',
+      'Avalanche transceiver, shovel and probe',
+      'Ski touring skis, bindings, skins and ski crampons',
+      'A backpack of around 30L',
+    ],
+    bookingKicker: 'Availability',
+    bookingTitle: 'Book an off-piste clinic.',
+    archProductId: 'off-piste',
   },
   {
     slug: 'kids-club',
@@ -92,8 +138,35 @@ const lessons = [
   },
 ];
 
+// Pass-through fields — any of these on a seed entry get copied into the
+// Sanity doc verbatim if present. Lets us add page-level content lesson by
+// lesson without growing the seed loop.
+const PASSTHROUGH = [
+  'seoTitle',
+  'seoDescription',
+  'heroKicker',
+  'heroHeadline',
+  'heroSub',
+  'heroPrimaryCta',
+  'heroSecondaryCta',
+  'introKicker',
+  'introTitle',
+  'introBody',
+  'introFactTiles',
+  'contentSectionKicker',
+  'contentSectionTitle',
+  'contentItems',
+  'kitKicker',
+  'kitTitle',
+  'kitBody',
+  'kitItems',
+  'bookingKicker',
+  'bookingTitle',
+  'archProductId',
+];
+
 async function seedLessons() {
-  console.log('Seeding lessons (card data)…');
+  console.log('Seeding lessons…');
   for (const l of lessons) {
     const doc = {
       _id: `lesson-${l.slug}`,
@@ -105,6 +178,9 @@ async function seedLessons() {
       cardBody: l.cardBody,
       ...(l.externalHref && { externalHref: l.externalHref }),
     };
+    for (const k of PASSTHROUGH) {
+      if (l[k] !== undefined) doc[k] = l[k];
+    }
     await upsert(doc);
     console.log(`  ✓ ${l.name}`);
   }

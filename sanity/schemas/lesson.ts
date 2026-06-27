@@ -1,5 +1,23 @@
 import { defineType, defineField } from 'sanity';
 
+const cta = {
+  type: 'object',
+  fields: [
+    { name: 'label', type: 'string', title: 'Label' },
+    { name: 'href', type: 'string', title: 'Link or anchor' },
+  ],
+} as const;
+
+const factTile = {
+  type: 'object',
+  name: 'factTile',
+  fields: [
+    { name: 'label', type: 'string', title: 'Label' },
+    { name: 'value', type: 'string', title: 'Value' },
+  ],
+  preview: { select: { title: 'label', subtitle: 'value' } },
+} as const;
+
 export default defineType({
   name: 'lesson',
   title: 'Lesson',
@@ -7,6 +25,7 @@ export default defineType({
   groups: [
     { name: 'identity', title: 'Identity', default: true },
     { name: 'card', title: 'Listing card' },
+    { name: 'page', title: 'Page content' },
     { name: 'product', title: 'Product details' },
   ],
   fields: [
@@ -24,7 +43,8 @@ export default defineType({
       description: 'Sort order on the /lessons listing (lower = earlier).',
       group: 'identity',
     }),
-    // Listing card (the 3-column grid on /lessons)
+
+    // Listing card (3-column grid on /lessons)
     defineField({
       name: 'cardKicker',
       type: 'string',
@@ -47,7 +67,58 @@ export default defineType({
         'Optional. Set this to override the card link if the card should point somewhere other than /lessons/<slug> (e.g. /ski-camps).',
       group: 'card',
     }),
-    // Product details (used by individual lesson page templates)
+
+    // Page-level content (used by the individual /lessons/<slug> page)
+    defineField({ name: 'seoTitle', type: 'string', group: 'page' }),
+    defineField({ name: 'seoDescription', type: 'text', rows: 2, group: 'page' }),
+    defineField({ name: 'heroKicker', type: 'string', group: 'page' }),
+    defineField({ name: 'heroHeadline', type: 'string', group: 'page' }),
+    defineField({ name: 'heroSub', type: 'text', rows: 3, group: 'page' }),
+    defineField({ name: 'heroPrimaryCta', title: 'Hero primary CTA', ...cta, group: 'page' }),
+    defineField({ name: 'heroSecondaryCta', title: 'Hero secondary CTA', ...cta, group: 'page' }),
+
+    // Intro section (kicker/title + lead paragraphs + side facts grid)
+    defineField({ name: 'introKicker', type: 'string', group: 'page' }),
+    defineField({ name: 'introTitle', type: 'string', group: 'page' }),
+    defineField({
+      name: 'introBody',
+      type: 'array',
+      of: [{ type: 'text', rows: 3 }],
+      group: 'page',
+    }),
+    defineField({
+      name: 'introFactTiles',
+      type: 'array',
+      of: [factTile],
+      group: 'page',
+    }),
+
+    // Generic content list section (the "What we cover" / clinic-content style)
+    defineField({ name: 'contentSectionKicker', type: 'string', group: 'page' }),
+    defineField({ name: 'contentSectionTitle', type: 'string', group: 'page' }),
+    defineField({
+      name: 'contentItems',
+      type: 'array',
+      of: [{ type: 'string' }],
+      group: 'page',
+    }),
+
+    // Optional secondary list (e.g. "Kit list" on off-piste)
+    defineField({ name: 'kitKicker', type: 'string', group: 'page' }),
+    defineField({ name: 'kitTitle', type: 'string', group: 'page' }),
+    defineField({ name: 'kitBody', type: 'text', rows: 3, group: 'page' }),
+    defineField({
+      name: 'kitItems',
+      type: 'array',
+      of: [{ type: 'string' }],
+      group: 'page',
+    }),
+
+    // Booking section
+    defineField({ name: 'bookingKicker', type: 'string', group: 'page' }),
+    defineField({ name: 'bookingTitle', type: 'string', group: 'page' }),
+
+    // Product details (Sanity-aware but mostly carried by archProductId)
     defineField({ name: 'hero', type: 'image', options: { hotspot: true }, group: 'product' }),
     defineField({ name: 'description', type: 'array', of: [{ type: 'block' }], group: 'product' }),
     defineField({ name: 'whoItsFor', type: 'text', rows: 4, group: 'product' }),

@@ -103,6 +103,34 @@ export const allLessonsQuery = `*[_type == "lesson"] | order(order asc, name asc
   externalHref
 }`;
 
+// Single lesson by slug for the /lessons/<slug> page templates.
+export const lessonBySlugQuery = `*[_type == "lesson" && slug.current == $slug][0]{
+  _id,
+  name,
+  "slug": slug.current,
+  seoTitle,
+  seoDescription,
+  heroKicker,
+  heroHeadline,
+  heroSub,
+  heroPrimaryCta,
+  heroSecondaryCta,
+  introKicker,
+  introTitle,
+  introBody,
+  introFactTiles,
+  contentSectionKicker,
+  contentSectionTitle,
+  contentItems,
+  kitKicker,
+  kitTitle,
+  kitBody,
+  kitItems,
+  bookingKicker,
+  bookingTitle,
+  archProductId
+}`;
+
 // Resorts — list + detail, both used by /resorts and /resorts/[slug].
 export const allResortsQuery = `*[_type == "resort"] | order(order asc, name asc){
   _id,
