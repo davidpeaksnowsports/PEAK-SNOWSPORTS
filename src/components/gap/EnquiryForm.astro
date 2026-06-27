@@ -1,0 +1,162 @@
+---
+/**
+ * GAP course enquiry form. Progressive enhancement: posts JSON to
+ * /api/gap-enquiry via fetch and shows inline status. Without JS it falls back
+ * to a normal form POST to the same endpoint. If the endpoint isn't configured
+ * (no RESEND_API_KEY), the script reveals the WhatsApp / email fallback.
+ */
+const WHATSAPP =
+  'https://api.whatsapp.com/send/?phone=33610618558&text&type=phone_number&app_absent=0';
+const EMAIL = 'hello@peaksnowsports.com';
+---
+
+<div class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
+  <form id="gap-enquiry-form" class="space-y-6" action="/api/gap-enquiry" method="post">
+    <div class="grid gap-6 sm:grid-cols-2">
+      <label class="block">
+        <span class="meta text-olive/60">Your name *</span>
+        <input
+          type="text"
+          name="name"
+          required
+          autocomplete="name"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Email *</span>
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Phone / WhatsApp</span>
+        <input
+          type="tel"
+          name="phone"
+          autocomplete="tel"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Which intake?</span>
+        <select
+          name="intake"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        >
+          <option value="Not sure yet">Not sure yet</option>
+          <option value="Autumn · Hintertux">Autumn pre-season · Hintertux</option>
+          <option value="Winter · Morzine">Winter in-season · Morzine</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="block">
+      <span class="meta text-olive/60">Anything you want to ask?</span>
+      <textarea
+        name="message"
+        rows="4"
+        placeholder="Your skiing background, questions on dates, payment, kit…"
+        class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+      ></textarea>
+    </label>
+
+    <!-- Honeypot: hidden from people, tempting to bots. Real users leave it empty. -->
+    <input
+      type="text"
+      name="company"
+      tabindex="-1"
+      autocomplete="off"
+      class="absolute left-[-9999px] h-0 w-0 opacity-0"
+      aria-hidden="true"
+    />
+
+    <div class="flex flex-wrap items-center gap-4">
+      <button
+        type="submit"
+        class="inline-flex items-center rounded-full bg-pink px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-olive"
+      >
+        Send my enquiry →
+      </button>
+      <p class="meta text-olive/55">We usually reply within 30 minutes in office hours.</p>
+    </div>
+
+    <p id="gap-enquiry-status" class="hidden text-base leading-relaxed" role="status" aria-live="polite"></p>
+  </form>
+
+  <noscript>
+    <p class="mt-4 meta text-olive/70">
+      Prefer not to use the form? <a class="underline" href={`mailto:${EMAIL}?subject=GAP%20course%20enquiry`}>Email us</a>
+      or <a class="underline" href={WHATSAPP} target="_blank" rel="noopener">WhatsApp us</a>.
+    </p>
+  </noscript>
+</div>
+
+<script is:inline define:vars={{ WHATSAPP, EMAIL }}>
+  const form = document.getElementById('gap-enquiry-form');
+  const status = document.getElementById('gap-enquiry-status');
+
+  function show(msg, ok) {
+    status.innerHTML = msg;
+    status.classList.remove('hidden');
+    status.classList.toggle('text-olive', ok);
+    status.classList.toggle('text-pink', !ok);
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      const data = Object.fromEntries(new FormData(form).entries());
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/gap-enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok) {
+          form.querySelector('.grid').style.display = 'none';
+          form.querySelector('textarea').closest('label').style.display = 'none';
+          btn.parentElement.style.display = 'none';
+          show(
+            "Thanks — that's with us. We'll be in touch shortly. Want a faster reply? <a class='underline' href='" +
+              WHATSAPP +
+              "' target='_blank' rel='noopener'>WhatsApp us</a>.",
+            true,
+          );
+        } else if (body.fallback) {
+          show(
+            "Our form's having a moment. Reach us directly: <a class='underline' href='" +
+              WHATSAPP +
+              "' target='_blank' rel='noopener'>WhatsApp</a> or <a class='underline' href='mailto:" +
+              EMAIL +
+              "?subject=GAP%20course%20enquiry'>email</a>.",
+            false,
+          );
+          btn.disabled = false;
+          btn.textContent = 'Send my enquiry →';
+        } else {
+          show(body.error || 'Something went wrong. Please try again.', false);
+          btn.disabled = false;
+          btn.textContent = 'Send my enquiry →';
+        }
+      } catch {
+        show(
+          "Couldn't send just now. <a class='underline' href='" +
+            WHATSAPP +
+            "' target='_blank' rel='noopener'>WhatsApp us</a> instead?",
+          false,
+        );
+        btn.disabled = false;
+        btn.textContent = 'Send my enquiry →';
+      }
+    });
+  }
+</script>

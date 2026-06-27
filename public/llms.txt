@@ -31,8 +31,10 @@ This site (https://peaksnowsports.com) is the marketing front-end. Online bookin
 - Two levels: Intermediate (comfortable on blues / easy reds, stepping up) and Advanced (refining performance, exploring all-mountain).
 - Fat Fox Lodge accommodation is for Morzine-Avoriaz camps only; other camp locations have accommodation TBC.
 
-### GAP Course (`/gap-course`)
-- Six-week instructor-training programme that delivers **BASI Level 1 + Level 2** qualifications.
+### GAP Course — ski instructor course (`/gap-course`)
+- Six-week **ski instructor training course** that takes a confident skier to a qualified **BASI Level 1 + Level 2** ski instructor. One of the fastest routes to becoming a ski instructor; suits gap-year students, university students and career-changers.
+- **How to become a ski instructor with Peak:** arrive a confident parallel skier (no teaching experience needed) → six weeks of BASI Level 1 + 2 training and exams → leave qualified, with on-course interviews for paid instructor work.
+- **Entry requirement:** confident parallel skier, comfortable on most red runs.
 - Two intakes per year:
   - **Autumn pre-season:** Hintertux, Austria (provisional Sun 1 Nov – Fri 11 Dec 2026)
   - **Winter in-season:** Morzine + Avoriaz (3 Jan – 12 Feb 2027)
