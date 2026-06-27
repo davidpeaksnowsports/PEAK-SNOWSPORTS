@@ -1,4 +1,3 @@
-import page from './page';
 import resort from './resort';
 import lesson from './lesson';
 import instructor from './instructor';
@@ -11,7 +10,6 @@ import skiCampsPage from './skiCampsPage';
 import lessonsPage from './lessonsPage';
 
 export const schemaTypes = [
-  page,
   resort,
   lesson,
   instructor,
