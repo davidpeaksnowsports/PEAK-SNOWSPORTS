@@ -66,7 +66,12 @@ async function run() {
 
     const body = addKeys(markdownToPortableText(content));
 
-    const publishedAt = new Date(`${fm.publishedAt}T09:00:00.000Z`).toISOString();
+    // YAML may parse an unquoted `publishedAt: 2026-06-27` as a Date already.
+    const publishedAt = (
+      fm.publishedAt instanceof Date
+        ? fm.publishedAt
+        : new Date(`${fm.publishedAt}T09:00:00.000Z`)
+    ).toISOString();
 
     const doc = {
       _id: `post-${slug}`,
