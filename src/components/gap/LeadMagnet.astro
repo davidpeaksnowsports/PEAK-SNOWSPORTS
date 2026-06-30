@@ -1,0 +1,126 @@
+---
+/**
+ * Lead-magnet capture: visitors give an email to get the kit-list PDF. Lower
+ * commitment than the full enquiry form, so it captures people earlier in the
+ * funnel. Posts to /api/lead-magnet (emails the lead to hello@), then reveals
+ * the download. The PDF is a public asset, so the form never blocks access —
+ * it just asks. First-party email only: no cookies, no consent needed.
+ */
+const ASSET = '/downloads/peak-ski-instructor-kit-list.pdf';
+---
+
+<section class="bg-cream">
+  <div class="mx-auto max-w-screen-2xl px-6 py-16 md:py-20">
+    <div class="grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-20">
+      <div class="space-y-5">
+        <p class="meta text-pink">Free download</p>
+        <h2 class="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+          The ski instructor course kit list.
+        </h2>
+        <p class="max-w-xl text-lg leading-relaxed text-olive/80">
+          Exactly what to pack for six weeks on snow — hardware, layers, documents and the bits people forget. One page, print it, tick it off. We'll email it over and keep you posted on dates and places.
+        </p>
+      </div>
+
+      <div class="rounded-3xl border border-olive bg-snow p-6 md:p-8">
+        <form id="kit-list-form" class="space-y-5" action="/api/lead-magnet" method="post">
+          <label class="block">
+            <span class="meta text-olive/60">First name</span>
+            <input
+              type="text"
+              name="name"
+              autocomplete="given-name"
+              class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+            />
+          </label>
+          <label class="block">
+            <span class="meta text-olive/60">Email *</span>
+            <input
+              type="email"
+              name="email"
+              required
+              autocomplete="email"
+              class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+            />
+          </label>
+
+          <!-- Honeypot -->
+          <input
+            type="text"
+            name="company"
+            tabindex="-1"
+            autocomplete="off"
+            class="absolute left-[-9999px] h-0 w-0 opacity-0"
+            aria-hidden="true"
+          />
+
+          <button
+            type="submit"
+            class="inline-flex w-full items-center justify-center rounded-full bg-pink px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-olive"
+          >
+            Send me the kit list →
+          </button>
+          <p class="meta text-olive/50">No spam. Unsubscribe anytime.</p>
+        </form>
+
+        <div id="kit-list-done" class="hidden text-center">
+          <p class="text-lg font-medium text-olive">That's on its way to your inbox. Grab it now too:</p>
+          <a
+            id="kit-list-download"
+            href={ASSET}
+            download
+            data-analytics-event="Kit List Download"
+            class="mt-5 inline-flex items-center justify-center rounded-full bg-olive px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-pink"
+          >
+            Download the kit list (PDF) →
+          </a>
+        </div>
+
+        <p id="kit-list-status" class="mt-4 hidden text-base leading-relaxed text-pink" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline define:vars={{ ASSET }}>
+  const form = document.getElementById('kit-list-form');
+  const done = document.getElementById('kit-list-done');
+  const status = document.getElementById('kit-list-status');
+
+  function reveal() {
+    if (form) form.classList.add('hidden');
+    if (done) done.classList.remove('hidden');
+    if (window.peakTrack) window.peakTrack('Lead Magnet', { asset: 'kit-list' });
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      const data = Object.fromEntries(new FormData(form).entries());
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/lead-magnet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok) {
+          reveal();
+        } else if (res.status === 422) {
+          status.textContent = body.error || 'Please give us a valid email.';
+          status.classList.remove('hidden');
+          btn.disabled = false;
+          btn.textContent = 'Send me the kit list →';
+        } else {
+          // Don't lose the visitor over a backend hiccup — hand over the asset.
+          reveal();
+        }
+      } catch {
+        reveal();
+      }
+    });
+  }
+</script>

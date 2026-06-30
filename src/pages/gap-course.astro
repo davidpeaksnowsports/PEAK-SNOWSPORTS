@@ -4,6 +4,7 @@ import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
 import EnquiryForm from '../components/gap/EnquiryForm.astro';
 import StickyCta from '../components/gap/StickyCta.astro';
+import LeadMagnet from '../components/gap/LeadMagnet.astro';
 import heroImage from '../assets/images/hero-gap.jpg';
 
 const included = [
@@ -503,6 +504,9 @@ jsonLd.push({
       ))}
     </div>
   </Section>
+
+  <!-- Lead magnet: capture emails earlier in the funnel with the kit list -->
+  <LeadMagnet />
 
   <!-- Why students choose Peak -->
   <Section kicker="Why students choose Peak" title="Four reasons it works.">
