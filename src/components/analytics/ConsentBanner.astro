@@ -1,0 +1,117 @@
+---
+/**
+ * Lightweight, self-hosted cookie-consent banner.
+ *
+ * Only ever rendered when at least one marketing pixel is configured (see
+ * BaseLayout) — there's no point asking for consent we don't act on. Plausible
+ * is cookieless and CNIL-exempt, so it runs without consent and is NOT gated
+ * here; only the advertising pixels (Meta / Google Ads) are.
+ *
+ * Behaviour (GDPR/ePrivacy-aligned):
+ *  - Pixels load ONLY after an explicit "Accept". No pre-consent loading, no
+ *    pre-ticked anything, no implied consent from scrolling.
+ *  - "Decline" is exactly as easy as "Accept" (equal-weight buttons).
+ *  - The choice persists in localStorage; the banner never reappears once set.
+ */
+interface Props {
+  metaPixelId?: string;
+  googleAdsId?: string;
+}
+const { metaPixelId, googleAdsId } = Astro.props;
+---
+
+<div
+  id="peak-consent"
+  hidden
+  role="dialog"
+  aria-live="polite"
+  aria-label="Cookie consent"
+  class="fixed inset-x-0 bottom-0 z-[60] border-t border-olive/15 bg-snow/95 backdrop-blur"
+>
+  <div class="mx-auto flex max-w-screen-2xl flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+    <p class="max-w-2xl text-sm leading-relaxed text-olive/80">
+      We use cookieless analytics by default. With your okay, we'd also set
+      advertising cookies so we can show Peak to people who've visited before.
+      <a href="/cookies" class="underline underline-offset-2 hover:bg-yellow">More in our cookie policy</a>.
+    </p>
+    <div class="flex shrink-0 gap-3">
+      <button
+        id="peak-consent-decline"
+        type="button"
+        class="inline-flex items-center rounded-full border border-olive/30 px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-olive no-underline transition hover:border-olive hover:bg-olive hover:text-snow"
+      >
+        Decline
+      </button>
+      <button
+        id="peak-consent-accept"
+        type="button"
+        class="inline-flex items-center rounded-full bg-pink px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-olive"
+      >
+        Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ metaPixelId, googleAdsId }}>
+  (function () {
+    var KEY = 'peak:consent';
+
+    function loadMeta(id) {
+      if (!id || window.fbq) return;
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+        t = b.createElement(e); t.async = !0; t.src = v;
+        s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      window.fbq('init', id);
+      window.fbq('track', 'PageView');
+    }
+
+    function loadGoogle(id) {
+      if (!id || window.gtag) return;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', id);
+    }
+
+    // Fire any conversion events that happened before consent was granted —
+    // peakTrack guards on window.fbq/gtag, so events during the same page view
+    // after this point flow through automatically.
+    function enable() {
+      loadMeta(metaPixelId);
+      loadGoogle(googleAdsId);
+    }
+
+    var banner = document.getElementById('peak-consent');
+    var choice = null;
+    try { choice = localStorage.getItem(KEY); } catch (_) {}
+
+    if (choice === 'granted') {
+      enable();
+    } else if (choice !== 'denied' && banner) {
+      banner.hidden = false;
+    }
+
+    function set(value) {
+      try { localStorage.setItem(KEY, value); } catch (_) {}
+      if (banner) banner.hidden = true;
+      if (value === 'granted') enable();
+    }
+
+    var accept = document.getElementById('peak-consent-accept');
+    var decline = document.getElementById('peak-consent-decline');
+    if (accept) accept.addEventListener('click', function () { set('granted'); });
+    if (decline) decline.addEventListener('click', function () { set('denied'); });
+  })();
+</script>

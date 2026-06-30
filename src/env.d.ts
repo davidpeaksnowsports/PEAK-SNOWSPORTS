@@ -9,6 +9,8 @@ interface ImportMetaEnv {
   readonly RESEND_API_KEY: string;
   readonly PUBLIC_FORMSPREE_ENDPOINT: string;
   readonly PUBLIC_PLAUSIBLE_DOMAIN: string;
+  readonly PUBLIC_META_PIXEL_ID: string;
+  readonly PUBLIC_GOOGLE_ADS_ID: string;
   readonly PUBLIC_WEGLOT_API_KEY: string;
 }
 

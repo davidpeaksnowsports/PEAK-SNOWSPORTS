@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Nav from '../components/nav/Nav.astro';
 import Footer from '../components/nav/Footer.astro';
+import ConsentBanner from '../components/analytics/ConsentBanner.astro';
 
 interface Props {
   title?: string;
@@ -37,6 +38,11 @@ const SITE_NAME = 'Peak Snowsports';
 // script below), and imperatively via window.plausible(...) from component
 // scripts (e.g. enquiry-form success).
 const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
+// Retargeting pixels are consent-gated: the banner + pixels render only when at
+// least one ID is configured. Plausible (above) is cookieless and runs always.
+const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID;
+const googleAdsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
+const hasMarketingPixels = Boolean(metaPixelId || googleAdsId);
 
 // Canonical must point at the final, non-redirecting URL: www host, no
 // trailing slash (the live site serves /gap-course, not /gap-course/). Strip
@@ -151,25 +157,43 @@ const allJsonLd = [orgJsonLd, websiteJsonLd, ...pageJsonLdArray];
       <script type="application/ld+json" set:html={JSON.stringify(data)} />
     ))}
 
-    <!-- Analytics (Plausible) — only when configured -->
+    <!-- Plausible: cookieless, CNIL-exempt, runs without consent -->
     {plausibleDomain && (
       <>
         <script defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js"></script>
         <script is:inline>
-          // Queue stub: lets window.plausible(...) work before the async
-          // script loads. Then delegate clicks on [data-analytics-event] to a
-          // Plausible goal, with optional JSON props in data-analytics-props.
+          // Queue stub so window.plausible(...) works before the async script loads.
           window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
-          document.addEventListener('click', function (e) {
-            const el = e.target.closest('[data-analytics-event]');
-            if (!el) return;
-            let props;
-            try { props = JSON.parse(el.getAttribute('data-analytics-props') || 'null'); } catch (_) { props = null; }
-            window.plausible(el.getAttribute('data-analytics-event'), props ? { props: props } : undefined);
-          }, true);
         </script>
       </>
     )}
+
+    <!-- Unified event dispatch: fan each goal out to whichever sinks are loaded.
+         Plausible is always-on; fbq/gtag only exist after marketing consent. -->
+    <script is:inline>
+      // Map our goal names onto Meta standard events for better ad optimisation.
+      var PEAK_META_STD = { 'Enquiry': 'Lead', 'Deposit Click': 'InitiateCheckout', 'Book Standard': 'InitiateCheckout', 'Book Upgraded': 'InitiateCheckout' };
+      window.peakTrack = function (name, props) {
+        try { if (window.plausible) window.plausible(name, props ? { props: props } : undefined); } catch (_) {}
+        try {
+          if (window.fbq) {
+            var std = PEAK_META_STD[name];
+            if (std) window.fbq('track', std, props || {});
+            else window.fbq('trackCustom', name, props || {});
+          }
+        } catch (_) {}
+        try { if (window.gtag) window.gtag('event', name, props || {}); } catch (_) {}
+      };
+      // Delegate clicks on [data-analytics-event] to a goal, with optional JSON
+      // props in data-analytics-props.
+      document.addEventListener('click', function (e) {
+        var el = e.target.closest('[data-analytics-event]');
+        if (!el) return;
+        var props;
+        try { props = JSON.parse(el.getAttribute('data-analytics-props') || 'null'); } catch (_) { props = null; }
+        window.peakTrack(el.getAttribute('data-analytics-event'), props);
+      }, true);
+    </script>
   </head>
   <body class="bg-snow font-sans text-olive">
     <Nav />
@@ -177,5 +201,6 @@ const allJsonLd = [orgJsonLd, websiteJsonLd, ...pageJsonLdArray];
       <slot />
     </main>
     <Footer />
+    {hasMarketingPixels && <ConsentBanner metaPixelId={metaPixelId} googleAdsId={googleAdsId} />}
   </body>
 </html>

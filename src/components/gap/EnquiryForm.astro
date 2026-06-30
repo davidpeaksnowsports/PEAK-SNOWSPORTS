@@ -122,9 +122,9 @@ const EMAIL = 'hello@peaksnowsports.com';
         });
         const body = await res.json().catch(() => ({}));
         if (res.ok && body.ok) {
-          // Conversion goal: a real enquiry landed. Guarded so it's a no-op
-          // when Plausible isn't configured. Segment by chosen intake.
-          if (window.plausible) window.plausible('Enquiry', { props: { intake: data.intake || 'Not sure yet' } });
+          // Conversion goal: a real enquiry landed. peakTrack fans this out to
+          // Plausible plus any consented pixels (Meta maps it to 'Lead').
+          if (window.peakTrack) window.peakTrack('Enquiry', { intake: data.intake || 'Not sure yet' });
           form.querySelector('.grid').style.display = 'none';
           form.querySelector('textarea').closest('label').style.display = 'none';
           btn.parentElement.style.display = 'none';
