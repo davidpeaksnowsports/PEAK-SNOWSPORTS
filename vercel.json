@@ -19,6 +19,8 @@
     { "source": "/book-a-ski-lesson",         "destination": "/book",                  "permanent": true },
     { "source": "/gap-course-morzine",        "destination": "/gap-course",            "permanent": true },
     { "source": "/gap",                       "destination": "/gap-course",            "permanent": true },
+    { "source": "/instructorcourses",         "destination": "/gap-course",            "permanent": true },
+    { "source": "/instructor-courses-launch", "destination": "/gap-course",            "permanent": true },
     { "source": "/terms-and-conditions",      "destination": "/terms",                 "permanent": true },
     { "source": "/privacy-policy",            "destination": "/privacy",               "permanent": true },
     { "source": "/lessons-morzine",           "destination": "/lessons",               "permanent": true },

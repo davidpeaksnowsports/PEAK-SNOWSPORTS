@@ -28,12 +28,14 @@ const {
   jsonLd,
 } = Astro.props;
 
-const SITE_URL = 'https://peaksnowsports.com';
+const SITE_URL = 'https://www.peaksnowsports.com';
 const SITE_NAME = 'Peak Snowsports';
 
-const canonicalUrl = canonical
-  ? new URL(canonical, SITE_URL).toString()
-  : new URL(Astro.url.pathname, SITE_URL).toString();
+// Canonical must point at the final, non-redirecting URL: www host, no
+// trailing slash (the live site serves /gap-course, not /gap-course/). Strip
+// any trailing slash from the pathname, keeping "/" for the root.
+const canonicalPath = canonical ?? (Astro.url.pathname.replace(/\/+$/, '') || '/');
+const canonicalUrl = new URL(canonicalPath, SITE_URL).toString();
 
 const ogImage = image.startsWith('http') ? image : new URL(image, SITE_URL).toString();
 

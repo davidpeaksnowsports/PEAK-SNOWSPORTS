@@ -148,7 +148,7 @@ const faqs = page?.faqs ?? [];
       name: page?.seoTitle,
       description: page?.seoDescription,
       brand: { '@type': 'Organization', name: 'Peak Snowsports' },
-      image: 'https://peaksnowsports.com/images/og/ski-camps.jpg',
+      image: 'https://www.peaksnowsports.com/images/og/ski-camps.jpg',
       category: 'Adult ski performance camp',
       offers: {
         '@type': 'AggregateOffer',
@@ -156,7 +156,7 @@ const faqs = page?.faqs ?? [];
         ...(lowPrice !== undefined && { lowPrice }),
         ...(highPrice !== undefined && { highPrice }),
         availability: 'https://schema.org/InStock',
-        url: 'https://peaksnowsports.com/ski-camps#book',
+        url: 'https://www.peaksnowsports.com/ski-camps#book',
         offerCount,
       },
     },

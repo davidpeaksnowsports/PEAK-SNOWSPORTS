@@ -61,7 +61,7 @@ const stats = [
 const heroDisplay = d.hero?.asset?._ref
   ? urlFor(d.hero).width(2400).height(1200).fit('crop').url()
   : undefined;
-const heroAbsolute = heroDisplay ?? 'https://peaksnowsports.com/images/og/resorts.jpg';
+const heroAbsolute = heroDisplay ?? 'https://www.peaksnowsports.com/images/og/resorts.jpg';
 
 const seoTitle =
   d.seoTitle ??
@@ -77,7 +77,7 @@ const jsonLd = [
     name: d.name,
     description: d.knownFor,
     image: heroAbsolute,
-    url: `https://peaksnowsports.com/resorts/${d.slug}`,
+    url: `https://www.peaksnowsports.com/resorts/${d.slug}`,
     address: {
       '@type': 'PostalAddress',
       addressLocality: d.name,
@@ -90,8 +90,8 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Resorts', item: 'https://peaksnowsports.com/resorts' },
-      { '@type': 'ListItem', position: 2, name: d.name, item: `https://peaksnowsports.com/resorts/${d.slug}` },
+      { '@type': 'ListItem', position: 1, name: 'Resorts', item: 'https://www.peaksnowsports.com/resorts' },
+      { '@type': 'ListItem', position: 2, name: d.name, item: `https://www.peaksnowsports.com/resorts/${d.slug}` },
     ],
   },
 ];

@@ -20,8 +20,8 @@ const specialitiesList = d.specialities.length ? d.specialities.join(', ') : nul
 const seoTitle = `${d.name} · Ski instructor in ${resortList} · Peak Snowsports`;
 const seoDescription = `${d.name}${d.role ? ` — ${d.role}` : ''}. Ski instructor at Peak Snowsports in ${resortList}.${specialitiesList ? ' Specialities: ' + specialitiesList + '.' : ''}${d.languages.length ? ' Languages: ' + d.languages.join(', ') + '.' : ''}`;
 const photoUrl = d.photo
-  ? new URL(d.photo, 'https://peaksnowsports.com').toString()
-  : 'https://peaksnowsports.com/images/og/instructors.jpg';
+  ? new URL(d.photo, 'https://www.peaksnowsports.com').toString()
+  : 'https://www.peaksnowsports.com/images/og/instructors.jpg';
 
 const jsonLd = [
   {
@@ -29,9 +29,9 @@ const jsonLd = [
     '@type': 'Person',
     name: d.name,
     jobTitle: d.role ?? 'Ski instructor',
-    worksFor: { '@id': 'https://peaksnowsports.com/#organization' },
+    worksFor: { '@id': 'https://www.peaksnowsports.com/#organization' },
     image: photoUrl,
-    url: `https://peaksnowsports.com/instructors/${instructor.id}`,
+    url: `https://www.peaksnowsports.com/instructors/${instructor.id}`,
     knowsLanguage: d.languages,
     knowsAbout: d.specialities,
     hasCredential: d.qualifications.map((q) => ({
@@ -44,8 +44,8 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Instructors', item: 'https://peaksnowsports.com/instructors' },
-      { '@type': 'ListItem', position: 2, name: d.name, item: `https://peaksnowsports.com/instructors/${instructor.id}` },
+      { '@type': 'ListItem', position: 1, name: 'Instructors', item: 'https://www.peaksnowsports.com/instructors' },
+      { '@type': 'ListItem', position: 2, name: d.name, item: `https://www.peaksnowsports.com/instructors/${instructor.id}` },
     ],
   },
 ];

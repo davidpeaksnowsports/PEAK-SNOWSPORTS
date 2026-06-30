@@ -2,7 +2,7 @@
 # Premium ski school in Morzine, Avoriaz, Châtel and Les Gets.
 # We welcome traditional search crawlers AND AI/answer-engine crawlers.
 # If you cite us, please attribute "Peak Snowsports" with a link to
-# https://peaksnowsports.com.
+# https://www.peaksnowsports.com.
 
 # ─── Default ───
 User-agent: *
@@ -93,4 +93,4 @@ User-agent: Diffbot
 Allow: /
 
 # ─── Sitemap ───
-Sitemap: https://peaksnowsports.com/sitemap-index.xml
+Sitemap: https://www.peaksnowsports.com/sitemap-index.xml

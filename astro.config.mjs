@@ -12,7 +12,7 @@ import sitemap from '@astrojs/sitemap';
 // Vercel adapter ships server routes as Vercel functions; static pages are
 // served from the edge as before. See src/pages/api/booking-token.ts.
 export default defineConfig({
-  site: 'https://peaksnowsports.com',
+  site: 'https://www.peaksnowsports.com',
   output: 'static',
   adapter: vercel(),
   integrations: [
@@ -32,9 +32,15 @@ export default defineConfig({
       changefreq: 'weekly',
       priority: 0.7,
       serialize: (item) => {
+        // Astro emits trailing slashes on every URL by default, but our
+        // canonical tags carry none (the live site serves /gap-course, not
+        // /gap-course/). Strip the slash so each sitemap entry matches its
+        // canonical character-for-character — keep "/" for the root.
+        const url = new URL(item.url);
+        url.pathname = url.pathname.replace(/\/+$/, '') || '/';
+        item = { ...item, url: url.href };
         // Per-route priority tuning. Match against the path part of the URL.
-        // Note: Astro emits trailing slashes on every URL by default.
-        const path = new URL(item.url).pathname;
+        const path = url.pathname;
         if (path === '/') return { ...item, priority: 1.0, changefreq: 'weekly' };
         if (/^\/(gap-course|ski-camps)\/?$/.test(path)) return { ...item, priority: 0.95, changefreq: 'weekly' };
         if (/^\/lessons\//.test(path)) return { ...item, priority: 0.9, changefreq: 'weekly' };
