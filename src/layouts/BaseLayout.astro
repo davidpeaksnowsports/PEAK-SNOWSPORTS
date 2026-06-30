@@ -31,6 +31,13 @@ const {
 const SITE_URL = 'https://www.peaksnowsports.com';
 const SITE_NAME = 'Peak Snowsports';
 
+// Analytics: Plausible loads only when PUBLIC_PLAUSIBLE_DOMAIN is set (in
+// Vercel env). Custom events are fired two ways: declaratively via
+// data-analytics-event attributes (click-tracked sitewide by the delegation
+// script below), and imperatively via window.plausible(...) from component
+// scripts (e.g. enquiry-form success).
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
+
 // Canonical must point at the final, non-redirecting URL: www host, no
 // trailing slash (the live site serves /gap-course, not /gap-course/). Strip
 // any trailing slash from the pathname, keeping "/" for the root.
@@ -143,6 +150,26 @@ const allJsonLd = [orgJsonLd, websiteJsonLd, ...pageJsonLdArray];
     {allJsonLd.map((data) => (
       <script type="application/ld+json" set:html={JSON.stringify(data)} />
     ))}
+
+    <!-- Analytics (Plausible) — only when configured -->
+    {plausibleDomain && (
+      <>
+        <script defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js"></script>
+        <script is:inline>
+          // Queue stub: lets window.plausible(...) work before the async
+          // script loads. Then delegate clicks on [data-analytics-event] to a
+          // Plausible goal, with optional JSON props in data-analytics-props.
+          window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+          document.addEventListener('click', function (e) {
+            const el = e.target.closest('[data-analytics-event]');
+            if (!el) return;
+            let props;
+            try { props = JSON.parse(el.getAttribute('data-analytics-props') || 'null'); } catch (_) { props = null; }
+            window.plausible(el.getAttribute('data-analytics-event'), props ? { props: props } : undefined);
+          }, true);
+        </script>
+      </>
+    )}
   </head>
   <body class="bg-snow font-sans text-olive">
     <Nav />
