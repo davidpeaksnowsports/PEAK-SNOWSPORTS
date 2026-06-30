@@ -1,0 +1,37 @@
+---
+/**
+ * Mobile-only sticky CTA bar for the GAP course page. Most traffic is mobile,
+ * and the enquiry form / WhatsApp CTAs sit mid- and end-of-page; this keeps a
+ * persistent path to convert in view while scrolling. Hidden on desktop
+ * (md:hidden). Sits below the consent banner (z-50 vs z-60) so first-visit
+ * consent takes priority.
+ */
+interface Props {
+  enquireHref?: string;
+  whatsappHref?: string;
+}
+const { enquireHref = '#enquire', whatsappHref } = Astro.props;
+---
+
+<div class="fixed inset-x-0 bottom-0 z-50 border-t border-olive/15 bg-snow/95 backdrop-blur md:hidden">
+  <div class="flex items-center gap-2 px-4 py-3">
+    <a
+      href={enquireHref}
+      data-analytics-event="Sticky Enquire"
+      class="flex-1 inline-flex items-center justify-center rounded-full bg-pink px-5 py-3 font-display text-sm font-bold uppercase tracking-tight text-snow no-underline"
+    >
+      Enquire now
+    </a>
+    {whatsappHref && (
+      <a
+        href={whatsappHref}
+        target="_blank"
+        rel="noopener"
+        data-analytics-event="Sticky WhatsApp"
+        class="inline-flex items-center justify-center rounded-full border border-olive/30 px-5 py-3 font-display text-sm font-bold uppercase tracking-tight text-olive no-underline"
+      >
+        WhatsApp
+      </a>
+    )}
+  </div>
+</div>
