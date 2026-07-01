@@ -114,6 +114,31 @@ const faqs = [
   },
 ];
 
+// Single source of truth for testimonials: drives both the visible section and
+// the Course schema's review list + reviewCount, so they can never drift apart.
+// Only real, attributable graduate quotes belong here (Google penalises
+// fabricated review markup).
+const testimonials = [
+  {
+    name: 'Ella Mayhew',
+    year: '2026',
+    quote:
+      'A great experience with Peak training. I highly recommend this ski school if you want to become a ski instructor. Excellent support and highly qualified instructors. In a word: I recommend PEAK.',
+  },
+  {
+    name: 'Katie Work',
+    year: '2026',
+    quote:
+      "The team at Peak are exceptional — they are extremely knowledgeable and can cater to a wide variety of levels and experience. Coming into the course I wasn't sure what to expect, but the team helped to outline the entire course with clear goals. They improved my skiing dramatically throughout the course and gave us all the tools needed to help through exams. Super professional and heaps of fun. Would recommend.",
+  },
+  {
+    name: 'Neil',
+    year: '2024',
+    quote:
+      'High quality of training first and foremost. Enthusiasm and humour of fellow students made it very memorable!',
+  },
+];
+
 const SITE = 'https://www.peaksnowsports.com';
 
 const jsonLd = [
@@ -132,24 +157,14 @@ const jsonLd = [
       ratingValue: '5',
       bestRating: '5',
       worstRating: '1',
-      reviewCount: '2',
+      reviewCount: String(testimonials.length),
     },
-    review: [
-      {
-        '@type': 'Review',
-        author: { '@type': 'Person', name: 'Ella Mayhew' },
-        reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
-        reviewBody:
-          'A great experience with Peak training. I highly recommend this ski school if you want to become a ski instructor. Excellent support and highly qualified instructors. In a word: I recommend PEAK.',
-      },
-      {
-        '@type': 'Review',
-        author: { '@type': 'Person', name: 'Katie Work' },
-        reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
-        reviewBody:
-          "The team at Peak are exceptional — they are extremely knowledgeable and can cater to a wide variety of levels and experience. Coming into the course I wasn't sure what to expect, but the team helped to outline the entire course with clear goals. They improved my skiing dramatically throughout the course and gave us all the tools needed to help through exams. Super professional and heaps of fun. Would recommend.",
-      },
-    ],
+    review: testimonials.map((t) => ({
+      '@type': 'Review',
+      author: { '@type': 'Person', name: t.name },
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      reviewBody: t.quote,
+    })),
     provider: {
       '@type': 'Organization',
       '@id': `${SITE}/#organization`,
@@ -526,22 +541,17 @@ jsonLd.push({
   </Section>
 
   <!-- Testimonials: social proof from last year's cohort -->
-  <Section kicker="What students say" title="From last year's cohort.">
-    <div class="grid gap-6 md:grid-cols-2">
-      <figure class="flex flex-col rounded-3xl border border-olive bg-cream p-8 md:p-10">
-        <span aria-hidden="true" class="font-display text-5xl leading-none text-pink">“</span>
-        <blockquote class="mt-4 text-lg leading-relaxed text-olive/85 md:text-xl">
-          A great experience with Peak training. I highly recommend this ski school if you want to become a ski instructor. Excellent support and highly qualified instructors. In a word: I recommend PEAK.
-        </blockquote>
-        <figcaption class="meta mt-6 text-olive/60">Ella Mayhew · 2026 GAP graduate</figcaption>
-      </figure>
-      <figure class="flex flex-col rounded-3xl border border-olive bg-cream p-8 md:p-10">
-        <span aria-hidden="true" class="font-display text-5xl leading-none text-pink">“</span>
-        <blockquote class="mt-4 text-lg leading-relaxed text-olive/85 md:text-xl">
-          The team at Peak are exceptional — they are extremely knowledgeable and can cater to a wide variety of levels and experience. Coming into the course I wasn't sure what to expect, but the team helped to outline the entire course with clear goals. They improved my skiing dramatically throughout the course and gave us all the tools needed to help through exams. Super professional and heaps of fun. Would recommend.
-        </blockquote>
-        <figcaption class="meta mt-6 text-olive/60">Katie Work · 2026 GAP graduate</figcaption>
-      </figure>
+  <Section kicker="What students say" title="From our graduates.">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {testimonials.map((t) => (
+        <figure class="flex flex-col rounded-3xl border border-olive bg-cream p-8 md:p-10">
+          <span aria-hidden="true" class="font-display text-5xl leading-none text-pink">“</span>
+          <blockquote class="mt-4 text-lg leading-relaxed text-olive/85 md:text-xl">
+            {t.quote}
+          </blockquote>
+          <figcaption class="meta mt-6 text-olive/60">{t.name} · {t.year} GAP graduate</figcaption>
+        </figure>
+      ))}
     </div>
     <div class="mt-8">
       <a href="#enquire" class="inline-flex items-center rounded-full bg-pink px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-olive">
