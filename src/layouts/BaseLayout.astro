@@ -157,13 +157,18 @@ const allJsonLd = [orgJsonLd, websiteJsonLd, ...pageJsonLdArray];
       <script type="application/ld+json" set:html={JSON.stringify(data)} />
     ))}
 
-    <!-- Plausible: cookieless, CNIL-exempt, runs without consent -->
+    <!-- Plausible (v2): cookieless, CNIL-exempt, runs without consent. The site
+         id is baked into the hashed script URL, so PUBLIC_PLAUSIBLE_DOMAIN is
+         just the on-switch — set it in Vercel Production so local/preview
+         traffic stays out of the stats. The init stub also queues any
+         window.plausible(...) custom events (peakTrack) until the script loads. -->
     {plausibleDomain && (
       <>
-        <script defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js"></script>
+        <script async src="https://plausible.io/js/pa-DsSRPMC-4S6Z60WtE5d95.js"></script>
         <script is:inline>
-          // Queue stub so window.plausible(...) works before the async script loads.
-          window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+          window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments); };
+          plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
+          plausible.init();
         </script>
       </>
     )}
