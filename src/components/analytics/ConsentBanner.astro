@@ -57,8 +57,12 @@ const { metaPixelId, googleAdsId } = Astro.props;
   (function () {
     var KEY = 'peak:consent';
 
-    function loadMeta(id) {
-      if (!id || window.fbq) return;
+    function loadMeta(ids) {
+      // Accepts one or more comma-separated pixel IDs. Every initialised pixel
+      // receives the same events (fbq default), so multiple pixels each build
+      // their own retargeting audience without extra tracking calls.
+      var list = (ids || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+      if (!list.length || window.fbq) return;
       !(function (f, b, e, v, n, t, s) {
         if (f.fbq) return;
         n = f.fbq = function () {
@@ -69,7 +73,7 @@ const { metaPixelId, googleAdsId } = Astro.props;
         t = b.createElement(e); t.async = !0; t.src = v;
         s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
       })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-      window.fbq('init', id);
+      list.forEach(function (id) { window.fbq('init', id); });
       window.fbq('track', 'PageView');
     }
 
