@@ -207,7 +207,7 @@ peaksnowsports-web/
 - Lower-priority for conversion, higher-priority for brand.
 
 ### Book (`/book`)
-- Dedicated page hosting the full SkiOperator booking embed. Styled wrapper that feels continuous with the rest of the site. Currently a "coming soon" holding page; drop in `<SkiOperatorEmbed />` when ready.
+- Dedicated page hosting the full SkiOperator booking embed at full width. Hero + embed + "or talk to us" fallback + cross-nav. Primary conversion destination for the "BOOK" nav link and every "Book a lesson" CTA on the site.
 
 ### Contact (`/contact`)
 - Simple form + WhatsApp deep-links for the appropriate route (GAP enquiry, general lesson enquiry, partner enquiry).
@@ -239,9 +239,8 @@ Full guide: <https://www.ski-operator.com/docs/embed>. Checkout redirects the to
 **Never** use a `sec_` key here — that mode requires a server endpoint on the SkiOperator side (`POST /api/v1/embed/token/generate`) and is out of scope for this site.
 
 ### Where it appears
-- `/lessons/private`, `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste`, `/lessons/race-coaching` — product-specific booking section per page.
-- `/book` — currently a coming-soon holding page; drop in `<SkiOperatorEmbed title="Book a lesson" />` when a full-catalogue view is wanted.
-- "Book a lesson" CTAs across the site link to `/book` or to the relevant product page.
+- `/book` — dedicated full-width embed, the primary conversion page for the "BOOK" nav link and every "Book a lesson" CTA.
+- `/lessons/private`, `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste`, `/lessons/race-coaching` — sidebar embed per product page.
 
 ### What we do NOT build
 - Booking flow, cart, payment — all SkiOperator.

@@ -42,13 +42,14 @@ export default defineConfig({
         // Per-route priority tuning. Match against the path part of the URL.
         const path = url.pathname;
         if (path === '/') return { ...item, priority: 1.0, changefreq: 'weekly' };
+        if (/^\/book\/?$/.test(path)) return { ...item, priority: 0.95, changefreq: 'weekly' };
         if (/^\/(gap-course|ski-camps)\/?$/.test(path)) return { ...item, priority: 0.95, changefreq: 'weekly' };
         if (/^\/lessons\//.test(path)) return { ...item, priority: 0.9, changefreq: 'weekly' };
         if (/^\/resorts\//.test(path)) return { ...item, priority: 0.85, changefreq: 'monthly' };
         if (/^\/instructors\//.test(path)) return { ...item, priority: 0.8, changefreq: 'monthly' };
         if (/^\/journal\//.test(path)) return { ...item, priority: 0.7, changefreq: 'monthly' };
         if (/^\/accommodation\//.test(path)) return { ...item, priority: 0.6, changefreq: 'monthly' };
-        if (/^\/(privacy|terms|cookies|book|join|contact|about)\/?$/.test(path)) return { ...item, priority: 0.4, changefreq: 'yearly' };
+        if (/^\/(privacy|terms|cookies|join|contact|about)\/?$/.test(path)) return { ...item, priority: 0.4, changefreq: 'yearly' };
         return { ...item, priority: 0.5 };
       },
     }),
