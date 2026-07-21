@@ -1,78 +1,65 @@
 ---
 /**
- * SkiOperator booking embed.
+ * SkiOperator booking embed (publishable-key mode).
  *
- * Flow:
- *  1. Browser POSTs to /api/skioperator-token.
- *  2. That endpoint hits SkiOperator server-side with the secure key and
- *     returns a short-lived token.
- *  3. We build the iframe URL from the token and mount the iframe.
+ * Renders a static iframe pointed at SkiOperator. The pub_ key, tenant and
+ * source origin are baked into the src at build time. No client-side JS, no
+ * server token endpoint — SkiOperator gates access via the origin allowlist
+ * configured in its admin (Settings → Embed).
  *
- * The secure key never reaches the browser. Tokens are minted per page load
- * and never cached — the iframe URL isn't persisted anywhere.
+ * pub_ keys are safe in browser code. See https://www.ski-operator.com/docs/embed.
+ *
+ * Env (all PUBLIC_-prefixed — read at build time, inlined into HTML):
+ *   PUBLIC_SKI_OPERATOR_TENANT      — tenant UUID
+ *   PUBLIC_SKI_OPERATOR_PUBLIC_KEY  — pub_… key
  *
  * Checkout redirects the top-level browser to the payment provider, so we
- * deliberately do NOT set an iframe `sandbox` — a sandbox would block the
- * top-navigation the payment flow relies on.
+ * deliberately do NOT set an iframe `sandbox` — a sandbox would break that
+ * navigation.
  */
 interface Props {
   /** Accessible iframe title. Announced by screen readers. */
   title: string;
-  /** Optional Tailwind classes on the outer wrapper. */
+  /** Optional Tailwind classes on the iframe wrapper. */
   class?: string;
 }
 
 const { title, class: className = '' } = Astro.props;
 
-const SKI_OPERATOR_ORIGIN = 'https://www.ski-operator.com';
+const APP_URL = 'https://www.ski-operator.com';
 const EMBED_PATH = '/app/embed/products';
 
-// Unique container id per component instance so multiple embeds on one page
-// don't collide.
-const containerId = `skioperator-embed-${Math.random().toString(36).slice(2, 10)}`;
+const tenant = import.meta.env.PUBLIC_SKI_OPERATOR_TENANT ?? '';
+const publicKey = import.meta.env.PUBLIC_SKI_OPERATOR_PUBLIC_KEY ?? '';
+
+// The parent-site origin SkiOperator validates against its allowlist.
+// `Astro.site` comes from `site:` in astro.config.mjs.
+const sourceOrigin = Astro.site?.origin ?? '';
+
+const configured = Boolean(tenant && publicKey && sourceOrigin);
+
+const params = new URLSearchParams({
+  embed: '1',
+  tenant,
+  sourceOrigin,
+  public_key: publicKey,
+});
+const src = `${APP_URL}${EMBED_PATH}?${params.toString()}`;
 ---
 
-<div id={containerId} class={`skioperator-embed ${className}`}>
-  <p class="meta py-12 text-center text-olive/50">Loading booking…</p>
-</div>
-
-<script is:inline define:vars={{ SKI_OPERATOR_ORIGIN, EMBED_PATH, containerId, title }}>
-  (async function () {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    try {
-      const resp = await fetch('/api/skioperator-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!resp.ok) throw new Error('token-request-failed:' + resp.status);
-
-      const data = await resp.json();
-      const token = data && data.token;
-      if (!token) throw new Error('no-token-in-response');
-
-      const iframe = document.createElement('iframe');
-      iframe.src =
-        SKI_OPERATOR_ORIGIN +
-        EMBED_PATH +
-        '?embed=1&token=' +
-        encodeURIComponent(token);
-      iframe.title = title;
-      iframe.loading = 'lazy';
-      iframe.setAttribute('allow', 'payment');
-      iframe.style.width = '100%';
-      iframe.style.minHeight = '900px';
-      iframe.style.border = '0';
-      iframe.style.display = 'block';
-
-      container.innerHTML = '';
-      container.appendChild(iframe);
-    } catch (err) {
-      console.error('SkiOperator embed error:', err);
-      container.innerHTML =
-        '<p class="meta py-12 text-center text-olive/60">Couldn\'t load the booking widget. Refresh, or <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">get in touch</a>.</p>';
-    }
-  })();
-</script>
+{configured ? (
+  <iframe
+    src={src}
+    title={title}
+    loading="lazy"
+    allow="payment"
+    class:list={['block w-full', className]}
+    style="min-height:900px; border:0;"
+  />
+) : (
+  <div class:list={['skioperator-embed', className]}>
+    <p class="meta py-12 text-center text-olive/60">
+      Booking widget not configured. <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">Get in touch</a> and we'll book you in directly.
+    </p>
+  </div>
+)}

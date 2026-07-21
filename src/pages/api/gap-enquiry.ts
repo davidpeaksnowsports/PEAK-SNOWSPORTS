@@ -1,8 +1,7 @@
 /**
  * Receives GAP-course enquiries from the form on /gap-course and emails them
- * to the team via Resend's REST API. Mirrors the server-only pattern used by
- * skioperator-token.ts: the API key lives in process.env and never reaches the
- * browser.
+ * to the team via Resend's REST API. The API key lives in process.env and
+ * never reaches the browser.
  *
  * The browser POSTs JSON (or a urlencoded form as a no-JS fallback). We
  * validate, drop spam via a honeypot, then forward to Resend.

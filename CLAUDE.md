@@ -217,18 +217,26 @@ peaksnowsports-web/
 ## 7. Booking system integration
 
 ### How it embeds
-**SkiOperator** hosts the booking experience on `ski-operator.com` and renders inside an iframe:
+**SkiOperator** hosts the booking experience on `ski-operator.com` and renders inside an iframe. We use **publishable-key mode** — the pub_ key + tenant are baked into the iframe URL at build time; no server token endpoint, no client-side JS. Access is gated by SkiOperator's origin allowlist.
 
-1. Browser POSTs to `/api/skioperator-token` (our Astro API route).
-2. That endpoint POSTs `{secure_api_key, domain}` to `https://www.ski-operator.com/api/v1/embed/token/generate` using the server-only `SKI_OPERATOR_SECURE_KEY` env var (never in browser code).
-3. The endpoint returns the short-lived token to the browser.
-4. `SkiOperatorEmbed.astro` mounts `<iframe src="https://www.ski-operator.com/app/embed/products?embed=1&token=…" allow="payment">` at min-height 900px.
+`SkiOperatorEmbed.astro` renders:
+```
+<iframe src="https://www.ski-operator.com/app/embed/products
+             ?embed=1
+             &tenant={PUBLIC_SKI_OPERATOR_TENANT}
+             &sourceOrigin={URL-encoded Astro.site origin}
+             &public_key={PUBLIC_SKI_OPERATOR_PUBLIC_KEY}"
+        allow="payment"
+        style="min-height:900px; border:0;">
+```
 
-Full guide: <https://www.ski-operator.com/docs/embed>. Tokens are minted per page load and never cached. Checkout redirects the top-level browser to the payment provider, so **no iframe `sandbox`** — a sandbox would break that.
+Full guide: <https://www.ski-operator.com/docs/embed>. Checkout redirects the top-level browser to the payment provider, so **no iframe `sandbox`** — a sandbox would block that navigation.
 
 **Required config**
-- `SKI_OPERATOR_SECURE_KEY` in Vercel Preview + Production (never `PUBLIC_`-prefixed, never committed).
+- `PUBLIC_SKI_OPERATOR_TENANT` and `PUBLIC_SKI_OPERATOR_PUBLIC_KEY` in Vercel Preview + Production. `PUBLIC_`-prefixed = inlined into browser HTML by design — pub_ keys are browser-safe.
 - Site origin `https://www.peaksnowsports.com` allowlisted in SkiOperator admin → Settings → Embed.
+
+**Never** use a `sec_` key here — that mode requires a server endpoint on the SkiOperator side (`POST /api/v1/embed/token/generate`) and is out of scope for this site.
 
 ### Where it appears
 - `/lessons/private`, `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste`, `/lessons/race-coaching` — product-specific booking section per page.
@@ -349,5 +357,5 @@ When working on this codebase:
 - All copy is short and declarative — flag to David if proposed copy reads as marketing-speak
 - Mobile-first responsive: design from 375px up
 - Every image goes through Astro's `<Image />` or Sanity's CDN for optimisation
-- Never break the booking system embed — `SKI_OPERATOR_SECURE_KEY` (Vercel env), the `/api/skioperator-token` endpoint, and the origin allowlist in SkiOperator admin are all easy to break; test any change to them end-to-end
+- Never break the booking system embed — `PUBLIC_SKI_OPERATOR_TENANT`, `PUBLIC_SKI_OPERATOR_PUBLIC_KEY` (Vercel env), and the origin allowlist in SkiOperator admin are the moving parts; test any change end-to-end
 - Update this CLAUDE.md when major decisions are made
