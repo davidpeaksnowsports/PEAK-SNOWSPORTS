@@ -203,11 +203,9 @@ const page = {
   heroPrimaryCta: { label: 'Check availability', href: '/book' },
   heroSecondaryCta: { label: 'Find your level', href: '#levels' },
 
-  promoEnabled: true,
-  promoKicker: '2025/26 prices · paid in full by 30 June',
-  promoBody:
-    'Lock in current-season prices for next season with code **FREEZE27**.',
-  promoCta: { label: 'Book now →', href: '/book' },
+  // Promo band is off by default — turn it on from Sanity Studio when there's
+  // a live promo (kicker + body support **bold** spans for the discount code).
+  promoEnabled: false,
 
   productsKicker: 'Choose your lesson',
   productsTitle: 'Six products. One standard.',

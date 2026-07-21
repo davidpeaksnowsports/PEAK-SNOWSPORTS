@@ -34,12 +34,12 @@ export default defineType({
     defineField({ name: 'heroPrimaryCta', title: 'Primary CTA', ...cta, group: 'hero' }),
     defineField({ name: 'heroSecondaryCta', title: 'Secondary CTA', ...cta, group: 'hero' }),
 
-    // Promo band (the dark "FREEZE27" strip)
+    // Promo band (the dark strip near the top of /lessons — kicker + body + CTA)
     defineField({
       name: 'promoEnabled',
       type: 'boolean',
       title: 'Show promo band',
-      initialValue: true,
+      initialValue: false,
       group: 'promoBand',
     }),
     defineField({ name: 'promoKicker', type: 'string', group: 'promoBand' }),
