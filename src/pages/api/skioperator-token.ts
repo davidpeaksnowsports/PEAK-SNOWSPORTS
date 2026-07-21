@@ -16,6 +16,16 @@ const SKI_OPERATOR_ORIGIN = 'https://www.ski-operator.com';
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
+  // TEMP DEBUG: probe the runtime to figure out why prod is returning empty 500.
+  const debug = new URL(request.url).searchParams.get('debug') === '1';
+  if (debug) {
+    const keyPresent = !!process.env.SKI_OPERATOR_SECURE_KEY;
+    const envKeys = Object.keys(process.env).filter(k => /SKI|OPERATOR/i.test(k));
+    return new Response(
+      JSON.stringify({ ok: true, keyPresent, matchedEnvKeys: envKeys, node: process.version }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   // Read at runtime via process.env (not import.meta.env, which would bake the
   // value into the function bundle at build time). Vercel injects the secret
   // fresh per invocation, so rotating the key needs no rebuild.
