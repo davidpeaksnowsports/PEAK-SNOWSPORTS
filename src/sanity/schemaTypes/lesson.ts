@@ -24,12 +24,12 @@ export const lesson = defineType({
     defineField({
       name: 'priceReference',
       type: 'string',
-      description: 'Display-only. Actual booking happens via Arch.',
+      description: 'Display-only. Actual booking happens via SkiOperator.',
     }),
     defineField({
       name: 'archProductId',
       type: 'string',
-      description: 'Arch product ID — used to target the availability widget embed.',
+      description: 'SkiOperator product ID — used to target the availability widget embed.',
     }),
   ],
   preview: { select: { title: 'name', media: 'hero' } },

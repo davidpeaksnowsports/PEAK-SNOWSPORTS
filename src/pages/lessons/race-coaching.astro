@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
-import BookingWidget from '../../components/booking/BookingWidget.astro';
+import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
 
 const programmes = [
   {
@@ -220,9 +220,9 @@ const faqs = [
 
   <!-- Availability -->
   <Section id="availability" kicker="Availability" title="Book race coaching.">
-    <BookingWidget productId="race-coaching" variant="product" />
+    <SkiOperatorEmbed title="Race coaching" />
     <p class="meta mt-6 text-olive/60">
-      Châtel-based programmes: email <a href="mailto:chatel@peaksnowsports.com" class="underline-offset-4 hover:bg-pink hover:text-snow hover:underline">chatel@peaksnowsports.com</a> to arrange.
+      Booking delivered by SkiOperator. Châtel-based programmes: email <a href="mailto:chatel@peaksnowsports.com" class="underline-offset-4 hover:bg-pink hover:text-snow hover:underline">chatel@peaksnowsports.com</a> to arrange.
     </p>
   </Section>
 

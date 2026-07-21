@@ -2,23 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
-
-// Booking-widget options for the placeholder at the top of the page.
-// Real booking flow will route through Arch once filtering is wired.
-const bookingDurations = [
-  { value: '4hr-7-13', label: '4 hours × 5 days  ·  ages 7,13' },
-  { value: '3hr-4-7',  label: '3 hours × 5 days  ·  ages 4,7' },
-  { value: '2hr-mini', label: '2 hours  ·  mini group, ages 3,4' },
-];
-const bookingLevels = ['Beginner', 'Improver', 'Intermediate', 'Advanced', 'Academy'];
-const bookingWeeks  = [
-  'Christmas week',
-  'New Year week',
-  'Feb half-term · week 1',
-  'Feb half-term · week 2',
-  'Easter week 1',
-  'Easter week 2',
-];
+import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
 
 // Same 7-level system as /lessons/group, we grade kids on the same ladder.
 const levels = [
@@ -222,70 +206,17 @@ const faqs = [
     imageAlt="A young skier working a posture drill above Morzine."
   />
 
-  <!-- Booking widget (placeholder mock) — top of page, primary action -->
+  <!-- Booking -->
   <Section id="book" kicker="Book your kid's place" title="Holiday weeks fill fast.">
-    <div class="grid gap-10 lg:grid-cols-[1fr_minmax(0,440px)] lg:gap-16">
-      <div class="text-lg leading-relaxed text-olive/85 md:text-xl">
-        <p>
-          Strict on group sizes, six max in regular kids groups, four in our minis. First come, first served. Pick a duration, level and week below.
-        </p>
-        <p class="mt-6 text-base text-olive/70">
-          Booking delivered by Arch. Visual placeholder shown below until the live availability widget is connected for kids products.
-        </p>
-      </div>
-
-      <div class="rounded-3xl bg-olive-deep p-6 text-salt shadow-lg md:p-8" data-arch-widget data-variant="kids-group">
-        <h3 class="font-display text-2xl font-bold tracking-tight">Book a kids' group</h3>
-
-        <div class="mt-6 space-y-5">
-          <div>
-            <p class="meta text-salt/70">Duration</p>
-            <div class="mt-2 grid gap-2">
-              {bookingDurations.map((d, i) => (
-                <span class={`rounded-2xl px-4 py-3 text-sm ${i === 0 ? 'bg-pink text-snow font-medium' : 'border border-salt/20 text-salt/85'}`}>
-                  {d.label}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p class="meta text-salt/70">Level</p>
-            <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {bookingLevels.map((l, i) => (
-                <span class={`rounded-full px-3 py-2 text-center text-xs font-medium ${i === 1 ? 'bg-pink text-snow' : 'border border-salt/20 text-salt/85'}`}>
-                  {l}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p class="meta text-salt/70">Week</p>
-            <div class="mt-2 flex items-center justify-between rounded-xl border border-salt/20 bg-salt/5 px-4 py-3 text-sm">
-              <span>Feb half-term · week 1</span>
-              <span class="text-salt/60">▾</span>
-            </div>
-            <p class="meta mt-2 text-salt/70">{bookingWeeks.length} peak weeks available</p>
-          </div>
-        </div>
-
-        <div class="mt-7 border-t border-salt/10 pt-5">
-          <div class="flex items-baseline justify-between">
-            <span class="meta text-salt/70">From</span>
-            <span class="font-display text-3xl font-bold tracking-tight">€280</span>
-          </div>
-          <p class="meta mt-1 text-salt/70">Refundable deposit holds your child's place.</p>
-        </div>
-
-        <button
-          type="button"
-          class="mt-6 w-full rounded-full bg-pink px-6 py-4 font-display text-sm font-bold uppercase tracking-tight text-snow transition hover:bg-snow hover:text-olive-deep"
-        >
-          Continue to checkout →
-        </button>
-      </div>
+    <p class="max-w-3xl text-lg leading-relaxed text-olive/85 md:text-xl">
+      Strict on group sizes — six max in regular kids groups, four in our minis. First come, first served. Pick a duration, level and week below.
+    </p>
+    <div class="mt-12">
+      <SkiOperatorEmbed title="Kids ski school" />
     </div>
+    <p class="meta mt-6 text-olive/55">
+      Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">Get in touch</a>.
+    </p>
   </Section>
 
   <!-- Welcome / overview -->

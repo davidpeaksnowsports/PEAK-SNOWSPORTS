@@ -1,0 +1,78 @@
+---
+/**
+ * SkiOperator booking embed.
+ *
+ * Flow:
+ *  1. Browser POSTs to /api/skioperator-token.
+ *  2. That endpoint hits SkiOperator server-side with the secure key and
+ *     returns a short-lived token.
+ *  3. We build the iframe URL from the token and mount the iframe.
+ *
+ * The secure key never reaches the browser. Tokens are minted per page load
+ * and never cached — the iframe URL isn't persisted anywhere.
+ *
+ * Checkout redirects the top-level browser to the payment provider, so we
+ * deliberately do NOT set an iframe `sandbox` — a sandbox would block the
+ * top-navigation the payment flow relies on.
+ */
+interface Props {
+  /** Accessible iframe title. Announced by screen readers. */
+  title: string;
+  /** Optional Tailwind classes on the outer wrapper. */
+  class?: string;
+}
+
+const { title, class: className = '' } = Astro.props;
+
+const SKI_OPERATOR_ORIGIN = 'https://www.ski-operator.com';
+const EMBED_PATH = '/app/embed/products';
+
+// Unique container id per component instance so multiple embeds on one page
+// don't collide.
+const containerId = `skioperator-embed-${Math.random().toString(36).slice(2, 10)}`;
+---
+
+<div id={containerId} class={`skioperator-embed ${className}`}>
+  <p class="meta py-12 text-center text-olive/50">Loading booking…</p>
+</div>
+
+<script is:inline define:vars={{ SKI_OPERATOR_ORIGIN, EMBED_PATH, containerId, title }}>
+  (async function () {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    try {
+      const resp = await fetch('/api/skioperator-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!resp.ok) throw new Error('token-request-failed:' + resp.status);
+
+      const data = await resp.json();
+      const token = data && data.token;
+      if (!token) throw new Error('no-token-in-response');
+
+      const iframe = document.createElement('iframe');
+      iframe.src =
+        SKI_OPERATOR_ORIGIN +
+        EMBED_PATH +
+        '?embed=1&token=' +
+        encodeURIComponent(token);
+      iframe.title = title;
+      iframe.loading = 'lazy';
+      iframe.setAttribute('allow', 'payment');
+      iframe.style.width = '100%';
+      iframe.style.minHeight = '900px';
+      iframe.style.border = '0';
+      iframe.style.display = 'block';
+
+      container.innerHTML = '';
+      container.appendChild(iframe);
+    } catch (err) {
+      console.error('SkiOperator embed error:', err);
+      container.innerHTML =
+        '<p class="meta py-12 text-center text-olive/60">Couldn\'t load the booking widget. Refresh, or <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">get in touch</a>.</p>';
+    }
+  })();
+</script>

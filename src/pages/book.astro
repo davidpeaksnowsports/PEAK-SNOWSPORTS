@@ -2,13 +2,13 @@
 /**
  * Temporary holding page for /book and the Account nav link.
  *
- * Both 'Book' and 'Account' in the main nav land here while the Arch
- * booking widget + account portal are being finalised. All other 'Book a
- * lesson' / 'Reserve your place' CTAs across the site also point to
- * /book, so they pick this up automatically.
+ * Both 'Book' and 'Account' in the main nav land here while the account
+ * portal is being finalised. All other 'Book a lesson' / 'Reserve your
+ * place' CTAs across the site also point to /book, so they pick this up
+ * automatically.
  *
- * When booking is ready, restore the ArchEmbed-based booking page from
- * git history (the commit before this holding page).
+ * The individual /lessons/* pages already embed SkiOperator; when we're
+ * ready to run a full catalogue view here, drop in <SkiOperatorEmbed />.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';

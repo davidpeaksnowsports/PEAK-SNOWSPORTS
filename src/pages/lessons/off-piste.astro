@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
-import BookingWidget from '../../components/booking/BookingWidget.astro';
+import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
 import { sanity, lessonBySlugQuery } from '../../lib/sanity';
 
 type Cta = { label?: string; href?: string };
@@ -121,6 +121,9 @@ const heroSecondary =
 
   <!-- Availability widget -->
   <Section id="availability" kicker={lesson.bookingKicker} title={lesson.bookingTitle}>
-    <BookingWidget productId={lesson.archProductId ?? 'off-piste'} variant="product" />
+    <SkiOperatorEmbed title="Off-piste & freeride lessons" />
+    <p class="meta mt-6 text-olive/55">
+      Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">Get in touch</a>.
+    </p>
   </Section>
 </BaseLayout>

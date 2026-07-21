@@ -10,7 +10,7 @@ import sitemap from '@astrojs/sitemap';
 // Pages remain static (prerendered) by default. Individual routes can opt into
 // per-request server rendering with `export const prerender = false`. The
 // Vercel adapter ships server routes as Vercel functions; static pages are
-// served from the edge as before. See src/pages/api/booking-token.ts.
+// served from the edge as before. See src/pages/api/skioperator-token.ts.
 export default defineConfig({
   site: 'https://www.peaksnowsports.com',
   output: 'static',

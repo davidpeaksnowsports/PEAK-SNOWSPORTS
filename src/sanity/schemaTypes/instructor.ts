@@ -44,7 +44,7 @@ export const instructor = defineType({
     defineField({
       name: 'archInstructorId',
       type: 'string',
-      description: 'Arch instructor ID — used for the "request this instructor" deep-link.',
+      description: 'SkiOperator instructor ID — used for the "request this instructor" deep-link.',
     }),
   ],
   preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } },
