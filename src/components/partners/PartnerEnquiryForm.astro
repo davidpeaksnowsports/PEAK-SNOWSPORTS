@@ -15,6 +15,7 @@ const CATEGORIES = [
   'Ski or kit hire',
   'Transfers',
   'Resort restaurant or concierge',
+  'Sponsorship',
   'Other',
 ];
 ---
@@ -83,6 +84,7 @@ const CATEGORIES = [
       <label class="block">
         <span class="meta text-olive/60">What kind of business?</span>
         <select
+          id="partner-enquiry-category"
           name="category"
           class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
         >
@@ -145,6 +147,19 @@ const CATEGORIES = [
 <script is:inline define:vars={{ EMAIL, RATE_CARD }}>
   const form = document.getElementById('partner-enquiry-form');
   const status = document.getElementById('partner-enquiry-status');
+  const categorySelect = document.getElementById('partner-enquiry-category');
+
+  // Any CTA on the page with data-preselect-category="…" pre-fills the
+  // dropdown when clicked, so the sponsorship button lands users on the
+  // right form state without a separate form.
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest && e.target.closest('[data-preselect-category]');
+    if (trigger && categorySelect) {
+      const val = trigger.getAttribute('data-preselect-category');
+      const match = Array.from(categorySelect.options).find((o) => o.value === val);
+      if (match) categorySelect.value = val;
+    }
+  });
 
   function show(msg, ok) {
     status.innerHTML = msg;

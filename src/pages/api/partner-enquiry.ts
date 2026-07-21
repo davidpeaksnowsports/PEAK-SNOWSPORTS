@@ -36,6 +36,13 @@ interface Enquiry {
 const RATE_CARD_PATH = '/downloads/peak-snowsports-partner-programme-2627.pdf';
 const RATE_CARD_FILENAME = 'peak-snowsports-partner-programme-2627.pdf';
 
+const SPONSORSHIP_PATH = '/downloads/peak-snowsports-sponsorship-deck.pdf';
+const SPONSORSHIP_FILENAME = 'peak-snowsports-sponsorship-deck.pdf';
+
+// Category value we watch for to switch the outgoing PDF from the referral
+// rate card to the sponsorship deck. Kept in sync with the form's dropdown.
+const SPONSORSHIP_CATEGORY = 'Sponsorship';
+
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
     status,
@@ -46,9 +53,9 @@ const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const clean = (v: unknown, max = 2000) =>
   typeof v === 'string' ? v.trim().slice(0, max) : '';
 
-async function fetchRateCardBase64(origin: string): Promise<string | null> {
+async function fetchPdfBase64(origin: string, path: string): Promise<string | null> {
   try {
-    const resp = await fetch(new URL(RATE_CARD_PATH, origin));
+    const resp = await fetch(new URL(path, origin));
     if (!resp.ok) return null;
     const bytes = new Uint8Array(await resp.arrayBuffer());
     // base64 without pulling in Node Buffer types
@@ -111,11 +118,17 @@ export const POST: APIRoute = async ({ request }) => {
     'Peak Snowsports <partners@peaksnowsports.com>';
 
   const origin = new URL(request.url).origin;
-  const rateCardBase64 = await fetchRateCardBase64(origin);
-  const rateCardUrl = new URL(RATE_CARD_PATH, origin).toString();
+  const isSponsorship = category === SPONSORSHIP_CATEGORY;
+  const attachmentPath = isSponsorship ? SPONSORSHIP_PATH : RATE_CARD_PATH;
+  const attachmentFilename = isSponsorship ? SPONSORSHIP_FILENAME : RATE_CARD_FILENAME;
+  const attachmentLabel = isSponsorship ? 'sponsorship deck' : '2026/27 rate card';
+  const attachmentBase64 = await fetchPdfBase64(origin, attachmentPath);
+  const attachmentUrl = new URL(attachmentPath, origin).toString();
+
+  const enquiryKind = isSponsorship ? 'sponsorship' : 'partner';
 
   const teamLines = [
-    'New partner enquiry from the website.',
+    `New ${enquiryKind} enquiry from the website.`,
     '',
     `Name:      ${name}`,
     `Email:     ${email}`,
@@ -129,25 +142,43 @@ export const POST: APIRoute = async ({ request }) => {
     'Message:',
     message || '(no message)',
     '',
-    `A copy of the 2026/27 rate card has ${rateCardBase64 ? 'been' : 'NOT been'} sent to the enquirer.`,
+    `A copy of the ${attachmentLabel} has ${attachmentBase64 ? 'been' : 'NOT been'} sent to the enquirer.`,
   ].filter((l) => l !== null);
 
-  const partnerLines = [
-    `Hi ${name.split(/\s+/)[0] || 'there'},`,
-    '',
-    'Thanks for your interest in the Peak Snowsports partner programme. The 2026/27 rate card is attached.',
-    '',
-    'It covers the 10% commission structure, the five ways your team or booking flow can refer guests, and the private, group and off-piste products we offer across Avoriaz-Morzine, Châtel and Les Gets.',
-    '',
-    'One of our team will be in touch shortly to talk about how we might work together. If you would rather jump straight on a call, reply to this email with a time that suits you.',
-    '',
-    'Best,',
-    'The Peak Snowsports team',
-    '',
-    '— Peak Snowsports · Morzine, France',
-    'hello@peaksnowsports.com · +44 1483 616 522',
-    `Can't see the attachment? Download the rate card here: ${rateCardUrl}`,
-  ];
+  const firstName = name.split(/\s+/)[0] || 'there';
+  const partnerLines = isSponsorship
+    ? [
+        `Hi ${firstName},`,
+        '',
+        'Thanks for your interest in sponsoring Peak Snowsports. The Winter 2026/27 sponsorship deck is attached.',
+        '',
+        'It covers the three tiers (Premier, Partner, Supporter), what each includes across logo placement, kids\' bibs, social and website presence, and the co-branded content add-on. We only take three sponsors per season, and Premier is exclusive by category, so worth flagging any category-specific interest when you reply.',
+        '',
+        'One of our team will be in touch shortly to talk about fit. If you would like to jump on a call, reply with a time that suits you.',
+        '',
+        'Best,',
+        'The Peak Snowsports team',
+        '',
+        '— Peak Snowsports · Morzine, France',
+        'hello@peaksnowsports.com · +44 1483 616 522',
+        `Can't see the attachment? Download the deck here: ${attachmentUrl}`,
+      ]
+    : [
+        `Hi ${firstName},`,
+        '',
+        'Thanks for your interest in the Peak Snowsports partner programme. The 2026/27 rate card is attached.',
+        '',
+        'It covers the 10% commission structure, the five ways your team or booking flow can refer guests, and the private, group and off-piste products we offer across Avoriaz-Morzine, Châtel and Les Gets.',
+        '',
+        'One of our team will be in touch shortly to talk about how we might work together. If you would rather jump straight on a call, reply to this email with a time that suits you.',
+        '',
+        'Best,',
+        'The Peak Snowsports team',
+        '',
+        '— Peak Snowsports · Morzine, France',
+        'hello@peaksnowsports.com · +44 1483 616 522',
+        `Can't see the attachment? Download the rate card here: ${attachmentUrl}`,
+      ];
 
   // Fire team notification first; if that fails, the enquirer won't get the
   // "we've got it" attachment either — better than a silent black hole.
@@ -162,7 +193,7 @@ export const POST: APIRoute = async ({ request }) => {
         from,
         to: teamTo,
         reply_to: email,
-        subject: `Partner enquiry — ${companyName} (${name})`,
+        subject: `${isSponsorship ? 'Sponsorship' : 'Partner'} enquiry — ${companyName} (${name})`,
         text: teamLines.join('\n'),
       }),
     });
@@ -198,13 +229,15 @@ export const POST: APIRoute = async ({ request }) => {
         from,
         to: [email],
         reply_to: teamTo[0],
-        subject: 'Your Peak Snowsports partner rate card · 2026/27',
+        subject: isSponsorship
+          ? 'Your Peak Snowsports sponsorship deck · Winter 2026/27'
+          : 'Your Peak Snowsports partner rate card · 2026/27',
         text: partnerLines.join('\n'),
-        attachments: rateCardBase64
+        attachments: attachmentBase64
           ? [
               {
-                filename: RATE_CARD_FILENAME,
-                content: rateCardBase64,
+                filename: attachmentFilename,
+                content: attachmentBase64,
                 content_type: 'application/pdf',
               },
             ]
