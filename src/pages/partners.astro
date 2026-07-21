@@ -12,6 +12,10 @@ const accommodationPartners = (
   await getCollection('accommodation', ({ data }) => !data.draft)
 ).sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
 
+// Non-accommodation partners we don't have a photo/CMS entry for.
+const bookingAgents = ['Ski Boutique', 'Powder Byrne', 'Oxford Ski'];
+const resortBusinesses = ['Le Crepu', 'Ski Mobile'];
+
 const stats = [
   { label: 'Commission', value: '10%' },
   { label: 'Group size', value: '6 max' },
@@ -164,7 +168,7 @@ const jsonLd = [
   />
 
   <!-- Headline offer -->
-  <Section kicker="The offer" title="Ten percent, cleanly reconciled.">
+  <Section size="tight" kicker="The offer" title="Ten percent, cleanly reconciled.">
     <div class="grid items-start gap-12 lg:grid-cols-[minmax(0,480px)_1fr] lg:gap-20">
       <div class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
         <p class="meta text-olive/55">Commission, every booking</p>
@@ -202,7 +206,7 @@ const jsonLd = [
   </section>
 
   <!-- How referrals work -->
-  <Section id="how" kicker="How to refer & book" title="Five ways your guests can book.">
+  <Section size="tight" id="how" kicker="How to refer & book" title="Five ways your guests can book.">
     <ol class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {channels.map((c, i) => (
         <li class="rounded-3xl border border-olive bg-snow p-8">
@@ -218,7 +222,7 @@ const jsonLd = [
   </Section>
 
   <!-- What guests actually book -->
-  <Section kicker="What we teach" title="Three product families. Seven levels.">
+  <Section size="tight" kicker="What we teach" title="Three product families. Seven levels.">
     <div class="grid gap-6 md:grid-cols-3">
       {products.map((p) => (
         <div class="flex flex-col rounded-3xl border border-olive bg-cream p-8">
@@ -234,7 +238,7 @@ const jsonLd = [
   </Section>
 
   <!-- Who we partner with -->
-  <Section kicker="Who we partner with" title="If you look after guests in resort, we should talk.">
+  <Section size="tight" kicker="Who we partner with" title="If you look after guests in resort, we should talk.">
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {partnerTypes.map((t) => (
         <div class="rounded-3xl border border-olive/20 bg-snow p-8">
@@ -245,42 +249,104 @@ const jsonLd = [
     </div>
   </Section>
 
-  <!-- Social proof: existing accommodation partners -->
-  {accommodationPartners.length > 0 && (
-    <Section kicker="Already partnered with" title="A few of the operators sending us guests.">
-      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {accommodationPartners.slice(0, 6).map((p) => (
-          <a href={`/accommodation/${p.id}`} class="group block no-underline">
-            <div class="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brown">
-              {p.data.photo ? (
-                <img
-                  src={p.data.photo}
-                  alt={p.data.name}
-                  loading="lazy"
-                  class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div class="flex h-full w-full items-center justify-center">
-                  <span class="meta text-salt/30">image pending</span>
-                </div>
-              )}
-            </div>
-            <div class="mt-5">
-              {p.data.style && (
-                <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{p.data.style}</span>
-              )}
-              <h3 class="mt-3 font-display text-xl font-bold tracking-tight transition-colors group-hover:bg-yellow md:text-2xl">{p.data.name}</h3>
-              <p class="mt-3 text-base leading-relaxed text-olive/75">{p.data.tagline}</p>
-              <p class="meta mt-4 text-olive/50">{p.data.locations.join(' · ')}</p>
-            </div>
-          </a>
-        ))}
+  <!-- Social proof: existing partners across three categories -->
+  <Section size="tight" kicker="Already partnered with" title="A few of the operators sending us guests.">
+    <div class="grid gap-6 lg:grid-cols-3">
+      <!-- Accommodation column: pulled from the same collection powering /accommodation -->
+      <div class="rounded-3xl border border-olive bg-cream p-8">
+        <p class="meta text-olive/55">Chalets & accommodation</p>
+        <ul class="mt-5 space-y-3">
+          {accommodationPartners.map((p) => (
+            <li>
+              <a href={`/accommodation/${p.id}`} class="group flex items-baseline justify-between gap-4 no-underline">
+                <span class="font-display text-lg font-bold tracking-tight transition-colors group-hover:bg-yellow">{p.data.name}</span>
+                <span class="meta shrink-0 text-olive/50">{p.data.locations[0]}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
-    </Section>
-  )}
+
+      <!-- Booking agents column -->
+      <div class="rounded-3xl border border-olive bg-cream p-8">
+        <p class="meta text-olive/55">Booking agents</p>
+        <ul class="mt-5 space-y-3">
+          {bookingAgents.map((name) => (
+            <li>
+              <span class="font-display text-lg font-bold tracking-tight">{name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- In-resort businesses column -->
+      <div class="rounded-3xl border border-olive bg-cream p-8">
+        <p class="meta text-olive/55">In-resort businesses</p>
+        <ul class="mt-5 space-y-3">
+          {resortBusinesses.map((name) => (
+            <li>
+              <span class="font-display text-lg font-bold tracking-tight">{name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Sponsorship: distinct from the referral partner programme -->
+  <section id="sponsorship" class="border-y border-olive/10 bg-olive-deep px-6 py-10 text-salt md:py-14 lg:py-16">
+    <div class="mx-auto max-w-screen-2xl">
+      <div class="max-w-3xl">
+        <p><span class="meta-pill">Sponsorship</span></p>
+        <h2 class="mt-4 text-4xl font-semibold leading-tight md:text-6xl">Sponsor a ski school that cares who it partners with.</h2>
+      </div>
+
+      <div class="mt-10 grid items-start gap-10 lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-16">
+        <div class="space-y-5 text-base leading-relaxed text-salt/85 md:text-lg">
+          <p>
+            Sponsorship is different from the partner programme. Sponsors pay Peak a cash fee in return for logo placement across our channels, dedicated digital content, and considered referrals to their brand, product or service.
+          </p>
+          <p>
+            We're selective. We only sponsor brands we'd genuinely recommend to our clients — the same people we teach every day, who trust our judgement on kit, accommodation, and the businesses worth knowing in resort. If the fit's right, sponsorship gets you in front of a premium, high-intent Alpine audience with the endorsement of the region's most-recommended ski school.
+          </p>
+          <p>
+            Ask for the sponsorship deck for placements, rates, and current inventory.
+          </p>
+
+          <div class="pt-4">
+            <a
+              href="mailto:hello@peaksnowsports.com?subject=Sponsorship%20enquiry"
+              class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+            >
+              Request the sponsorship deck →
+            </a>
+          </div>
+        </div>
+
+        <aside class="rounded-3xl border border-salt/20 bg-olive p-8">
+          <p class="meta text-salt/60">Currently sponsored by</p>
+          <div class="mt-5 flex items-center gap-5">
+            <img
+              src="/images/logos/douglas-elliman.svg"
+              alt="Douglas Elliman"
+              class="h-12 w-auto shrink-0 [filter:brightness(0)_invert(1)]"
+              loading="lazy"
+            />
+            <div>
+              <p class="font-display text-xl font-bold tracking-tight">Douglas Elliman France</p>
+              <p class="meta mt-1 text-salt/60">Alpine real estate</p>
+            </div>
+          </div>
+          <p class="mt-6 text-base leading-relaxed text-salt/75">
+            One sponsor at a time in any given category, so your placement stands on its own.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </section>
 
   <!-- Enquiry form -->
-  <Section id="enquire" kicker="Get the rate card" title="Send us a note. We'll send you the details.">
+  <Section size="tight" id="enquire" kicker="Get the rate card" title="Send us a note. We'll send you the details.">
     <div class="grid items-start gap-12 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-20">
       <div class="space-y-6">
         <p class="text-lg leading-relaxed text-olive/80 md:text-xl">
@@ -309,7 +375,7 @@ const jsonLd = [
   </Section>
 
   <!-- FAQs -->
-  <Section kicker="FAQ" title="Partner questions, straight answers.">
+  <Section size="tight" kicker="FAQ" title="Partner questions, straight answers.">
     <ul class="divide-y divide-olive/10 border-y border-olive/10">
       {faqs.map((f) => (
         <li>

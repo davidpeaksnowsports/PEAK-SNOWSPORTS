@@ -4,12 +4,16 @@ interface Props {
   title?: string;
   class?: string;
   id?: string;
+  size?: 'default' | 'tight';
 }
 
-const { kicker, title, class: className = '', id } = Astro.props;
+const { kicker, title, class: className = '', id, size = 'default' } = Astro.props;
+
+const padding =
+  size === 'tight' ? 'py-10 md:py-14 lg:py-16' : 'py-16 md:py-24 lg:py-32';
 ---
 
-<section id={id} class={`px-6 py-16 md:py-24 lg:py-32 ${className}`}>
+<section id={id} class={`px-6 ${padding} ${className}`}>
   <div class="mx-auto max-w-screen-2xl">
     {(kicker || title) && (
       <header class="mb-12 max-w-3xl">
