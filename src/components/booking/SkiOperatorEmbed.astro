@@ -29,8 +29,14 @@ const { title, class: className = '' } = Astro.props;
 const APP_URL = 'https://www.ski-operator.com';
 const EMBED_PATH = '/app/embed/products';
 
-const tenant = import.meta.env.PUBLIC_SKI_OPERATOR_TENANT ?? '';
-const publicKey = import.meta.env.PUBLIC_SKI_OPERATOR_PUBLIC_KEY ?? '';
+// Peak Snowsports tenant + pub_ key. Both are browser-safe per the SkiOperator
+// docs — security is enforced by the origin allowlist on the SkiOperator side.
+// Env vars override for reuse / rotation without touching this file.
+const DEFAULT_TENANT = '6aa55bc3-cfc9-40e4-a4ce-541349868b5a';
+const DEFAULT_PUBLIC_KEY = 'pub_149c82388384fa9dbb3d33388378b783a996';
+
+const tenant = import.meta.env.PUBLIC_SKI_OPERATOR_TENANT || DEFAULT_TENANT;
+const publicKey = import.meta.env.PUBLIC_SKI_OPERATOR_PUBLIC_KEY || DEFAULT_PUBLIC_KEY;
 
 // The parent-site origin SkiOperator validates against its allowlist.
 // `Astro.site` comes from `site:` in astro.config.mjs.
