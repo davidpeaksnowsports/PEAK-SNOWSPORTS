@@ -1,0 +1,352 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import Section from '../components/ui/Section.astro';
+import PartnerEnquiryForm from '../components/partners/PartnerEnquiryForm.astro';
+import heroImage from '../assets/images/hero-resorts.jpg';
+
+// Existing accommodation partners are the social-proof anchor — they've already
+// signed on. Filter drafts and order by the same rank the accommodation index uses.
+const accommodationPartners = (
+  await getCollection('accommodation', ({ data }) => !data.draft)
+).sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
+
+const stats = [
+  { label: 'Commission', value: '10%' },
+  { label: 'Group size', value: '6 max' },
+  { label: 'Every coach', value: 'Carte Pro' },
+  { label: 'Led by', value: 'BASI trainers' },
+  { label: 'Resorts', value: 'Portes du Soleil' },
+  { label: 'Levels', value: 'Seven' },
+];
+
+const products = [
+  {
+    title: 'Private lessons',
+    detail:
+      'One instructor, one to six skiers. Half-days, full days, all seven levels. The bread and butter of what your guests will book.',
+    duration: '2.5 h → full day',
+  },
+  {
+    title: 'Groups & camps',
+    detail:
+      "Kids' school (three age brackets), adult courses, our five-day adult ski camp, and Local Kids' Club by the session. Small groups, PEAK medal system.",
+    duration: 'Holiday weeks',
+  },
+  {
+    title: 'Off-piste & experiences',
+    detail:
+      'Half-day guiding, sunset tours, ski touring days. Route choice and avalanche awareness delivered by BASI trainers.',
+    duration: '2 h → 7 h',
+  },
+];
+
+const channels = [
+  {
+    title: 'Affiliate link',
+    body: 'Your unique link. Clicks are automatically attributed to you for the whole season.',
+  },
+  {
+    title: 'Booking widget',
+    body: 'Embed our SkiOperator widget on your own site. Guests book in place, you get credit.',
+  },
+  {
+    title: 'Checkout dropdown',
+    body: 'Guests who book directly can pick you as their referrer before payment.',
+  },
+  {
+    title: 'Concierge email',
+    body: "Send us the enquiry. It's matched to you in our CRM and worked through by our team.",
+  },
+  {
+    title: 'Partner portal',
+    body: 'Live availability, self-service booking, real-time reporting. Rolling out through the season.',
+    soon: true,
+  },
+];
+
+const partnerTypes = [
+  {
+    title: 'Tour operators',
+    body: "You sell the Portes du Soleil. We're the ski school your clients will actually rave about.",
+  },
+  {
+    title: 'Chalets & catered chalets',
+    body: 'Every chalet week needs lessons. Bundle Peak in and your guests get named coaches, not luck-of-the-draw.',
+  },
+  {
+    title: 'Hotels & apartments',
+    body: 'A concierge-grade referral your front desk can hand out with confidence.',
+  },
+  {
+    title: 'Ski & kit hire',
+    body: 'Your guests need lessons. Ours need kit. A clean two-way referral relationship.',
+  },
+  {
+    title: 'Transfers',
+    body: 'The first and last conversation of the holiday. A good recommendation lands hard.',
+  },
+  {
+    title: 'Restaurants & concierge',
+    body: 'If you look after guests in resort, we should be your first-call ski school.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What counts as a completed referred booking?',
+    a: 'Any lesson, group course or experience that goes ahead and is paid in full, where the guest reached us via your unique affiliate link, embedded widget, checkout dropdown selection or a named concierge email introduction. Commission is calculated on the lesson value ex-TVA (ski lessons are TVA exempt).',
+  },
+  {
+    q: 'When and how is commission paid?',
+    a: 'We reconcile at season end and pay by 31 May each year. Payment is by bank transfer in EUR. Full statement provided showing every booking, cancellation and refund included in the calculation.',
+  },
+  {
+    q: 'Is the partnership exclusive?',
+    a: "No. We're happy for you to work with other providers. What we ask for is a fair chance at the recommendation, and honest feedback when we could serve your guests better. If exclusivity is something you'd like to talk about for your patch, get in touch — we'll consider it case by case.",
+  },
+  {
+    q: "How do you handle guests who don't book through my channel?",
+    a: 'If a guest tells our team you sent them, we log the referral against your account in our CRM and it counts toward commission at reconciliation. The affiliate link and widget make this automatic; the concierge and checkout routes are the fallback for people who prefer email or phone.',
+  },
+  {
+    q: 'Can you co-brand the booking experience for our guests?',
+    a: 'Yes. The embedded booking widget can be styled to sit inside your own site, and we can pre-filter it to just the resorts, dates or product families that make sense for your audience. If you want a fully white-labelled booking experience powered by our system, ask us about SkiOperator — that\'s our booking product, and we license it separately.',
+  },
+  {
+    q: 'How do you keep lesson quality up?',
+    a: 'Every coach holds a French Carte Pro (the legal instructor-teaching qualification for France) and our sessions are led by BASI trainers — the people who train and examine other instructors. Groups are capped at six. It\'s the quality standard we\'d expect if we were sending our own family.',
+  },
+  {
+    q: 'What resorts do you cover?',
+    a: 'Avoriaz-Morzine, Châtel and Les Gets, plus the wider Portes du Soleil ski area. If your guests are in a resort we don\'t currently serve, get in touch — we may still be able to help via our trainer network.',
+  },
+];
+
+const SITE = 'https://www.peaksnowsports.com';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'Partner Programme', item: `${SITE}/partners` },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title="Partner Programme · 10% commission on every referred booking · Peak Snowsports"
+  description="Partner with Peak Snowsports, the premium ski school across the Portes du Soleil. 10% commission on completed referred bookings, five booking channels, real coaches with real names. Request the 2026/27 rate card."
+  jsonLd={jsonLd}
+>
+  <Hero
+    kicker="Partner programme · 2026/27"
+    headline="Experiences, not transactions."
+    sub="We partner with tour operators, chalet companies and resort businesses across the Portes du Soleil. Real coaches, real names, every referred booking earns commission."
+    primaryCta={{ href: '#enquire', label: 'Get the rate card' }}
+    secondaryCta={{ href: '#how', label: 'How referrals work' }}
+    variant="compact"
+    image={heroImage}
+    imageAlt="A Peak Snowsports coach with a small group of skiers on an alpine ridge."
+  />
+
+  <!-- Headline offer -->
+  <Section kicker="The offer" title="Ten percent, cleanly reconciled.">
+    <div class="grid items-start gap-12 lg:grid-cols-[minmax(0,480px)_1fr] lg:gap-20">
+      <div class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
+        <p class="meta text-olive/55">Commission, every booking</p>
+        <p class="mt-3 font-display text-7xl font-bold tracking-tight text-pink md:text-8xl">10%</p>
+        <p class="mt-6 text-base leading-relaxed text-olive/80 md:text-lg">
+          On the lesson value of every completed, referred booking. Reconciled at season end, paid by 31 May.
+        </p>
+      </div>
+      <div class="space-y-6 text-base leading-relaxed text-olive/85 md:text-lg">
+        <p>
+          Peak is the premium ski school across the Portes du Soleil. Twenty thousand-plus clients, twenty-five-plus instructors, three resorts, one standard. Named coaches, small groups, French Carte Pro across the board, sessions led by BASI trainers.
+        </p>
+        <p>
+          The partner programme is the commercial side of that: a straight 10% on every completed booking your channel sends us. No tiered thresholds, no minimums, no reason not to recommend us to the guests who deserve a good ski school.
+        </p>
+        <p>
+          Five ways to book, one rate card, one contact. Request the details below and we'll be in touch.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Stats band, matching the PDF -->
+  <section class="border-y border-olive/10 bg-cream">
+    <div class="mx-auto max-w-screen-2xl px-6 py-14 md:py-16">
+      <dl class="grid gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
+        {stats.map((s) => (
+          <div>
+            <dt class="meta text-olive/55">{s.label}</dt>
+            <dd class="mt-2 font-display text-2xl font-bold tracking-tight text-olive md:text-3xl">{s.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- How referrals work -->
+  <Section id="how" kicker="How to refer & book" title="Five ways your guests can book.">
+    <ol class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {channels.map((c, i) => (
+        <li class="rounded-3xl border border-olive bg-snow p-8">
+          <div class="flex items-center gap-3">
+            <span class="meta text-olive/40">{String(i + 1).padStart(2, '0')}</span>
+            {c.soon && <span class="meta-pill">Soon</span>}
+          </div>
+          <h3 class="mt-3 font-display text-2xl font-bold tracking-tight">{c.title}</h3>
+          <p class="mt-4 text-base leading-relaxed text-olive/75">{c.body}</p>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <!-- What guests actually book -->
+  <Section kicker="What we teach" title="Three product families. Seven levels.">
+    <div class="grid gap-6 md:grid-cols-3">
+      {products.map((p) => (
+        <div class="flex flex-col rounded-3xl border border-olive bg-cream p-8">
+          <p class="meta text-olive/55">{p.duration}</p>
+          <h3 class="mt-3 font-display text-2xl font-bold tracking-tight">{p.title}</h3>
+          <p class="mt-4 text-base leading-relaxed text-olive/75">{p.detail}</p>
+        </div>
+      ))}
+    </div>
+    <p class="meta mt-8 text-olive/70">
+      Full off-peak and peak pricing across every product is in the <a href="#enquire" class="underline underline-offset-4 hover:bg-yellow">2026/27 rate card</a>.
+    </p>
+  </Section>
+
+  <!-- Who we partner with -->
+  <Section kicker="Who we partner with" title="If you look after guests in resort, we should talk.">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {partnerTypes.map((t) => (
+        <div class="rounded-3xl border border-olive/20 bg-snow p-8">
+          <h3 class="font-display text-xl font-bold tracking-tight md:text-2xl">{t.title}</h3>
+          <p class="mt-4 text-base leading-relaxed text-olive/75">{t.body}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- Social proof: existing accommodation partners -->
+  {accommodationPartners.length > 0 && (
+    <Section kicker="Already partnered with" title="A few of the operators sending us guests.">
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {accommodationPartners.slice(0, 6).map((p) => (
+          <a href={`/accommodation/${p.id}`} class="group block no-underline">
+            <div class="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brown">
+              {p.data.photo ? (
+                <img
+                  src={p.data.photo}
+                  alt={p.data.name}
+                  loading="lazy"
+                  class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div class="flex h-full w-full items-center justify-center">
+                  <span class="meta text-salt/30">image pending</span>
+                </div>
+              )}
+            </div>
+            <div class="mt-5">
+              {p.data.style && (
+                <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{p.data.style}</span>
+              )}
+              <h3 class="mt-3 font-display text-xl font-bold tracking-tight transition-colors group-hover:bg-yellow md:text-2xl">{p.data.name}</h3>
+              <p class="mt-3 text-base leading-relaxed text-olive/75">{p.data.tagline}</p>
+              <p class="meta mt-4 text-olive/50">{p.data.locations.join(' · ')}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </Section>
+  )}
+
+  <!-- Enquiry form -->
+  <Section id="enquire" kicker="Get the rate card" title="Send us a note. We'll send you the details.">
+    <div class="grid items-start gap-12 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-20">
+      <div class="space-y-6">
+        <p class="text-lg leading-relaxed text-olive/80 md:text-xl">
+          Fill this in and the 2026/27 rate card lands in your inbox straight away — full pricing, the commission mechanic, and the five ways your guests can book.
+        </p>
+        <ul class="space-y-3 text-base text-olive/75 md:text-lg">
+          <li class="flex gap-3">
+            <span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
+            <span>Rate card by email as soon as you hit send.</span>
+          </li>
+          <li class="flex gap-3">
+            <span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
+            <span>Personal follow-up from our team within two working days.</span>
+          </li>
+          <li class="flex gap-3">
+            <span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
+            <span>No commitment — we'll answer questions before you sign anything.</span>
+          </li>
+        </ul>
+        <p class="meta text-olive/55">
+          Prefer to email? <a href="mailto:hello@peaksnowsports.com?subject=Partner%20enquiry" class="underline underline-offset-4 hover:bg-yellow">hello@peaksnowsports.com</a>
+        </p>
+      </div>
+      <PartnerEnquiryForm />
+    </div>
+  </Section>
+
+  <!-- FAQs -->
+  <Section kicker="FAQ" title="Partner questions, straight answers.">
+    <ul class="divide-y divide-olive/10 border-y border-olive/10">
+      {faqs.map((f) => (
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer items-baseline gap-6 py-6 list-none [&::-webkit-details-marker]:hidden">
+              <span class="font-display text-xl font-bold tracking-tight md:text-2xl">{f.q}</span>
+              <span class="ml-auto font-display text-2xl text-olive/40 transition group-open:rotate-45">+</span>
+            </summary>
+            <p class="pb-8 pr-12 text-base leading-relaxed text-olive/75 md:text-lg">{f.a}</p>
+          </details>
+        </li>
+      ))}
+    </ul>
+    <p class="meta mt-8 text-olive">
+      Something we haven't covered? <a href="#enquire" class="underline underline-offset-4 hover:bg-yellow">Ask us in the enquiry</a> or email <a href="mailto:hello@peaksnowsports.com" class="underline underline-offset-4 hover:bg-yellow">hello@peaksnowsports.com</a>.
+    </p>
+  </Section>
+
+  <!-- Closing CTA band -->
+  <section class="bg-olive-deep text-salt">
+    <div class="mx-auto max-w-screen-2xl px-6 py-16 md:py-20">
+      <p class="meta-pill">Peak Snowsports · Partner programme 2026/27</p>
+      <h2 class="mt-6 max-w-3xl text-4xl leading-tight md:text-6xl">Ready to send your guests to a ski school you can stand behind?</h2>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a
+          href="#enquire"
+          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+        >
+          Get the rate card →
+        </a>
+        <a
+          href="mailto:hello@peaksnowsports.com?subject=Partner%20enquiry"
+          class="inline-flex items-center rounded-full border border-salt/40 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+        >
+          Email us
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,212 @@
+---
+/**
+ * Partner-programme enquiry form on /partners. Progressive enhancement: posts
+ * JSON to /api/partner-enquiry via fetch and shows an inline success state
+ * (the rate card is emailed as a PDF attachment). Without JS it falls back to
+ * a normal form POST to the same endpoint.
+ */
+const EMAIL = 'hello@peaksnowsports.com';
+const RATE_CARD = '/downloads/peak-snowsports-partner-programme-2627.pdf';
+
+const CATEGORIES = [
+  'Tour operator',
+  'Chalet or catered chalet company',
+  'Hotel or apartment',
+  'Ski or kit hire',
+  'Transfers',
+  'Resort restaurant or concierge',
+  'Other',
+];
+---
+
+<div class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
+  <form id="partner-enquiry-form" class="space-y-6" action="/api/partner-enquiry" method="post">
+    <div class="grid gap-6 sm:grid-cols-2">
+      <label class="block">
+        <span class="meta text-olive/60">Your name *</span>
+        <input
+          type="text"
+          name="name"
+          required
+          autocomplete="name"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Work email *</span>
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Company *</span>
+        <input
+          type="text"
+          name="companyName"
+          required
+          autocomplete="organization"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Your role</span>
+        <input
+          type="text"
+          name="role"
+          autocomplete="organization-title"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Website</span>
+        <input
+          type="url"
+          name="website"
+          placeholder="https://"
+          autocomplete="url"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Phone / WhatsApp</span>
+        <input
+          type="tel"
+          name="phone"
+          autocomplete="tel"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">What kind of business?</span>
+        <select
+          name="category"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        >
+          <option value="">Choose one…</option>
+          {CATEGORIES.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Resort(s) you serve</span>
+        <input
+          type="text"
+          name="resorts"
+          placeholder="Morzine, Avoriaz, Châtel, Les Gets…"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+    </div>
+
+    <label class="block">
+      <span class="meta text-olive/60">How would you like to work with us?</span>
+      <textarea
+        name="message"
+        rows="4"
+        placeholder="Approx guest volume, existing referrals, questions on the commission or booking channels…"
+        class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+      ></textarea>
+    </label>
+
+    <!-- Honeypot: hidden from people, tempting to bots. Real users leave it empty. -->
+    <input
+      type="text"
+      name="company"
+      tabindex="-1"
+      autocomplete="off"
+      class="absolute left-[-9999px] h-0 w-0 opacity-0"
+      aria-hidden="true"
+    />
+
+    <div class="flex flex-wrap items-center gap-4">
+      <button
+        type="submit"
+        class="inline-flex items-center rounded-full bg-pink px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-olive"
+      >
+        Send my enquiry & get the rate card →
+      </button>
+      <p class="meta text-olive/55">Rate card lands in your inbox as soon as you submit.</p>
+    </div>
+
+    <p id="partner-enquiry-status" class="hidden text-base leading-relaxed" role="status" aria-live="polite"></p>
+  </form>
+
+  <noscript>
+    <p class="mt-4 meta text-olive/70">
+      Prefer not to use the form? <a class="underline" href={`mailto:${EMAIL}?subject=Partner%20enquiry`}>Email us</a>
+      or <a class="underline" href={RATE_CARD} target="_blank" rel="noopener">grab the rate card</a>.
+    </p>
+  </noscript>
+</div>
+
+<script is:inline define:vars={{ EMAIL, RATE_CARD }}>
+  const form = document.getElementById('partner-enquiry-form');
+  const status = document.getElementById('partner-enquiry-status');
+
+  function show(msg, ok) {
+    status.innerHTML = msg;
+    status.classList.remove('hidden');
+    status.classList.toggle('text-olive', ok);
+    status.classList.toggle('text-pink', !ok);
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      const data = Object.fromEntries(new FormData(form).entries());
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/partner-enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok) {
+          if (window.peakTrack)
+            window.peakTrack('Partner Enquiry', { category: data.category || 'Unspecified' });
+          form.querySelector('.grid').style.display = 'none';
+          form.querySelector('textarea').closest('label').style.display = 'none';
+          btn.parentElement.style.display = 'none';
+          show(
+            "Thanks — the rate card is on its way to your inbox. We'll follow up personally within two working days. Meanwhile, you can also <a class='underline' href='" +
+              RATE_CARD +
+              "' target='_blank' rel='noopener'>download it here</a>.",
+            true,
+          );
+        } else if (body.fallback) {
+          show(
+            "Our form's having a moment. Email us at <a class='underline' href='mailto:" +
+              EMAIL +
+              "?subject=Partner%20enquiry'>" +
+              EMAIL +
+              "</a> and we'll send the rate card straight over.",
+            false,
+          );
+          btn.disabled = false;
+          btn.textContent = 'Send my enquiry & get the rate card →';
+        } else {
+          show(body.error || 'Something went wrong. Please try again.', false);
+          btn.disabled = false;
+          btn.textContent = 'Send my enquiry & get the rate card →';
+        }
+      } catch {
+        show(
+          "Couldn't send just now. Email us at <a class='underline' href='mailto:" +
+            EMAIL +
+            "?subject=Partner%20enquiry'>" +
+            EMAIL +
+            "</a> instead?",
+          false,
+        );
+        btn.disabled = false;
+        btn.textContent = 'Send my enquiry & get the rate card →';
+      }
+    });
+  }
+</script>
