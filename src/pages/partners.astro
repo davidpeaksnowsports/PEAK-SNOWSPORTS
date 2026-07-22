@@ -1,20 +1,41 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
 import PartnerEnquiryForm from '../components/partners/PartnerEnquiryForm.astro';
 import heroImage from '../assets/images/hero-resorts.jpg';
 
-// Existing accommodation partners are the social-proof anchor — they've already
-// signed on. Filter drafts and order by the same rank the accommodation index uses.
-const accommodationPartners = (
-  await getCollection('accommodation', ({ data }) => !data.draft)
-).sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
+// Full "already partnered with" list. URLs link out to each partner's own
+// site; a null url renders as plain text (source needed / no website).
+const chaletPartners = [
+  { name: 'The Boutique Chalet Company', url: 'https://theboutiquechalet.com' },
+  { name: 'More Mountain', url: 'https://www.moremountain.com' },
+  { name: 'Elevation Alps', url: 'https://elevationalps.com' },
+  { name: 'Atlas Ski Co', url: 'https://atlasskico.com' },
+  { name: 'Jack & Jill Holidays', url: 'https://jackandjillholidays.com' },
+  { name: 'TG Ski', url: 'https://www.tgski.com' },
+  { name: 'The Chalet Edit', url: 'https://thechaletedit.com' },
+  { name: 'Hunter Chalets', url: 'https://hunterchalets.com' },
+  { name: 'Simply Morzine', url: 'https://simply-morzine.co.uk' },
+  { name: 'Chilly Powder', url: 'https://www.chillypowder.com' },
+  { name: 'The Fat Fox Lodge', url: 'https://fatfoxlodge.com' },
+  { name: 'Alpichalets', url: 'https://alpichalets.com' },
+  { name: 'Treeline Chalets', url: 'https://treelinechalets.com' },
+  { name: 'The Nant', url: 'https://www.thenant.com' },
+];
 
-// Non-accommodation partners we don't have a photo/CMS entry for.
-const bookingAgents = ['Ski Boutique', 'Powder Byrne', 'Oxford Ski'];
-const resortBusinesses = ['Le Crepu', 'Ski Mobile'];
+const bookingAgents = [
+  { name: 'Ski Boutique', url: 'https://www.ski-boutique.co.uk' },
+  { name: 'Powder Byrne', url: 'https://www.powderbyrne.com' },
+  { name: 'Oxford Ski', url: 'https://www.oxfordski.com' },
+  { name: 'Leo Trippi', url: 'https://www.leotrippi.com' },
+  { name: 'Heidi', url: 'https://www.heidi.com' },
+];
+
+const resortBusinesses = [
+  { name: 'Le Crepu', url: 'https://www.crepu-morzine.com' },
+  { name: 'Ski Mobile', url: 'https://ski-mobile.com' },
+];
 
 const stats = [
   { label: 'Commission', value: '10%' },
@@ -78,7 +99,7 @@ const sponsorTiers = [
     fiveYr: '€35,000',
     highlights: [
       'Prime chest & arm logo placement',
-      "Exclusive category partnership — you're the only one in your industry",
+      "Exclusive category partnership, so you're the only one in your industry",
       "Logo on kids' group bibs",
       '4+ dedicated social posts per season',
       'Direct client recommendations from instructors',
@@ -155,7 +176,7 @@ const faqs = [
   },
   {
     q: 'Is the partnership exclusive?',
-    a: "No. We're happy for you to work with other providers. What we ask for is a fair chance at the recommendation, and honest feedback when we could serve your guests better. If exclusivity is something you'd like to talk about for your patch, get in touch — we'll consider it case by case.",
+    a: "No. We're happy for you to work with other providers. What we ask for is a fair chance at the recommendation, and honest feedback when we could serve your guests better. If exclusivity is something you'd like to talk about for your patch, get in touch; we'll consider it case by case.",
   },
   {
     q: "How do you handle guests who don't book through my channel?",
@@ -163,15 +184,15 @@ const faqs = [
   },
   {
     q: 'Can you co-brand the booking experience for our guests?',
-    a: 'Yes. The embedded booking widget can be styled to sit inside your own site, and we can pre-filter it to just the resorts, dates or product families that make sense for your audience. If you want a fully white-labelled booking experience powered by our system, ask us about SkiOperator — that\'s our booking product, and we license it separately.',
+    a: "Yes. The embedded booking widget can be styled to sit inside your own site, and we can pre-filter it to just the resorts, dates or product families that make sense for your audience. If you want a fully white-labelled booking experience powered by our system, ask us about SkiOperator. That's our booking product, and we license it separately.",
   },
   {
     q: 'How do you keep lesson quality up?',
-    a: 'Every coach holds a French Carte Pro (the legal instructor-teaching qualification for France) and our sessions are led by BASI trainers — the people who train and examine other instructors. Groups are capped at six. It\'s the quality standard we\'d expect if we were sending our own family.',
+    a: "Every coach holds a French Carte Pro (the legal instructor-teaching qualification for France) and our sessions are led by BASI trainers, the people who train and examine other instructors. Groups are capped at six. It's the quality standard we'd expect if we were sending our own family.",
   },
   {
     q: 'What resorts do you cover?',
-    a: 'Avoriaz-Morzine, Châtel and Les Gets, plus the wider Portes du Soleil ski area. If your guests are in a resort we don\'t currently serve, get in touch — we may still be able to help via our trainer network.',
+    a: "Avoriaz-Morzine, Châtel and Les Gets, plus the wider Portes du Soleil ski area. If your guests are in a resort we don't currently serve, get in touch. We may still be able to help via our trainer network.",
   },
 ];
 
@@ -297,30 +318,52 @@ const jsonLd = [
   </Section>
 
   <!-- Social proof: existing partners across three categories -->
-  <Section size="tight" kicker="Already partnered with" title="A few of the operators sending us guests.">
+  <Section size="tight" kicker="Already partnered with" title="Operators sending us guests.">
     <div class="grid gap-6 lg:grid-cols-3">
-      <!-- Accommodation column: pulled from the same collection powering /accommodation -->
-      <div class="rounded-3xl border border-olive bg-cream p-8">
+      <!-- Chalets & accommodation: spans the full width, uses multi-column
+           inside because the list is long (14 operators). -->
+      <div class="rounded-3xl border border-olive bg-cream p-8 lg:col-span-3">
         <p class="meta text-olive/55">Chalets & accommodation</p>
-        <ul class="mt-5 space-y-3">
-          {accommodationPartners.map((p) => (
-            <li>
-              <a href={`/accommodation/${p.id}`} class="group flex items-baseline justify-between gap-4 no-underline">
-                <span class="font-display text-lg font-bold tracking-tight transition-colors group-hover:bg-yellow">{p.data.name}</span>
-                <span class="meta shrink-0 text-olive/50">{p.data.locations[0]}</span>
-              </a>
+        <ul class="mt-5 gap-x-8 space-y-3 sm:columns-2 lg:columns-3">
+          {chaletPartners.map((p) => (
+            <li class="break-inside-avoid">
+              {p.url ? (
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener"
+                  class="group inline-flex items-baseline gap-2 no-underline"
+                >
+                  <span class="font-display text-lg font-bold tracking-tight transition-colors group-hover:bg-yellow">{p.name}</span>
+                  <span aria-hidden="true" class="meta text-olive/40 transition-colors group-hover:text-pink">↗</span>
+                </a>
+              ) : (
+                <span class="font-display text-lg font-bold tracking-tight">{p.name}</span>
+              )}
             </li>
           ))}
         </ul>
       </div>
 
       <!-- Booking agents column -->
-      <div class="rounded-3xl border border-olive bg-cream p-8">
-        <p class="meta text-olive/55">Booking agents</p>
-        <ul class="mt-5 space-y-3">
-          {bookingAgents.map((name) => (
-            <li>
-              <span class="font-display text-lg font-bold tracking-tight">{name}</span>
+      <div class="rounded-3xl border border-olive bg-cream p-8 lg:col-span-2">
+        <p class="meta text-olive/55">Booking agents & tour operators</p>
+        <ul class="mt-5 space-y-3 sm:columns-2">
+          {bookingAgents.map((p) => (
+            <li class="break-inside-avoid">
+              {p.url ? (
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener"
+                  class="group inline-flex items-baseline gap-2 no-underline"
+                >
+                  <span class="font-display text-lg font-bold tracking-tight transition-colors group-hover:bg-yellow">{p.name}</span>
+                  <span aria-hidden="true" class="meta text-olive/40 transition-colors group-hover:text-pink">↗</span>
+                </a>
+              ) : (
+                <span class="font-display text-lg font-bold tracking-tight">{p.name}</span>
+              )}
             </li>
           ))}
         </ul>
@@ -330,15 +373,53 @@ const jsonLd = [
       <div class="rounded-3xl border border-olive bg-cream p-8">
         <p class="meta text-olive/55">In-resort businesses</p>
         <ul class="mt-5 space-y-3">
-          {resortBusinesses.map((name) => (
+          {resortBusinesses.map((p) => (
             <li>
-              <span class="font-display text-lg font-bold tracking-tight">{name}</span>
+              {p.url ? (
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener"
+                  class="group inline-flex items-baseline gap-2 no-underline"
+                >
+                  <span class="font-display text-lg font-bold tracking-tight transition-colors group-hover:bg-yellow">{p.name}</span>
+                  <span aria-hidden="true" class="meta text-olive/40 transition-colors group-hover:text-pink">↗</span>
+                </a>
+              ) : (
+                <span class="font-display text-lg font-bold tracking-tight">{p.name}</span>
+              )}
             </li>
           ))}
         </ul>
       </div>
     </div>
   </Section>
+
+  <!-- Accommodation referral: the reverse-direction relationship -->
+  <section class="border-y border-olive/10 bg-cream px-6 py-10 md:py-14 lg:py-16">
+    <div class="mx-auto max-w-screen-2xl">
+      <div class="grid items-center gap-8 lg:grid-cols-[minmax(0,2fr)_1fr] lg:gap-16">
+        <div>
+          <p><span class="meta-pill">Accommodation referral</span></p>
+          <h2 class="mt-4 max-w-2xl text-3xl font-semibold leading-tight md:text-5xl">The other side of the deal.</h2>
+          <p class="mt-6 max-w-2xl text-base leading-relaxed text-olive/80 md:text-lg">
+            The relationship works both ways. Every week, guests ask us where to stay. We only recommend a handful of hand-picked chalet and accommodation operators we genuinely rate, and those partners pay us commission on the bookings we send.
+          </p>
+          <p class="mt-4 max-w-2xl text-base leading-relaxed text-olive/75 md:text-lg">
+            Selective, curated, and worth the shelf space. If you run accommodation in Morzine, Avoriaz, Châtel or Les Gets and want to be considered for the shortlist, tell us in the enquiry form.
+          </p>
+        </div>
+        <div class="lg:justify-self-end">
+          <a
+            href="/accommodation"
+            class="inline-flex items-center rounded-full border border-olive px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive no-underline transition hover:bg-olive hover:text-snow"
+          >
+            See the current shortlist →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Sponsorship: distinct from the referral partner programme -->
   <section id="sponsorship" class="border-y border-olive/10 bg-olive-deep px-6 py-10 text-salt md:py-14 lg:py-16">
@@ -354,10 +435,10 @@ const jsonLd = [
             Sponsorship is different from the referral partner programme. Sponsors pay Peak a cash fee in return for logo placement across our uniforms and channels, dedicated digital content, and considered referrals to their brand, product or service.
           </p>
           <p>
-            We're selective — three sponsors per season, no more. We only sponsor brands we'd genuinely recommend to our clients: the same people we teach every day, high-net-worth professionals in finance, law, tech and property from the UK, France, Switzerland, Germany and the US, average spend €236 a day.
+            We're selective, three sponsors per season, no more. We only sponsor brands we'd genuinely recommend to our clients: the same people we teach every day, high-net-worth professionals in finance, law, tech and property from the UK, France, Switzerland, Germany and the US, average spend €1,700 a day.
           </p>
           <p>
-            If the fit is right, sponsorship gets you in front of that audience with the endorsement of the region's most-recommended ski school. Not an ad they scroll past — a recommendation from a coach they trust.
+            If the fit is right, sponsorship gets you in front of that audience with the endorsement of the region's most-recommended ski school. Not an ad they scroll past. A recommendation from a coach they trust.
           </p>
         </div>
 
@@ -436,7 +517,7 @@ const jsonLd = [
     <div class="grid items-start gap-12 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-20">
       <div class="space-y-6">
         <p class="text-lg leading-relaxed text-olive/80 md:text-xl">
-          Fill this in and the 2026/27 rate card lands in your inbox straight away — full pricing, the commission mechanic, and the five ways your guests can book.
+          Fill this in and the 2026/27 rate card lands in your inbox straight away, with full pricing, the commission mechanic, and the five ways your guests can book.
         </p>
         <ul class="space-y-3 text-base text-olive/75 md:text-lg">
           <li class="flex gap-3">
@@ -449,7 +530,7 @@ const jsonLd = [
           </li>
           <li class="flex gap-3">
             <span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
-            <span>No commitment — we'll answer questions before you sign anything.</span>
+            <span>No commitment. We'll answer questions before you sign anything.</span>
           </li>
         </ul>
         <p class="meta text-olive/55">
