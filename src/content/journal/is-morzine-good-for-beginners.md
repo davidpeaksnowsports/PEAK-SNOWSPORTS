@@ -48,4 +48,4 @@ Right at the top of the main bubble lifts, Pleney Bubble in Morzine, Prodains in
 
 ---
 
-Ready to book? [See our lessons](/lessons) or [WhatsApp us](https://wa.me/?text=Hi%20Peak), we usually reply within 30 minutes.
+Ready to book? [See our lessons](/lessons) or [WhatsApp us](https://wa.me/33610618558?text=Hi%20Peak), we usually reply within 30 minutes.

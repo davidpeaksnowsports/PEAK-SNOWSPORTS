@@ -340,7 +340,7 @@ const page = {
   closingBody:
     'WhatsApp us, email hello@peaksnowsports.com, or call +44 1483 616 522. Replies usually within 30 minutes.',
   closingPrimaryCta: { label: 'Book a lesson →', href: '/book' },
-  closingSecondaryCta: { label: 'WhatsApp us', href: 'https://wa.me/?text=Hi%20Peak' },
+  closingSecondaryCta: { label: 'WhatsApp us', href: 'https://wa.me/33610618558?text=Hi%20Peak' },
 };
 
 async function seedPage() {
