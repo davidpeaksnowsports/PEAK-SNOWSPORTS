@@ -5,8 +5,8 @@
  * to a normal form POST to the same endpoint. If the endpoint isn't configured
  * (no RESEND_API_KEY), the script reveals the WhatsApp / email fallback.
  */
-const WHATSAPP =
-  'https://api.whatsapp.com/send/?phone=33610618558&text&type=phone_number&app_absent=0';
+import { whatsappHref } from '../../lib/whatsapp';
+const WHATSAPP = whatsappHref();
 const EMAIL = 'hello@peaksnowsports.com';
 ---
 

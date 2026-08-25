@@ -6,6 +6,7 @@ import EnquiryForm from '../components/gap/EnquiryForm.astro';
 import StickyCta from '../components/gap/StickyCta.astro';
 import LeadMagnet from '../components/gap/LeadMagnet.astro';
 import heroImage from '../assets/images/hero-gap.jpg';
+import { whatsappHref } from '../lib/whatsapp';
 
 const included = [
   {
@@ -618,7 +619,7 @@ jsonLd.push({
         Book a call →
       </a>
       <a
-        href="https://api.whatsapp.com/send/?phone=33610618558&text&type=phone_number&app_absent=0"
+        href={whatsappHref()}
         data-analytics-event="WhatsApp Click"
         target="_blank"
         rel="noopener"
@@ -635,6 +636,6 @@ jsonLd.push({
 
   <StickyCta
     enquireHref="#enquire"
-    whatsappHref="https://api.whatsapp.com/send/?phone=33610618558&text&type=phone_number&app_absent=0"
+    whatsappHref={whatsappHref()}
   />
 </BaseLayout>

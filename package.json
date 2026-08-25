@@ -8,6 +8,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
+    "check:whatsapp": "node scripts/check-whatsapp.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "sanity:dev": "cd sanity && npm run dev",
