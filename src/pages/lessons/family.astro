@@ -83,23 +83,39 @@ const levels = [
 
 const tiers = [
   {
+    name: "Les P'tits",
+    age: '4 – 5',
+    duration: '2 hours',
+    max: 'Max 4 skiers',
+    note: 'Tiny groups for the youngest. Two hours is plenty for little legs — proper progression, no crowds.',
+  },
+  {
+    name: 'Kids group',
     age: '5 – 7',
     duration: '3 hours',
     max: 'Max 6 skiers',
-    note: 'Three hours of focused, playful coaching, the right length for shorter attention spans.',
+    note: 'Three hours of focused, playful coaching, the right length for shorter attention spans. Peak weeks run 4 hours with a structured break.',
   },
   {
+    name: 'Kids group',
     age: '7 – 12',
     duration: '4 hours',
     max: 'Max 6 skiers',
     note: 'A full half-day on snow. Time to explore, learn properly and make friends.',
+  },
+  {
+    name: 'GCSE Ski',
+    age: '14 – 16',
+    duration: 'Private, filmed',
+    max: '1:1',
+    note: 'A private assessment lesson for GCSE PE candidates. Your instructor delivers and films all five AQA/OCR/Edexcel skill drills and uploads the evidence to Google Drive during the session. Timed-run practical (Part 2) available in Lindarets during race-club peak weeks; other weeks Part 1 only.',
   },
 ];
 
 const whyJoin = [
   {
     label: 'Tiny groups',
-    body: 'Max 4 in mini groups and 6 in everything else. Real attention, no being lost in the crowd.',
+    body: "Max 4 in Les P'tits and 6 in everything else. Real attention, no being lost in the crowd.",
   },
   {
     label: 'PEAK levels & medals',
@@ -143,7 +159,7 @@ const faqs = [
   },
   {
     q: 'How big are the groups?',
-    a: "Four max in mini groups, six max in everything 5+. We hold those numbers strictly, it's the whole point.",
+    a: "Four max in Les P'tits (our 4–5 year olds), six max in everything else. We hold those numbers strictly, it's the whole point.",
   },
   {
     q: 'Are helmets compulsory?',
@@ -182,22 +198,22 @@ const faqs = [
 
 <BaseLayout
   title="Kids ski school in Morzine, Avoriaz, Châtel & Les Gets · Peak Snowsports"
-  description="School-holiday kids' ski lessons across the Portes du Soleil for ages 5–12. Max 6 per group, max 4 in mini-beginners. PEAK level system with medals."
+  description="School-holiday kids' ski lessons across the Portes du Soleil for ages 4–12, plus GCSE PE assessment lessons. Max 6 per group, max 4 in Les P'tits (4–5 yrs). PEAK level system with medals."
   image="/images/og/lessons.jpg"
   jsonLd={{
     '@context': 'https://schema.org',
     '@type': 'Service',
     serviceType: 'Children ski lessons',
     name: "Peak Snowsports Kids' Ski School",
-    description: "Holiday-week kids' ski groups for ages 5–12 across Morzine, Avoriaz, Châtel and Les Gets. Max 6 per group, max 4 in mini-beginners.",
+    description: "Holiday-week kids' ski groups for ages 4–12 across Morzine, Avoriaz, Châtel and Les Gets. Max 6 per group, max 4 in Les P'tits (4–5 yrs). GCSE PE ski assessment lessons available.",
     provider: { '@id': 'https://www.peaksnowsports.com/#organization' },
-    audience: { '@type': 'PeopleAudience', suggestedMinAge: 5, suggestedMaxAge: 12 },
+    audience: { '@type': 'PeopleAudience', suggestedMinAge: 4, suggestedMaxAge: 16 },
   }}
 >
   <Hero
     kicker="Lessons · Kids group"
     headline="Small groups. Big confidence."
-    sub="School-holiday ski lessons for kids 5–12. Six max per group (four in minis). Sustainably-made medals when they pass a PEAK level."
+    sub="School-holiday ski lessons for kids 4–12. Six max per group (four in Les P'tits). Sustainably-made medals when they pass a PEAK level. GCSE PE assessment lessons on request."
     primaryCta={{ href: '#book', label: 'Check availability' }}
     secondaryCta={{ href: '#levels', label: "Find their level" }}
     variant="full"
@@ -209,7 +225,7 @@ const faqs = [
   <!-- Booking -->
   <Section id="book" kicker="Book your kid's place" title="Holiday weeks fill fast.">
     <p class="max-w-3xl text-lg leading-relaxed text-olive/85 md:text-xl">
-      Strict on group sizes — six max in regular kids groups, four in our minis. First come, first served. Pick a duration, level and week below.
+      Strict on group sizes — six max in regular kids groups, four in Les P'tits (4–5 yrs). First come, first served. Pick a duration, level and week below.
     </p>
     <div class="mt-12">
       <SkiOperatorEmbed title="Kids ski school" />
@@ -234,7 +250,7 @@ const faqs = [
           </div>
           <div>
             <dt class="meta text-olive/50">Ages</dt>
-            <dd class="mt-1 font-display text-2xl font-bold tracking-tight">5 – 12</dd>
+            <dd class="mt-1 font-display text-2xl font-bold tracking-tight">4 – 12</dd>
           </div>
           <div>
             <dt class="meta text-olive/50">When</dt>
@@ -244,7 +260,7 @@ const faqs = [
 
         <div class="space-y-5 text-base leading-relaxed text-olive/75 md:text-lg">
           <p>
-            Strict on group sizes, six max in regular kids groups, four in our mini groups for the youngest. It's the only way to give every child the 1-to-1 moments that actually move the needle. First come, first served.
+            Strict on group sizes, six max in regular kids groups, four in Les P'tits for our 4–5 year olds. It's the only way to give every child the 1-to-1 moments that actually move the needle. First come, first served.
           </p>
           <p>
             All on the PEAK 7-level system: every child gets graded honestly and earns a medal when they pass a level. Sustainably made, properly earned.
@@ -254,19 +270,24 @@ const faqs = [
 
       <div class="space-y-4">
         <div class="rounded-3xl border border-olive bg-cream p-6">
-          <p class="meta text-olive">5 – 7 year olds</p>
-          <p class="mt-2 font-display text-xl font-bold tracking-tight">3 hours · max 6</p>
-          <p class="mt-1 text-sm text-olive/70">Right length for shorter attention spans.</p>
+          <p class="meta text-olive">Les P'tits · 4 – 5 yrs</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">2 hours · max 4</p>
+          <p class="mt-1 text-sm text-olive/70">Tiny groups for the youngest.</p>
         </div>
         <div class="rounded-3xl border border-olive bg-cream p-6">
-          <p class="meta text-olive">7 – 12 year olds</p>
+          <p class="meta text-olive">Kids group · 5 – 7 yrs</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">3 hours · max 6</p>
+          <p class="mt-1 text-sm text-olive/70">Right length for shorter attention spans. 4 hrs in peak weeks.</p>
+        </div>
+        <div class="rounded-3xl border border-olive bg-cream p-6">
+          <p class="meta text-olive">Kids group · 7 – 12 yrs</p>
           <p class="mt-2 font-display text-xl font-bold tracking-tight">4 hours · max 6</p>
           <p class="mt-1 text-sm text-olive/70">Among the longest kids groups in the area.</p>
         </div>
         <div class="rounded-3xl border border-olive bg-cream p-6">
-          <p class="meta text-olive">Mini group</p>
-          <p class="mt-2 font-display text-xl font-bold tracking-tight">Max 4</p>
-          <p class="mt-1 text-sm text-olive/70">For the youngest, tiny groups, lots of attention.</p>
+          <p class="meta text-olive">GCSE Ski · 14 – 16 yrs</p>
+          <p class="mt-2 font-display text-xl font-bold tracking-tight">Private, filmed</p>
+          <p class="mt-1 text-sm text-olive/70">Assessment evidence for GCSE PE, delivered and filmed on-mountain.</p>
         </div>
       </div>
     </div>
@@ -284,12 +305,12 @@ const faqs = [
     </ul>
   </Section>
 
-  <!-- Two tiers -->
-  <Section kicker="Two durations" title="Pick the right length.">
+  <!-- Groups -->
+  <Section kicker="Four groups" title="Pick your child's group.">
     <div class="grid gap-6 md:grid-cols-2">
       {tiers.map((t) => (
         <article class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
-          <p class="meta text-olive/50">Ages {t.age}</p>
+          <p class="meta text-olive/50">{t.name} · Ages {t.age}</p>
           <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{t.duration}</h3>
           <p class="meta mt-3 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{t.max}</p>
           <p class="mt-6 text-base leading-relaxed text-olive/80 md:text-lg">{t.note}</p>
