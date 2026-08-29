@@ -68,6 +68,13 @@ export default defineType({
       group: 'pricing',
     }),
     defineField({
+      name: 'pricingProvisionalNote',
+      type: 'string',
+      title: 'Provisional-pricing note',
+      description: 'Optional. When set, renders as a caveat under the priced tiers — e.g. "Accommodation being finalised — prices may change".',
+      group: 'pricing',
+    }),
+    defineField({
       name: 'tiers',
       type: 'array',
       title: 'Price tiers',

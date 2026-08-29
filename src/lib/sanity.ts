@@ -41,6 +41,7 @@ export const campLocationsQuery = `*[_type == "campLocation"] | order(name asc){
   facts,
   pricingTbc,
   pricingSubtitle,
+  pricingProvisionalNote,
   tiers,
   accommodationHeadline,
   accommodationLogo,

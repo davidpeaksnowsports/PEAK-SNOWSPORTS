@@ -25,6 +25,7 @@ interface CampLocation {
   facts?: FactT[];
   pricingTbc?: boolean;
   pricingSubtitle?: string;
+  pricingProvisionalNote?: string;
   tiers?: Tier[];
   accommodationHeadline?: string;
   accommodationLogo?: ImageRef;
@@ -345,6 +346,9 @@ const faqs = page?.faqs ?? [];
                   </div>
                 ))}
               </dl>
+              {p.pricingProvisionalNote && (
+                <p class="meta mt-4 text-olive/60">{p.pricingProvisionalNote}</p>
+              )}
               <a
                 href="#book"
                 class="mt-8 inline-flex items-center rounded-full bg-yellow px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
