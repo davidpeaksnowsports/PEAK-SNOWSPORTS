@@ -27,14 +27,13 @@
     @apply underline-offset-4 hover:underline;
   }
 
-  /* Display headlines use Bricolage Grotesque — variable grotesque with
-     optical sizing. Heavy weight, optical size 96, tight tracking for
-     architectural impact at large sizes. */
+  /* Display headlines use Geist — neutral grotesque in the SF Pro lane.
+     No optical-sizing axis, so weight and tracking are set explicitly for
+     large sizes rather than left to the font. */
   h1, h2 {
     font-family: theme('fontFamily.display');
-    font-variation-settings: "opsz" 96, "wdth" 100;
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    letter-spacing: -0.035em;
     line-height: 0.95;
   }
 

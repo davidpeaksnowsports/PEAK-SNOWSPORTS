@@ -46,7 +46,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['"Source Sans Pro"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        display: ['"Bricolage Grotesque"', 'system-ui', 'sans-serif'], // architectural grotesque — headlines, hero, big stats
+        display: ['Geist', '"SF Pro Display"', 'system-ui', '-apple-system', 'helvetica', 'sans-serif'], // neutral grotesque — headlines, hero, nav, CTA labels
         mono: ['"Courier New"', 'Courier', 'monospace'],
       },
       fontWeight: {
