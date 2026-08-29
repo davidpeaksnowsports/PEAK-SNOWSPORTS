@@ -231,7 +231,7 @@ const faqs = [
       <SkiOperatorEmbed title="Kids ski school" />
     </div>
     <p class="meta mt-6 text-olive/55">
-      Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">Get in touch</a>.
+      Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a>.
     </p>
   </Section>
 
@@ -312,11 +312,11 @@ const faqs = [
         <article class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
           <p class="meta text-olive/50">{t.name} · Ages {t.age}</p>
           <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{t.duration}</h3>
-          <p class="meta mt-3 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{t.max}</p>
+          <p class="meta mt-3 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-snow">{t.max}</p>
           <p class="mt-6 text-base leading-relaxed text-olive/80 md:text-lg">{t.note}</p>
           <a
             href="#book"
-            class="meta mt-8 inline-flex items-center gap-2 text-olive transition-colors hover:bg-yellow"
+            class="meta mt-8 inline-flex items-center gap-2 text-olive transition-colors hover:bg-yellow hover:text-snow"
           >
             Check availability →
           </a>
@@ -347,7 +347,7 @@ const faqs = [
       {levels.map((l, i) => (
         <li class="border-t border-olive/10 pt-10">
           <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
-            <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full bg-yellow text-olive-deep">{String(i + 1).padStart(2, '0')}</span>
+            <span class="meta inline-flex h-14 w-14 items-center justify-center rounded-full bg-yellow text-snow">{String(i + 1).padStart(2, '0')}</span>
             <div>
               <p class="meta text-olive/50">Level {i + 1}</p>
               <h3 class="mt-1 font-display text-2xl font-bold tracking-tight md:text-4xl">{l.name}</h3>

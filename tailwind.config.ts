@@ -1,48 +1,62 @@
 import type { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
 
-// Summer Collection palette — see CLAUDE.md §3.
+// Winter Collection palette - Monochrome. See CLAUDE.md section 3.
 //
-// Four-colour system: white + cream + pink + navy. White is the clean
-// surface, cream is the warm buffer, pink is the bold accent, navy is
-// the deep voice (type, mood surfaces, outlines).
+// The page is off-white and charcoal with a single accent. Neither pure
+// black nor pure white appears anywhere: #FAFAFA paper, #1A1A1A ink.
+// Between them sits a grey ramp with a faint cool bias so the neutrals
+// read chosen rather than dead.
 //
-// Historic token names (snow / olive / olive-deep / brown / salt / yellow)
-// are preserved so every existing `text-olive`, `bg-yellow`, etc. class
-// keeps working. Their hex values now point to the new palette:
+// ONE accent, Peak olive #3B4131 - the value retired in the Summer
+// rebrand, restored. It is deliberately dark: in a monochrome layout an
+// accent has to work as a link, as a button fill, as that button's edge,
+// and stay visibly distinct from the body ink. Pale accents fail the
+// first, third and sometimes all of those. Measured against #FAFAFA:
 //
-//   snow + salt                → true white  (#FFFFFF)
-//   olive + olive-deep + brown → navy        (#1A2647)  — was black, was olive green
-//   yellow                     → pink        (#EB437F)
+//   accent as link        10.13:1   AAA
+//   paper label on accent 10.13:1   AAA
+//   accent vs body ink     1.65:1   distinct enough to read as colour
+//   ink-70 on paper        6.41:1   AA   secondary copy
+//   ink-45 on paper        3.31:1   large text and marks only
 //
-// New explicit-name tokens (`cream`, `navy`, `pink`) are the preferred
-// names for new code. `blue` and `green` remain defined for level-coding
-// and success-state use, but are not actively deployed.
+// Historic token names (snow / cream / olive / brown / salt / navy /
+// pink / yellow) are preserved so the ~1,150 existing class references
+// keep working, remapped onto the ramp. NOTE the collision: the legacy
+// `olive` token is the type colour and now points at ink, while the new
+// accent - which is the actual olive - is `accent`. New code should use
+// paper / ink / accent and ignore the aliases.
 const config: Config = {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Surfaces + type
-        snow: '#FFFFFF',      // bright clean surface
-        cream: '#F1ECE0',     // Pantone 11-4201 Cloud Dancer — warm buffer
-        olive: {
-          DEFAULT: '#1A2647', // body type (now navy — was #0A0A0A black, originally olive)
-          deep: '#1A2647',    // dark surface (matches navy)
+        // Monochrome surfaces + type
+        paper: '#FAFAFA',      // page ground
+        'paper-2': '#F2F2F3',  // subtle second surface
+        ink: {
+          DEFAULT: '#1A1A1A',  // body type, dark bands
+          70: '#5C5C5E',       // secondary copy      6.41:1 on paper
+          45: '#8A8A8D',       // marks, large text   3.31:1 on paper
         },
-        brown: '#1A2647',     // card dark surface (matches navy)
-        salt: '#FFFFFF',      // type on dark surfaces (white)
 
-        // Summer Collection accents
-        navy: '#1A2647',      // deep voice — type, mood surfaces, outlines
-        pink: '#EB437F',      // bold accent — CTAs, kickers, highlights, hover
-        blue: '#2E55E2',      // sparingly · level / category coding only
-        green: '#1FB089',     // sparingly · success / confirmation only
+        // The single accent
+        accent: '#3B4131',     // Peak olive - buttons, links, active states
 
-        // Legacy alias — `yellow` was the original accent token. Mapped to
-        // pink for backward compatibility. Migrate `bg-yellow` etc. to
-        // `bg-pink` over time.
-        yellow: '#EB437F',
+        // Legacy aliases, remapped. Do not use in new code.
+        snow: '#FAFAFA',
+        salt: '#FAFAFA',
+        cream: '#F2F2F3',
+        navy: '#1A1A1A',
+        brown: '#1A1A1A',
+        olive: {
+          DEFAULT: '#1A1A1A',
+          deep: '#1A1A1A',
+        },
+        pink: '#3B4131',
+        yellow: '#3B4131',
+        blue: '#5C5C5E',
+        green: '#5C5C5E',
       },
       fontFamily: {
         sans: ['"Source Sans Pro"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
