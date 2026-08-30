@@ -59,20 +59,32 @@ Off-white and charcoal with **one** accent. The colour budget is spent entirely 
 | `ink` | `#1A1A1A` | Body type and dark bands. Not pure black. |
 | `ink-70` | `#5C5C5E` | Secondary copy. 6.41:1 on paper — AA. |
 | `ink-45` | `#8A8A8D` | Marks, captions, large text only. 3.31:1 — fails AA for body copy. |
-| `accent` | `#3B4131` | **Peak olive.** Buttons, links, active nav, numbered markers, quote marks. |
+| `accent` | `#67458D` | **Purple.** Buttons, links, active nav, numbered markers, quote marks. |
 | `snow` `salt` | `#FAFAFA` | Legacy aliases → `paper`. |
 | `cream` | `#F2F2F3` | Legacy alias → `paper-2`. |
 | `navy` `brown` `olive` `olive-deep` | `#1A1A1A` | Legacy aliases → `ink`. |
-| `pink` `yellow` | `#3B4131` | Legacy aliases → `accent`. |
+| `pink` `yellow` | `#67458D` | Legacy aliases → `accent`. |
 | `blue` `green` | `#5C5C5E` | Legacy aliases → `ink-70`. |
 
-**Why the accent is dark.** In a monochrome layout an accent has to do four jobs: read as a link on paper, fill a button, give that button an edge, and stay visibly distinct from the body ink. Pale accents fail at least one — the retired Peak yellow `#EFFDA4` scores 1.04:1 as a link and has no pill edge at all. Peak olive measures 10.13:1 on the first three and 1.65:1 against the ink.
+**Why the accent is dark.** In a monochrome layout an accent has to do four jobs: read as a link on paper, fill a button, give that button an edge, and stay visibly distinct from the body ink. Pale accents fail at least one — the retired Peak yellow `#EFFDA4` scores 1.04:1 as a link and has no pill edge at all, and every navy Peak uses (`#192747`, `#1A2647`, `#14243F`) sits under 1.2:1 against the ink, so it reads as a second black rather than a colour.
+
+Candidates that pass all four, ranked by how much they announce themselves against the ink:
+
+| Accent | As link | As button | vs ink |
+|---|---|---|---|
+| **Purple `#67458D`** — current | 7.15 | 7.15 | **2.33** |
+| Royal blue `#324E8E` | 7.69 | 7.69 | 2.17 |
+| Uniform olive `#4F4A36` | 8.51 | 8.51 | 1.96 |
+| Peak olive `#3B4131` | 10.13 | 10.13 | 1.65 |
+| Slate navy `#213E63` | 10.40 | 10.40 | 1.60 |
+
+Swapping the accent is a one-line change to `accent` plus its two legacy aliases in `tailwind.config.ts` — nothing else in the codebase hardcodes it.
 
 **Rhythm**: with only one surface, sections separate by **column structure and hairline rules**, not by background colour. Vary the grid per section — 7/4, 5/6, four columns, a narrow measure — so no two adjacent sections share a shape. One ink band per page maximum, used where numbers or an offer need to land.
 
 **Naming collision — read this.** The legacy `olive` token is the *type* colour and points at ink `#1A1A1A`. The new accent, which is the actual olive, is `accent`. New code should use `paper` / `ink` / `accent` and ignore the aliases entirely.
 
-**Migration history**: original palette (olive `#3B4131` + yellow `#EFFDA4` + brown `#2D291E`) → Summer Collection (white + cream + pink `#EB437F` + navy) → Winter Collection (monochrome + Peak olive). Token names have been preserved throughout, so ~1,150 class references keep resolving; only the hex values change. The Winter migration also required two mechanical fixes: 40 accent fills carried `text-olive-deep` labels (1.65:1 against a dark accent — now paper labels at 10.13:1), and 27 accent buttons used `hover:bg-salt` which would have gone light-on-light (now `hover:bg-ink`). **Peak olive is the original brand accent restored**, so the site once again matches the olive mountain uniform.
+**Migration history**: original palette (olive `#3B4131` + yellow `#EFFDA4` + brown `#2D291E`) → Summer Collection (white + cream + pink `#EB437F` + navy) → Winter Collection (monochrome + purple). Token names have been preserved throughout, so ~1,150 class references keep resolving; only the hex values change. The Winter migration also required two mechanical fixes: 40 accent fills carried `text-olive-deep` labels, which against any dark accent is close to invisible — they now take paper labels (7.15:1 on the current purple), and 27 accent buttons used `hover:bg-salt` which would have gone light-on-light (now `hover:bg-ink`). The accent was briefly Peak olive `#3B4131` — the original pre-rebrand value — before moving to purple.
 
 **Recommended for new code**: `bg-paper`, `text-ink`, `text-ink-70`, `bg-accent`. Never `bg-yellow` / `text-olive`.
 
@@ -333,7 +345,7 @@ Each document gets EN + FR fields where appropriate, OR we use Weglot to transla
 
 ## 11. Open questions to resolve before/during build
 
-1. ~~**Brand accent colour**~~ — **Resolved.** Peak olive `#3B4131`, the original accent restored, as the single accent in a monochrome system.
+1. ~~**Brand accent colour**~~ — **Resolved.** Purple `#67458D` as the single accent in a monochrome system.
 2. ~~**Typography licensing**~~ — **Resolved.** Geist, chosen over Inter Tight, Instrument Sans and Schibsted Grotesk. OFL, so free and self-hostable; currently served from Google Fonts, can move to `/public/fonts` later.
 3. **Hero video footage** — do we have season footage already shot, or commission?
 4. **Existing site URL inventory** — pull the full sitemap from Squarespace for redirect mapping
