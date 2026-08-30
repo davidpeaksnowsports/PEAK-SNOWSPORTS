@@ -123,8 +123,8 @@ const heroSecondary =
   />
 
   {page?.promoEnabled && page?.promoBody && (
-    <section class="bg-olive-deep text-salt">
-      <div class="mx-auto flex max-w-screen-2xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
+    <section class="bg-ink text-snow">
+      <div class="mx-auto flex max-w-screen-2xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between md:px-10">
         <div>
           {page.promoKicker && <p class="meta-pill">{page.promoKicker}</p>}
           <p class="mt-3 max-w-2xl text-lg leading-snug md:text-xl">
@@ -168,7 +168,7 @@ const heroSecondary =
       </div>
       <ul class="grid grid-cols-2 gap-4">
         {(page?.philosophyFacts ?? []).map((f) => (
-          <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <li class="rounded-none border border-olive bg-cream px-5 py-4">
             <p class="meta text-olive/55">{f.label}</p>
             <p class="mt-2 font-display text-2xl font-bold tracking-tight">{f.value}</p>
           </li>
@@ -188,7 +188,7 @@ const heroSecondary =
       </div>
       <ul class="grid grid-cols-2 gap-3">
         {(page?.peakProgressFacts ?? []).map((f, i, arr) => (
-          <li class={`rounded-2xl border border-olive bg-cream px-5 py-4 ${i === arr.length - 1 && arr.length % 2 === 1 ? 'col-span-2' : ''}`}>
+          <li class={`rounded-none border border-olive bg-cream px-5 py-4 ${i === arr.length - 1 && arr.length % 2 === 1 ? 'col-span-2' : ''}`}>
             <p class="meta text-olive/55">{f.label}</p>
             <p class="mt-2 font-display text-xl font-bold tracking-tight">{f.value}</p>
           </li>
@@ -219,7 +219,7 @@ const heroSecondary =
                   ))}
                 </ul>
                 {l.lifts && (
-                  <div class="rounded-2xl border border-olive bg-cream px-5 py-4 md:self-start">
+                  <div class="rounded-none border border-olive bg-cream px-5 py-4 md:self-start">
                     <p class="meta text-olive/55">Lifts</p>
                     <p class="mt-2 text-sm">{l.lifts}</p>
                   </div>

@@ -51,7 +51,7 @@ const heroUrl = (h: ImageRef | undefined, w: number, hh: number) =>
     <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {homeResorts.map((r) => (
         <a href={`/resorts/${r.slug}`} class="group block no-underline">
-          <div class="aspect-[4/5] overflow-hidden rounded-3xl bg-brown">
+          <div class="aspect-[4/5] overflow-hidden rounded-none bg-brown">
             {heroUrl(r.hero, 600, 750) ? (
               <img
                 src={heroUrl(r.hero, 600, 750)}
