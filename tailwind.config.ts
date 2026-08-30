@@ -8,15 +8,15 @@ import typography from '@tailwindcss/typography';
 // Between them sits a grey ramp with a faint cool bias so the neutrals
 // read chosen rather than dead.
 //
-// ONE accent, Peak olive #3B4131 - the value retired in the Summer
-// rebrand, restored. It is deliberately dark: in a monochrome layout an
-// accent has to work as a link, as a button fill, as that button's edge,
-// and stay visibly distinct from the body ink. Pale accents fail the
-// first, third and sometimes all of those. Measured against #FAFAFA:
+// ONE accent, purple #67458D. It is deliberately dark: in a monochrome
+// layout an accent has to work as a link, as a button fill, as that
+// button's edge, and stay visibly distinct from the body ink. Pale
+// accents fail the first, third and sometimes all of those. Measured
+// against #FAFAFA:
 //
-//   accent as link        10.13:1   AAA
-//   paper label on accent 10.13:1   AAA
-//   accent vs body ink     1.65:1   distinct enough to read as colour
+//   accent as link         7.15:1   AAA
+//   paper label on accent  7.15:1   AAA
+//   accent vs body ink     2.33:1   the most distinct of the candidates
 //   ink-70 on paper        6.41:1   AA   secondary copy
 //   ink-45 on paper        3.31:1   large text and marks only
 //
@@ -41,7 +41,7 @@ const config: Config = {
         },
 
         // The single accent
-        accent: '#3B4131',     // Peak olive - buttons, links, active states
+        accent: '#67458D',     // Purple - buttons, links, active states
 
         // Legacy aliases, remapped. Do not use in new code.
         snow: '#FAFAFA',
@@ -53,8 +53,8 @@ const config: Config = {
           DEFAULT: '#1A1A1A',
           deep: '#1A1A1A',
         },
-        pink: '#3B4131',
-        yellow: '#3B4131',
+        pink: '#67458D',
+        yellow: '#67458D',
         blue: '#5C5C5E',
         green: '#5C5C5E',
       },
