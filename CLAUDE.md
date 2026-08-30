@@ -41,36 +41,40 @@ Examples:
 - ❌ "Elevating your snow sports journey to new heights"
 
 ### Visual language
-- **Light-mode primary.** Warm snow surface (`#F7F7F7`) with olive type — editorial feel, like a premium magazine. Cards and the hero overlay flip dark (brown / olive-deep) for contrast moments. No corporate navy/baby-blue ski-school cliché.
-- **Type:** Source Sans Pro 400/600 for display + body. Courier for metadata (kickers, bylines, captions, timestamps).
+- **Light-mode primary, monochrome.** Off-white paper (`#FAFAFA`) with charcoal ink (`#1A1A1A`) and a single accent. Neither pure black nor pure white appears anywhere — both strain the eyes. Cards and the hero overlay flip to ink for contrast moments. Photography is the only chroma on the page besides the accent.
+- **Type:** Geist 700 for display (headlines, hero, nav, CTA labels), Source Sans Pro 400/600 for body. Courier for metadata (kickers, bylines, captions, timestamps). With colour stripped out, type size and weight carry the hierarchy, so the scale runs deliberately wide — 11px metadata to hero display.
 - **Imagery:** Real, raw mountain photography. Real Peak team faces. Video backgrounds on hero. Instructor portraits shot consistently — same lighting, same crop, builds the team as a visual ensemble.
 - **Layout:** Full-bleed everywhere. Generous vertical rhythm. Mobile-first (majority of traffic is mobile).
 - **No stock photo clichés.** No corporate-handshake imagery, no generic-skier-in-action stock.
 
-### Palette — Summer Collection (locked)
+### Palette — Winter Collection (monochrome)
 Defined in [`tailwind.config.ts`](./tailwind.config.ts). Do not introduce hex codes outside that file.
 
-The "Summer Collection" is the active palette. **Four-colour system**: white + cream + pink + navy. Each has a defined role and a defined surface. The rhythm — white → cream → pink → navy — is how sections breathe.
+Off-white and charcoal with **one** accent. The colour budget is spent entirely on buttons and active links; everything else is the grey ramp.
 
 | Token | Hex | Role |
 |---|---|---|
-| `snow` | `#FFFFFF` | Bright clean surface. Default body bg, nav, sub-footer. |
-| `cream` | `#F1ECE0` | Pantone 11-4201 Cloud Dancer. Warm buffer surface — side cards, alternating sections, partner/accreditation bands. |
-| `pink` | `#EB437F` | Bold accent — CTAs, kickers, hero highlights, hover-bgs, badges, link underlines. The brand's punch. |
-| `navy` | `#1A2647` | Deep voice — body type, mood surfaces (hero overlays, dark bands), outlines, secondary buttons. Replaces pure black. |
-| `salt` | `#FFFFFF` | Type on dark surfaces. Same value as `snow` — both render as white. |
-| `olive` | `#1A2647` | Legacy alias for `navy`. Existing `text-olive` classes keep working. |
-| `olive-deep` | `#1A2647` | Legacy alias for `navy`. Existing `bg-olive-deep` classes keep working. |
-| `brown` | `#1A2647` | Legacy alias for `navy`. Existing `bg-brown` classes keep working. |
-| `yellow` | `#EB437F` | Legacy alias for `pink`. Existing `bg-yellow` / `text-yellow` classes keep working. |
-| `blue` | `#2E55E2` | Reserved for level / category coding. Not currently deployed. |
-| `green` | `#1FB089` | Reserved for confirmation / success states. Not currently deployed. |
+| `paper` | `#FAFAFA` | Page ground, nav, sub-footer. Not pure white. |
+| `paper-2` | `#F2F2F3` | Subtle second surface. |
+| `ink` | `#1A1A1A` | Body type and dark bands. Not pure black. |
+| `ink-70` | `#5C5C5E` | Secondary copy. 6.41:1 on paper — AA. |
+| `ink-45` | `#8A8A8D` | Marks, captions, large text only. 3.31:1 — fails AA for body copy. |
+| `accent` | `#3B4131` | **Peak olive.** Buttons, links, active nav, numbered markers, quote marks. |
+| `snow` `salt` | `#FAFAFA` | Legacy aliases → `paper`. |
+| `cream` | `#F2F2F3` | Legacy alias → `paper-2`. |
+| `navy` `brown` `olive` `olive-deep` | `#1A1A1A` | Legacy aliases → `ink`. |
+| `pink` `yellow` | `#3B4131` | Legacy aliases → `accent`. |
+| `blue` `green` | `#5C5C5E` | Legacy aliases → `ink-70`. |
 
-**Rhythm**: alternate sections between white (clean), cream (warm calm), pink (bold). Navy handles the deep moments — type, hero overlays, mood bands. The cream is what stops the white→pink jump from feeling harsh.
+**Why the accent is dark.** In a monochrome layout an accent has to do four jobs: read as a link on paper, fill a button, give that button an edge, and stay visibly distinct from the body ink. Pale accents fail at least one — the retired Peak yellow `#EFFDA4` scores 1.04:1 as a link and has no pill edge at all. Peak olive measures 10.13:1 on the first three and 1.65:1 against the ink.
 
-**Migration history**: the original palette (olive `#3B4131` + yellow `#EFFDA4` + brown `#2D291E`) was retired in the Summer Collection rebrand. Token names were preserved so the ~700 existing class references keep working — the hex values were swapped. Then pure-black-on-white was replaced by navy-on-white to soften the contrast against hot pink. The site visual no longer matches the olive-green team uniform — that's an accepted brand divergence for the Summer Collection. The mountain uniform stays olive.
+**Rhythm**: with only one surface, sections separate by **column structure and hairline rules**, not by background colour. Vary the grid per section — 7/4, 5/6, four columns, a narrow measure — so no two adjacent sections share a shape. One ink band per page maximum, used where numbers or an offer need to land.
 
-**Recommended for new code**: use the explicit names — `bg-cream`, `text-navy`, `bg-pink` — rather than the legacy aliases (`bg-brown`, `text-olive`, `bg-yellow`).
+**Naming collision — read this.** The legacy `olive` token is the *type* colour and points at ink `#1A1A1A`. The new accent, which is the actual olive, is `accent`. New code should use `paper` / `ink` / `accent` and ignore the aliases entirely.
+
+**Migration history**: original palette (olive `#3B4131` + yellow `#EFFDA4` + brown `#2D291E`) → Summer Collection (white + cream + pink `#EB437F` + navy) → Winter Collection (monochrome + Peak olive). Token names have been preserved throughout, so ~1,150 class references keep resolving; only the hex values change. The Winter migration also required two mechanical fixes: 40 accent fills carried `text-olive-deep` labels (1.65:1 against a dark accent — now paper labels at 10.13:1), and 27 accent buttons used `hover:bg-salt` which would have gone light-on-light (now `hover:bg-ink`). **Peak olive is the original brand accent restored**, so the site once again matches the olive mountain uniform.
+
+**Recommended for new code**: `bg-paper`, `text-ink`, `text-ink-70`, `bg-accent`. Never `bg-yellow` / `text-olive`.
 
 ### Aspirational references
 - **barrys.com** — the lifestyle/brand-led model. Confident type, full-bleed video, booking tucked behind a single CTA.
@@ -275,7 +279,7 @@ Each document gets EN + FR fields where appropriate, OR we use Weglot to transla
 - Init Astro + Tailwind + Sanity Studio in monorepo
 - Set up Vercel deploys (auto-deploy on push to main)
 - Set up Sanity project (free tier, EN + FR datasets if going native; single dataset if Weglot)
-- Buy/swap fonts (Söhne Mono or Geist if licensing budget; Inter as fallback)
+- Fonts: Geist (display) + Source Sans Pro (body), both via Google Fonts
 
 ### Phase 1 — Foundations (1-2 days)
 - Base layout, nav, footer
@@ -329,8 +333,8 @@ Each document gets EN + FR fields where appropriate, OR we use Weglot to transla
 
 ## 11. Open questions to resolve before/during build
 
-1. **Brand accent colour** — needs founder decision (David)
-2. **Typography licensing** — Söhne/Geist licensed, or Inter free? Affects budget
+1. ~~**Brand accent colour**~~ — **Resolved.** Peak olive `#3B4131`, the original accent restored, as the single accent in a monochrome system.
+2. ~~**Typography licensing**~~ — **Resolved.** Geist, chosen over Inter Tight, Instrument Sans and Schibsted Grotesk. OFL, so free and self-hostable; currently served from Google Fonts, can move to `/public/fonts` later.
 3. **Hero video footage** — do we have season footage already shot, or commission?
 4. **Existing site URL inventory** — pull the full sitemap from Squarespace for redirect mapping
 5. **Current photography library** — what's already shot? What needs new shoots before launch?
