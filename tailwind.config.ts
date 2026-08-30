@@ -58,6 +58,33 @@ const config: Config = {
         blue: '#5C5C5E',
         green: '#5C5C5E',
       },
+      // Prose defaults for @tailwindcss/typography. Without these the plugin
+      // ships its own grey scale (#111827 / #9ca3af / #e5e7eb), which is close
+      // to our ramp but not it. Pointing the variables at the tokens means
+      // long-form content inherits the ink ramp with no per-page overrides -
+      // which is what the pages were badly hand-rolling before.
+      typography: ({ theme }: { theme: (k: string) => string }) => ({
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': theme('colors.ink.70'),
+            '--tw-prose-headings': theme('colors.ink.DEFAULT'),
+            '--tw-prose-lead': theme('colors.ink.70'),
+            '--tw-prose-links': theme('colors.accent'),
+            '--tw-prose-bold': theme('colors.ink.DEFAULT'),
+            '--tw-prose-counters': theme('colors.ink.45'),
+            '--tw-prose-bullets': theme('colors.ink.45'),
+            '--tw-prose-hr': 'rgba(26, 26, 26, 0.13)',
+            '--tw-prose-quotes': theme('colors.ink.DEFAULT'),
+            '--tw-prose-quote-borders': theme('colors.accent'),
+            '--tw-prose-captions': theme('colors.ink.45'),
+            '--tw-prose-code': theme('colors.ink.DEFAULT'),
+            '--tw-prose-pre-code': theme('colors.paper'),
+            '--tw-prose-pre-bg': theme('colors.ink.DEFAULT'),
+            '--tw-prose-th-borders': 'rgba(26, 26, 26, 0.28)',
+            '--tw-prose-td-borders': 'rgba(26, 26, 26, 0.13)',
+          },
+        },
+      }),
       fontFamily: {
         sans: ['"Source Sans Pro"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
         display: ['Geist', '"SF Pro Display"', 'system-ui', '-apple-system', 'helvetica', 'sans-serif'], // neutral grotesque — headlines, hero, nav, CTA labels

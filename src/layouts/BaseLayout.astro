@@ -139,9 +139,15 @@ const allJsonLd = [orgJsonLd, websiteJsonLd, ...pageJsonLdArray];
     <meta name="twitter:image" content={ogImage} />
 
     <!-- Icons -->
+    <!-- The mark is an ink disc with a paper A. On a dark tab strip the disc
+         disappears into the chrome and only the A reads, so dark mode gets the
+         inverted variant: paper disc, ink mark. Browsers that ignore media on
+         icon links fall through to the .ico, which is the light version. -->
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-dark.png" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16-dark.png" media="(prefers-color-scheme: dark)" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <!-- Fonts -->
