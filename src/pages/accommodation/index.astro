@@ -63,7 +63,7 @@ const providers = all.sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 99
           </div>
           <div class="mt-5">
             {p.data.style && (
-              <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-snow">{p.data.style}</span>
+              <span class="meta inline-flex items-center rounded-sm bg-yellow px-3 py-1 text-snow">{p.data.style}</span>
             )}
             <h3 class="mt-3 font-display text-2xl font-bold tracking-tight transition-colors group-hover:bg-yellow hover:text-snow md:text-3xl">{p.data.name}</h3>
             <p class="mt-3 text-base leading-relaxed text-olive/75">{p.data.tagline}</p>
@@ -129,7 +129,7 @@ const providers = all.sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 99
           <textarea name="message" rows="4" class="mt-2 w-full border-b border-salt/30 bg-transparent py-3 text-salt focus:border-yellow focus:outline-none"></textarea>
         </label>
 
-        <button type="submit" class="justify-self-start rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow transition hover:bg-ink">
+        <button type="submit" class="justify-self-start rounded-sm bg-yellow px-8 py-4 font-display text-base font-semibold text-snow transition hover:bg-ink">
           Send enquiry →
         </button>
 

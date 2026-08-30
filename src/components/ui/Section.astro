@@ -1,24 +1,48 @@
 ---
+/**
+ * Section — the page's structural unit in the Winter Collection.
+ *
+ * With colour stripped out, sections can no longer separate themselves with a
+ * background. They separate by a hairline rule and by column structure, so this
+ * lays its header on the shared 12-column grid: kicker in columns 1–2, title in
+ * 3–10. Pages vary the grid of their own slot content underneath, which is what
+ * stops a long scroll reading as one block.
+ */
 interface Props {
   kicker?: string;
   title?: string;
   class?: string;
   id?: string;
   size?: 'default' | 'tight';
+  /** Set false for the first section under a hero, where the rule would double up. */
+  rule?: boolean;
 }
 
-const { kicker, title, class: className = '', id, size = 'default' } = Astro.props;
+const {
+  kicker,
+  title,
+  class: className = '',
+  id,
+  size = 'default',
+  rule = true,
+} = Astro.props;
 
-const padding =
-  size === 'tight' ? 'py-10 md:py-14 lg:py-16' : 'py-16 md:py-24 lg:py-32';
+const padding = size === 'tight' ? 'py-12 md:py-16' : 'py-16 md:py-20 lg:py-24';
+const border = rule ? 'border-t border-ink/10' : '';
 ---
 
-<section id={id} class={`px-6 ${padding} ${className}`}>
+<section id={id} class={`px-6 md:px-10 ${padding} ${border} ${className}`}>
   <div class="mx-auto max-w-screen-2xl">
     {(kicker || title) && (
-      <header class="mb-12 max-w-3xl">
-        {kicker && <p><span class="meta-pill">{kicker}</span></p>}
-        {title && <h2 class="mt-4 text-4xl font-semibold leading-tight md:text-6xl">{title}</h2>}
+      <header class="mb-12 grid grid-cols-12 items-baseline gap-x-6 gap-y-3">
+        {kicker && (
+          <p class="meta col-span-12 self-start text-ink-45 md:col-span-2">{kicker}</p>
+        )}
+        {title && (
+          <h2 class="col-span-12 text-4xl leading-[0.95] md:col-span-9 md:text-5xl lg:text-6xl">
+            {title}
+          </h2>
+        )}
       </header>
     )}
     <slot />

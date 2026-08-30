@@ -7,11 +7,12 @@ interface Props {
 
 const { href, variant = 'primary', class: className = '', ...rest } = Astro.props;
 
-const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline transition';
+// Winter Collection: 2px radius, sentence case, accent fill or hairline outline.
+const base = 'inline-flex items-center justify-center gap-2 rounded-sm px-7 py-3.5 font-display text-sm font-semibold no-underline transition';
 const variants = {
-  primary: 'bg-yellow text-snow hover:bg-ink',
-  secondary: 'border border-olive/40 text-olive hover:border-yellow hover:bg-yellow hover:text-snow',
-  ghost: 'text-olive hover:bg-yellow hover:text-snow',
+  primary: 'bg-accent text-snow hover:bg-ink',
+  secondary: 'border border-ink/30 text-ink hover:border-ink',
+  ghost: 'text-accent hover:text-ink',
 };
 
 const cls = `${base} ${variants[variant]} ${className}`;

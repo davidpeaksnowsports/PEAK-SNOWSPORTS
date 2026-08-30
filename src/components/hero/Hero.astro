@@ -2,6 +2,17 @@
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
+/**
+ * Hero — type-led in the Winter Collection.
+ *
+ * The Summer hero overlaid the headline on a full-bleed image. Without colour
+ * to hold the two apart, type has to carry the page, so the headline now sits
+ * on paper at display size and the image follows as a bounded band. It trades
+ * atmosphere for authority, which is the point of the monochrome direction.
+ *
+ * `facts` renders the metadata strip under the headline — the grid device that
+ * gives the hero a second register without adding another surface.
+ */
 interface Props {
   kicker?: string;
   headline: string;
@@ -12,8 +23,9 @@ interface Props {
   variant?: 'full' | 'compact';
   image?: ImageMetadata;
   imageAlt?: string;
-  video?: string;        // path under /public, e.g. "/videos/hero-home.mp4"
-  videoPoster?: string;  // poster image path under /public
+  video?: string;
+  videoPoster?: string;
+  facts?: { label: string; value: string }[];
 }
 
 const {
@@ -28,15 +40,74 @@ const {
   imageAlt = '',
   video,
   videoPoster,
+  facts,
 } = Astro.props;
 
-const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
+const mediaHeight = variant === 'full' ? 'h-[42vh] min-h-[300px] md:h-[52vh]' : 'h-[30vh] min-h-[220px]';
+const hasCta = primaryCta || secondaryCta || tertiaryCta;
 ---
 
-<section class={`relative flex ${height} items-end overflow-hidden bg-brown`}>
+<section class="bg-snow px-6 pt-16 md:px-10 md:pt-20">
+  <div class="mx-auto max-w-screen-2xl">
+    {kicker && <p class="meta mb-6 text-ink-45">{kicker}</p>}
+
+    <h1 class="max-w-[16ch] text-5xl leading-[0.88] tracking-[-0.045em] md:text-7xl lg:text-8xl">
+      {headline}
+    </h1>
+
+    <div class="mt-8 grid grid-cols-12 items-start gap-x-6 gap-y-8">
+      {sub && (
+        <p class="col-span-12 max-w-[46ch] text-lg leading-relaxed text-ink-70 md:col-span-6 md:text-xl">
+          {sub}
+        </p>
+      )}
+      {hasCta && (
+        <div class="col-span-12 flex flex-wrap gap-3 md:col-span-6 md:justify-end">
+          {primaryCta && (
+            <a
+              href={primaryCta.href}
+              class="inline-flex items-center rounded-sm bg-accent px-7 py-3.5 font-display text-sm font-semibold text-snow no-underline transition hover:bg-ink"
+            >
+              {primaryCta.label}
+            </a>
+          )}
+          {secondaryCta && (
+            <a
+              href={secondaryCta.href}
+              class="inline-flex items-center rounded-sm border border-ink/30 px-7 py-3.5 font-display text-sm font-semibold no-underline transition hover:border-ink"
+            >
+              {secondaryCta.label}
+            </a>
+          )}
+          {tertiaryCta && (
+            <a
+              href={tertiaryCta.href}
+              class="inline-flex items-center rounded-sm border border-ink/30 px-7 py-3.5 font-display text-sm font-semibold no-underline transition hover:border-ink"
+            >
+              {tertiaryCta.label}
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+
+    {facts && facts.length > 0 && (
+      <dl class="mt-12 grid grid-cols-12 gap-x-6 gap-y-6 border-y border-ink/15 py-6">
+        {facts.map((f) => (
+          <div class="col-span-6 md:col-span-3">
+            <dt class="meta text-ink-45">{f.label}</dt>
+            <dd class="mt-2 font-display text-xl font-semibold tracking-tight">{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+  </div>
+</section>
+
+<div class={`relative w-full overflow-hidden bg-ink ${mediaHeight} ${facts ? '' : 'mt-14 md:mt-16'}`}>
   {video ? (
     <video
-      class="absolute inset-0 h-full w-full object-cover"
+      class="h-full w-full object-cover"
       autoplay
       muted
       loop
@@ -53,45 +124,9 @@ const height = variant === 'full' ? 'min-h-[80vh]' : 'min-h-[50vh]';
       alt={imageAlt}
       widths={[640, 1024, 1600, 2400]}
       sizes="100vw"
-      class="absolute inset-0 h-full w-full object-cover"
+      class="h-full w-full object-cover"
       loading="eager"
       fetchpriority="high"
     />
   )}
-  <div class="absolute inset-0 bg-gradient-to-t from-olive-deep via-olive-deep/80 to-olive-deep/30" />
-  <div class="relative mx-auto w-full max-w-screen-2xl px-6 py-16 text-salt md:py-24">
-    {kicker && <p><span class="meta-pill">{kicker}</span></p>}
-    <h1 class="mt-4 max-w-5xl text-5xl font-semibold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
-      {headline}
-    </h1>
-    {sub && <p class="mt-6 max-w-2xl text-lg text-salt/80 md:text-xl">{sub}</p>}
-    {(primaryCta || secondaryCta || tertiaryCta) && (
-      <div class="mt-10 flex flex-wrap gap-4">
-        {primaryCta && (
-          <a
-            href={primaryCta.href}
-            class="inline-flex items-center rounded-full bg-yellow px-6 py-3 text-sm font-semibold uppercase tracking-wider text-snow no-underline hover:bg-ink"
-          >
-            {primaryCta.label}
-          </a>
-        )}
-        {secondaryCta && (
-          <a
-            href={secondaryCta.href}
-            class="inline-flex items-center rounded-full border border-salt/40 px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline hover:border-yellow hover:text-yellow"
-          >
-            {secondaryCta.label}
-          </a>
-        )}
-        {tertiaryCta && (
-          <a
-            href={tertiaryCta.href}
-            class="inline-flex items-center rounded-full border border-salt/40 px-6 py-3 text-sm font-semibold uppercase tracking-wider no-underline hover:border-yellow hover:text-yellow"
-          >
-            {tertiaryCta.label}
-          </a>
-        )}
-      </div>
-    )}
-  </div>
-</section>
+</div>
