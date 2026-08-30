@@ -49,7 +49,7 @@ const hasCta = primaryCta || secondaryCta || tertiaryCta;
 
 <section class="bg-snow px-6 pt-16 md:px-10 md:pt-20">
   <div class="mx-auto max-w-screen-2xl">
-    {kicker && <p class="meta mb-6 text-ink-45">{kicker}</p>}
+    {kicker && <p class="meta mb-6 text-ink-70">{kicker}</p>}
 
     <h1 class="max-w-[16ch] text-5xl leading-[0.88] tracking-[-0.045em] md:text-7xl lg:text-8xl">
       {headline}
@@ -95,7 +95,7 @@ const hasCta = primaryCta || secondaryCta || tertiaryCta;
       <dl class="mt-12 grid grid-cols-12 gap-x-6 gap-y-6 border-y border-ink/15 py-6">
         {facts.map((f) => (
           <div class="col-span-6 md:col-span-3">
-            <dt class="meta text-ink-45">{f.label}</dt>
+            <dt class="meta text-ink-70">{f.label}</dt>
             <dd class="mt-2 font-display text-xl font-semibold tracking-tight">{f.value}</dd>
           </div>
         ))}

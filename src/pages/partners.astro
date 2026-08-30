@@ -475,7 +475,7 @@ const jsonLd = [
         {sponsorTiers.map((tier) => (
           <div class="flex flex-col rounded-none border border-salt/15 bg-olive p-8">
             <div class="flex items-center gap-3">
-              <span class={`inline-block h-3 w-3 ${tier.accent}`} style="clip-path: polygon(50% 0%, 100% 100%, 0% 100%);" aria-hidden="true"></span>
+              <span class={`inline-block h-2 w-2 rounded-full ${tier.accent}`} aria-hidden="true"></span>
               <p class="meta text-salt/60">{tier.name} sponsor</p>
             </div>
             <p class="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">{tier.threeYr}<span class="ml-2 font-display text-base font-normal text-salt/60">/ 3 yrs</span></p>
@@ -483,7 +483,7 @@ const jsonLd = [
             <ul class="mt-6 space-y-3 text-base leading-relaxed text-salt/85">
               {tier.highlights.map((h) => (
                 <li class="flex gap-3">
-                  <span aria-hidden="true" class={`mt-1.5 inline-block h-3 w-3 shrink-0 ${tier.accent}`} style="clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
+                  <span aria-hidden="true" class={`mt-1.5 inline-block h-2 w-2 shrink-0 rounded-full ${tier.accent}`}></span>
                   <span>{h}</span>
                 </li>
               ))}
@@ -519,15 +519,15 @@ const jsonLd = [
         </p>
         <ul class="space-y-3 text-base text-olive/75 md:text-lg">
           <li class="flex gap-3">
-            <span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0 bg-accent" style="clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
+            <span aria-hidden="true" class="mt-1.5 inline-block h-2 w-2 shrink-0 rounded-full bg-accent"></span>
             <span>Rate card by email as soon as you hit send.</span>
           </li>
           <li class="flex gap-3">
-            <span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0 bg-accent" style="clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
+            <span aria-hidden="true" class="mt-1.5 inline-block h-2 w-2 shrink-0 rounded-full bg-accent"></span>
             <span>Personal follow-up from our team within two working days.</span>
           </li>
           <li class="flex gap-3">
-            <span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0 bg-accent" style="clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span>
+            <span aria-hidden="true" class="mt-1.5 inline-block h-2 w-2 shrink-0 rounded-full bg-accent"></span>
             <span>No commitment. We'll answer questions before you sign anything.</span>
           </li>
         </ul>
