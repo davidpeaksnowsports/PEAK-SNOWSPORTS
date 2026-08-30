@@ -99,35 +99,36 @@ const jsonLd = [
 
 <BaseLayout title={seoTitle} description={seoDescription} image={heroAbsolute} jsonLd={jsonLd}>
   <!-- Hero -->
-  <section class="relative flex min-h-[60vh] items-end overflow-hidden bg-brown text-salt">
-    {heroDisplay && (
-      <img
-        src={heroDisplay}
-        alt={d.name}
-        class="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-      />
-    )}
-    <div class="absolute inset-0 bg-gradient-to-t from-olive-deep via-olive-deep/70 to-olive-deep/20" />
-    <div class="relative mx-auto w-full max-w-screen-2xl px-6 py-16 md:py-20">
-      <p class="meta text-salt/60">
-        <a href="/resorts" class="no-underline hover:text-yellow">Resorts</a>
-        <span class="px-2">/</span>
-        <span>{d.country}{d.parentArea ? ` · ${d.parentArea}` : ''}</span>
-      </p>
+  <nav aria-label="Breadcrumb" class="mx-auto max-w-screen-2xl px-6 pt-8 md:px-10">
+    <p class="meta text-ink-45">
+      <a href="/resorts" class="no-underline transition-colors hover:text-accent">Resorts</a>
+      <span class="px-2" aria-hidden="true">/</span>
+      <span class="text-ink-70">{d.country}{d.parentArea ? ` \u00B7 ${d.parentArea}` : ''}</span>
+    </p>
+  </nav>
+
+  <section class="px-6 pt-10 md:px-10 md:pt-12">
+    <div class="mx-auto max-w-screen-2xl">
       {d.type === 'product' && d.product && (
-        <p class="meta mt-4 inline-flex items-center rounded-sm bg-yellow px-3 py-1 text-snow">
+        <p class="meta mb-5 inline-flex items-center rounded-sm bg-accent px-3 py-1 text-snow">
           {d.product}
         </p>
       )}
-      <h1 class="mt-6 max-w-4xl text-6xl leading-[0.95] tracking-tight md:text-8xl">
+      <h1 class="max-w-[14ch] text-6xl leading-[0.88] tracking-[-0.045em] md:text-7xl lg:text-8xl">
         {d.name}.
       </h1>
       {d.knownFor && (
-        <p class="mt-6 max-w-2xl text-lg text-salt/85 md:text-xl">{d.knownFor}</p>
+        <p class="mt-7 max-w-[46ch] text-lg leading-relaxed text-ink-70 md:text-xl">{d.knownFor}</p>
       )}
     </div>
   </section>
+
+  {heroDisplay && (
+    <div class="mt-12 h-[42vh] min-h-[300px] w-full overflow-hidden bg-ink md:mt-14 md:h-[52vh]">
+      <img src={heroDisplay} alt={d.name} class="h-full w-full object-cover" loading="eager" />
+    </div>
+  )}
+  {!heroDisplay && <div class="pb-14"></div>}
 
   <!-- Stat pills -->
   {stats.length > 0 && (
