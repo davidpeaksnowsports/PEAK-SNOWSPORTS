@@ -104,6 +104,7 @@ const hasCta = primaryCta || secondaryCta || tertiaryCta;
   </div>
 </section>
 
+{(video || image) && (
 <div class={`relative w-full overflow-hidden bg-ink ${mediaHeight} ${facts ? '' : 'mt-14 md:mt-16'}`}>
   {video ? (
     <video
@@ -130,3 +131,6 @@ const hasCta = primaryCta || secondaryCta || tertiaryCta;
     />
   )}
 </div>
+)}
+
+{!video && !image && <div class="pb-16 md:pb-20"></div>}
