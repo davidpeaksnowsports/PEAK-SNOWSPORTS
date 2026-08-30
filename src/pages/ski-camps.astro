@@ -214,7 +214,7 @@ const faqs = page?.faqs ?? [];
 
       <div class="space-y-4">
         {(page?.welcomeTiles ?? []).map((t) => (
-          <div class="rounded-3xl border border-olive bg-cream p-6">
+          <div class="rounded-none border border-olive bg-cream p-6">
             <p class="meta text-olive">{t.kicker}</p>
             <p class="mt-2 font-display text-xl font-bold tracking-tight">{t.headline}</p>
             {t.body && <p class="mt-1 text-sm text-olive/70">{t.body}</p>}
@@ -227,7 +227,7 @@ const faqs = page?.faqs ?? [];
   <!-- Photo gallery -->
   <div class="mx-auto max-w-screen-2xl px-6 pb-16 md:pb-24">
     <div class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-      <div class="col-span-2 overflow-hidden rounded-3xl md:col-span-1">
+      <div class="col-span-2 overflow-hidden rounded-none md:col-span-1">
         <img
           src="/images/ski-camps/camp-instructor.jpg"
           alt="Peak Snowsports instructor on the mountain above Avoriaz"
@@ -235,7 +235,7 @@ const faqs = page?.faqs ?? [];
           class="h-full w-full object-cover aspect-[4/3] md:aspect-auto md:h-80"
         />
       </div>
-      <div class="overflow-hidden rounded-3xl">
+      <div class="overflow-hidden rounded-none">
         <img
           src="/images/ski-camps/camp-lunch.jpg"
           alt="Camp group lunch at a mountain restaurant in the Portes du Soleil"
@@ -243,7 +243,7 @@ const faqs = page?.faqs ?? [];
           class="h-full w-full object-cover aspect-[4/3] md:aspect-auto md:h-80"
         />
       </div>
-      <div class="overflow-hidden rounded-3xl">
+      <div class="overflow-hidden rounded-none">
         <img
           src="/images/ski-camps/camp-group.jpg"
           alt="Ski camp group session on the slopes above Avoriaz"
@@ -258,7 +258,7 @@ const faqs = page?.faqs ?? [];
   <Section id="camps" kicker="Two levels" title="Pick your level.">
     <div class="grid gap-6 md:grid-cols-2">
       {(page?.levels ?? []).map((l) => (
-        <article class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
+        <article class="rounded-none border border-olive bg-cream p-8 md:p-10">
           <p class="meta text-olive/50">Ski camp</p>
           <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{l.name}</h3>
           <p class="mt-5 text-base leading-relaxed text-olive/80 md:text-lg">{l.forWhom}</p>
@@ -306,7 +306,7 @@ const faqs = page?.faqs ?? [];
     <p class="meta mt-8 text-olive/55">All camps run Monday to Friday. We confirm each camp 6 weeks before it starts.</p>
 
     {page?.planBHeadline && (
-      <div class="mt-10 rounded-3xl border border-olive bg-cream p-6 md:p-8">
+      <div class="mt-10 rounded-none border border-olive bg-cream p-6 md:p-8">
         <p class="meta font-bold text-olive">{page.planBHeadline}</p>
         <p class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">{page.planBBody}</p>
       </div>
@@ -320,7 +320,7 @@ const faqs = page?.faqs ?? [];
     </p>
     <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {pricing.map((p) => (
-        <article class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
+        <article class="rounded-none border border-olive bg-cream p-8 md:p-10">
           <p class="meta font-bold text-olive">{p.pricingSubtitle}</p>
           <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{p.name}</h3>
           {p.pricingTbc ? (
@@ -403,7 +403,7 @@ const faqs = page?.faqs ?? [];
             <img
               src={urlFor(morzine.accommodationLogo).width(200).url()}
               alt={`${morzine.accommodationHeadline ?? morzine.name} logo`}
-              class="h-20 w-auto rounded-2xl md:h-24"
+              class="h-20 w-auto rounded-none md:h-24"
             />
           )}
           <div>
@@ -418,7 +418,7 @@ const faqs = page?.faqs ?? [];
 
         <div class="grid items-start gap-6 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-8">
           {morzine.accommodationImage && (
-            <figure class="overflow-hidden rounded-3xl bg-brown">
+            <figure class="overflow-hidden rounded-none bg-brown">
               <img
                 src={urlFor(morzine.accommodationImage).width(600).height(750).fit('crop').url()}
                 alt={`Accommodation at ${morzine.accommodationHeadline ?? morzine.name}`}
@@ -429,7 +429,7 @@ const faqs = page?.faqs ?? [];
           )}
           <ul class="space-y-3">
             {(morzine.usps ?? []).map((u) => (
-              <li class="rounded-3xl border border-olive bg-cream p-5">
+              <li class="rounded-none border border-olive bg-cream p-5">
                 <p class="meta font-bold text-olive">{u.label}</p>
                 <p class="mt-2 text-base leading-relaxed text-olive/80">{u.body}</p>
               </li>
@@ -440,7 +440,7 @@ const faqs = page?.faqs ?? [];
     )}
 
     {page?.valAccommodationCard?.headline && (
-      <div class="mt-16 rounded-3xl border border-olive bg-cream p-8 md:p-12">
+      <div class="mt-16 rounded-none border border-olive bg-cream p-8 md:p-12">
         <p class="meta font-bold text-olive">{page.valAccommodationCard.kicker}</p>
         <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{page.valAccommodationCard.headline}</h3>
         {page.valAccommodationCard.body && (
@@ -457,7 +457,7 @@ const faqs = page?.faqs ?? [];
     )}
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       {resorts.map((r) => (
-        <article class="rounded-3xl border border-olive bg-cream p-8">
+        <article class="rounded-none border border-olive bg-cream p-8">
           <p class="meta text-olive/50">{r.area}</p>
           <h3 class="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">{r.name}</h3>
           {r.shortBlurb && <p class="mt-4 text-base leading-relaxed text-olive/80">{r.shortBlurb}</p>}
@@ -513,7 +513,7 @@ const faqs = page?.faqs ?? [];
 
   <!-- Ready to book -->
   <Section id="book" kicker={page?.bookKicker} title={page?.bookTitle}>
-    <div class="rounded-3xl bg-brown p-8 text-salt md:p-12">
+    <div class="rounded-none bg-brown p-8 text-salt md:p-12">
       {page?.bookLead && (
         <p class="text-lg leading-relaxed text-salt/85 md:text-xl">{page.bookLead}</p>
       )}

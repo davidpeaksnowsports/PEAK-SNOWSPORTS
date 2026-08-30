@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/ui/Section.astro';
+import Hero from '../../components/hero/Hero.astro';
 import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
 
 const skills = [
@@ -75,36 +76,29 @@ const faqs = [
   }}
 >
   <!-- Breadcrumb + Hero -->
-  <section id="top" class="bg-olive-deep text-salt">
-    <div class="mx-auto max-w-screen-2xl px-6 pt-10 md:pt-12">
-      <p class="meta text-salt/85">
-        <a href="/lessons" class="no-underline hover:text-yellow">Lessons</a>
-        <span class="px-2">/</span>
-        <span>Local Kids Club</span>
-      </p>
-    </div>
+  <nav aria-label="Breadcrumb" class="mx-auto max-w-screen-2xl px-6 pt-8 md:px-10">
+    <p class="meta text-ink-45">
+      <a href="/lessons" class="no-underline transition-colors hover:text-accent">Lessons</a>
+      <span class="px-2" aria-hidden="true">/</span>
+      <span class="text-ink-70">Local Kids Club</span>
+    </p>
+  </nav>
 
-    <div class="mx-auto max-w-screen-2xl px-6 pb-20 pt-10 md:pb-24 md:pt-14">
-      <p class="meta-pill">Local Kids Club · 7+</p>
-      <h1 class="mt-6 max-w-3xl text-5xl md:text-7xl">
-        A whole season.<br />A whole skill set.
-      </h1>
-      <p class="mt-6 max-w-2xl text-lg text-salt/80 md:text-xl">
-        Wednesday and Saturday afternoons through the off-peak weeks. Three-hour sessions. Thirty across the season. Coached by inspirational instructors who'll take your kid from confident parallel turner to all-mountain skier.
-      </p>
-
-      <div class="mt-10 flex flex-wrap gap-3">
-        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">3-hour sessions</span>
-        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">30 sessions across the season</span>
-        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">Min. 10 sessions recommended</span>
-        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">6–8 per coach</span>
-      </div>
-    </div>
-  </section>
+  <Hero
+    kicker="Local Kids Club \u00B7 7+"
+    headline="A whole season. A whole skill set."
+    sub="Wednesday and Saturday afternoons through the off-peak weeks. Three-hour sessions, thirty across the season, coached by instructors who'll take your kid from confident parallel turner to all-mountain skier."
+    variant="compact"
+    facts={[
+      { label: 'Session', value: 'Three hours' },
+      { label: 'Across the season', value: '30 sessions' },
+      { label: 'Recommended', value: 'Min. 10 sessions' },
+      { label: 'Group size', value: '6\u20138 per coach' },
+    ]}
+  />
 
   <!-- Details -->
-  <section class="px-6 py-20 md:py-24">
-    <div class="mx-auto max-w-screen-2xl space-y-14">
+  <Section rule={false} class="[&>div]:space-y-14">
 
       <div>
         <h2 class="text-3xl md:text-4xl">What you get</h2>
@@ -120,7 +114,7 @@ const faqs = [
         <h2 class="text-3xl md:text-4xl">What we cover</h2>
         <div class="mt-8 grid gap-5 sm:grid-cols-2">
           {skills.map((s) => (
-            <div class="rounded-2xl border border-olive bg-cream p-6">
+            <div class="rounded-none border border-olive bg-cream p-6">
               <h3 class="font-display text-xl font-bold tracking-tight text-olive md:text-2xl">{s.title}</h3>
               <p class="mt-3 text-base leading-relaxed text-olive/85">{s.body}</p>
             </div>
@@ -157,8 +151,7 @@ const faqs = [
         </ul>
       </div>
 
-    </div>
-  </section>
+  </Section>
 
   <!-- Ready to enrol -->
   <Section id="book" kicker="Ready to enrol" title="Reserve a place in the Kids Club.">
@@ -174,22 +167,22 @@ const faqs = [
   </Section>
 
   <!-- Why parents choose Peak strip -->
-  <section class="bg-brown text-salt">
-    <div class="mx-auto max-w-screen-2xl px-6 py-20 md:py-24">
+  <section class="bg-ink text-snow">
+    <div class="mx-auto max-w-screen-2xl px-6 py-16 md:px-10 md:py-20">
       <h2 class="text-3xl md:text-5xl">Why parents pick us.</h2>
       <p class="mt-4 max-w-2xl text-lg text-salt/85">Built on empathy, teamwork, and a bit of healthy competition.</p>
       <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div class="rounded-3xl border border-salt/10 p-6">
-          <p class="meta text-salt/85">Small groups</p>
-          <p class="mt-3 text-base leading-relaxed text-salt/85">Max 4 in Les P'tits (4–5 yrs), max 6 in the 5+ groups. Every kid actually gets coached.</p>
+        <div class="border-t border-snow/25 pt-5">
+          <p class="meta text-snow/60">Small groups</p>
+          <p class="mt-3 text-base leading-relaxed text-snow/80">Max 4 in Les P'tits (4–5 yrs), max 6 in the 5+ groups. Every kid actually gets coached.</p>
         </div>
-        <div class="rounded-3xl border border-salt/10 p-6">
-          <p class="meta text-salt/85">Longer sessions</p>
-          <p class="mt-3 text-base leading-relaxed text-salt/85">Three hours per session for 8+ kids, proper time to explore, learn, and holiday.</p>
+        <div class="border-t border-snow/25 pt-5">
+          <p class="meta text-snow/60">Longer sessions</p>
+          <p class="mt-3 text-base leading-relaxed text-snow/80">Three hours per session for 8+ kids, proper time to explore, learn, and holiday.</p>
         </div>
-        <div class="rounded-3xl border border-salt/10 p-6">
-          <p class="meta text-salt/85">Coaching that sticks</p>
-          <p class="mt-3 text-base leading-relaxed text-salt/85">Patient, empathetic, inspirational. State-of-the-art teaching techniques delivered by people who give a damn.</p>
+        <div class="border-t border-snow/25 pt-5">
+          <p class="meta text-snow/60">Coaching that sticks</p>
+          <p class="mt-3 text-base leading-relaxed text-snow/80">Patient, empathetic, inspirational. State-of-the-art teaching techniques delivered by people who give a damn.</p>
         </div>
       </div>
     </div>

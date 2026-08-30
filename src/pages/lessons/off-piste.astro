@@ -81,7 +81,7 @@ const heroSecondary =
 
       <ul class="grid grid-cols-2 gap-3">
         {(lesson.introFactTiles ?? []).map((f) => (
-          <li class="rounded-2xl border border-olive bg-cream px-5 py-4">
+          <li class="rounded-none border border-olive bg-cream px-5 py-4">
             <p class="meta text-olive/55">{f.label}</p>
             <p class="mt-2 font-display text-xl font-bold tracking-tight">{f.value}</p>
           </li>
@@ -94,7 +94,7 @@ const heroSecondary =
   <Section id="what-we-cover" kicker={lesson.contentSectionKicker} title={lesson.contentSectionTitle}>
     <ul class="grid gap-4 md:grid-cols-2">
       {(lesson.contentItems ?? []).map((item) => (
-        <li class="flex gap-4 rounded-2xl border border-olive bg-snow p-5">
+        <li class="flex gap-4 rounded-none border border-olive bg-snow p-5">
           <span class="mt-2 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-pink" aria-hidden="true" />
           <span class="text-base leading-relaxed text-olive md:text-lg">{item}</span>
         </li>
@@ -110,7 +110,7 @@ const heroSecondary =
       )}
       <ul class="mt-10 grid gap-3 md:grid-cols-2">
         {(lesson.kitItems ?? []).map((item) => (
-          <li class="flex gap-4 rounded-2xl bg-cream p-5">
+          <li class="flex gap-4 rounded-none bg-cream p-5">
             <span class="mt-2 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-pink" aria-hidden="true" />
             <span class="text-base leading-relaxed text-olive md:text-lg">{item}</span>
           </li>

@@ -137,10 +137,10 @@ const jsonLd = [
       <img
         src={heroDisplaySrc}
         alt={heroAlt}
-        class="mx-auto mt-16 aspect-[16/9] w-full max-w-5xl rounded-3xl object-cover"
+        class="mx-auto mt-16 aspect-[16/9] w-full max-w-5xl rounded-none object-cover"
       />
     ) : (
-      <div class="mx-auto mt-16 aspect-[16/9] max-w-5xl overflow-hidden rounded-3xl bg-brown" aria-hidden="true" />
+      <div class="mx-auto mt-16 aspect-[16/9] max-w-5xl overflow-hidden rounded-none bg-brown" aria-hidden="true" />
     )}
 
     <div class="article-prose prose prose-lg mx-auto mt-16 max-w-2xl
@@ -152,7 +152,7 @@ const jsonLd = [
       prose-strong:text-snow
       prose-a:text-snow prose-a:underline-offset-4 hover:prose-a:bg-yellow
       prose-blockquote:border-l-yellow prose-blockquote:not-italic prose-blockquote:font-display prose-blockquote:font-semibold prose-blockquote:text-snow
-      prose-img:rounded-2xl">
+      prose-img:rounded-none">
       <slot />
     </div>
   </article>

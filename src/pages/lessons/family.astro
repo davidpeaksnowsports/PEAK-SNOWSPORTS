@@ -269,22 +269,22 @@ const faqs = [
       </div>
 
       <div class="space-y-4">
-        <div class="rounded-3xl border border-olive bg-cream p-6">
+        <div class="rounded-none border border-olive bg-cream p-6">
           <p class="meta text-olive">Les P'tits · 4 – 5 yrs</p>
           <p class="mt-2 font-display text-xl font-bold tracking-tight">2 hours · max 4</p>
           <p class="mt-1 text-sm text-olive/70">Tiny groups for the youngest.</p>
         </div>
-        <div class="rounded-3xl border border-olive bg-cream p-6">
+        <div class="rounded-none border border-olive bg-cream p-6">
           <p class="meta text-olive">Kids group · 5 – 7 yrs</p>
           <p class="mt-2 font-display text-xl font-bold tracking-tight">3 hours · max 6</p>
           <p class="mt-1 text-sm text-olive/70">Right length for shorter attention spans. 4 hrs in peak weeks.</p>
         </div>
-        <div class="rounded-3xl border border-olive bg-cream p-6">
+        <div class="rounded-none border border-olive bg-cream p-6">
           <p class="meta text-olive">Kids group · 7 – 12 yrs</p>
           <p class="mt-2 font-display text-xl font-bold tracking-tight">4 hours · max 6</p>
           <p class="mt-1 text-sm text-olive/70">Among the longest kids groups in the area.</p>
         </div>
-        <div class="rounded-3xl border border-olive bg-cream p-6">
+        <div class="rounded-none border border-olive bg-cream p-6">
           <p class="meta text-olive">GCSE Ski · 14 – 16 yrs</p>
           <p class="mt-2 font-display text-xl font-bold tracking-tight">Private, filmed</p>
           <p class="mt-1 text-sm text-olive/70">Assessment evidence for GCSE PE, delivered and filmed on-mountain.</p>
@@ -297,7 +297,7 @@ const faqs = [
   <Section kicker="Why join" title="What makes our kids groups different.">
     <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {whyJoin.map((w) => (
-        <li class="rounded-3xl border border-olive bg-cream p-6">
+        <li class="rounded-none border border-olive bg-cream p-6">
           <p class="meta text-olive/50">{w.label}</p>
           <p class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">{w.body}</p>
         </li>
@@ -309,7 +309,7 @@ const faqs = [
   <Section kicker="Four groups" title="Pick your child's group.">
     <div class="grid gap-6 md:grid-cols-2">
       {tiers.map((t) => (
-        <article class="rounded-3xl border border-olive bg-cream p-8 md:p-10">
+        <article class="rounded-none border border-olive bg-cream p-8 md:p-10">
           <p class="meta text-olive/50">{t.name} · Ages {t.age}</p>
           <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{t.duration}</h3>
           <p class="meta mt-3 inline-flex items-center rounded-sm bg-yellow px-3 py-1 text-snow">{t.max}</p>
@@ -336,7 +336,7 @@ const faqs = [
       href="/Ski level book (Booklets).pdf"
       target="_blank"
       rel="noopener"
-      class="mt-8 inline-flex items-center gap-3 rounded-2xl border border-olive bg-cream px-5 py-4 no-underline transition-colors hover:bg-pink hover:text-snow"
+      class="mt-8 inline-flex items-center gap-3 rounded-none border border-olive bg-cream px-5 py-4 no-underline transition-colors hover:bg-pink hover:text-snow"
     >
       <span class="meta-pill">PDF</span>
       <span class="font-display text-base font-bold tracking-tight md:text-lg">Peak Progress Book</span>
@@ -386,7 +386,7 @@ const faqs = [
   <Section kicker="FAQs" title="The questions parents actually ask.">
     <ul class="grid gap-3 md:grid-cols-2 md:gap-4">
       {faqs.map((f) => (
-        <li class="rounded-2xl border border-olive bg-snow">
+        <li class="rounded-none border border-olive bg-snow">
           <details class="group">
             <summary class="flex cursor-pointer items-start justify-between gap-4 list-none px-5 py-4 [&::-webkit-details-marker]:hidden">
               <span class="font-display text-base font-bold tracking-tight text-olive md:text-lg">{f.q}</span>

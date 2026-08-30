@@ -92,11 +92,11 @@ const brothers = [
   />
 
   <!-- The story: tightened spacing so heading, copy and image sit together -->
-  <section class="px-6 py-16 md:py-20">
+  <section class="border-t border-ink/10 px-6 py-16 md:px-10 md:py-20">
     <div class="mx-auto max-w-screen-2xl">
       <div class="grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-16">
         <div>
-          <p class="meta-pill">The story</p>
+          <p class="meta text-ink-45">The story</p>
           <h2 class="mt-5 text-4xl font-semibold leading-tight md:text-6xl">Three brothers. One ski school.</h2>
           <div class="mt-6 space-y-5 text-lg leading-relaxed text-olive/85 md:text-xl">
             <p>
@@ -107,7 +107,7 @@ const brothers = [
             </p>
           </div>
         </div>
-        <figure class="overflow-hidden rounded-3xl bg-brown aspect-[4/5]">
+        <figure class="overflow-hidden rounded-none bg-brown aspect-[4/5]">
           <img
             src="/images/about/three-brothers-image.jpg"
             alt="A lone Peak skier carving deep powder."
@@ -120,7 +120,7 @@ const brothers = [
   </section>
 
   <Section>
-    <p class="meta-pill">Where we ski</p>
+    <p class="meta text-ink-45">Where we ski</p>
     <h2 class="mt-6 text-5xl leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
       Four resorts. One ski school.
     </h2>
@@ -153,10 +153,10 @@ const brothers = [
   </Section>
 
   <!-- You at the centre: kicker + heading + copy + image grouped tightly -->
-  <section class="px-6 py-16 md:py-20">
+  <section class="border-t border-ink/10 px-6 py-16 md:px-10 md:py-20">
     <div class="mx-auto max-w-screen-2xl">
       <div class="grid items-center gap-10 lg:grid-cols-[minmax(0,520px)_1fr] lg:gap-16">
-        <figure class="overflow-hidden rounded-3xl bg-brown lg:order-first">
+        <figure class="overflow-hidden rounded-none bg-brown lg:order-first">
           <img
             src="/images/about/you-at-the-centre.jpg"
             alt="A Peak instructor and client pause on piste, an Alpine peak rising behind them."
@@ -165,7 +165,7 @@ const brothers = [
           />
         </figure>
         <div>
-          <p class="meta-pill">How we coach</p>
+          <p class="meta text-ink-45">How we coach</p>
           <h2 class="mt-5 text-4xl font-semibold leading-tight md:text-6xl">You at the centre.</h2>
           <p class="mt-6 text-lg leading-relaxed text-olive/85 md:text-xl">
             What ties it all together is a coaching philosophy that puts you at the centre. Our team work to a skills-based approach. Which is a fancy way of saying we figure out what you actually need and how you need it and teach you that, rather than running you through a script.
@@ -239,7 +239,7 @@ const brothers = [
     <div class="grid gap-12 md:grid-cols-3">
       {brothers.map((b) => (
         <div>
-          <div class="aspect-[3/4] w-full overflow-hidden rounded-3xl bg-brown">
+          <div class="aspect-[3/4] w-full overflow-hidden rounded-none bg-brown">
             <img src={b.photo} alt={b.name} class="h-full w-full object-cover" loading="lazy" />
           </div>
           <h3 class="mt-6 font-display text-3xl font-bold tracking-tight">{b.name}</h3>
@@ -252,7 +252,7 @@ const brothers = [
   <Section kicker="On the mountain" title="Where they're happiest.">
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {motion.map((m) => (
-        <figure class="overflow-hidden rounded-3xl bg-brown">
+        <figure class="overflow-hidden rounded-none bg-brown">
           <img
             src={m.src}
             alt={m.alt}
@@ -285,8 +285,8 @@ const brothers = [
       </div>
 
       <!-- Colophon: current visual palette -->
-      <div class="mt-20 rounded-3xl border border-olive bg-cream p-8 md:p-12">
-        <p class="meta-pill">Colophon</p>
+      <div class="mt-20 rounded-none border border-olive bg-cream p-8 md:p-12">
+        <p class="meta text-ink-45">Colophon</p>
         <h3 class="mt-5 font-display text-2xl font-bold tracking-tight md:text-3xl">Our colours change with the season.</h3>
         <p class="mt-4 max-w-2xl text-lg leading-relaxed text-olive md:text-xl">
           The site you're reading is dressed in our <span class="font-semibold text-pink">Summer Collection</span>, white + Cloud Dancer cream + hot pink + navy, built around Pantone's 2026 Colour of the Year.

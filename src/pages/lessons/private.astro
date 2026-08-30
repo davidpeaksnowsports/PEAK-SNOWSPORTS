@@ -87,7 +87,7 @@ const instructors = [
         </p>
 
         <figure class="mt-10 max-w-2xl">
-          <div class="overflow-hidden rounded-3xl bg-brown">
+          <div class="overflow-hidden rounded-none bg-brown">
             <video
               class="block aspect-video w-full"
               controls
@@ -144,7 +144,7 @@ const instructors = [
 
           <!-- Off-peak table -->
           <div class="mt-6 hidden peer-checked/off:block" role="tabpanel">
-            <ul class="divide-y divide-olive/10 overflow-hidden rounded-2xl border border-olive/10">
+            <ul class="divide-y divide-olive/10 overflow-hidden rounded-none border border-olive/10">
               {offPeakPricing.map((p) => (
                 <li class="flex items-center justify-between bg-snow px-6 py-4">
                   <span class="text-sm">{p.label}</span>
@@ -156,7 +156,7 @@ const instructors = [
 
           <!-- Peak table -->
           <div class="mt-6 hidden peer-checked/peak:block" role="tabpanel">
-            <ul class="divide-y divide-olive/10 overflow-hidden rounded-2xl border border-olive/10">
+            <ul class="divide-y divide-olive/10 overflow-hidden rounded-none border border-olive/10">
               {peakPricing.map((p) => (
                 <li class="flex items-center justify-between bg-snow px-6 py-4">
                   <span class="text-sm">{p.label}</span>
@@ -188,7 +188,7 @@ const instructors = [
 
   <!-- Book -->
   <Section id="book" kicker="Ready to book" title="Pick a date. Pick an instructor.">
-    <SkiOperatorEmbed title="Private lessons" class="overflow-hidden rounded-3xl border border-olive/10 bg-snow" />
+    <SkiOperatorEmbed title="Private lessons" class="overflow-hidden rounded-none border border-olive/10 bg-snow" />
     <p class="meta mt-6 text-olive/55">
       Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a> and we'll book you in directly.
     </p>
