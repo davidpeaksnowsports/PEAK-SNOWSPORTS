@@ -44,7 +44,7 @@ Examples:
 - **Light-mode primary, monochrome.** Off-white paper (`#FAFAFA`) with charcoal ink (`#1A1A1A`) and a single accent. Neither pure black nor pure white appears anywhere — both strain the eyes. Cards and the hero overlay flip to ink for contrast moments. Photography is the only chroma on the page besides the accent.
 - **Type:** Geist 700 for display (headlines, hero, nav, CTA labels), Source Sans Pro 400/600 for body. Courier for metadata (kickers, bylines, captions, timestamps). With colour stripped out, type size and weight carry the hierarchy, so the scale runs deliberately wide — 11px metadata to hero display.
 - **Imagery:** Real, raw mountain photography. Real Peak team faces. Video backgrounds on hero. Instructor portraits shot consistently — same lighting, same crop, builds the team as a visual ensemble.
-- **Layout:** Full-bleed everywhere. Generous vertical rhythm. Mobile-first (majority of traffic is mobile).
+- **Layout:** A shared 12-column grid, 24px gutters, 40px page gutters. Sections separate by hairline rule and by varying their column structure, never by background colour. Photography and ink bands are the only full-bleed elements. Generous vertical rhythm. Mobile-first (majority of traffic is mobile).
 - **No stock photo clichés.** No corporate-handshake imagery, no generic-skier-in-action stock.
 
 ### Palette — Winter Collection (monochrome)
@@ -172,7 +172,7 @@ peaksnowsports-web/
 ## 6. Pages — launch scope
 
 ### Home (`/`)
-- Full-bleed hero with video background. Single headline statement ("LEARN TO SKI. PROPERLY." or similar — TBD). One primary CTA: "Book a lesson." Secondary: "Explore the GAP Course."
+- Type-led hero: headline on paper at display size, with the video or image following as a bounded band. Optional `facts` strip under the headline. One primary CTA: "Book a lesson." Secondary: "Explore the GAP Course."
 - Three resort cards (Morzine / Chatel / Les Gets) with imagery.
 - "Why Peak" — three concise pillars: **Premium**, **Personal**, **Professional**.
 - Instructor strip — scrolling horizontal showcase of team faces with names.
