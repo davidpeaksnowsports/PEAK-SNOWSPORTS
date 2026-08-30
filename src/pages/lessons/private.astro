@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/ui/Section.astro';
+import Hero from '../../components/hero/Hero.astro';
 import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
 
 const whoItsFor = {
@@ -55,35 +56,29 @@ const instructors = [
   }}
 >
   <!-- Breadcrumb + Hero -->
-  <section id="top" class="bg-olive-deep text-salt">
-    <div class="mx-auto max-w-screen-2xl px-6 pt-10 md:pt-12">
-      <p class="meta text-salt/85">
-        <a href="/lessons" class="no-underline hover:text-yellow">Lessons</a>
-        <span class="px-2">/</span>
-        <span>Private lessons</span>
-      </p>
-    </div>
+  <nav aria-label="Breadcrumb" class="mx-auto max-w-screen-2xl px-6 pt-8 md:px-10">
+    <p class="meta text-ink-45">
+      <a href="/lessons" class="no-underline transition-colors hover:text-accent">Lessons</a>
+      <span class="px-2" aria-hidden="true">/</span>
+      <span class="text-ink-70">Private lessons</span>
+    </p>
+  </nav>
 
-    <div class="mx-auto max-w-screen-2xl px-6 pb-20 pt-10 md:pb-24 md:pt-14">
-      <p class="meta-pill">Private lessons</p>
-      <h1 class="mt-6 max-w-3xl text-5xl md:text-7xl">
-        One instructor.<br />You, or your people.
-      </h1>
-      <p class="mt-6 max-w-2xl text-lg text-salt/80 md:text-xl">
-        Half day to a full day. All levels. All resorts.
-      </p>
-
-      <div class="mt-10 flex flex-wrap gap-3">
-        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">From €295 &middot; 2.5h PM</span>
-        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">All resorts</span>
-        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">All levels</span>
-      </div>
-    </div>
-  </section>
+  <Hero
+    kicker="Private lessons"
+    headline="One instructor. You, or your people."
+    sub="Half day to a full day. All levels. All resorts."
+    variant="compact"
+    facts={[
+      { label: 'From', value: '\u20AC295' },
+      { label: 'Duration', value: '2.5h PM' },
+      { label: 'Resorts', value: 'All three' },
+      { label: 'Levels', value: 'Beginner to advanced' },
+    ]}
+  />
 
   <!-- Details -->
-  <section class="px-6 py-20 md:py-24">
-    <div class="mx-auto max-w-screen-2xl space-y-14">
+  <Section rule={false} class="[&>div]:space-y-14">
 
       <div>
         <h2 class="text-3xl md:text-4xl">What you get</h2>
@@ -110,14 +105,14 @@ const instructors = [
         <h2 class="text-3xl md:text-4xl">Who it's for</h2>
         <div class="mt-6 flex flex-wrap gap-2">
           {whoItsFor.group.map((g, i) => (
-            <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70'}`}>
+            <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
               {g}
             </span>
           ))}
         </div>
         <div class="mt-3 flex flex-wrap gap-2">
           {whoItsFor.level.map((l, i) => (
-            <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70'}`}>
+            <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
               {l}
             </span>
           ))}
@@ -189,8 +184,7 @@ const instructors = [
         </ul>
       </div>
 
-    </div>
-  </section>
+  </Section>
 
   <!-- Book -->
   <Section id="book" kicker="Ready to book" title="Pick a date. Pick an instructor.">
@@ -201,8 +195,8 @@ const instructors = [
   </Section>
 
   <!-- Trust strip on brown -->
-  <section class="bg-brown text-salt">
-    <div class="mx-auto max-w-screen-2xl px-6 py-20 md:py-24">
+  <section class="bg-ink text-snow">
+    <div class="mx-auto max-w-screen-2xl px-6 py-16 md:px-10 md:py-20">
       <h2 class="text-3xl md:text-5xl">Your instructor in Morzine.</h2>
       <p class="mt-4 max-w-2xl text-lg text-salt/85">
         Browse, or let us match you. All Peak instructors are BASI-qualified.
@@ -212,12 +206,12 @@ const instructors = [
         {instructors.map((i) => (
           <a
             href={`/instructors/${i.name.toLowerCase().replace(/[^a-z]+/g, '-')}`}
-            class="group block rounded-3xl border border-salt/10 p-6 no-underline transition hover:border-yellow"
+            class="group block border-t border-snow/25 pt-5 no-underline transition-colors hover:border-accent"
           >
             <div class="flex items-center gap-4">
               <div class="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-olive-deep" aria-hidden="true"></div>
               <div>
-                <p class="font-display text-lg font-bold tracking-tight">{i.name}</p>
+                <p class="font-display text-lg font-semibold tracking-tight">{i.name}</p>
                 <p class="meta mt-1 text-salt/60">{i.seasons} seasons &middot; {i.langs}</p>
               </div>
             </div>
@@ -229,7 +223,7 @@ const instructors = [
       <div class="mt-10">
         <a
           href="/instructors?resort=morzine"
-          class="meta inline-flex items-center gap-2 rounded-sm border border-salt/20 px-5 py-3 no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
+          class="inline-flex items-center gap-2 rounded-sm border border-snow/30 px-6 py-3 font-display text-sm font-semibold no-underline transition-colors hover:border-snow"
         >
           Browse all Morzine instructors →
         </a>
