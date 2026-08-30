@@ -1,4 +1,13 @@
 ---
+/**
+ * Card — a hairline column, not a filled box.
+ *
+ * The Summer card was a filled dark rectangle, which worked because colour
+ * separated it from the surface behind it. In monochrome every filled card
+ * would be the same grey block, so the fill goes and a top rule plus column
+ * alignment does the separating instead. The accent appears only on hover,
+ * which is the whole colour budget a card gets.
+ */
 interface Props {
   href?: string;
   kicker?: string;
@@ -12,11 +21,13 @@ const Tag = href ? 'a' : 'div';
 
 <Tag
   href={href}
-  class={`group block rounded-3xl border border-salt/10 bg-brown p-8 text-salt no-underline transition hover:border-pink hover:no-underline ${className}`}
+  class={`group block border-t border-ink/25 pt-5 text-ink no-underline transition-colors hover:border-accent hover:no-underline ${className}`}
 >
-  {kicker && <p class="meta text-salt">{kicker}</p>}
-  <h3 class="mt-4 text-2xl font-semibold leading-tight">{title}</h3>
-  <div class="mt-4 text-sm text-salt/70 [text-decoration:none]">
+  {kicker && <p class="meta text-ink-45">{kicker}</p>}
+  <h3 class="mt-3 font-display text-xl font-semibold leading-tight tracking-tight md:text-2xl">
+    {title}
+  </h3>
+  <div class="mt-3 max-w-[38ch] text-sm leading-relaxed text-ink-70 [text-decoration:none]">
     <slot />
   </div>
 </Tag>

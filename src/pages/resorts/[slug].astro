@@ -116,7 +116,7 @@ const jsonLd = [
         <span>{d.country}{d.parentArea ? ` · ${d.parentArea}` : ''}</span>
       </p>
       {d.type === 'product' && d.product && (
-        <p class="meta mt-4 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-snow">
+        <p class="meta mt-4 inline-flex items-center rounded-sm bg-yellow px-3 py-1 text-snow">
           {d.product}
         </p>
       )}
@@ -134,7 +134,7 @@ const jsonLd = [
     <section class="border-b border-olive/10 px-6 py-10">
       <div class="mx-auto flex max-w-screen-2xl flex-wrap gap-3">
         {stats.map((s) => (
-          <span class="inline-flex items-center gap-3 rounded-full border border-olive/20 px-5 py-3">
+          <span class="inline-flex items-center gap-3 rounded-sm border border-olive/20 px-5 py-3">
             <span class="meta text-olive/50">{s.label}</span>
             <span class="text-sm font-semibold text-olive">{s.value}</span>
           </span>
@@ -171,13 +171,13 @@ const jsonLd = [
       <div class="flex flex-wrap gap-3">
         <a
           href="/book"
-          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
+          class="inline-flex items-center rounded-sm bg-yellow px-8 py-4 font-display text-base font-semibold text-snow no-underline transition hover:bg-ink"
         >
           {d.type === 'product' ? `Enquire about ${d.product}` : `Book a lesson in ${d.name}`} →
         </a>
         <a
           href="/lessons"
-          class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
+          class="inline-flex items-center rounded-sm border border-olive/30 px-8 py-4 font-display text-base font-semibold no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
         >
           See all lessons
         </a>

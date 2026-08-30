@@ -63,7 +63,7 @@ const otherProviders = allProviders
 
         <div class="md:col-span-7">
           {d.style && (
-            <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-snow">{d.style}</span>
+            <span class="meta inline-flex items-center rounded-sm bg-yellow px-3 py-1 text-snow">{d.style}</span>
           )}
           <h1 class="mt-4 text-5xl leading-tight md:text-7xl">{d.name}</h1>
           <p class="mt-4 text-lg text-olive/70 md:text-xl">{d.tagline}</p>
@@ -102,7 +102,7 @@ const otherProviders = allProviders
           <div class="mt-12 flex flex-wrap gap-3">
             <a
               href={`/accommodation#enquire?provider=${encodeURIComponent(d.name)}`}
-              class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
+              class="inline-flex items-center rounded-sm bg-yellow px-8 py-4 font-display text-base font-semibold text-snow no-underline transition hover:bg-ink"
             >
               Enquire about {d.name} →
             </a>
@@ -111,7 +111,7 @@ const otherProviders = allProviders
                 href={d.website}
                 rel="noopener"
                 target="_blank"
-                class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
+                class="inline-flex items-center rounded-sm border border-olive/30 px-8 py-4 font-display text-base font-semibold no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
               >
                 Visit website
               </a>

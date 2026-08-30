@@ -276,7 +276,7 @@ const faqs = page?.faqs ?? [];
 
           <a
             href="#book"
-            class="mt-8 inline-flex items-center rounded-full bg-yellow px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
+            class="mt-8 inline-flex items-center rounded-sm bg-yellow px-6 py-3 font-display text-sm font-semibold text-snow no-underline transition hover:bg-ink"
           >
             Check availability →
           </a>
@@ -296,7 +296,7 @@ const faqs = page?.faqs ?? [];
           <p class="font-display text-lg font-bold tracking-tight md:text-xl">{c.start}</p>
           <p class="text-base leading-snug text-olive/80 md:text-lg">{c.locationNames.join(' · ')}</p>
           {c.tag ? (
-            <span class="meta inline-flex w-fit items-center rounded-full bg-yellow px-3 py-1 text-snow">{c.tag}</span>
+            <span class="meta inline-flex w-fit items-center rounded-sm bg-yellow px-3 py-1 text-snow">{c.tag}</span>
           ) : (
             <span class="sm:block" aria-hidden="true" />
           )}
@@ -331,7 +331,7 @@ const faqs = page?.faqs ?? [];
               </p>
               <a
                 href="/contact"
-                class="mt-8 inline-flex items-center rounded-full bg-yellow px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
+                class="mt-8 inline-flex items-center rounded-sm bg-yellow px-6 py-3 font-display text-sm font-semibold text-snow no-underline transition hover:bg-ink"
               >
                 Enquire →
               </a>
@@ -351,7 +351,7 @@ const faqs = page?.faqs ?? [];
               )}
               <a
                 href="#book"
-                class="mt-8 inline-flex items-center rounded-full bg-yellow px-6 py-3 font-display text-sm font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
+                class="mt-8 inline-flex items-center rounded-sm bg-yellow px-6 py-3 font-display text-sm font-semibold text-snow no-underline transition hover:bg-ink"
               >
                 Reserve a place →
               </a>
@@ -521,7 +521,7 @@ const faqs = page?.faqs ?? [];
         {page?.bookPrimaryCta?.href && (
           <a
             href={page.bookPrimaryCta.href}
-            class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
+            class="inline-flex items-center rounded-sm bg-yellow px-8 py-4 font-display text-base font-semibold text-snow no-underline transition hover:bg-ink"
           >
             {page.bookPrimaryCta.label}
           </a>
@@ -529,7 +529,7 @@ const faqs = page?.faqs ?? [];
         {page?.bookSecondaryCta?.href && (
           <a
             href={page.bookSecondaryCta.href}
-            class="inline-flex items-center rounded-full border border-salt/40 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
+            class="inline-flex items-center rounded-sm border border-salt/40 px-8 py-4 font-display text-base font-semibold no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
           >
             {page.bookSecondaryCta.label}
           </a>

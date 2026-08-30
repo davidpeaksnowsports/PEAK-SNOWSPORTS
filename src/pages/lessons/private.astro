@@ -74,9 +74,9 @@ const instructors = [
       </p>
 
       <div class="mt-10 flex flex-wrap gap-3">
-        <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">From €295 &middot; 2.5h PM</span>
-        <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">All resorts</span>
-        <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">All levels</span>
+        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">From €295 &middot; 2.5h PM</span>
+        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">All resorts</span>
+        <span class="meta inline-flex items-center rounded-sm border border-salt/20 px-4 py-2">All levels</span>
       </div>
     </div>
   </section>
@@ -110,14 +110,14 @@ const instructors = [
         <h2 class="text-3xl md:text-4xl">Who it's for</h2>
         <div class="mt-6 flex flex-wrap gap-2">
           {whoItsFor.group.map((g, i) => (
-            <span class={`meta rounded-full border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70'}`}>
+            <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70'}`}>
               {g}
             </span>
           ))}
         </div>
         <div class="mt-3 flex flex-wrap gap-2">
           {whoItsFor.level.map((l, i) => (
-            <span class={`meta rounded-full border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70'}`}>
+            <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70'}`}>
               {l}
             </span>
           ))}
@@ -138,13 +138,13 @@ const instructors = [
           <label
             for="price-offpeak"
             role="tab"
-            class="meta mr-2 inline-flex cursor-pointer items-center rounded-full border border-olive/20 bg-cream px-5 py-2 text-olive/70 transition peer-checked/off:border-olive-deep peer-checked/off:bg-olive-deep peer-checked/off:text-salt"
+            class="meta mr-2 inline-flex cursor-pointer items-center rounded-sm border border-olive/20 bg-cream px-5 py-2 text-olive/70 transition peer-checked/off:border-olive-deep peer-checked/off:bg-olive-deep peer-checked/off:text-salt"
           >Off-peak</label>
           <input type="radio" name="private-price-view" id="price-peak" class="peer/peak sr-only" />
           <label
             for="price-peak"
             role="tab"
-            class="meta inline-flex cursor-pointer items-center rounded-full border border-olive/20 bg-cream px-5 py-2 text-olive/70 transition peer-checked/peak:border-olive-deep peer-checked/peak:bg-olive-deep peer-checked/peak:text-salt"
+            class="meta inline-flex cursor-pointer items-center rounded-sm border border-olive/20 bg-cream px-5 py-2 text-olive/70 transition peer-checked/peak:border-olive-deep peer-checked/peak:bg-olive-deep peer-checked/peak:text-salt"
           >Peak</label>
 
           <!-- Off-peak table -->
@@ -229,7 +229,7 @@ const instructors = [
       <div class="mt-10">
         <a
           href="/instructors?resort=morzine"
-          class="meta inline-flex items-center gap-2 rounded-full border border-salt/20 px-5 py-3 no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
+          class="meta inline-flex items-center gap-2 rounded-sm border border-salt/20 px-5 py-3 no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
         >
           Browse all Morzine instructors →
         </a>
