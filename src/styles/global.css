@@ -10,6 +10,8 @@
     color-scheme: light;
   }
 
+  /* Neither pure black nor pure white anywhere - #FAFAFA over #1A1A1A. */
+
   html {
     @apply bg-snow text-olive antialiased;
     font-family: theme('fontFamily.sans');
@@ -20,21 +22,20 @@
   }
 
   ::selection {
-    @apply bg-yellow text-olive-deep;
+    @apply bg-yellow text-snow;
   }
 
   a {
     @apply underline-offset-4 hover:underline;
   }
 
-  /* Display headlines use Bricolage Grotesque — variable grotesque with
-     optical sizing. Heavy weight, optical size 96, tight tracking for
-     architectural impact at large sizes. */
+  /* Display headlines use Geist — neutral grotesque in the SF Pro lane.
+     No optical-sizing axis, so weight and tracking are set explicitly for
+     large sizes rather than left to the font. */
   h1, h2 {
     font-family: theme('fontFamily.display');
-    font-variation-settings: "opsz" 96, "wdth" 100;
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    letter-spacing: -0.035em;
     line-height: 0.95;
   }
 
@@ -44,9 +45,9 @@
     @apply text-xs uppercase tracking-widest;
   }
 
-  /* Highlighted-pill kicker variant. Used in place of plain pink-on-bg
-     kickers (which had poor legibility on both light and dark surfaces).
-     Pink fill + white type reads cleanly on both snow and black grounds. */
+  /* Highlighted-pill kicker variant. Accent fill + paper type: 10.13:1,
+     and it reads on both the paper ground and the ink bands, which a bare
+     accent-on-paper kicker would not at small sizes. */
   .meta-pill {
     font-family: theme('fontFamily.mono');
     @apply inline-block text-xs font-bold uppercase tracking-widest bg-pink text-snow px-2 py-1 rounded-sm;

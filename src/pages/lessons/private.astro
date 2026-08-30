@@ -8,16 +8,29 @@ const whoItsFor = {
   level: ['Beginner', 'Intermediate', 'Advanced'],
 };
 
-const pricing = [
-  { label: '2 hours', price: '€180' },
-  { label: 'Half day (4h)', price: '€340' },
-  { label: 'Full day (6h)', price: '€480' },
+// 2026/27 season pricing. "From" prices are the 1–2 skier rate; groups of
+// 3–6 add €10–20 per session per the price sheet.
+const offPeakPricing = [
+  { label: '2.5 hours (PM only)', price: '€295' },
+  { label: '3 hours', price: '€354' },
+  { label: '4 hours', price: '€460' },
+  { label: 'Full day · 6 hours', price: '€650' },
+  { label: 'Full day · 7 hours', price: '€730' },
+];
+const peakPricing = [
+  { label: '2.5 hours (PM only)', price: '€324.50' },
+  { label: '3 hours', price: '€389.40' },
+  { label: '4 hours', price: '€506' },
+  { label: 'Full day · 6 hours (w/c 19 Dec)', price: '€715' },
+  { label: 'Full day · 7 hours (Feb half term)', price: '€750' },
+  { label: 'Full day · 7 hours (New Year & Easter)', price: '€803' },
 ];
 
 const meetingPoints = [
-  { resort: 'Morzine', points: 'Pleney, Super Morzine, Prodains' },
-  { resort: 'Chatel', points: 'Linga, Pré-la-Joux, Super Chatel' },
-  { resort: 'Les Gets', points: 'Les Chavannes, Chavannes Express' },
+  { resort: 'Morzine', points: 'Pleney bubble' },
+  { resort: 'Avoriaz', points: 'Prodains bubble · Ardent bubble · Super M bubble' },
+  { resort: 'Châtel', points: 'Pré la Joux' },
+  { resort: 'Les Gets', points: 'Chavannes bubble' },
 ];
 
 const instructors = [
@@ -29,14 +42,14 @@ const instructors = [
 
 <BaseLayout
   title="Private ski lessons in Morzine, Avoriaz, Châtel & Les Gets · Peak Snowsports"
-  description="One-to-one private ski lessons with a dedicated Peak instructor. Two hours to a full day. All levels, all four home resorts. Request your preferred instructor by name."
+  description="One-to-one private ski lessons with a dedicated Peak instructor. Half day to a full day. All levels, all four home resorts. Request your preferred instructor by name."
   image="/images/og/lessons.jpg"
   jsonLd={{
     '@context': 'https://schema.org',
     '@type': 'Service',
     serviceType: 'Private ski lessons',
     name: 'Private ski lessons · Peak Snowsports',
-    description: 'One-to-one private ski lessons across Morzine, Avoriaz, Châtel and Les Gets. Two hours to a full day. All levels.',
+    description: 'One-to-one private ski lessons across Morzine, Avoriaz, Châtel and Les Gets. Half day to a full day. All levels.',
     provider: { '@id': 'https://www.peaksnowsports.com/#organization' },
     areaServed: ['Morzine', 'Avoriaz', 'Châtel', 'Les Gets'],
   }}
@@ -57,11 +70,11 @@ const instructors = [
         One instructor.<br />You, or your people.
       </h1>
       <p class="mt-6 max-w-2xl text-lg text-salt/80 md:text-xl">
-        2 hours minimum. Up to a full day. All levels. All resorts.
+        Half day to a full day. All levels. All resorts.
       </p>
 
       <div class="mt-10 flex flex-wrap gap-3">
-        <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">From €180 &middot; 2h</span>
+        <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">From €295 &middot; 2.5h PM</span>
         <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">All resorts</span>
         <span class="meta inline-flex items-center rounded-full border border-salt/20 px-4 py-2">All levels</span>
       </div>
@@ -97,14 +110,14 @@ const instructors = [
         <h2 class="text-3xl md:text-4xl">Who it's for</h2>
         <div class="mt-6 flex flex-wrap gap-2">
           {whoItsFor.group.map((g, i) => (
-            <span class={`meta rounded-full border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-olive-deep' : 'border-olive/20 text-olive/70'}`}>
+            <span class={`meta rounded-full border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70'}`}>
               {g}
             </span>
           ))}
         </div>
         <div class="mt-3 flex flex-wrap gap-2">
           {whoItsFor.level.map((l, i) => (
-            <span class={`meta rounded-full border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-olive-deep' : 'border-olive/20 text-olive/70'}`}>
+            <span class={`meta rounded-full border px-4 py-2 ${i === 2 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70'}`}>
               {l}
             </span>
           ))}
@@ -113,14 +126,54 @@ const instructors = [
 
       <div>
         <h2 class="text-3xl md:text-4xl">Duration &amp; pricing</h2>
-        <ul class="mt-6 max-w-xl divide-y divide-olive/10 overflow-hidden rounded-2xl border border-olive/10">
-          {pricing.map((p) => (
-            <li class="flex items-center justify-between bg-snow px-6 py-4">
-              <span class="text-sm">{p.label}</span>
-              <span class="font-display text-lg font-bold tracking-tight">{p.price}</span>
-            </li>
-          ))}
-        </ul>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-olive/75">
+          "From" prices per group, 2026/27 season. Groups of 3&ndash;6 skiers add €10&ndash;20 per session. AM sessions start 09:15; PM sessions start 14:00.
+        </p>
+
+        <!-- CSS-only tab toggle. Radios, labels, and tables are all direct
+             siblings so Tailwind's peer-checked (general-sibling selector)
+             can reach every element it needs to style. -->
+        <div class="mt-8 max-w-xl">
+          <input type="radio" name="private-price-view" id="price-offpeak" class="peer/off sr-only" checked />
+          <label
+            for="price-offpeak"
+            role="tab"
+            class="meta mr-2 inline-flex cursor-pointer items-center rounded-full border border-olive/20 bg-cream px-5 py-2 text-olive/70 transition peer-checked/off:border-olive-deep peer-checked/off:bg-olive-deep peer-checked/off:text-salt"
+          >Off-peak</label>
+          <input type="radio" name="private-price-view" id="price-peak" class="peer/peak sr-only" />
+          <label
+            for="price-peak"
+            role="tab"
+            class="meta inline-flex cursor-pointer items-center rounded-full border border-olive/20 bg-cream px-5 py-2 text-olive/70 transition peer-checked/peak:border-olive-deep peer-checked/peak:bg-olive-deep peer-checked/peak:text-salt"
+          >Peak</label>
+
+          <!-- Off-peak table -->
+          <div class="mt-6 hidden peer-checked/off:block" role="tabpanel">
+            <ul class="divide-y divide-olive/10 overflow-hidden rounded-2xl border border-olive/10">
+              {offPeakPricing.map((p) => (
+                <li class="flex items-center justify-between bg-snow px-6 py-4">
+                  <span class="text-sm">{p.label}</span>
+                  <span class="font-display text-lg font-bold tracking-tight">{p.price}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Peak table -->
+          <div class="mt-6 hidden peer-checked/peak:block" role="tabpanel">
+            <ul class="divide-y divide-olive/10 overflow-hidden rounded-2xl border border-olive/10">
+              {peakPricing.map((p) => (
+                <li class="flex items-center justify-between bg-snow px-6 py-4">
+                  <span class="text-sm">{p.label}</span>
+                  <span class="font-display text-lg font-bold tracking-tight">{p.price}</span>
+                </li>
+              ))}
+            </ul>
+            <p class="meta mt-4 text-olive/60">
+              Peak weeks 2026/27: w/c 19 Dec (6-hr day), w/c 26 Dec &middot; 27 Mar &middot; 3 Apr (7-hr day), w/c 13 &amp; 20 Feb (Feb half term, 7-hr day).
+            </p>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -143,7 +196,7 @@ const instructors = [
   <Section id="book" kicker="Ready to book" title="Pick a date. Pick an instructor.">
     <SkiOperatorEmbed title="Private lessons" class="overflow-hidden rounded-3xl border border-olive/10 bg-snow" />
     <p class="meta mt-6 text-olive/55">
-      Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:underline">Get in touch</a> and we'll book you in directly.
+      Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a> and we'll book you in directly.
     </p>
   </Section>
 
@@ -176,7 +229,7 @@ const instructors = [
       <div class="mt-10">
         <a
           href="/instructors?resort=morzine"
-          class="meta inline-flex items-center gap-2 rounded-full border border-salt/20 px-5 py-3 no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+          class="meta inline-flex items-center gap-2 rounded-full border border-salt/20 px-5 py-3 no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
         >
           Browse all Morzine instructors →
         </a>

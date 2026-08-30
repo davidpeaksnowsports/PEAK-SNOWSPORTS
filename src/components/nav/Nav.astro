@@ -26,7 +26,7 @@ const secondary = [
       {primary.map((item) => (
         <a
           href={item.href}
-          class="rounded-full px-4 py-2 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:bg-yellow hover:text-olive-deep"
+          class="rounded-full px-4 py-2 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:bg-yellow hover:text-snow"
         >
           {item.label}
         </a>
@@ -35,7 +35,7 @@ const secondary = [
 
     <div class="hidden items-center gap-4 md:flex">
       {secondary.map((item) => (
-        <a href={item.href} class="meta -mx-1 rounded px-1 no-underline transition-colors hover:bg-yellow">{item.label}</a>
+        <a href={item.href} class="meta -mx-1 rounded px-1 no-underline transition-colors hover:bg-yellow hover:text-snow">{item.label}</a>
       ))}
       <span class="meta text-olive/60">EN / FR</span>
     </div>

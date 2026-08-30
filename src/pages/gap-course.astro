@@ -71,7 +71,7 @@ const faqs = [
   },
   {
     q: 'How much does it cost to become a ski instructor?',
-    a: "The Peak GAP course is €8,999 for the standard package, or €9,499 for a single-occupancy upgraded room. That's all-in: 100+ hours of coaching, both BASI exam fees, Outdoor First Aid, six weeks in a private Peak chalet, kit discounts and your Geneva transfer. Staged payments start from a €150 deposit, and book before 31 July 2026 and we include free skis and bindings. On top of the course you'll budget separately for BASI membership, travel insurance, a lift pass and personal kit.",
+    a: "The Peak GAP course is €8,999 for the standard package, or €9,499 for a single-occupancy upgraded room. That's all-in: 100+ hours of coaching, both BASI exam fees, Outdoor First Aid, six weeks in a private Peak chalet, kit discounts and your Geneva transfer. Staged payments start from a €150 deposit. On top of the course you'll budget separately for BASI membership, travel insurance, a lift pass and personal kit.",
   },
   {
     q: 'How long does it take to qualify as a ski instructor?',
@@ -359,7 +359,7 @@ jsonLd.push({
             For winter, the whole course moves into a private Peak chalet, students, coaches and the wider team under one roof. You train in Avoriaz, the heart of the 650 km Portes du Soleil, and come home to Morzine.
           </p>
           <p>
-            New to all this? Start with our plain-English guides: <a href="/journal/how-to-become-a-ski-instructor" class="underline underline-offset-4 hover:bg-yellow">how to become a ski instructor</a>, <a href="/journal/how-much-does-a-ski-instructor-course-cost" class="underline underline-offset-4 hover:bg-yellow">what it costs</a>, and <a href="/journal/basi-level-1-vs-level-2" class="underline underline-offset-4 hover:bg-yellow">BASI Level 1 vs Level 2</a>.
+            New to all this? Start with our plain-English guides: <a href="/journal/how-to-become-a-ski-instructor" class="underline underline-offset-4 hover:bg-yellow hover:text-snow">how to become a ski instructor</a>, <a href="/journal/how-much-does-a-ski-instructor-course-cost" class="underline underline-offset-4 hover:bg-yellow hover:text-snow">what it costs</a>, and <a href="/journal/basi-level-1-vs-level-2" class="underline underline-offset-4 hover:bg-yellow hover:text-snow">BASI Level 1 vs Level 2</a>.
           </p>
         </div>
       </div>
@@ -402,33 +402,12 @@ jsonLd.push({
         <ul class="space-y-3 text-base text-olive/75 md:text-lg">
           <li class="flex gap-3"><span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span><span>Reply usually within 30 minutes in office hours.</span></li>
           <li class="flex gap-3"><span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span><span>Not sure you're at the right level? Send a clip, we'll be honest.</span></li>
-          <li class="flex gap-3"><span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span><span>Prefer to chat live? <a href="#talk" class="underline underline-offset-4 hover:bg-yellow">Book a call or WhatsApp us</a>.</span></li>
+          <li class="flex gap-3"><span aria-hidden="true" class="mt-1.5 inline-block h-3 w-3 shrink-0" style="background-color:#EB437F; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);"></span><span>Prefer to chat live? <a href="#talk" class="underline underline-offset-4 hover:bg-yellow hover:text-snow">Book a call or WhatsApp us</a>.</span></li>
         </ul>
       </div>
       <EnquiryForm />
     </div>
   </Section>
-
-  <!-- Early bird offer band -->
-  <section class="bg-olive-deep text-salt">
-    <div class="mx-auto max-w-screen-2xl px-6 py-16 md:py-20">
-      <p class="meta-pill">Early bird · book by 31 July 2026</p>
-      <h2 class="mt-6 max-w-3xl text-4xl leading-tight md:text-6xl">
-        Free skis + bindings. On us.
-      </h2>
-      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-salt/80 md:text-xl">
-        We've partnered with <strong class="text-salt">Fluid Lines</strong>, the UK outdoor sports store, to put together a kit package built specifically for what you'll need on course. Lock in your spot before the end of July and the skis and bindings are included. Yours to keep.
-      </p>
-      <div class="mt-10 flex flex-wrap gap-3">
-        <a
-          href="#book"
-          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
-        >
-          Reserve your spot →
-        </a>
-      </div>
-    </div>
-  </section>
 
   <!-- Book your place / pricing -->
   <Section id="book" kicker="Dates & pricing" title="How much the course costs.">
@@ -445,19 +424,18 @@ jsonLd.push({
           Book the standard package →
         </a>
       </div>
-      <div class="flex flex-col rounded-3xl border border-olive bg-cream p-8">
-        <div class="flex items-center gap-3">
-          <p class="meta text-olive/55">Upgraded room</p>
-          <span class="meta-pill">Limited</span>
-        </div>
-        <p class="mt-3 font-display text-5xl font-bold tracking-tight md:text-6xl">€9,499</p>
-        <p class="mt-5 text-base leading-relaxed text-olive/80">Same course, single-occupancy room with en-suite.</p>
+      <div class="relative flex flex-col overflow-hidden rounded-3xl border border-olive bg-cream p-8 opacity-70">
+        <span class="absolute right-6 top-6 inline-flex items-center rounded-full bg-olive-deep px-4 py-1.5 font-display text-xs font-bold uppercase tracking-tight text-salt">
+          Sold out · 26/27
+        </span>
+        <p class="meta text-olive/55">Upgraded room</p>
+        <p class="mt-3 font-display text-5xl font-bold tracking-tight text-olive/70 line-through decoration-2 md:text-6xl">€9,499</p>
+        <p class="mt-5 text-base leading-relaxed text-olive/70">Same course, single-occupancy room with en-suite. Fully booked for 26/27 &mdash; joins next season's list on enquiry.</p>
         <a
-          href="https://buy.stripe.com/14A14n71SeZ032qdAb2ZO0v"
-          data-analytics-event="Book Upgraded"
+          href="/contact?subject=GAP+single+room+waitlist"
           class="mt-8 inline-flex items-center justify-center rounded-full border border-olive bg-snow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive no-underline transition hover:bg-olive hover:text-snow"
         >
-          Book the upgraded room →
+          Join the waitlist →
         </a>
       </div>
     </div>
@@ -475,7 +453,7 @@ jsonLd.push({
         <a
           href="https://buy.stripe.com/7sIcQ406IcKl4XCdRf"
           data-analytics-event="Deposit Click"
-          class="inline-flex shrink-0 items-center justify-center rounded-full bg-pink px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-snow hover:text-olive-deep"
+          class="inline-flex shrink-0 items-center justify-center rounded-full bg-pink px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink hover:text-olive-deep"
         >
           Pay €150 deposit →
         </a>
@@ -598,7 +576,7 @@ jsonLd.push({
       ))}
     </ul>
     <p class="meta mt-8 text-olive">
-      For the full course details, packing checklists, working rights by country, BASI criteria, <a href="#enquire" class="underline underline-offset-4 hover:bg-yellow">get in touch with us today</a>.
+      For the full course details, packing checklists, working rights by country, BASI criteria, <a href="#enquire" class="underline underline-offset-4 hover:bg-yellow hover:text-snow">get in touch with us today</a>.
     </p>
   </Section>
 
@@ -614,7 +592,7 @@ jsonLd.push({
         data-analytics-event="Book a Call"
         target="_blank"
         rel="noopener"
-        class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+        class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
       >
         Book a call →
       </a>
@@ -623,7 +601,7 @@ jsonLd.push({
         data-analytics-event="WhatsApp Click"
         target="_blank"
         rel="noopener"
-        class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+        class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
       >
         WhatsApp us
       </a>

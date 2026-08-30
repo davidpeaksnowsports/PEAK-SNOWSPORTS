@@ -116,7 +116,7 @@ const jsonLd = [
         <span>{d.country}{d.parentArea ? ` · ${d.parentArea}` : ''}</span>
       </p>
       {d.type === 'product' && d.product && (
-        <p class="meta mt-4 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">
+        <p class="meta mt-4 inline-flex items-center rounded-full bg-yellow px-3 py-1 text-snow">
           {d.product}
         </p>
       )}
@@ -146,9 +146,9 @@ const jsonLd = [
   <!-- Body -->
   <Section>
     <div class="prose prose-lg max-w-3xl
-      prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-olive
-      prose-p:text-olive/80 prose-strong:text-olive
-      prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:bg-yellow">
+      prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-snow
+      prose-p:text-snow/80 prose-strong:text-snow
+      prose-a:text-snow prose-a:underline-offset-4 hover:prose-a:bg-yellow">
       <PortableText value={(d.body as any) ?? []} />
     </div>
   </Section>
@@ -171,13 +171,13 @@ const jsonLd = [
       <div class="flex flex-wrap gap-3">
         <a
           href="/book"
-          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+          class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
         >
           {d.type === 'product' ? `Enquire about ${d.product}` : `Book a lesson in ${d.name}`} →
         </a>
         <a
           href="/lessons"
-          class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+          class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
         >
           See all lessons
         </a>
@@ -192,7 +192,7 @@ const jsonLd = [
           <li>
             <a
               href={`/resorts/${r.slug}`}
-              class="group -mx-3 flex items-baseline gap-4 px-3 py-6 no-underline transition-colors hover:bg-yellow md:gap-8"
+              class="group -mx-3 flex items-baseline gap-4 px-3 py-6 no-underline transition-colors hover:bg-yellow hover:text-snow md:gap-8"
             >
               <span class="font-display text-3xl font-bold tracking-tight md:text-5xl">
                 {r.name}.

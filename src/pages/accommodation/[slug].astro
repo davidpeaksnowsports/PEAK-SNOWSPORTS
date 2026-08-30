@@ -43,7 +43,7 @@ const otherProviders = allProviders
   <article class="px-6 pb-24 pt-16 md:pb-32 md:pt-24">
     <div class="mx-auto max-w-screen-2xl">
       <p class="meta text-olive/40">
-        <a href="/accommodation" class="-mx-1 rounded px-1 no-underline transition-colors hover:bg-yellow">Accommodation</a>
+        <a href="/accommodation" class="-mx-1 rounded px-1 no-underline transition-colors hover:bg-yellow hover:text-snow">Accommodation</a>
         <span class="px-2">/</span>
         <span>{d.name}</span>
       </p>
@@ -63,14 +63,14 @@ const otherProviders = allProviders
 
         <div class="md:col-span-7">
           {d.style && (
-            <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-olive-deep">{d.style}</span>
+            <span class="meta inline-flex items-center rounded-full bg-yellow px-3 py-1 text-snow">{d.style}</span>
           )}
           <h1 class="mt-4 text-5xl leading-tight md:text-7xl">{d.name}</h1>
           <p class="mt-4 text-lg text-olive/70 md:text-xl">{d.tagline}</p>
 
           <div class="article-prose prose prose-lg mt-10 max-w-2xl
-            prose-p:text-olive/80 prose-strong:text-olive
-            prose-a:text-olive prose-a:underline-offset-4 hover:prose-a:bg-yellow">
+            prose-p:text-snow/80 prose-strong:text-snow
+            prose-a:text-snow prose-a:underline-offset-4 hover:prose-a:bg-yellow">
             <Content />
           </div>
 
@@ -91,7 +91,7 @@ const otherProviders = allProviders
               <div class="col-span-2">
                 <dt class="meta text-olive/50">Website</dt>
                 <dd class="mt-2">
-                  <a href={d.website} rel="noopener" target="_blank" class="underline-offset-4 hover:bg-yellow hover:underline">
+                  <a href={d.website} rel="noopener" target="_blank" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">
                     {d.website.replace(/^https?:\/\//, '').replace(/\/$/, '')} ↗
                   </a>
                 </dd>
@@ -102,7 +102,7 @@ const otherProviders = allProviders
           <div class="mt-12 flex flex-wrap gap-3">
             <a
               href={`/accommodation#enquire?provider=${encodeURIComponent(d.name)}`}
-              class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-olive-deep no-underline transition hover:bg-salt"
+              class="inline-flex items-center rounded-full bg-yellow px-8 py-4 font-display text-base font-bold uppercase tracking-tight text-snow no-underline transition hover:bg-ink"
             >
               Enquire about {d.name} →
             </a>
@@ -111,7 +111,7 @@ const otherProviders = allProviders
                 href={d.website}
                 rel="noopener"
                 target="_blank"
-                class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-olive-deep"
+                class="inline-flex items-center rounded-full border border-olive/30 px-8 py-4 font-display text-base font-bold uppercase tracking-tight no-underline transition hover:border-yellow hover:bg-yellow hover:text-snow"
               >
                 Visit website
               </a>
@@ -132,7 +132,7 @@ const otherProviders = allProviders
           <li>
             <a
               href={`/accommodation/${p.id}`}
-              class="group -mx-3 flex items-baseline gap-4 px-3 py-6 no-underline transition-colors hover:bg-yellow md:gap-8"
+              class="group -mx-3 flex items-baseline gap-4 px-3 py-6 no-underline transition-colors hover:bg-yellow hover:text-snow md:gap-8"
             >
               <span class="font-display text-3xl font-bold tracking-tight md:text-5xl">{p.data.name}.</span>
               <span class="meta hidden text-olive/50 md:inline">{p.data.tagline}</span>

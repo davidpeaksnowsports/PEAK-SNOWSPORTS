@@ -57,7 +57,7 @@ const [featured, ...rest] = posts;
       {categories.map((c, i) => (
         <a
           href={c.href}
-          class={`meta rounded-full border px-4 py-2 no-underline transition ${i === 0 ? 'border-yellow bg-yellow text-olive-deep' : 'border-olive/20 text-olive/70 hover:border-yellow hover:bg-yellow hover:text-olive-deep'}`}
+          class={`meta rounded-full border px-4 py-2 no-underline transition ${i === 0 ? 'border-yellow bg-yellow text-snow' : 'border-olive/20 text-snow/70 hover:border-yellow hover:bg-yellow hover:text-snow'}`}
         >
           {c.label}
           <span class="ml-1 text-olive-deep/40">{c.count}</span>
