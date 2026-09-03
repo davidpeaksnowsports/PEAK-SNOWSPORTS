@@ -45,9 +45,11 @@
     @apply text-xs uppercase tracking-widest;
   }
 
-  /* Highlighted-pill kicker variant. Accent fill + paper type: 10.13:1,
+  /* Highlighted-pill kicker variant. Accent fill + paper type: 7.15:1,
      and it reads on both the paper ground and the ink bands, which a bare
-     accent-on-paper kicker would not at small sizes. */
+     accent-on-paper kicker would not at small sizes. Section headers use
+     plain .meta instead - a filled pill on every header would spend most
+     of the colour budget on labels. */
   .meta-pill {
     font-family: theme('fontFamily.mono');
     @apply inline-block text-xs font-bold uppercase tracking-widest bg-pink text-snow px-2 py-1 rounded-sm;
