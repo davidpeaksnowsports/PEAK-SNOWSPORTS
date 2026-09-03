@@ -5,7 +5,7 @@ resorts: ["Verbier"]
 languages: ["EN", "FR"]
 specialities: ["Off-piste", "Advanced", "Race"]
 qualifications: []
-photo: "/images/instructors/placeholder.jpg"
+photo: "/images/instructors/tom-peek.jpg"
 order: 13
 ---
 
