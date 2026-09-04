@@ -233,7 +233,10 @@ peaksnowsports-web/
 ## 7. Booking system integration
 
 ### How it embeds
-**SkiOperator** hosts the booking experience on `ski-operator.com` and renders inside an iframe. We use **publishable-key mode** — the pub_ key + tenant are baked into the iframe URL at build time; no server token endpoint, no client-side JS. Access is gated by SkiOperator's origin allowlist.
+**SkiOperator** hosts the booking experience on `ski-operator.com` and renders inside an iframe. Two modes are in use, both gated by SkiOperator's origin allowlist:
+
+- **Publishable-key mode** (`SkiOperatorEmbed.astro`) — pub_ key + tenant baked into the iframe URL at build time; no server token, no client-side JS. Used on every booking page except `/lessons/private`.
+- **Secure server mode** (`SkiOperatorSecureEmbed.astro`) — the server mints a short-lived token per request from the `sec_` key. Used on `/lessons/private`.
 
 `SkiOperatorEmbed.astro` renders:
 ```
@@ -252,11 +255,31 @@ Full guide: <https://www.ski-operator.com/docs/embed>. Checkout redirects the to
 - `PUBLIC_SKI_OPERATOR_TENANT` and `PUBLIC_SKI_OPERATOR_PUBLIC_KEY` in Vercel Preview + Production. `PUBLIC_`-prefixed = inlined into browser HTML by design — pub_ keys are browser-safe.
 - Site origin `https://www.peaksnowsports.com` allowlisted in SkiOperator admin → Settings → Embed.
 
-**Never** use a `sec_` key here — that mode requires a server endpoint on the SkiOperator side (`POST /api/v1/embed/token/generate`) and is out of scope for this site.
+**Never** put a `sec_` key in browser code or in a `PUBLIC_`-prefixed env var. pub_ keys are browser-safe; sec_ keys are not.
+
+### Secure server mode (`/lessons/private`)
+`SkiOperatorSecureEmbed.astro` POSTs `{ secure_api_key, domain }` to
+`https://www.ski-operator.com/api/v1/embed/token/generate` from the server and renders
+`…/app/embed/products?embed=1&token={token}` with the returned token.
+
+```
+POST /api/v1/embed/token/generate
+{ "secure_api_key": SKI_OPERATOR_SECURE_KEY, "domain": "https://www.peaksnowsports.com" }
+→ { "token": "…" }
+```
+
+Because tokens expire, `/lessons/private` sets `export const prerender = false` and
+`Cache-Control: no-store` — it is the only server-rendered page on the site. Never
+prerender it or let a CDN cache it; a cached copy serves a dead token.
+
+**Required config**
+- `SKI_OPERATOR_SECURE_KEY` (the `sec_…` key) in Vercel Preview + Production. No `PUBLIC_` prefix, never committed, read from `process.env` at request time.
+- If the key is missing or the token call fails, the page renders the "get in touch" fallback rather than a broken iframe, and logs the reason server-side.
 
 ### Where it appears
 - `/book` — dedicated full-width embed, the primary conversion page for the "BOOK" nav link and every "Book a lesson" CTA.
-- `/lessons/private`, `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste`, `/lessons/race-coaching` — sidebar embed per product page.
+- `/lessons/private` — sidebar embed in **secure server mode** (server-rendered, uncached).
+- `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste`, `/lessons/race-coaching` — sidebar embed per product page, publishable-key mode.
 
 ### What we do NOT build
 - Booking flow, cart, payment — all SkiOperator.
@@ -372,5 +395,5 @@ When working on this codebase:
 - All copy is short and declarative — flag to David if proposed copy reads as marketing-speak
 - Mobile-first responsive: design from 375px up
 - Every image goes through Astro's `<Image />` or Sanity's CDN for optimisation
-- Never break the booking system embed — `PUBLIC_SKI_OPERATOR_TENANT`, `PUBLIC_SKI_OPERATOR_PUBLIC_KEY` (Vercel env), and the origin allowlist in SkiOperator admin are the moving parts; test any change end-to-end
+- Never break the booking system embed — `PUBLIC_SKI_OPERATOR_TENANT`, `PUBLIC_SKI_OPERATOR_PUBLIC_KEY`, `SKI_OPERATOR_SECURE_KEY` (Vercel env), and the origin allowlist in SkiOperator admin are the moving parts; test any change end-to-end
 - Update this CLAUDE.md when major decisions are made

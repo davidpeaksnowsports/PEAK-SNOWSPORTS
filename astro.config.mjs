@@ -28,7 +28,8 @@ const jobLastmod = Object.fromEntries(
 // Pages remain static (prerendered) by default. Individual routes can opt into
 // per-request server rendering with `export const prerender = false`. The
 // Vercel adapter ships server routes as Vercel functions; static pages are
-// served from the edge as before. See src/pages/api/skioperator-token.ts.
+// served from the edge as before. See src/pages/lessons/private.astro, which
+// server-renders so it can mint a fresh SkiOperator embed token per request.
 export default defineConfig({
   site: 'https://www.peaksnowsports.com',
   output: 'static',

@@ -2,7 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/ui/Section.astro';
 import Hero from '../../components/hero/Hero.astro';
-import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
+import SkiOperatorSecureEmbed from '../../components/booking/SkiOperatorSecureEmbed.astro';
+
+// The booking embed uses SkiOperator's secure server mode: a fresh, short-lived
+// token is minted server-side on every request. That means this page renders
+// per request rather than at build time, and must never be cached — a cached
+// copy would serve an expired token. Every other page stays static.
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'no-store');
 
 const whoItsFor = {
   group: ['Solo', 'Couples', 'Small groups'],
@@ -188,7 +195,7 @@ const instructors = [
 
   <!-- Book -->
   <Section id="book" kicker="Ready to book" title="Pick a date. Pick an instructor.">
-    <SkiOperatorEmbed title="Private lessons" class="overflow-hidden rounded-none border border-olive/10 bg-snow" />
+    <SkiOperatorSecureEmbed title="Private lessons" class="overflow-hidden rounded-none border border-olive/10 bg-snow" />
     <p class="meta mt-6 text-olive/55">
       Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a> and we'll book you in directly.
     </p>

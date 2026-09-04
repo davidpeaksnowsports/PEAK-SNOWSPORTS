@@ -1,0 +1,103 @@
+---
+/**
+ * SkiOperator booking embed — secure server mode.
+ *
+ * Unlike the publishable-key embed (SkiOperatorEmbed.astro), this variant mints
+ * a short-lived embed token on the server for every request and puts that token
+ * in the iframe URL. The sec_ key never leaves the server: it is read from
+ * process.env at request time, so it is not inlined into the build output and
+ * never reaches browser code.
+ *
+ * The page that renders this component MUST opt out of prerendering
+ * (`export const prerender = false`) and send `Cache-Control: no-store`.
+ * Tokens expire, so a cached HTML page would hand visitors a dead iframe URL.
+ * See src/pages/lessons/private.astro.
+ *
+ * Required env var (Vercel Preview + Production, and local .env):
+ *   SKI_OPERATOR_SECURE_KEY , the sec_… key. NO PUBLIC_ prefix, never expose,
+ *                             never commit. Store it in Vercel's env settings.
+ *
+ * SkiOperator also checks the requesting origin against the allowlist in its
+ * admin (Settings → Embed). `domain` below must match an allowlisted origin.
+ *
+ * If the key is missing or the token request fails we render the same
+ * "get in touch" fallback the publishable-key embed uses, rather than an iframe
+ * that would only show an error to the visitor.
+ *
+ * Checkout redirects the top-level browser to the payment provider, so we
+ * deliberately do NOT set an iframe `sandbox` — a sandbox would break that
+ * navigation.
+ *
+ * Full guide: https://www.ski-operator.com/docs/embed
+ */
+interface Props {
+  /** Accessible iframe title. Announced by screen readers. */
+  title: string;
+  /** Optional Tailwind classes on the iframe. */
+  class?: string;
+}
+
+const { title, class: className = '' } = Astro.props;
+
+const APP_URL = 'https://www.ski-operator.com';
+const EMBED_PATH = '/app/embed/products';
+const TOKEN_ENDPOINT = `${APP_URL}/api/v1/embed/token/generate`;
+
+// The public origin the token is minted for. Must match an entry in the
+// SkiOperator origin allowlist. `Astro.site` comes from `site:` in
+// astro.config.mjs — https://www.peaksnowsports.com.
+const domain = Astro.site?.origin ?? '';
+
+const secureKey = process.env.SKI_OPERATOR_SECURE_KEY;
+
+let src = '';
+let failure = '';
+
+if (!secureKey) {
+  failure = 'SKI_OPERATOR_SECURE_KEY is not set';
+} else if (!domain) {
+  failure = 'no `site` origin in astro.config.mjs to mint a token for';
+} else {
+  try {
+    const res = await fetch(TOKEN_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secure_api_key: secureKey, domain }),
+      // Don't let a slow booking API hold the whole page render hostage.
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) {
+      failure = `token request returned ${res.status} ${res.statusText}`;
+    } else {
+      const token = ((await res.json()) as { token?: unknown })?.token;
+      if (typeof token === 'string' && token) {
+        src = `${APP_URL}${EMBED_PATH}?embed=1&token=${encodeURIComponent(token)}`;
+      } else {
+        failure = 'token request succeeded but returned no token';
+      }
+    }
+  } catch (err) {
+    failure = `token request failed: ${err instanceof Error ? err.message : String(err)}`;
+  }
+}
+
+// Server log only — never rendered, and never contains the key itself.
+if (failure) console.error(`[SkiOperatorSecureEmbed] ${failure}`);
+---
+
+{src ? (
+  <iframe
+    src={src}
+    title={title}
+    loading="lazy"
+    allow="payment"
+    class:list={['block w-full max-w-full', className]}
+    style="min-height:900px; border:0; overflow:hidden;"
+  />
+) : (
+  <div class:list={['skioperator-embed', className]}>
+    <p class="meta py-12 text-center text-olive/60">
+      Booking widget not configured. <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a> and we'll book you in directly.
+    </p>
+  </div>
+)}
