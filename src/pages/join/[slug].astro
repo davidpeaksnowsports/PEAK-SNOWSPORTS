@@ -35,30 +35,106 @@ const terms = [
 const seoTitle = `${d.title} · Jobs at Peak Snowsports · ${d.locations.join(', ')}`;
 const seoDescription = `${d.summary} ${d.employmentType}${d.dates ? `, ${d.dates}` : ''}. Apply to Peak Snowsports.`;
 
-const jsonLd = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'JobPosting',
-    title: d.title,
-    description: d.summary,
-    employmentType: /part/i.test(d.employmentType) ? 'PART_TIME' : 'FULL_TIME',
-    hiringOrganization: { '@id': `${SITE}/#organization` },
-    jobLocation: d.locations.map((l) => ({
-      '@type': 'Place',
-      address: { '@type': 'PostalAddress', addressLocality: l, addressCountry: 'FR' },
-    })),
-    directApply: true,
-    url,
+// --- Google JobPosting eligibility ---------------------------------------
+// https://developers.google.com/search/docs/appearance/structured-data/job-posting
+//
+// A posting is only marked up while it is genuinely open. Google issues manual
+// actions for stale postings, so `validThrough` passing retires the listing on
+// its own: the markup goes, and the page flips to "applications closed". That
+// is Google's recommended expiry route and it means a forgotten role degrades
+// safely instead of advertising a job we are no longer hiring for.
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const expired = d.validThrough ? d.validThrough < today : false;
+const isLive = d.open && !expired;
+
+// Postcodes for the resorts we hire into. Google only requires addressCountry,
+// but locality/region/postcode materially improve location matching.
+const RESORT_ADDRESS: Record<string, { locality: string; postalCode: string }> = {
+  Morzine: { locality: 'Morzine', postalCode: '74110' },
+  Avoriaz: { locality: 'Avoriaz', postalCode: '74110' },
+  'Les Gets': { locality: 'Les Gets', postalCode: '74260' },
+  Chatel: { locality: 'Châtel', postalCode: '74390' },
+};
+
+const jobLocation = d.locations.map((l) => {
+  const addr = RESORT_ADDRESS[l];
+  return {
+    '@type': 'Place',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: addr?.locality ?? l,
+      ...(addr ? { postalCode: addr.postalCode } : {}),
+      addressRegion: 'Haute-Savoie',
+      addressCountry: 'FR',
+    },
+  };
+});
+
+const iso = (date: Date) => date.toISOString().slice(0, 10);
+
+const listHtml = (heading: string, items: string[]) =>
+  items.length
+    ? `<h3>${heading}</h3><ul>${items.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}</ul>`
+    : '';
+
+function escapeHtml(v: string) {
+  return v
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// Google wants the COMPLETE description as HTML, not a teaser — the same
+// substance a candidate sees on the page. We reuse the rendered markdown body
+// and append the structured lists the page shows alongside it, so the markup
+// can never drift from the visible content.
+const termRows = terms.map((t) => `<li><strong>${escapeHtml(t.label)}:</strong> ${escapeHtml(t.value)}</li>`).join('');
+const descriptionHtml = [
+  `<p>${escapeHtml(d.summary)}</p>`,
+  job.rendered?.html ?? '',
+  `<h3>Terms</h3><ul>${termRows}</ul>`,
+  listHtml('What you&rsquo;d actually do', d.responsibilities),
+  listHtml('Essential', d.essentials),
+  listHtml('Nice to have', d.niceToHave),
+  listHtml('Perks', d.perks),
+].filter(Boolean).join('\n');
+
+const jobPostingJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'JobPosting',
+  title: d.title,
+  description: descriptionHtml,
+  datePosted: iso(d.datePosted),
+  ...(d.validThrough ? { validThrough: iso(d.validThrough) } : {}),
+  employmentType: d.schemaEmploymentType,
+  // Google requires a real Organization object here, not a bare @id reference.
+  hiringOrganization: {
+    '@type': 'Organization',
+    name: 'Peak Snowsports',
+    sameAs: SITE,
+    logo: `${SITE}/images/logos/peak-menu-logo.png`,
   },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Join the team', item: `${SITE}/join` },
-      { '@type': 'ListItem', position: 2, name: d.title, item: url },
-    ],
+  jobLocation,
+  identifier: {
+    '@type': 'PropertyValue',
+    name: 'Peak Snowsports',
+    value: d.identifier ?? job.id,
   },
-];
+  directApply: true,
+  url,
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Join the team', item: `${SITE}/join` },
+    { '@type': 'ListItem', position: 2, name: d.title, item: url },
+  ],
+};
+
+const jsonLd = isLive ? [jobPostingJsonLd, breadcrumbJsonLd] : [breadcrumbJsonLd];
 ---
 
 <BaseLayout title={seoTitle} description={seoDescription} image="/images/og/instructors.jpg" jsonLd={jsonLd}>
@@ -83,7 +159,7 @@ const jsonLd = [
             {d.summary}
           </p>
           <div class="col-span-12 flex flex-wrap gap-3 md:col-span-6 md:justify-end">
-            {d.open ? (
+            {isLive ? (
               <a
                 href="#apply"
                 class="inline-flex items-center rounded-sm bg-accent px-7 py-3.5 font-display text-sm font-semibold text-paper no-underline transition hover:bg-ink"
@@ -194,8 +270,8 @@ const jsonLd = [
       </Section>
     )}
 
-    <Section kicker="Apply" title={d.open ? `Apply for ${d.title.toLowerCase()}.` : 'This role is closed.'}>
-      {d.open ? (
+    <Section kicker="Apply" title={isLive ? `Apply for ${d.title.toLowerCase()}.` : 'This role is closed.'}>
+      {isLive ? (
         <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div class="lg:col-span-7">
             <ApplyForm role={d.title} id="apply" />

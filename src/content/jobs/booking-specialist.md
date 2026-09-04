@@ -3,6 +3,9 @@ title: Booking specialist
 kicker: Off the mountain
 summary: Own the enquiries and the diary - convert bookings, keep the system clean, and run our instructors close to full.
 employmentType: Seasonal, reducing to part-time at the end of the season
+datePosted: 2026-09-04
+validThrough: 2026-11-30
+schemaEmploymentType: ['FULL_TIME', 'PART_TIME', 'TEMPORARY']
 locations: [Morzine]
 dates: November 2026 - April 2027
 commitment: Full season in resort

@@ -4,6 +4,24 @@ import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
 import sanity from '@sanity/astro';
 import sitemap from '@astrojs/sitemap';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Google's job-posting guidance asks for accurate <lastmod> so it knows when to
+// recrawl a posting. We only set it where we have a real date to give: each job
+// file's own `datePosted`. Stamping every page with the build time would be a
+// lie that triggers pointless recrawls, which the same guidance warns against.
+const jobLastmod = Object.fromEntries(
+  fs
+    .readdirSync('./src/content/jobs')
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => {
+      const src = fs.readFileSync(path.join('./src/content/jobs', f), 'utf8');
+      const posted = src.match(/^datePosted:\s*(\S+)/m)?.[1];
+      return [`/join/${f.replace(/\.md$/, '')}`, posted];
+    })
+    .filter(([, posted]) => posted),
+);
 
 // https://astro.build/config
 //
@@ -49,7 +67,15 @@ export default defineConfig({
         if (/^\/instructors\//.test(path)) return { ...item, priority: 0.8, changefreq: 'monthly' };
         if (/^\/journal\//.test(path)) return { ...item, priority: 0.7, changefreq: 'monthly' };
         if (/^\/accommodation\//.test(path)) return { ...item, priority: 0.6, changefreq: 'monthly' };
-        if (/^\/join(\/|$)/.test(path)) return { ...item, priority: 0.6, changefreq: 'monthly' };
+        if (/^\/join(\/|$)/.test(path)) {
+          const lastmod = jobLastmod[path];
+          return {
+            ...item,
+            priority: 0.6,
+            changefreq: 'monthly',
+            ...(lastmod ? { lastmod: new Date(lastmod).toISOString() } : {}),
+          };
+        }
         if (/^\/(privacy|terms|cookies|contact|about)\/?$/.test(path)) return { ...item, priority: 0.4, changefreq: 'yearly' };
         return { ...item, priority: 0.5 };
       },

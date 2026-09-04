@@ -3,6 +3,9 @@ title: Race coach
 kicker: On the mountain
 summary: Run gates, build technique and take our race squads through a full season of training and events.
 employmentType: Self-employed contractor, contract for services
+datePosted: 2026-09-04
+validThrough: 2026-12-31
+schemaEmploymentType: ['CONTRACTOR', 'TEMPORARY']
 locations: [Morzine, Les Gets, Avoriaz]
 dates: 1 December 2026 - 31 May 2027
 commitment: Minimum 12 weeks across the winter, full season preferred.

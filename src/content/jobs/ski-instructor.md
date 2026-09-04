@@ -3,6 +3,9 @@ title: Ski instructor
 kicker: On the mountain
 summary: Teach across four Portes du Soleil resorts on a self-employed basis, with a team that keeps you busy and backs you to get better.
 employmentType: Self-employed contractor, contract for services
+datePosted: 2026-09-04
+validThrough: 2026-12-31
+schemaEmploymentType: ['CONTRACTOR', 'TEMPORARY']
 locations: [Morzine, Avoriaz, Les Gets, Chatel]
 dates: 1 December 2026 - 31 May 2027
 commitment: Minimum 12 weeks across the winter. Peak-weeks-only instructors, minimum one peak week.

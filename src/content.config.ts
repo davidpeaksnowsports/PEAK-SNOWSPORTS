@@ -93,7 +93,19 @@ const jobs = defineCollection({
     title: z.string(),
     kicker: z.string(),                    // card label: "On the mountain", "Off the mountain"
     summary: z.string(),                   // one-line blurb on the job card
-    employmentType: z.string().default('Seasonal'),
+    employmentType: z.string().default('Seasonal'),   // human-readable, for the terms table
+    // Google JobPosting fields. `schemaEmploymentType` must use Google's enum,
+    // not our prose: FULL_TIME | PART_TIME | CONTRACTOR | TEMPORARY | INTERN |
+    // VOLUNTEER | PER_DIEM | OTHER. `datePosted` is required by Google;
+    // `validThrough` expires the posting — once it passes, the role shows as
+    // closed on /join and the JobPosting markup is dropped, which is Google's
+    // recommended way to retire a listing. Bump it to keep a role live.
+    schemaEmploymentType: z
+      .array(z.enum(['FULL_TIME', 'PART_TIME', 'CONTRACTOR', 'TEMPORARY', 'INTERN', 'VOLUNTEER', 'PER_DIEM', 'OTHER']))
+      .default(['FULL_TIME']),
+    datePosted: z.coerce.date(),
+    validThrough: z.coerce.date().optional(),
+    identifier: z.string().optional(),               // defaults to the slug
     locations: z.array(z.string()).default(['Morzine']),
     dates: z.string().optional(),          // "December 2026 - April 2027"
     commitment: z.string().optional(),     // minimum availability, from the contract

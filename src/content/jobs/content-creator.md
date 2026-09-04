@@ -3,6 +3,9 @@ title: Content creator
 kicker: Off the mountain
 summary: Shoot, edit and publish the season as it happens - social, journal and the photography that sells the school.
 employmentType: Seasonal, with a route to year-round
+datePosted: 2026-09-04
+validThrough: 2026-12-31
+schemaEmploymentType: ['FULL_TIME', 'TEMPORARY']
 locations: [Morzine, Avoriaz, Les Gets, Chatel]
 dates: December 2026 - April 2027
 hours: Full time, five days a week, shaped around light and weather rather than a fixed shift.

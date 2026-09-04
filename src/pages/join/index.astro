@@ -9,15 +9,27 @@ import heroImage from '../../assets/images/hero-instructors.jpg';
 import { whatsappHref } from '../../lib/whatsapp';
 
 const allJobs = await getCollection('jobs', ({ data }) => !data.draft);
-// Open roles first, then by the explicit `order` field, then alphabetically.
+
+// A role is live only while it is open AND its validThrough hasn't passed —
+// the same rule /join/[slug] uses to decide whether to emit JobPosting markup.
+// Keeping one definition means the board can't advertise a role Google has
+// already been told is expired.
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const isLive = (j: (typeof allJobs)[number]) =>
+  j.data.open && (!j.data.validThrough || j.data.validThrough >= today);
+
+// Live roles first, then by the explicit `order` field, then alphabetically.
 const jobs = allJobs.sort((a, b) => {
-  if (a.data.open !== b.data.open) return a.data.open ? -1 : 1;
+  const al = isLive(a);
+  const bl = isLive(b);
+  if (al !== bl) return al ? -1 : 1;
   const ao = a.data.order ?? 99;
   const bo = b.data.order ?? 99;
   if (ao !== bo) return ao - bo;
   return a.data.title.localeCompare(b.data.title);
 });
-const openCount = jobs.filter((j) => j.data.open).length;
+const openCount = jobs.filter(isLive).length;
 
 const SITE = 'https://www.peaksnowsports.com';
 
@@ -59,7 +71,7 @@ const jsonLd = [
     '@type': 'ItemList',
     name: 'Open roles at Peak Snowsports',
     itemListElement: jobs
-      .filter((j) => j.data.open)
+      .filter(isLive)
       .map((j, i) => ({
         '@type': 'ListItem',
         position: i + 1,
@@ -99,7 +111,7 @@ const jsonLd = [
           locations={job.data.locations}
           employmentType={job.data.employmentType}
           dates={job.data.dates}
-          open={job.data.open}
+          open={isLive(job)}
         />
       ))}
     </div>

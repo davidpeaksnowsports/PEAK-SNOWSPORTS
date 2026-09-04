@@ -3,6 +3,9 @@ title: Resort director
 kicker: Leadership
 summary: Run a resort end to end - the team, the standard and the season's numbers.
 employmentType: Full season, year-round for the right person
+datePosted: 2026-09-04
+validThrough: 2026-11-30
+schemaEmploymentType: ['FULL_TIME']
 locations: [Morzine, Avoriaz, Les Gets, Chatel]
 dates: November 2026 - April 2027, with pre-season planning from September
 hours: Full time through the season. Long weeks in the peaks, quieter in the shoulders.
