@@ -106,55 +106,60 @@ const instructors = [
         </p>
       </div>
 
-      <div class="space-y-14 xl:col-start-1 xl:row-start-1 xl:row-span-2">
+      <div class="space-y-14 xl:col-start-1 xl:row-start-1">
 
-        <div>
-          <h2 class="text-3xl md:text-4xl">What you get</h2>
+        <!-- The clip runs alongside both of the short blocks rather than just
+             the first. "What you get" is a two-line paragraph; on its own it
+             left most of the column blank beside a portrait video. Paired with
+             "Who it's for" as well, the two columns come out close in height.
+             The source is 720x900 (4:5), NOT 9:16 — framing it 9:16 letterboxes
+             it with black bars. nocookie domain: the player must not drop
+             advertising cookies before a visitor has answered the consent
+             banner. -->
+        <div class="grid gap-8 md:grid-cols-[minmax(0,1fr)_300px] md:items-start">
 
-          <!-- Copy and clip sit side by side from md up. The Short is 9:16, so
-               it is capped at 300px — left on its own under the paragraph it
-               stranded ~540px of empty column beside it. nocookie domain: the
-               player must not drop advertising cookies before a visitor has
-               answered the consent banner. -->
-          <div class="mt-5 grid gap-8 md:grid-cols-[minmax(0,1fr)_300px] md:items-start">
-            <p class="text-lg leading-relaxed text-olive/80">
-              A dedicated instructor for the time you book. They'll meet you at a fixed point, ski with you, and tailor the lesson to what you want to get out of it.
-            </p>
+          <div class="space-y-14">
+            <div>
+              <h2 class="text-3xl md:text-4xl">What you get</h2>
+              <p class="mt-5 text-lg leading-relaxed text-olive/80">
+                A dedicated instructor for the time you book. They'll meet you at a fixed point, ski with you, and tailor the lesson to what you want to get out of it.
+              </p>
+            </div>
 
-            <figure class="w-full max-w-[300px]">
-              <div class="overflow-hidden rounded-none bg-brown">
-                <iframe
-                  class="block aspect-[9/16] w-full"
-                  src="https://www.youtube-nocookie.com/embed/cW1JHtz86uk"
-                  title="Carve your skis this winter"
-                  loading="lazy"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                  allowfullscreen
-                  style="border:0;"
-                ></iframe>
+            <div>
+              <h2 class="text-3xl md:text-4xl">Who it's for</h2>
+              <div class="mt-6 flex flex-wrap gap-2">
+                {whoItsFor.group.map((g, i) => (
+                  <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
+                    {g}
+                  </span>
+                ))}
               </div>
-              <figcaption class="meta mt-3 text-olive/60">Watch · Carve your skis this winter</figcaption>
-            </figure>
+              <div class="mt-3 flex flex-wrap gap-2">
+                {whoItsFor.level.map((l, i) => (
+                  <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
+                    {l}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <h2 class="text-3xl md:text-4xl">Who it's for</h2>
-          <div class="mt-6 flex flex-wrap gap-2">
-            {whoItsFor.group.map((g, i) => (
-              <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
-                {g}
-              </span>
-            ))}
-          </div>
-          <div class="mt-3 flex flex-wrap gap-2">
-            {whoItsFor.level.map((l, i) => (
-              <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
-                {l}
-              </span>
-            ))}
-          </div>
+          <figure class="w-full max-w-[300px] md:mt-2">
+            <div class="overflow-hidden rounded-none bg-brown">
+              <iframe
+                class="block aspect-[4/5] w-full"
+                src="https://www.youtube-nocookie.com/embed/cW1JHtz86uk"
+                title="Carve your skis this winter"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                allowfullscreen
+                style="border:0;"
+              ></iframe>
+            </div>
+            <figcaption class="meta mt-3 text-olive/60">Watch · Carve your skis this winter</figcaption>
+          </figure>
         </div>
 
         <div>
@@ -209,24 +214,19 @@ const instructors = [
           </div>
         </div>
 
-      </div>
+        <div>
+          <h2 class="text-3xl md:text-4xl">Meeting points</h2>
+          <ul class="meta mt-6 space-y-2 text-olive/70">
+            {meetingPoints.map((m) => (
+              <li>
+                <span class="text-olive">{m.resort}</span>
+                <span class="px-2 text-olive/40">,</span>
+                <span>{m.points}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <!-- Meeting points rides in the right column under the booking panel.
-           The widget is a fixed 900px while the copy runs much longer, which
-           stranded ~700px of empty column beneath it; this is the shortest
-           block and the one that reads most naturally next to a booking form.
-           Last in source order, so it still stacks last on narrow screens. -->
-      <div class="xl:col-start-2 xl:row-start-2">
-        <h2 class="text-3xl md:text-4xl">Meeting points</h2>
-        <ul class="meta mt-6 space-y-2 text-olive/70">
-          {meetingPoints.map((m) => (
-            <li>
-              <span class="text-olive">{m.resort}</span>
-              <span class="px-2 text-olive/40">,</span>
-              <span>{m.points}</span>
-            </li>
-          ))}
-        </ul>
       </div>
 
     </div>
