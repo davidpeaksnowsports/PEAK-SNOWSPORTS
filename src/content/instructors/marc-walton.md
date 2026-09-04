@@ -17,4 +17,4 @@ dislikes: "Watching football and sitting in traffic."
 order: 3
 ---
 
-_Story coming soon._
+Marc co-founded Peak Snowsports and holds a BASI Trainer and Examiner appointment — the qualification held by the people who train and assess other schools' instructors. He teaches across Morzine, Avoriaz and Les Gets, and alongside the BASI Level 4 International ski teaching diploma he holds European Mountain Safety, the European speed test and mountain first aid.

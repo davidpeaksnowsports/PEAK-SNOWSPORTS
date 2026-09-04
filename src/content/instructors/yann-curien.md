@@ -14,4 +14,4 @@ photo: "/images/instructors/yann.jpg"
 order: 6
 ---
 
-_Bio coming soon._
+Yann holds the French Moniteur de ski qualification and teaches in both French and English across Morzine, Avoriaz and Les Gets. He also holds European Mountain Safety, the European speed test and mountain first aid.

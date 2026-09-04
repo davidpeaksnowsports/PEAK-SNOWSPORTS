@@ -15,4 +15,4 @@ favouriteKit: "My headband or overshirt"
 order: 4
 ---
 
-_Bio coming soon._
+Rory holds the BASI Level 4 International ski teaching diploma, the highest qualification BASI awards, and teaches across Morzine, Avoriaz and Les Gets. He also holds European Mountain Safety, the European speed test and mountain first aid.
