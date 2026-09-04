@@ -6,8 +6,11 @@ languages: ["EN"]
 specialities: []
 qualifications:
   - "Instructor Trainer / Examiner appointment (BASI)"
-  - "Carte Professionale - Ski Alpin No. #07417ED0463"
-  - "European Mountain Security"
+  - "BASI Level 4 International ski teaching diploma"
+  - "Carte Professionale - Ski Alpin #07417ED0463"
+  - "European Mountain Safety"
+  - "European speed test"
+  - "Mountain first aid"
 photo: "/images/instructors/marc.jpg"
 likes: "I am a big foodie - particularly Italian, Indian and Thai. All types of burgers. Traveling, cycling and cars."
 dislikes: "Watching football and sitting in traffic."
