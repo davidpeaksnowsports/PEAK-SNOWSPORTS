@@ -108,58 +108,29 @@ const instructors = [
 
       <div class="space-y-14 xl:col-start-1 xl:row-start-1">
 
-        <!-- The clip runs alongside both of the short blocks rather than just
-             the first. "What you get" is a two-line paragraph; on its own it
-             left most of the column blank beside a portrait video. Paired with
-             "Who it's for" as well, the two columns come out close in height.
-             The source is 720x900 (4:5), NOT 9:16 — framing it 9:16 letterboxes
-             it with black bars. nocookie domain: the player must not drop
-             advertising cookies before a visitor has answered the consent
-             banner. -->
-        <div class="grid gap-8 md:grid-cols-[minmax(0,1fr)_300px] md:items-start">
+        <div>
+          <h2 class="text-3xl md:text-4xl">What you get</h2>
+          <p class="mt-5 max-w-2xl text-lg leading-relaxed text-olive/80">
+            A dedicated instructor for the time you book. They'll meet you at a fixed point, ski with you, and tailor the lesson to what you want to get out of it.
+          </p>
+        </div>
 
-          <div class="space-y-14">
-            <div>
-              <h2 class="text-3xl md:text-4xl">What you get</h2>
-              <p class="mt-5 text-lg leading-relaxed text-olive/80">
-                A dedicated instructor for the time you book. They'll meet you at a fixed point, ski with you, and tailor the lesson to what you want to get out of it.
-              </p>
-            </div>
-
-            <div>
-              <h2 class="text-3xl md:text-4xl">Who it's for</h2>
-              <div class="mt-6 flex flex-wrap gap-2">
-                {whoItsFor.group.map((g, i) => (
-                  <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
-                    {g}
-                  </span>
-                ))}
-              </div>
-              <div class="mt-3 flex flex-wrap gap-2">
-                {whoItsFor.level.map((l, i) => (
-                  <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
-                    {l}
-                  </span>
-                ))}
-              </div>
-            </div>
+        <div>
+          <h2 class="text-3xl md:text-4xl">Who it's for</h2>
+          <div class="mt-6 flex flex-wrap gap-2">
+            {whoItsFor.group.map((g, i) => (
+              <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
+                {g}
+              </span>
+            ))}
           </div>
-
-          <figure class="w-full max-w-[300px] md:mt-2">
-            <div class="overflow-hidden rounded-none bg-brown">
-              <iframe
-                class="block aspect-[4/5] w-full"
-                src="https://www.youtube-nocookie.com/embed/cW1JHtz86uk"
-                title="Carve your skis this winter"
-                loading="lazy"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                allowfullscreen
-                style="border:0;"
-              ></iframe>
-            </div>
-            <figcaption class="meta mt-3 text-olive/60">Watch · Carve your skis this winter</figcaption>
-          </figure>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {whoItsFor.level.map((l, i) => (
+              <span class={`meta rounded-sm border px-4 py-2 ${i === 2 ? 'border-accent bg-accent text-snow' : 'border-ink/20 text-ink-70'}`}>
+                {l}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div>
@@ -230,6 +201,26 @@ const instructors = [
       </div>
 
     </div>
+
+    <!-- Landscape clip sits below both columns, full width of the copy measure.
+         1920x1080 confirmed from the player data, so aspect-video is right and
+         nothing letterboxes. nocookie domain: the player must not drop
+         advertising cookies before a visitor has answered the consent banner. -->
+    <figure class="mt-16 w-full max-w-4xl">
+      <div class="overflow-hidden rounded-none bg-brown">
+        <iframe
+          class="block aspect-video w-full"
+          src="https://www.youtube-nocookie.com/embed/To3Xzk8YUjc"
+          title="Short turns"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+          allowfullscreen
+          style="border:0;"
+        ></iframe>
+      </div>
+      <figcaption class="meta mt-3 text-olive/60">Watch · Short turns</figcaption>
+    </figure>
   </Section>
 
   <!-- Trust strip on brown -->
