@@ -383,6 +383,30 @@ Resolved: booking embed format (SkiOperator iframe via `/api/skioperator-token`)
 
 ---
 
+## 11a. Instructor portal
+
+A server-rendered area at `/portal`, behind a Supabase login, sharing this repo
+and this design system. See [`PORTAL.md`](./PORTAL.md) for setup and the full
+rationale.
+
+Three things to know before touching it:
+
+- **This repo is public.** Portal documents — safeguarding, pay rates, code of
+  conduct — must never be committed here, and must never go in the `production`
+  Sanity dataset, whose reads are public. They live in a separate **private**
+  dataset read server-side with a token.
+- **Instructors are self-employed contractors, not employees.** Documents are
+  tiered: tier 3 (employer policies such as paid time off and working from home)
+  is filtered out of the query for an instructor entirely, not merely hidden in
+  the nav. Do not move a document between tiers without asking David — the split
+  is a requirement, and the reasoning is recorded outside this repo.
+- **No contracts and no signatures.** Those are issued and signed offline, by
+  David's decision. Do not re-introduce a signing flow unless asked.
+
+Every portal route sets `prerender = false`; `src/middleware.ts` guards them.
+
+---
+
 ## 12. Stakeholders
 
 - **David Walton** — Director, founder voice, sign-off authority

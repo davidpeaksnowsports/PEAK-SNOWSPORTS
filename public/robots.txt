@@ -7,6 +7,8 @@
 # ─── Default ───
 User-agent: *
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 Disallow: /api/
 Disallow: /admin
 Disallow: /admin/
@@ -14,83 +16,127 @@ Disallow: /admin/
 # ─── Major search engines ───
 User-agent: Googlebot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: DuckDuckBot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # ─── AI / answer-engine crawlers (explicit allow) ───
 
 # OpenAI
 User-agent: GPTBot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Anthropic
 User-agent: ClaudeBot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: Claude-Web
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: anthropic-ai
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Google (separate flag for AI training / Bard / Gemini / AI Overviews)
 User-agent: Google-Extended
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Perplexity
 User-agent: PerplexityBot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: Perplexity-User
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Common Crawl (foundation for many LLM training sets)
 User-agent: CCBot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Apple Intelligence / Siri
 User-agent: Applebot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: Applebot-Extended
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Meta (Llama family training crawler)
 User-agent: Meta-ExternalAgent
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 User-agent: FacebookBot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # ByteDance / Doubao
 User-agent: Bytespider
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Amazon
 User-agent: Amazonbot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Mistral
 User-agent: MistralAI-User
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # You.com
 User-agent: YouBot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # Diffbot (commonly used by AI products to ingest web content)
 User-agent: Diffbot
 Allow: /
+Disallow: /portal
+Disallow: /portal/
 
 # ─── Sitemap ───
 Sitemap: https://www.peaksnowsports.com/sitemap-index.xml

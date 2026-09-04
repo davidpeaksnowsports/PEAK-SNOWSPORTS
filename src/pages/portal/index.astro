@@ -1,0 +1,106 @@
+---
+/**
+ * Portal home. A directory rather than a dashboard — Phase 1 has no live
+ * figures to show, and a row of empty stat tiles would be worse than none.
+ */
+export const prerender = false;
+
+import PortalLayout from '../../layouts/PortalLayout.astro';
+import { SECTIONS, isContentConfigured, listDocs } from '../../lib/portal/content';
+import { visibleTiers, type PortalUser } from '../../lib/portal/supabase';
+
+const user = Astro.locals.portalUser as PortalUser;
+const tiers = visibleTiers(user.role);
+
+// One query, counted per section, rather than seven round trips.
+const docs = await listDocs(tiers);
+const countFor = (key: string) => docs.filter((d) => d.section === key).length;
+
+const firstName = user.name.split(' ')[0];
+
+// The two documents worth surfacing above the fold — but only once they exist.
+// Linking to a slug that hasn't been seeded yet would hand people a 404 on the
+// one page that tells them what to read first.
+const priority = ['safeguarding', 'health-and-safety', 'accident-procedure']
+  .map((slug) => docs.find((d) => d.slug === slug))
+  .filter((d): d is (typeof docs)[number] => Boolean(d));
+---
+
+<PortalLayout
+  title="Instructor hub"
+  kicker={`Signed in as ${user.email}`}
+  heading={`Hello, ${firstName}.`}
+  intro="Everything you need for the season, in one place. Start with the handbook — safeguarding and the accident procedure are the two worth reading before you teach."
+>
+  {
+    !isContentConfigured && (
+      <div class="mb-10 border-l-2 border-accent bg-paper-2 p-5">
+        <p class="meta mb-2 text-accent">No documents yet</p>
+        <p class="text-ink-70">
+          The private Sanity dataset is not connected, so every section is empty.
+          Set <code class="font-mono text-sm">SANITY_PORTAL_DATASET</code> and{' '}
+          <code class="font-mono text-sm">SANITY_PORTAL_TOKEN</code>, then run the
+          seed script.
+        </p>
+      </div>
+    )
+  }
+
+  <ul class="grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      SECTIONS.map((section) => {
+        const count = countFor(section.key);
+        return (
+          <li class="bg-paper">
+            <a
+              href={section.href}
+              class="flex h-full flex-col gap-2 p-6 no-underline transition-colors hover:bg-paper-2 hover:no-underline"
+            >
+              <span class="font-display text-xl font-bold text-ink">
+                {section.label}
+              </span>
+              <span class="text-sm leading-relaxed text-ink-70">
+                {section.blurb}
+              </span>
+              <span class="meta mt-auto pt-4 text-ink-45">
+                {count === 0
+                  ? 'Nothing yet'
+                  : `${count} ${count === 1 ? 'document' : 'documents'}`}
+              </span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+
+  {
+    priority.length > 0 && (
+      <section class="mt-16 border-t border-ink/10 pt-10">
+        <h2 class="font-display text-2xl font-bold">Read these first</h2>
+        <p class="mt-2 max-w-2xl text-ink-70">
+          These carry more weight than the rest. Safeguarding covers every client
+          under 18, and the accident procedure is the one you need to know before
+          you need it.
+        </p>
+        <ul class="mt-6 flex flex-wrap gap-3">
+          {priority.map((doc, i) => (
+            <li>
+              <a
+                href={`/portal/${doc.section}/${doc.slug}`}
+                class:list={[
+                  'inline-block px-5 py-3 font-display font-bold no-underline transition-colors hover:no-underline',
+                  i === 0
+                    ? 'bg-accent text-paper hover:bg-ink'
+                    : 'border border-ink/20 text-ink hover:border-ink',
+                ]}
+              >
+                {doc.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</PortalLayout>
