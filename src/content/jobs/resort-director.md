@@ -6,7 +6,6 @@ employmentType: Full season, year-round for the right person
 locations: [Morzine, Avoriaz, Les Gets, Chatel]
 dates: November 2026 - April 2027, with pre-season planning from September
 hours: Full time through the season. Long weeks in the peaks, quieter in the shoulders.
-pay: Salaried, with a season performance bonus. Discussed openly at first interview.
 reportsTo: Director
 responsibilities:
   - Lead the instructor team in your resort - recruitment, briefing, mentoring, standards
@@ -28,12 +27,14 @@ niceToHave:
   - Portes du Soleil knowledge
   - A commercial head - reading a P&L should not frighten you
 perks:
-  - Portes du Soleil season pass
-  - Peak Performance uniform, yours to keep
-  - Funded CPD including a route to BASI Level 4
-  - Support with accommodation in resort
-  - Season performance bonus
-  - Real authority - you run the resort, you are not relaying decisions from someone who does
+  - Full Portes du Soleil winter ski pass
+  - Branded Peak uniform and merch
+  - Professional development budget, including a route to BASI Level 4
+  - Discounted kit through our partners - Peak Performance, Norrona, Hestra, Palm + Pine
+  - Subsidised team trip to Cervinia, and the pre-season training weekend
+  - Weekly team gym sessions at The Hive in winter, run club in summer
+  - Team dinners, after-parties and social events through the season
+  - 10% commission on any property sale you introduce, through our Knight Frank tie-up
 order: 5
 ---
 

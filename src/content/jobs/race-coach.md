@@ -2,11 +2,11 @@
 title: Race coach
 kicker: On the mountain
 summary: Run gates, build technique and take our race squads through a full season of training and events.
-employmentType: Seasonal, full season preferred
+employmentType: Self-employed contractor, contract for services
 locations: [Morzine, Les Gets, Avoriaz]
-dates: December 2026 - April 2027
+dates: 1 December 2026 - 31 May 2027
+commitment: Minimum 12 weeks across the winter, full season preferred.
 hours: Six days a week in peak weeks. Early starts on training mornings.
-pay: Competitive day rate at the top of our coaching band, reflecting the qualification. Paid weekly.
 reportsTo: Resort Director
 responsibilities:
   - Plan and run gate sessions for club squads, race camps and private race clients
@@ -18,7 +18,9 @@ responsibilities:
 essentials:
   - BASI Level 3 or above, or a recognised national race coaching qualification
   - Real gate-setting and race-training experience, not just a racing background
-  - Eligible to hold a French Carte Professionnelle
+  - A valid carte professionnelle d'educateur sportif, listed on the French register
+  - Registered as self-employed, with professional liability insurance to a minimum of GBP 10m
+  - Attendance at the whole pre-season training course
   - Fluent English
   - Comfortable coaching juniors and their parents in the same conversation
 niceToHave:
@@ -27,12 +29,14 @@ niceToHave:
   - Timing and video analysis tooling
   - French
 perks:
-  - Portes du Soleil season pass
-  - Peak Performance uniform, yours to keep
-  - Funded CPD and race coaching qualifications
-  - Help finding season accommodation in Morzine
-  - Discounted kit and race gear through our partners
-  - Input into how the race programme is built, not just how it is delivered
+  - Discounted Portes du Soleil lift pass
+  - Subsidised pre-season training weekend, with CPD
+  - Professional development budget, subject to approval of the training spend
+  - Discounted kit through our partners - Peak Performance, Norrona, Hestra, Palm + Pine
+  - Team dinners, after-parties and social events through the season
+  - Weekly team gym sessions
+  - Finder's fee for introducing instructors to the team
+  - 10% commission on any property sale you introduce, through our Knight Frank tie-up
 order: 2
 ---
 

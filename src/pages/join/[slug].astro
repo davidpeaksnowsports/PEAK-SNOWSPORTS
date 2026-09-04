@@ -26,6 +26,7 @@ const terms = [
   { label: 'Contract', value: d.employmentType },
   { label: 'Where', value: d.locations.join(', ') },
   d.dates ? { label: 'Season', value: d.dates } : null,
+  d.commitment ? { label: 'Commitment', value: d.commitment } : null,
   d.hours ? { label: 'Hours', value: d.hours } : null,
   d.pay ? { label: 'Pay', value: d.pay } : null,
   d.reportsTo ? { label: 'Reports to', value: d.reportsTo } : null,

@@ -6,7 +6,6 @@ employmentType: Seasonal, with a route to year-round
 locations: [Morzine, Avoriaz, Les Gets, Chatel]
 dates: December 2026 - April 2027
 hours: Full time, five days a week, shaped around light and weather rather than a fixed shift.
-pay: Monthly salary, banded by experience and portfolio. Discussed openly at first interview.
 reportsTo: Digital Marketing Lead
 responsibilities:
   - Shoot stills and video on the mountain, several days a week, in all conditions
@@ -27,12 +26,15 @@ niceToHave:
   - Working knowledge of a headless CMS
   - Basic paid social experience
 perks:
-  - Portes du Soleil season pass
-  - Peak Performance uniform, yours to keep
-  - Help finding season accommodation in Morzine
-  - Free lessons and coaching - we want you skiing better by April
-  - Discounted kit through our partners
-  - Every frame credited to you, and yours to use in your own portfolio
+  - Full Portes du Soleil winter ski pass
+  - Branded Peak uniform and merch
+  - A company MacBook or iMac
+  - Training courses on LinkedIn Learning and Udemy, picked around your development goals
+  - 15% off Peak lessons for friends and family
+  - Subsidised team trip to Cervinia
+  - Weekly team gym sessions at The Hive in winter, run club in summer
+  - Discounted drinks at Le Crepu, our local
+  - Flexible working - a blend of remote and in-resort time
 order: 4
 ---
 

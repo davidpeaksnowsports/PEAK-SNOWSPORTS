@@ -1,23 +1,26 @@
 ---
 title: Ski instructor
 kicker: On the mountain
-summary: Teach across four Portes du Soleil resorts with proper hours, small groups and a team that backs you.
-employmentType: Seasonal, full or part season
+summary: Teach across four Portes du Soleil resorts on a self-employed basis, with a team that keeps you busy and backs you to get better.
+employmentType: Self-employed contractor, contract for services
 locations: [Morzine, Avoriaz, Les Gets, Chatel]
-dates: December 2026 - April 2027
-hours: Six days a week in peak weeks, five in quiet ones. One full day off, always.
-pay: Competitive day rate, banded by qualification and experience. Paid weekly.
+dates: 1 December 2026 - 31 May 2027
+commitment: Minimum 12 weeks across the winter. Peak-weeks-only instructors, minimum one peak week.
+hours: Not guaranteed and they fluctuate. Work is allocated the week before delivery via the instructor portal.
 reportsTo: Resort Director
 responsibilities:
   - Teach private, group, family and kids' lessons across the Portes du Soleil
-  - Write a short, honest progress note for every client at the end of their block
-  - Meet clients at the right lift at the right time, in full Peak uniform
-  - Make the call on terrain, weather and group safety, and stand behind it
-  - Feed the team back on kit, conditions and anything a client told you that we should know
+  - Be available the evening before a lesson or course starts
+  - Take part in all in-resort safety training and meetings
+  - Make the call on terrain, conditions and appropriate safety equipment, and stand behind it
+  - Deliver up to six hours of promotional lessons to partners across the season
+  - Invoice monthly to finance@peaksnowsports.com, within seven days of month end
 essentials:
-  - BASI Level 2 or equivalent, and eligible to hold a French Carte Professionnelle
+  - A valid carte professionnelle d'educateur sportif, listed on the French register
+  - Registered as self-employed, and responsible for your own tax and social charges
+  - Professional liability insurance to a minimum of GBP 10m - full BASI membership includes it
+  - Attendance at the whole pre-season training course
   - Fluent English - every Peak lesson is taught in English
-  - Available for all or a meaningful part of the winter season
   - Patient, sharp-eyed, and genuinely good with people
 niceToHave:
   - BASI Level 3 or 4, or working towards it
@@ -25,12 +28,14 @@ niceToHave:
   - Freeride, race or adaptive experience
   - Previous seasons in the Portes du Soleil
 perks:
-  - Portes du Soleil season pass
-  - Peak Performance uniform, yours to keep
-  - Funded CPD and a mapped route to BASI Level 3 and 4
-  - Help finding season accommodation in Morzine
-  - Discounted kit through our partners
-  - Staff ski days and a team that actually skis together
+  - Discounted Portes du Soleil lift pass
+  - Subsidised pre-season training weekend, with CPD
+  - Professional development budget, subject to approval of the training spend
+  - Discounted kit through our partners - Peak Performance, Norrona, Hestra, Palm + Pine
+  - Team dinners, after-parties and social events through the season
+  - Weekly team gym sessions
+  - Finder's fee for introducing instructors to the team
+  - 10% commission on any property sale you introduce, through our Knight Frank tie-up
 order: 1
 ---
 
@@ -42,15 +47,26 @@ teaching time, and the client at the centre of every decision you make.
 
 You will work across Morzine, Avoriaz, Les Gets and Chatel. Some weeks that
 means five days with the same family building a genuine arc of progress. Some
-weeks it is a different group every morning. Both are the job, and we brief you
-properly for both.
+weeks it is a different group every morning. Both are the job, and we brief
+you properly for both.
 
-## Who you'll be teaching
+## How the arrangement works
 
-Mostly British and Northern European families, adult improvers, and a steady
-run of returning clients who ask for their instructor by name. Around a third
-of our bookings each season are repeat clients. If you teach well here, people
-come back for you specifically, and we build your diary around that.
+Peak Snowsports Morzine is a syndicat professionnel, and instructors join us
+as independent self-employed contractors, not employees. You hold your own
+carte professionnelle and your own liability insurance, you invoice us
+monthly, and you keep your independence - you are free to hold other work
+provided it does not get in the way.
+
+What we bring is the commercial and administrative side: the clients, the
+diary, the booking platform, the office. Enquiries are matched to the school,
+provisionally allocated, and confirmed to you the week before delivery once
+the client has paid. Until that point the planner moves, which is why hours
+are never guaranteed.
+
+If a confirmed lesson is cancelled we try to re-sell your time. If we manage
+it, you invoice the higher of the two. If we cannot, you invoice the original.
+You are never paid twice, and you are never left with nothing.
 
 ## What we give you
 
@@ -58,9 +74,9 @@ A full diary. That is the thing instructors tell us they never get elsewhere,
 and it is the thing we work hardest at. We keep the team busy through the
 season instead of leaving you to scramble for the odd lesson in January.
 
-Beyond that: mentoring from our senior team, funded CPD, and a clear route to
-Level 3 and 4 for anyone who wants it. Instructors who came to us as Level 2s
-now coach on the GAP course and run resorts.
+Beyond that: mentoring from our senior team, a development budget, and a clear
+route to Level 3 and 4 for anyone who wants it. Instructors who came to us as
+Level 2s now coach on the GAP course and run resorts.
 
 ## How we hire
 
@@ -68,3 +84,7 @@ Send the form below. We read every application and reply to all of them, yes
 or no. If it looks like a fit we will get you on a video call with the resort
 director you would be working under, and if you are already in resort we would
 far rather ski with you for an hour than interview you for one.
+
+Full terms are set out in the PEAK Snowsports Instructor Terms and Conditions,
+which we send before anyone signs anything. It is governed by French law, with
+the Commercial Court of Annecy as the jurisdiction.

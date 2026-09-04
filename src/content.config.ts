@@ -96,6 +96,7 @@ const jobs = defineCollection({
     employmentType: z.string().default('Seasonal'),
     locations: z.array(z.string()).default(['Morzine']),
     dates: z.string().optional(),          // "December 2026 - April 2027"
+    commitment: z.string().optional(),     // minimum availability, from the contract
     hours: z.string().optional(),
     pay: z.string().optional(),
     reportsTo: z.string().optional(),
