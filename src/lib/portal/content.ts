@@ -17,10 +17,13 @@
 import { createClient } from '@sanity/client';
 import type { PortableTextBlock } from '@portabletext/types';
 
+// Same public project ID default as src/lib/sanity.ts and astro.config.mjs, so
+// a Preview build without PUBLIC_SANITY_PROJECT_ID still resolves. The dataset
+// and token below are what actually gate access, and they have no defaults.
 const projectId =
-  import.meta.env.PUBLIC_SANITY_PROJECT_ID ??
-  process.env.PUBLIC_SANITY_PROJECT_ID ??
-  '';
+  import.meta.env.PUBLIC_SANITY_PROJECT_ID ||
+  process.env.PUBLIC_SANITY_PROJECT_ID ||
+  'un1s8qq9';
 const dataset =
   import.meta.env.SANITY_PORTAL_DATASET ??
   process.env.SANITY_PORTAL_DATASET ??
