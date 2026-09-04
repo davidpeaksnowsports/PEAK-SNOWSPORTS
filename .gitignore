@@ -32,3 +32,6 @@ pnpm-debug.log*
 # sanity
 sanity/dist/
 sanity/.sanity/
+
+# portal content — never commit policy documents to this public repo
+portal-content/

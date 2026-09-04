@@ -1,0 +1,101 @@
+---
+/**
+ * Index for one portal section. Server-rendered, so no getStaticPaths — the
+ * section is validated against the known list and anything else 404s.
+ *
+ * Static sibling routes (/portal/login, /portal/logout…) take precedence over
+ * this dynamic one in Astro's route ordering, and the whitelist below is the
+ * second line of defence.
+ */
+export const prerender = false;
+
+import PortalLayout from '../../../layouts/PortalLayout.astro';
+import {
+  SECTIONS,
+  listDocs,
+  isContentConfigured,
+  type PortalSection,
+} from '../../../lib/portal/content';
+import { visibleTiers, type PortalUser } from '../../../lib/portal/supabase';
+
+const user = Astro.locals.portalUser as PortalUser;
+const key = Astro.params.section as PortalSection;
+
+// The site has no /404 route, so rewriting to one would be a guess. Set the
+// status and render a real page instead — the reader gets somewhere to go, and
+// crawlers and monitoring still see a 404.
+const section = SECTIONS.find((s) => s.key === key);
+if (!section) Astro.response.status = 404;
+
+const tiers = visibleTiers(user.role);
+const docs = section ? await listDocs(tiers, key) : [];
+
+/** Tier 3 is office-only, so the badge only ever renders for office and admin. */
+const tierLabel = (tier: number) =>
+  tier === 1 ? 'Versioned' : tier === 3 ? 'Office' : null;
+
+const dateFmt = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+---
+
+{
+  !section ? (
+    <PortalLayout
+      title="Not found"
+      heading="Not found"
+      intro="That section does not exist. It may have been renamed."
+    >
+      <a href="/portal" class="text-accent">Back to the hub</a>
+    </PortalLayout>
+  ) : (
+<PortalLayout title={section.label} kicker="Peak Snowsports" heading={section.label} intro={section.blurb}>
+  {
+    docs.length === 0 ? (
+      <div class="border-l-2 border-ink/20 bg-paper-2 p-6">
+        <p class="text-ink-70">
+          {isContentConfigured
+            ? 'Nothing has been published to this section yet.'
+            : 'The document store is not connected yet, so every section is empty.'}
+        </p>
+      </div>
+    ) : (
+      <ul class="border-t border-ink/10">
+        {docs.map((doc) => (
+          <li class="border-b border-ink/10">
+            <a
+              href={`/portal/${doc.section}/${doc.slug}`}
+              class="group flex flex-col gap-1 py-5 no-underline hover:no-underline sm:flex-row sm:items-baseline sm:gap-6"
+            >
+              <span class="flex-1">
+                <span class="font-display text-lg font-bold text-ink group-hover:text-accent">
+                  {doc.title}
+                </span>
+                {doc.summary && (
+                  <span class="mt-1 block max-w-2xl text-sm leading-relaxed text-ink-70">
+                    {doc.summary}
+                  </span>
+                )}
+              </span>
+
+              <span class="meta flex shrink-0 items-center gap-3 text-ink-45">
+                {tierLabel(doc.tier) && (
+                  <span class="border border-ink/20 px-2 py-1">
+                    {tierLabel(doc.tier)}
+                  </span>
+                )}
+                {doc.updatedAt && (
+                  <span>{dateFmt.format(new Date(doc.updatedAt))}</span>
+                )}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</PortalLayout>
+  )
+}

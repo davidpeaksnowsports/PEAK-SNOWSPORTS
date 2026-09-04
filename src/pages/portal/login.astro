@@ -1,0 +1,137 @@
+---
+/**
+ * Portal sign-in. Plain HTML form, posted to this same route and handled on the
+ * server — no client-side JS and no Supabase in the browser.
+ */
+export const prerender = false;
+
+import PortalLayout from '../../layouts/PortalLayout.astro';
+import { createPortalClient, isPortalConfigured } from '../../lib/portal/supabase';
+
+/**
+ * Only same-site portal paths are accepted as a return destination. Anything
+ * else — a full URL, a protocol-relative //evil.com, a path outside /portal —
+ * is discarded rather than followed.
+ */
+function safeNext(raw: string | null): string {
+  if (!raw) return '/portal';
+  if (!raw.startsWith('/portal')) return '/portal';
+  if (raw.startsWith('//')) return '/portal';
+  return raw;
+}
+
+const next = safeNext(Astro.url.searchParams.get('next'));
+
+let error: string | null = null;
+let email = '';
+
+if (Astro.request.method === 'POST' && isPortalConfigured) {
+  const form = await Astro.request.formData();
+  email = String(form.get('email') ?? '').trim();
+  const password = String(form.get('password') ?? '');
+  const target = safeNext(String(form.get('next') ?? '') || null);
+
+  if (!email || !password) {
+    error = 'Enter your email address and password.';
+  } else {
+    const supabase = createPortalClient(Astro.cookies, Astro.request);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      // Deliberately vague: distinguishing "no such account" from "wrong
+      // password" tells an attacker which emails are registered.
+      error = 'That email address and password do not match.';
+    } else {
+      return Astro.redirect(target, 303);
+    }
+  }
+}
+---
+
+<PortalLayout title="Sign in" chrome={false}>
+  <div class="mx-auto max-w-md py-8">
+    <p class="meta mb-3 text-ink-45">Peak Snowsports</p>
+    <h1 class="font-display text-4xl font-bold">Instructor hub</h1>
+
+    {
+      !isPortalConfigured ? (
+        <div class="mt-8 border-l-2 border-accent bg-paper-2 p-5">
+          <p class="meta mb-2 text-accent">Not configured yet</p>
+          <p class="text-ink-70">
+            The portal needs <code class="font-mono text-sm">SUPABASE_URL</code> and{' '}
+            <code class="font-mono text-sm">SUPABASE_ANON_KEY</code> before anyone
+            can sign in. Add them in Vercel and redeploy.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p class="mt-4 text-ink-70">
+            Sign in with the email address we hold for you.
+          </p>
+
+          {error && (
+            <p
+              role="alert"
+              class="mt-6 border-l-2 border-accent bg-paper-2 px-4 py-3 text-ink"
+            >
+              {error}
+            </p>
+          )}
+
+          <form method="POST" class="mt-8 space-y-5">
+            <input type="hidden" name="next" value={next} />
+
+            <div>
+              <label for="email" class="meta mb-2 block text-ink-70">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                value={email}
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <div>
+              <label for="password" class="meta mb-2 block text-ink-70">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+            >
+              Sign in
+            </button>
+          </form>
+
+          <p class="mt-6 text-sm text-ink-70">
+            <a href="/portal/forgot-password" class="text-accent">
+              Forgotten your password?
+            </a>
+          </p>
+        </>
+      )
+    }
+
+    <p class="mt-12 border-t border-ink/10 pt-6 text-sm text-ink-45">
+      Not got an account? Ask the office to set one up for you.
+    </p>
+  </div>
+</PortalLayout>

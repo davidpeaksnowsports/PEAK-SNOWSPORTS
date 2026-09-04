@@ -1,0 +1,100 @@
+---
+/**
+ * A single portal document.
+ *
+ * Tier filtering happens inside the query: an instructor requesting a tier 3
+ * office policy by URL gets the same 404 as a slug that doesn't exist, rather
+ * than a "forbidden" that confirms the document is there.
+ */
+export const prerender = false;
+
+import { PortableText } from 'astro-portabletext';
+import PortalLayout from '../../../layouts/PortalLayout.astro';
+import {
+  SECTIONS,
+  getDoc,
+  type PortalSection,
+} from '../../../lib/portal/content';
+import { visibleTiers, type PortalUser } from '../../../lib/portal/supabase';
+
+const user = Astro.locals.portalUser as PortalUser;
+const key = Astro.params.section as PortalSection;
+const slug = Astro.params.slug as string;
+
+const section = SECTIONS.find((s) => s.key === key);
+const doc = section ? await getDoc(slug, visibleTiers(user.role)) : null;
+
+// A document above the reader's tier returns null from the query, so it lands
+// here as an ordinary not-found. That is deliberate: a "forbidden" would
+// confirm the document exists.
+const found = Boolean(section && doc && doc.section === key);
+if (!found) Astro.response.status = 404;
+
+const dateFmt = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+{
+  !found ? (
+    <PortalLayout
+      title="Not found"
+      heading="Not found"
+      intro="That document does not exist, or has been withdrawn."
+    >
+      <a href="/portal" class="text-accent">Back to the hub</a>
+    </PortalLayout>
+  ) : (
+<PortalLayout title={doc!.title}>
+  <nav aria-label="Breadcrumb" class="mb-8">
+    <a href={section!.href} class="meta text-ink-45 hover:text-ink">
+      &larr; {section!.label}
+    </a>
+  </nav>
+
+  <article class="max-w-3xl">
+    <header class="border-b border-ink/10 pb-8">
+      <h1 class="font-display text-4xl font-bold md:text-5xl">{doc!.title}</h1>
+      {doc!.summary && <p class="mt-4 text-lg text-ink-70">{doc!.summary}</p>}
+
+      <dl class="meta mt-6 flex flex-wrap gap-x-8 gap-y-2 text-ink-45">
+        {
+          doc!.version && (
+            <div class="flex gap-2">
+              <dt>Version</dt>
+              <dd class="text-ink-70">{doc!.version}</dd>
+            </div>
+          )
+        }
+        {
+          doc!.updatedAt && (
+            <div class="flex gap-2">
+              <dt>Updated</dt>
+              <dd class="text-ink-70">
+                {dateFmt.format(new Date(doc!.updatedAt!))}
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </header>
+
+    {
+      doc!.tier === 1 && (
+        <p class="mt-8 border-l-2 border-accent bg-paper-2 px-5 py-4 text-sm text-ink-70">
+          Your contract refers to this document, so it carries a version number.
+          If it changes materially we will tell you rather than quietly
+          republishing it.
+        </p>
+      )
+    }
+
+    <div class="prose prose-lg mt-8 max-w-none">
+      <PortableText value={(doc!.body as any) ?? []} />
+    </div>
+  </article>
+</PortalLayout>
+  )
+}

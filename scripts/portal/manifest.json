@@ -1,0 +1,209 @@
+{
+  "$comment": [
+    "Which source documents become portal documents, and where each one lands.",
+    "",
+    "Metadata only — no policy text lives here, so this file is safe in a public",
+    "repo. The .docx sources are NOT in the repo and must not be: put them in a",
+    "local folder and point PORTAL_SOURCE_DIR at it.",
+    "",
+    "tier 1 — versioned, referenced by the offline contract",
+    "tier 2 — mountain standards, everyone who teaches",
+    "tier 3 — employer policies, employed office staff only (never an instructor)",
+    "",
+    "Only documents cleared in the audit appear here. Third-party copyright,",
+    "board material and anything still marked 'decide' is deliberately absent."
+  ],
+
+  "documents": [
+    {
+      "file": "Policies/Safeguarding Policy.docx",
+      "slug": "safeguarding",
+      "title": "Safeguarding",
+      "section": "handbook",
+      "tier": 2,
+      "order": 1,
+      "summary": "How we protect children and young people using our services, and what to do if you have a concern."
+    },
+    {
+      "file": "Policies/Health and Safety Policy for Peak Snowsports.docx",
+      "slug": "health-and-safety",
+      "title": "Health and safety",
+      "section": "handbook",
+      "tier": 2,
+      "order": 2,
+      "summary": "Our commitment to a safe teaching environment, and the standards that go with it."
+    },
+    {
+      "file": "Policies/Code of conduct.docx",
+      "slug": "code-of-conduct",
+      "title": "Code of conduct",
+      "section": "handbook",
+      "tier": 1,
+      "order": 3,
+      "version": "2026.1",
+      "summary": "The standards every person representing Peak is held to. Referenced by your contract."
+    },
+    {
+      "file": "Policies/Mission and Values.docx",
+      "slug": "mission-and-values",
+      "title": "Mission and values",
+      "section": "handbook",
+      "tier": 2,
+      "order": 4,
+      "summary": "What we are trying to do, and how we expect to do it."
+    },
+    {
+      "file": "Policies/Anti-harassment and discrimination policy.docx",
+      "slug": "anti-harassment-and-discrimination",
+      "title": "Anti-harassment and discrimination",
+      "section": "handbook",
+      "tier": 2,
+      "order": 5,
+      "summary": "What is not acceptable, and how to raise it if it happens."
+    },
+    {
+      "file": "Policies/Anti-bribary and corruption policy.docx",
+      "slug": "anti-bribery-and-corruption",
+      "title": "Anti-bribery and corruption",
+      "section": "handbook",
+      "tier": 2,
+      "order": 6,
+      "summary": "Gifts, hospitality and payments — what you can accept and what you must decline."
+    },
+    {
+      "file": "Policies/Ethics and compliance hotline.docx",
+      "slug": "ethics-hotline",
+      "title": "Ethics and compliance hotline",
+      "section": "handbook",
+      "tier": 2,
+      "order": 7,
+      "summary": "How to report something anonymously if the usual routes are not right."
+    },
+    {
+      "file": "Policies/Equal opportunity employer statement.docx",
+      "slug": "equal-opportunity",
+      "title": "Equal opportunity",
+      "section": "handbook",
+      "tier": 2,
+      "order": 8,
+      "summary": "Our position on fair treatment, in hiring and in work allocation."
+    },
+    {
+      "file": "Policies/Background checks.docx",
+      "slug": "background-checks",
+      "title": "Background checks",
+      "section": "handbook",
+      "tier": 2,
+      "order": 9,
+      "summary": "What we check before you teach, and why."
+    },
+    {
+      "file": "Policies/Smoking and E-Cigarette Policy.docx",
+      "slug": "smoking",
+      "title": "Smoking and e-cigarettes",
+      "section": "handbook",
+      "tier": 2,
+      "order": 10,
+      "summary": "Where smoking and vaping are and are not acceptable while representing Peak."
+    },
+    {
+      "file": "Policies/Email Policy.docx",
+      "slug": "email",
+      "title": "Email",
+      "section": "handbook",
+      "tier": 2,
+      "order": 11,
+      "summary": "Using a Peak email address, and what not to put in one."
+    },
+    {
+      "file": "Policies/Social Media Policy.docx",
+      "slug": "social-media",
+      "title": "Social media and client images",
+      "section": "marketing",
+      "tier": 2,
+      "order": 3,
+      "summary": "Sharing your season online — including consent for filming clients, and the extra care needed for under-18s."
+    },
+    {
+      "file": "Ops/Accident report checklist and procedure and lost skier .docx",
+      "slug": "accident-and-lost-skier",
+      "title": "Accident and lost skier procedure",
+      "section": "ops",
+      "tier": 2,
+      "order": 1,
+      "summary": "What to do on the hill, in order. Read this before you need it."
+    },
+    {
+      "file": "Ops/Peak Systems of Work & Habits Guide.docx",
+      "slug": "systems-of-work",
+      "title": "How we work",
+      "section": "ops",
+      "tier": 2,
+      "order": 2,
+      "summary": "The working principles that keep a team spread across four resorts consistent."
+    },
+    {
+      "file": "Ops/🧭 Google Chat Space Structure by Department.docx",
+      "slug": "how-we-communicate",
+      "title": "How we communicate",
+      "section": "ops",
+      "tier": 2,
+      "order": 3,
+      "summary": "Which channel to use for what, so nothing important gets lost in a group chat."
+    },
+    {
+      "file": "Admin : hr : finance/Carte Pro Guide.docx",
+      "slug": "carte-pro",
+      "title": "Carte professionnelle",
+      "section": "knowledge",
+      "tier": 2,
+      "order": 1,
+      "summary": "Getting and renewing your carte pro, including when the stage de recyclage applies."
+    },
+    {
+      "file": "Knowledge hub/Questioning.docx",
+      "slug": "questioning",
+      "title": "Asking better questions",
+      "section": "knowledge",
+      "tier": 2,
+      "order": 2,
+      "summary": "Socratic questioning and Bloom's levels, applied to a ski lesson."
+    },
+    {
+      "file": "Policies/Ski School Expense Policy.docx",
+      "slug": "expenses",
+      "title": "Expenses",
+      "section": "hr",
+      "tier": 2,
+      "order": 2,
+      "summary": "What you can claim, what needs approving first, and what we need to see."
+    },
+    {
+      "file": "Policies/Trainee Shadowing Policy for Ski Instructing.docx",
+      "slug": "shadowing",
+      "title": "Shadowing",
+      "section": "development",
+      "tier": 2,
+      "order": 1,
+      "summary": "How shadowing works for trainees, and what to log."
+    },
+    {
+      "file": "Admin : hr : finance/About PEAK Snowsports __ About us __ Our story.docx",
+      "slug": "our-story",
+      "title": "Our story",
+      "section": "handbook",
+      "tier": 2,
+      "order": 12,
+      "summary": "Three brothers, four resorts, and what we set out to build."
+    },
+    {
+      "file": "Policies/Ideas.docx",
+      "slug": "how-ideas-work",
+      "title": "How ideas work here",
+      "section": "ideas",
+      "tier": 2,
+      "order": 1,
+      "summary": "No idea is perfect. Here is how we want them brought forward."
+    }
+  ]
+}

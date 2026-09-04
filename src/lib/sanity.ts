@@ -2,8 +2,14 @@ import { createClient, type ClientConfig } from '@sanity/client';
 import imageUrlBuilder from '@sanity/image-url';
 import type { SanityImageSource } from '@sanity/image-url/lib/types/types';
 
+// The project ID falls back to the real one rather than an empty string.
+// `createClient({ projectId: '' })` throws "Configuration must contain
+// projectId" at module scope, which takes the whole build down — and
+// PUBLIC_SANITY_PROJECT_ID is currently set for Production only, so every
+// Preview build hit that. astro.config.mjs and sanity.config.ts already carry
+// the same default; the ID is public and committed there.
 const config: ClientConfig = {
-  projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID ?? '',
+  projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'un1s8qq9',
   dataset: import.meta.env.PUBLIC_SANITY_DATASET ?? 'production',
   apiVersion: import.meta.env.PUBLIC_SANITY_API_VERSION ?? '2024-10-01',
   useCdn: true,

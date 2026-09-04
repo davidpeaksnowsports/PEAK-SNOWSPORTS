@@ -47,6 +47,7 @@ export default defineConfig({
       filter: (page) =>
         !page.includes('/api/') &&
         !page.includes('/admin') &&
+        !page.includes('/portal') &&
         !page.includes('/_'),
       changefreq: 'weekly',
       priority: 0.7,
