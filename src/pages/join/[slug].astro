@@ -1,0 +1,244 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/ui/Section.astro';
+import ApplyForm from '../../components/careers/ApplyForm.astro';
+import { whatsappHref } from '../../lib/whatsapp';
+
+export async function getStaticPaths() {
+  const jobs = await getCollection('jobs', ({ data }) => !data.draft);
+  return jobs.map((job) => ({
+    params: { slug: job.id },
+    props: { job },
+  }));
+}
+
+const { job } = Astro.props;
+const { Content } = await render(job);
+const d = job.data;
+
+const SITE = 'https://www.peaksnowsports.com';
+const url = `${SITE}/join/${job.id}`;
+
+// The terms table. Every row is optional bar the first two, so the page stays
+// honest when a role's pay or dates aren't settled yet.
+const terms = [
+  { label: 'Contract', value: d.employmentType },
+  { label: 'Where', value: d.locations.join(', ') },
+  d.dates ? { label: 'Season', value: d.dates } : null,
+  d.hours ? { label: 'Hours', value: d.hours } : null,
+  d.pay ? { label: 'Pay', value: d.pay } : null,
+  d.reportsTo ? { label: 'Reports to', value: d.reportsTo } : null,
+].filter((t) => t !== null) as { label: string; value: string }[];
+
+const seoTitle = `${d.title} · Jobs at Peak Snowsports · ${d.locations.join(', ')}`;
+const seoDescription = `${d.summary} ${d.employmentType}${d.dates ? `, ${d.dates}` : ''}. Apply to Peak Snowsports.`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: d.title,
+    description: d.summary,
+    employmentType: /part/i.test(d.employmentType) ? 'PART_TIME' : 'FULL_TIME',
+    hiringOrganization: { '@id': `${SITE}/#organization` },
+    jobLocation: d.locations.map((l) => ({
+      '@type': 'Place',
+      address: { '@type': 'PostalAddress', addressLocality: l, addressCountry: 'FR' },
+    })),
+    directApply: true,
+    url,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Join the team', item: `${SITE}/join` },
+      { '@type': 'ListItem', position: 2, name: d.title, item: url },
+    ],
+  },
+];
+---
+
+<BaseLayout title={seoTitle} description={seoDescription} image="/images/og/instructors.jpg" jsonLd={jsonLd}>
+  <article>
+    <!-- Hero: type-led, on paper, no image band. The terms table is the second
+         register here, in place of the hero's usual facts strip. -->
+    <section class="bg-paper px-6 pt-16 md:px-10 md:pt-20">
+      <div class="mx-auto max-w-screen-2xl">
+        <p class="meta text-ink-45">
+          <a href="/join" class="-mx-1 rounded px-1 no-underline transition-colors hover:bg-accent hover:text-paper">Join the team</a>
+          <span class="px-2">/</span>
+          <span>{d.title}</span>
+        </p>
+
+        <p class="meta mt-8 text-ink-70">{d.kicker}</p>
+        <h1 class="mt-4 max-w-[16ch] text-5xl leading-[0.88] tracking-[-0.045em] md:text-7xl">
+          {d.title}
+        </h1>
+
+        <div class="mt-8 grid grid-cols-12 items-start gap-x-6 gap-y-8 pb-12 md:pb-16">
+          <p class="col-span-12 max-w-[46ch] text-lg leading-relaxed text-ink-70 md:col-span-6 md:text-xl">
+            {d.summary}
+          </p>
+          <div class="col-span-12 flex flex-wrap gap-3 md:col-span-6 md:justify-end">
+            {d.open ? (
+              <a
+                href="#apply"
+                class="inline-flex items-center rounded-sm bg-accent px-7 py-3.5 font-display text-sm font-semibold text-paper no-underline transition hover:bg-ink"
+              >
+                Apply now →
+              </a>
+            ) : (
+              <span class="meta inline-flex items-center rounded-sm border border-ink/20 px-7 py-3.5 text-ink-45">
+                Applications closed
+              </span>
+            )}
+            <a
+              href={whatsappHref(`Hi Peak, I've got a question about the ${d.title} role`)}
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center rounded-sm border border-ink/30 px-7 py-3.5 font-display text-sm font-semibold no-underline transition hover:border-ink"
+            >
+              Ask a question
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The role: description on the left, terms pinned alongside. -->
+    <Section rule={true}>
+      <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-7">
+          <div class="prose prose-lg max-w-none prose-headings:font-display prose-headings:tracking-tight prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 md:prose-h2:text-3xl">
+            <Content />
+          </div>
+        </div>
+
+        <aside class="lg:col-span-4 lg:col-start-9">
+          <h2 class="meta text-ink-70">Terms</h2>
+          <dl class="mt-5 divide-y divide-ink/10 border-y border-ink/10">
+            {terms.map((t) => (
+              <div class="py-4">
+                <dt class="meta text-ink-45">{t.label}</dt>
+                <dd class="mt-1.5 text-base leading-relaxed text-ink">{t.value}</dd>
+              </div>
+            ))}
+          </dl>
+          {d.perks.length > 0 && (
+            <>
+              <h2 class="meta mt-12 text-ink-70">Perks</h2>
+              <ul class="mt-5 space-y-3">
+                {d.perks.map((p) => (
+                  <li class="flex gap-3 text-base leading-relaxed text-ink-70">
+                    <span class="meta mt-1.5 shrink-0 text-accent">&middot;</span>
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </aside>
+      </div>
+    </Section>
+
+    {d.responsibilities.length > 0 && (
+      <Section kicker="Day to day" title="What you'd actually do.">
+        <ol class="grid gap-x-12 gap-y-6 md:grid-cols-2">
+          {d.responsibilities.map((r, i) => (
+            <li class="flex gap-5 border-t border-ink/10 pt-5">
+              <span class="meta shrink-0 text-ink-45">{String(i + 1).padStart(2, '0')}</span>
+              <span class="text-base leading-relaxed text-ink-70">{r}</span>
+            </li>
+          ))}
+        </ol>
+      </Section>
+    )}
+
+    {(d.essentials.length > 0 || d.niceToHave.length > 0) && (
+      <Section kicker="Who we're looking for" title="The basics.">
+        <div class="grid gap-12 md:grid-cols-2 md:gap-20">
+          {d.essentials.length > 0 && (
+            <div>
+              <h3 class="meta text-ink-70">Essential</h3>
+              <ul class="mt-5 space-y-4">
+                {d.essentials.map((item) => (
+                  <li class="flex gap-3 text-lg leading-relaxed text-ink-70">
+                    <span class="meta mt-1.5 shrink-0 text-accent">&middot;</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {d.niceToHave.length > 0 && (
+            <div>
+              <h3 class="meta text-ink-70">Nice to have</h3>
+              <ul class="mt-5 space-y-4">
+                {d.niceToHave.map((item) => (
+                  <li class="flex gap-3 text-lg leading-relaxed text-ink-70">
+                    <span class="meta mt-1.5 shrink-0 text-ink-45">&middot;</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+        <p class="mt-10 max-w-2xl text-base leading-relaxed text-ink-45">
+          Not sure you tick every box? Tell us about yourself anyway, we'd rather hear from a great
+          candidate than miss one.
+        </p>
+      </Section>
+    )}
+
+    <Section kicker="Apply" title={d.open ? `Apply for ${d.title.toLowerCase()}.` : 'This role is closed.'}>
+      {d.open ? (
+        <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div class="lg:col-span-7">
+            <ApplyForm role={d.title} id="apply" />
+          </div>
+          <div class="lg:col-span-4 lg:col-start-9">
+            <p class="text-lg leading-relaxed text-ink-70">
+              It goes straight to hello@peaksnowsports.com. We read every application and reply to
+              all of them, yes or no.
+            </p>
+            <p class="meta mt-6 text-ink-45">
+              Or email hello@peaksnowsports.com &middot; +44 1483 616 522
+            </p>
+          </div>
+        </div>
+      ) : (
+        <p class="max-w-2xl text-lg leading-relaxed text-ink-70">
+          We're not taking applications for this one right now. Have a look at
+          <a href="/join" class="text-accent">the other roles</a>, or send us a line anyway if you
+          think we should hear from you.
+        </p>
+      )}
+    </Section>
+
+    <Section>
+      <div class="bg-ink px-8 py-16 text-paper md:px-16 md:py-20">
+        <p class="meta-pill">More at Peak</p>
+        <h2 class="mt-6 max-w-3xl text-4xl leading-[1.0] tracking-tight md:text-6xl">
+          Come and work a winter with us.
+        </h2>
+        <div class="mt-10 flex flex-wrap gap-3">
+          <a
+            href="/join"
+            class="inline-flex items-center rounded-sm bg-accent px-8 py-4 font-display text-base font-semibold text-paper no-underline transition hover:bg-paper hover:text-ink"
+          >
+            All open roles →
+          </a>
+          <a
+            href="/instructors"
+            class="inline-flex items-center rounded-sm border border-paper/40 px-8 py-4 font-display text-base font-semibold no-underline transition hover:border-paper hover:bg-paper hover:text-ink"
+          >
+            Meet the team
+          </a>
+        </div>
+      </div>
+    </Section>
+  </article>
+</BaseLayout>

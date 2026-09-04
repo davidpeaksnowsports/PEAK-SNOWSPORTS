@@ -1,0 +1,233 @@
+---
+/**
+ * Job application form. Used on /join/[slug] with the role preselected, and on
+ * /join as the catch-all "none of these quite fit" form.
+ *
+ * Progressive enhancement, same contract as the GAP and partner forms: posts
+ * JSON to /api/job-application via fetch and shows inline status; without JS it
+ * falls back to a normal form POST to the same endpoint. If the endpoint isn't
+ * configured (no RESEND_API_KEY) the script reveals the WhatsApp / email route.
+ */
+import { whatsappHref } from '../../lib/whatsapp';
+
+interface Props {
+  /** Preselect a role. Must match one of ROLES, or it is added to the list. */
+  role?: string;
+  /** Anchor target so "Apply now" buttons can jump here. */
+  id?: string;
+}
+
+const { role, id = 'apply' } = Astro.props;
+
+const WHATSAPP = whatsappHref(
+  role ? `Hi Peak, I'd like to apply for the ${role} role` : "Hi Peak, I'd like to apply to join the team",
+);
+const EMAIL = 'hello@peaksnowsports.com';
+
+const BASE_ROLES = [
+  'Ski instructor',
+  'Race coach',
+  'Bookings specialist',
+  'Content creator',
+  'Resort director',
+];
+const ROLES = role && !BASE_ROLES.includes(role) ? [role, ...BASE_ROLES] : BASE_ROLES;
+const selected = role ?? '';
+---
+
+<div id={id} class="scroll-mt-24 rounded-none border border-ink bg-paper-2 p-8 md:p-10">
+  <form class="job-application-form space-y-6" action="/api/job-application" method="post">
+    <div class="grid gap-6 sm:grid-cols-2">
+      <label class="block">
+        <span class="meta text-ink-70">Your name *</span>
+        <input
+          type="text"
+          name="name"
+          required
+          autocomplete="name"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-ink-70">Email *</span>
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-ink-70">Phone / WhatsApp</span>
+        <input
+          type="tel"
+          name="phone"
+          autocomplete="tel"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-ink-70">Role *</span>
+        <select
+          name="role"
+          required
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        >
+          {!selected && <option value="">Choose a role</option>}
+          {ROLES.map((r) => <option value={r} selected={r === selected}>{r}</option>)}
+          <option value="Something else">Something else</option>
+        </select>
+      </label>
+      <label class="block">
+        <span class="meta text-ink-70">Nationality / right to work</span>
+        <input
+          type="text"
+          name="nationality"
+          placeholder="e.g. British, with an EU passport"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-ink-70">Availability</span>
+        <input
+          type="text"
+          name="availability"
+          placeholder="e.g. Full season, from 1 December"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        />
+      </label>
+    </div>
+
+    <label class="block">
+      <span class="meta text-ink-70">Qualifications</span>
+      <input
+        type="text"
+        name="qualifications"
+        placeholder="BASI Level 3, Carte Pro, or the relevant ones for your role"
+        class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+      />
+    </label>
+
+    <label class="block">
+      <span class="meta text-ink-70">Links</span>
+      <input
+        type="text"
+        name="links"
+        placeholder="CV, portfolio, reel, LinkedIn, Instagram — whatever shows your work"
+        class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+      />
+    </label>
+
+    <label class="block">
+      <span class="meta text-ink-70">Tell us about you *</span>
+      <textarea
+        name="message"
+        rows="5"
+        required
+        placeholder="Where you've taught or worked, what you're good at, why Peak."
+        class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+      ></textarea>
+    </label>
+
+    <!-- Honeypot: hidden from people, tempting to bots. Real users leave it empty. -->
+    <input
+      type="text"
+      name="company"
+      tabindex="-1"
+      autocomplete="off"
+      class="absolute left-[-9999px] h-0 w-0 opacity-0"
+      aria-hidden="true"
+    />
+
+    <div class="flex flex-wrap items-center gap-4">
+      <button
+        type="submit"
+        class="inline-flex items-center rounded-sm bg-accent px-8 py-4 font-display text-base font-semibold text-paper no-underline transition hover:bg-ink"
+      >
+        Send my application →
+      </button>
+      <p class="meta text-ink-70">We read every one and reply to all of them.</p>
+    </div>
+
+    <p class="job-application-status hidden text-base leading-relaxed" role="status" aria-live="polite"></p>
+  </form>
+
+  <noscript>
+    <p class="meta mt-4 text-ink-70">
+      Prefer not to use the form?
+      <a class="underline" href={`mailto:${EMAIL}?subject=${encodeURIComponent(`Application — ${role ?? 'Join the team'}`)}`}>Email us</a>
+      or <a class="underline" href={WHATSAPP} target="_blank" rel="noopener">WhatsApp us</a>.
+    </p>
+  </noscript>
+</div>
+
+<script is:inline define:vars={{ WHATSAPP, EMAIL }}>
+  // This script is inline, so it re-runs for every instance of the component
+  // on the page. Bind once per form and skip any we have already wired up.
+  document.querySelectorAll('.job-application-form').forEach((form) => {
+    if (form.dataset.bound) return;
+    form.dataset.bound = '1';
+    const status = form.querySelector('.job-application-status');
+
+    function show(msg, ok) {
+      status.innerHTML = msg;
+      status.classList.remove('hidden');
+      status.classList.toggle('text-ink', ok);
+      status.classList.toggle('text-accent', !ok);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      const data = Object.fromEntries(new FormData(form).entries());
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/job-application', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok) {
+          // Conversion goal: a real application landed. peakTrack fans this out
+          // to Plausible plus any consented pixels.
+          if (window.peakTrack) window.peakTrack('Application', { role: data.role || 'Not specified' });
+          form.querySelectorAll('label, .grid').forEach((el) => (el.style.display = 'none'));
+          btn.parentElement.style.display = 'none';
+          show(
+            "Thanks — that's with us. We'll read it and come back to you, yes or no. Want a faster reply? <a class='underline' href='" +
+              WHATSAPP +
+              "' target='_blank' rel='noopener'>WhatsApp us</a>.",
+            true,
+          );
+        } else if (body.fallback) {
+          show(
+            "Our form's having a moment. Reach us directly: <a class='underline' href='" +
+              WHATSAPP +
+              "' target='_blank' rel='noopener'>WhatsApp</a> or <a class='underline' href='mailto:" +
+              EMAIL +
+              "?subject=Job%20application'>email</a>.",
+            false,
+          );
+          btn.disabled = false;
+          btn.textContent = 'Send my application →';
+        } else {
+          show(body.error || 'Something went wrong. Please try again.', false);
+          btn.disabled = false;
+          btn.textContent = 'Send my application →';
+        }
+      } catch {
+        show(
+          "Couldn't send just now. <a class='underline' href='" +
+            WHATSAPP +
+            "' target='_blank' rel='noopener'>WhatsApp us</a> instead?",
+          false,
+        );
+        btn.disabled = false;
+        btn.textContent = 'Send my application →';
+      }
+    });
+  });
+</script>

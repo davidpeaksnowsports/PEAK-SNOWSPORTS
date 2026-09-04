@@ -83,4 +83,30 @@ const accommodation = defineCollection({
   }),
 });
 
-export const collections = { journal, instructors, resorts: resortCollection, accommodation };
+// Careers. One markdown file per vacancy in src/content/jobs; the body is the
+// job description, the frontmatter carries the terms table and the perks list
+// that /join/[slug] renders around it. Set `open: false` to keep a role's page
+// live (SEO, inbound links) while pulling it off the /join board.
+const jobs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/jobs' }),
+  schema: z.object({
+    title: z.string(),
+    kicker: z.string(),                    // card label: "On the mountain", "Off the mountain"
+    summary: z.string(),                   // one-line blurb on the job card
+    employmentType: z.string().default('Seasonal'),
+    locations: z.array(z.string()).default(['Morzine']),
+    dates: z.string().optional(),          // "December 2026 - April 2027"
+    hours: z.string().optional(),
+    pay: z.string().optional(),
+    reportsTo: z.string().optional(),
+    responsibilities: z.array(z.string()).default([]),
+    essentials: z.array(z.string()).default([]),
+    niceToHave: z.array(z.string()).default([]),
+    perks: z.array(z.string()).default([]),
+    order: z.number().optional(),
+    open: z.boolean().optional().default(true),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
+export const collections = { journal, instructors, resorts: resortCollection, accommodation, jobs };

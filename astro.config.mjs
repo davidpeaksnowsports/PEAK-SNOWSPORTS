@@ -49,7 +49,8 @@ export default defineConfig({
         if (/^\/instructors\//.test(path)) return { ...item, priority: 0.8, changefreq: 'monthly' };
         if (/^\/journal\//.test(path)) return { ...item, priority: 0.7, changefreq: 'monthly' };
         if (/^\/accommodation\//.test(path)) return { ...item, priority: 0.6, changefreq: 'monthly' };
-        if (/^\/(privacy|terms|cookies|join|contact|about)\/?$/.test(path)) return { ...item, priority: 0.4, changefreq: 'yearly' };
+        if (/^\/join(\/|$)/.test(path)) return { ...item, priority: 0.6, changefreq: 'monthly' };
+        if (/^\/(privacy|terms|cookies|contact|about)\/?$/.test(path)) return { ...item, priority: 0.4, changefreq: 'yearly' };
         return { ...item, priority: 0.5 };
       },
     }),

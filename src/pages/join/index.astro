@@ -1,0 +1,231 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/hero/Hero.astro';
+import Section from '../../components/ui/Section.astro';
+import JobCard from '../../components/careers/JobCard.astro';
+import ApplyForm from '../../components/careers/ApplyForm.astro';
+import heroImage from '../../assets/images/hero-instructors.jpg';
+import { whatsappHref } from '../../lib/whatsapp';
+
+const allJobs = await getCollection('jobs', ({ data }) => !data.draft);
+// Open roles first, then by the explicit `order` field, then alphabetically.
+const jobs = allJobs.sort((a, b) => {
+  if (a.data.open !== b.data.open) return a.data.open ? -1 : 1;
+  const ao = a.data.order ?? 99;
+  const bo = b.data.order ?? 99;
+  if (ao !== bo) return ao - bo;
+  return a.data.title.localeCompare(b.data.title);
+});
+const openCount = jobs.filter((j) => j.data.open).length;
+
+const SITE = 'https://www.peaksnowsports.com';
+
+const reasons = [
+  {
+    title: 'Proper hours, properly paid.',
+    body:
+      "Consistent, well-paid work across four resorts in the Portes du Soleil. We keep our team busy through the season, not scrambling for the odd lesson.",
+  },
+  {
+    title: 'Teach the way it should be taught.',
+    body:
+      "Small groups, learner-centered coaching, the client at the centre of every decision. You'll have the time to actually teach, not run people through a script.",
+  },
+  {
+    title: 'A team that backs you.',
+    body:
+      "We invest in our people the way we invest in our clients. Mentoring, CPD, a route to BASI Level 3 and 4, and a crew that shares the same standards and the same humour.",
+  },
+  {
+    title: 'Room to grow.',
+    body:
+      "People here go on to lead, coach on the GAP course, and help build new mountain ventures under the Peak umbrella. Show us what you've got and we'll make room for it.",
+  },
+];
+
+const resorts = [
+  { name: 'Morzine', tag: 'Family-friendly Alpine village' },
+  { name: 'Avoriaz', tag: 'Car-free, ski-in / ski-out' },
+  { name: 'Les Gets', tag: 'Quieter, gentler, family-leaning' },
+  { name: 'Chatel', tag: 'Linga snow, Super Chatel relaxed' },
+];
+
+// One ItemList of JobPostings so the board itself is legible to search engines,
+// alongside the per-role JobPosting on each /join/[slug].
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Open roles at Peak Snowsports',
+    itemListElement: jobs
+      .filter((j) => j.data.open)
+      .map((j, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: j.data.title,
+        url: `${SITE}/join/${j.id}`,
+      })),
+  },
+];
+---
+
+<BaseLayout
+  title="Jobs at Peak Snowsports · Ski instructors, coaches and season staff"
+  description="Open roles at Peak Snowsports across Morzine, Avoriaz, Les Gets and Chatel — ski instructors, race coaches, bookings, content and resort leadership. Proper hours, proper coaching, a team that backs you."
+  image="/images/og/instructors.jpg"
+  jsonLd={jsonLd}
+>
+  <Hero
+    kicker="Join the team"
+    headline="Work a winter on the best snow in the Alps."
+    sub={`We're hiring across the Portes du Soleil for the season ahead. ${openCount} open ${openCount === 1 ? 'role' : 'roles'}, on the mountain and off it.`}
+    variant="compact"
+    image={heroImage}
+    imageAlt="A Peak instructor leading a lesson on a sunlit Alpine piste."
+    primaryCta={{ href: '#roles', label: 'See open roles' }}
+    secondaryCta={{ href: '/about', label: 'Why Peak' }}
+  />
+
+  <!-- Vacancies first. Everything else on this page is a reason to click one. -->
+  <Section id="roles" kicker="Open roles" title="Five ways onto the team." rule={false}>
+    <div class="grid gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+      {jobs.map((job) => (
+        <JobCard
+          href={`/join/${job.id}`}
+          kicker={job.data.kicker}
+          title={job.data.title}
+          summary={job.data.summary}
+          locations={job.data.locations}
+          employmentType={job.data.employmentType}
+          dates={job.data.dates}
+          open={job.data.open}
+        />
+      ))}
+    </div>
+
+    <p class="mt-14 max-w-2xl text-base leading-relaxed text-ink-70">
+      None of these quite you? Send us a line anyway — we'd rather hear from a great
+      person with no vacancy attached than miss one.
+      <a href="#apply" class="text-accent">Use the form at the bottom of this page</a>, or
+      <a href={whatsappHref("Hi Peak, I'd like to ask about joining the team")} target="_blank" rel="noopener" class="text-accent">
+        ask us on WhatsApp</a>.
+    </p>
+  </Section>
+
+  <Section kicker="The school" title="We're hiring. Now.">
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,460px)] lg:gap-20">
+      <div class="space-y-6 text-lg leading-relaxed text-ink-70 md:text-xl">
+        <p>
+          Peak is a British-owned ski school running lessons across Morzine, Avoriaz, Les Gets and
+          Chatel. We don't run lessons, we build skiers. To do that, we need people who can actually
+          do the job, on the mountain and behind it.
+        </p>
+        <p>
+          If you're chasing your first full winter or you're a seasoned pro, there's a place on the
+          team for you. We'll keep you busy, back you to get better, and treat the season like the
+          best job in the world, because it is.
+        </p>
+      </div>
+      <div class="border border-ink/15 bg-paper-2 p-8 md:p-10">
+        <p class="meta-pill">Ready to go?</p>
+        <p class="mt-4 font-display text-2xl font-semibold leading-tight md:text-3xl">
+          Spots fill fast as the season approaches.
+        </p>
+        <div class="mt-8 flex flex-col gap-3">
+          <a
+            href="#roles"
+            class="inline-flex items-center justify-center rounded-sm bg-accent px-8 py-4 font-display text-base font-semibold text-paper no-underline transition hover:bg-ink"
+          >
+            See open roles →
+          </a>
+          <a
+            href={whatsappHref("Hi Peak, I'd like to ask about joining the team")}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center justify-center rounded-sm border border-ink/30 px-8 py-4 font-display text-base font-semibold no-underline transition hover:border-ink"
+          >
+            Ask us on WhatsApp
+          </a>
+        </div>
+        <p class="meta mt-6 text-ink-45">
+          Or email hello@peaksnowsports.com &middot; +44 1483 616 522
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section kicker="Why people choose Peak" title="The short version.">
+    <ol class="space-y-16">
+      {reasons.map((r, i) => (
+        <li class="border-t border-ink/10 pt-10">
+          <div class="grid gap-6 md:grid-cols-[5rem_1fr]">
+            <span class="meta text-ink-45">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3 class="font-display text-2xl font-bold tracking-tight md:text-3xl">{r.title}</h3>
+              <p class="mt-4 max-w-2xl text-lg leading-relaxed text-ink-70">{r.body}</p>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <Section kicker="Where you'll work" title="Four resorts. One ski school.">
+    <ul class="divide-y divide-ink/10 border-y border-ink/10">
+      {resorts.map((r) => (
+        <li class="flex items-baseline gap-4 py-8 md:gap-8 md:py-10">
+          <span class="font-display text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+            {r.name}.
+          </span>
+          <span class="meta hidden text-ink-45 md:inline">{r.tag}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section kicker="Apply" title="Tell us who you are.">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-7">
+        <ApplyForm id="apply" />
+      </div>
+      <div class="lg:col-span-4 lg:col-start-9">
+        <p class="text-lg leading-relaxed text-ink-70">
+          Pick the role you're after, or choose "something else" and tell us what you'd bring.
+          It goes straight to hello@peaksnowsports.com. We read every application and reply to all
+          of them, yes or no.
+        </p>
+        <p class="meta mt-6 text-ink-45">
+          Or email hello@peaksnowsports.com &middot; +44 1483 616 522
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section>
+    <div class="bg-ink px-8 py-16 text-paper md:px-16 md:py-20">
+      <p class="meta-pill">Next step</p>
+      <h2 class="mt-6 max-w-3xl text-4xl leading-[1.0] tracking-tight md:text-6xl">
+        Come and work a winter with us.
+      </h2>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-paper/80">
+        Spots fill fast as the season approaches. Read the role, send the form, and we'll come back
+        to you.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a
+          href="#roles"
+          class="inline-flex items-center rounded-sm bg-accent px-8 py-4 font-display text-base font-semibold text-paper no-underline transition hover:bg-paper hover:text-ink"
+        >
+          See open roles →
+        </a>
+        <a
+          href="/instructors"
+          class="inline-flex items-center rounded-sm border border-paper/40 px-8 py-4 font-display text-base font-semibold no-underline transition hover:border-paper hover:bg-paper hover:text-ink"
+        >
+          Meet the team
+        </a>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
