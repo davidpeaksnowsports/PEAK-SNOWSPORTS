@@ -260,7 +260,12 @@ Full guide: <https://www.ski-operator.com/docs/embed>. Checkout redirects the to
 ### Secure server mode (`/book`, `/lessons/private`)
 `SkiOperatorSecureEmbed.astro` POSTs `{ secure_api_key, domain }` to
 `https://www.ski-operator.com/api/v1/embed/token/generate` from the server and renders
-`…/app/embed/products?embed=1&token={token}` with the returned token.
+`…/app/embed/products?embed=1&sourceOrigin={origin}&token={token}` with the returned token.
+
+**`sourceOrigin` is not optional.** Omit it and the embed renders "This embed link is
+invalid or has expired" even with a freshly minted, correctly signed token — the origin
+is checked from the query param, not only from the token payload. This cost an outage;
+don't drop it.
 
 ```
 POST /api/v1/embed/token/generate

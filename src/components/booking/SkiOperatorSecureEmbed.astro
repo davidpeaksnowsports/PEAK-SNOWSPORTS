@@ -18,7 +18,9 @@
  *                             never commit. Store it in Vercel's env settings.
  *
  * SkiOperator also checks the requesting origin against the allowlist in its
- * admin (Settings → Embed). `domain` below must match an allowlisted origin.
+ * admin (Settings → Embed). `domain` below must match an allowlisted origin,
+ * and is sent twice: once to mint the token, and again as the `sourceOrigin`
+ * query param on the iframe URL, which the embed requires.
  *
  * If the key is missing or the token request fails we render the same
  * "get in touch" fallback the publishable-key embed uses, rather than an iframe
@@ -71,7 +73,16 @@ if (!secureKey) {
     } else {
       const token = ((await res.json()) as { token?: unknown })?.token;
       if (typeof token === 'string' && token) {
-        src = `${APP_URL}${EMBED_PATH}?embed=1&token=${encodeURIComponent(token)}`;
+        // `sourceOrigin` is required alongside the token. Without it the embed
+        // renders "This embed link is invalid or has expired" even though the
+        // token itself is fresh and correctly signed — SkiOperator checks the
+        // declared parent origin here, not just the one baked into the token.
+        const params = new URLSearchParams({
+          embed: '1',
+          sourceOrigin: domain,
+          token,
+        });
+        src = `${APP_URL}${EMBED_PATH}?${params.toString()}`;
       } else {
         failure = 'token request succeeded but returned no token';
       }
