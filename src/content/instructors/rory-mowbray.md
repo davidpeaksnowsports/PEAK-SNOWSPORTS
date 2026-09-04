@@ -6,7 +6,7 @@ languages: ["EN"]
 specialities: []
 qualifications: []
 photo: "/images/instructors/rory.jpg"
-order: 15
+order: 4
 ---
 
 _Bio coming soon._
