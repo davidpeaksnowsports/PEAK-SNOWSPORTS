@@ -1,8 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';
-import SkiOperatorEmbed from '../components/booking/SkiOperatorEmbed.astro';
+import SkiOperatorSecureEmbed from '../components/booking/SkiOperatorSecureEmbed.astro';
 import { whatsappHref } from '../lib/whatsapp';
+
+// Secure server mode: a fresh, short-lived SkiOperator token is minted on the
+// server for every request, so this page renders per request and must never be
+// cached — a cached copy would hand visitors an expired token. Matches
+// /lessons/private; the remaining booking pages stay static on the pub_ key.
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'no-store');
 ---
 
 <BaseLayout
@@ -24,7 +31,7 @@ import { whatsappHref } from '../lib/whatsapp';
 
   <!-- Embed -->
   <Section id="book">
-    <SkiOperatorEmbed title="Peak Snowsports booking" class="overflow-hidden rounded-none border border-olive/10 bg-snow" />
+    <SkiOperatorSecureEmbed title="Peak Snowsports booking" class="overflow-hidden rounded-none border border-olive/10 bg-snow" />
     <p class="meta mt-6 text-olive/55">
       Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a> and we'll book you in directly.
     </p>
