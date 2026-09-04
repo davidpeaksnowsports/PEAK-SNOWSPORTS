@@ -92,7 +92,10 @@ const instructors = [
        below moves it back to the right on xl without reordering the markup.
        The split waits for xl (1280px) on purpose: at lg the copy column comes
        out narrower than the embed beside it, which reads as a mistake. -->
-  <Section rule={false}>
+  <!-- pt override: with no hero media, Hero emits an empty 80px spacer.
+       Section's own 96px top padding on top of that left a 176px dead
+       band under the facts row. -->
+  <Section rule={false} class="pt-6 md:pt-8 lg:pt-8">
     <div class="grid gap-x-10 gap-y-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,480px)] xl:items-start">
 
       <div id="book" class="xl:col-start-2 xl:row-start-1">
@@ -103,33 +106,37 @@ const instructors = [
         </p>
       </div>
 
-      <div class="space-y-14 xl:col-start-1 xl:row-start-1">
+      <div class="space-y-14 xl:col-start-1 xl:row-start-1 xl:row-span-2">
 
         <div>
           <h2 class="text-3xl md:text-4xl">What you get</h2>
-          <p class="mt-5 max-w-2xl text-lg leading-relaxed text-olive/80">
-            A dedicated instructor for the time you book. They'll meet you at a fixed point, ski with you, and tailor the lesson to what you want to get out of it.
-          </p>
 
-          <!-- YouTube Short, so the frame is 9:16 and capped narrow — at the
-               copy column's full width a vertical clip would run over 1000px
-               tall. nocookie domain: the player must not drop advertising
-               cookies before a visitor has answered the consent banner. -->
-          <figure class="mt-10 w-full max-w-[300px]">
-            <div class="overflow-hidden rounded-none bg-brown">
-              <iframe
-                class="block aspect-[9/16] w-full"
-                src="https://www.youtube-nocookie.com/embed/cW1JHtz86uk"
-                title="Carve your skis this winter"
-                loading="lazy"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                allowfullscreen
-                style="border:0;"
-              ></iframe>
-            </div>
-            <figcaption class="meta mt-3 text-olive/60">Watch · Carve your skis this winter</figcaption>
-          </figure>
+          <!-- Copy and clip sit side by side from md up. The Short is 9:16, so
+               it is capped at 300px — left on its own under the paragraph it
+               stranded ~540px of empty column beside it. nocookie domain: the
+               player must not drop advertising cookies before a visitor has
+               answered the consent banner. -->
+          <div class="mt-5 grid gap-8 md:grid-cols-[minmax(0,1fr)_300px] md:items-start">
+            <p class="text-lg leading-relaxed text-olive/80">
+              A dedicated instructor for the time you book. They'll meet you at a fixed point, ski with you, and tailor the lesson to what you want to get out of it.
+            </p>
+
+            <figure class="w-full max-w-[300px]">
+              <div class="overflow-hidden rounded-none bg-brown">
+                <iframe
+                  class="block aspect-[9/16] w-full"
+                  src="https://www.youtube-nocookie.com/embed/cW1JHtz86uk"
+                  title="Carve your skis this winter"
+                  loading="lazy"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                  allowfullscreen
+                  style="border:0;"
+                ></iframe>
+              </div>
+              <figcaption class="meta mt-3 text-olive/60">Watch · Carve your skis this winter</figcaption>
+            </figure>
+          </div>
         </div>
 
         <div>
@@ -202,20 +209,26 @@ const instructors = [
           </div>
         </div>
 
-        <div>
-          <h2 class="text-3xl md:text-4xl">Meeting points</h2>
-          <ul class="meta mt-6 space-y-2 text-olive/70">
-            {meetingPoints.map((m) => (
-              <li>
-                <span class="text-olive">{m.resort}</span>
-                <span class="px-2 text-olive/40">,</span>
-                <span>{m.points}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
       </div>
+
+      <!-- Meeting points rides in the right column under the booking panel.
+           The widget is a fixed 900px while the copy runs much longer, which
+           stranded ~700px of empty column beneath it; this is the shortest
+           block and the one that reads most naturally next to a booking form.
+           Last in source order, so it still stacks last on narrow screens. -->
+      <div class="xl:col-start-2 xl:row-start-2">
+        <h2 class="text-3xl md:text-4xl">Meeting points</h2>
+        <ul class="meta mt-6 space-y-2 text-olive/70">
+          {meetingPoints.map((m) => (
+            <li>
+              <span class="text-olive">{m.resort}</span>
+              <span class="px-2 text-olive/40">,</span>
+              <span>{m.points}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
     </div>
   </Section>
 
