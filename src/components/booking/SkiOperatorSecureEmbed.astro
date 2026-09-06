@@ -13,9 +13,13 @@
  * Tokens expire, so a cached HTML page would hand visitors a dead iframe URL.
  * See src/pages/lessons/private.astro.
  *
- * Required env var (Vercel Preview + Production, and local .env):
- *   SKI_OPERATOR_SECURE_KEY , the sec_… key. NO PUBLIC_ prefix, never expose,
- *                             never commit. Store it in Vercel's env settings.
+ * Required env var (Vercel Preview + Production, and local .env), named by the
+ * `keyEnv` prop — each embed in SkiOperator has its own sec_… key, and the key
+ * is what decides which embed renders:
+ *   SKI_OPERATOR_SECURE_KEY        , default — used by /book
+ *   SKI_OPERATOR_PRIVATE_LESSONS   , the private-lessons embed
+ * NO PUBLIC_ prefix on any of them, never expose, never commit. Store them in
+ * Vercel's env settings.
  *
  * SkiOperator also checks the requesting origin against the allowlist in its
  * admin (Settings → Embed). `domain` below must match an allowlisted origin,
@@ -37,9 +41,20 @@ interface Props {
   title: string;
   /** Optional Tailwind classes on the iframe. */
   class?: string;
+  /**
+   * Name of the env var holding the sec_ key for this embed. Each SkiOperator
+   * embed has its own key, and the key is what selects which embed renders —
+   * so pointing a page at a different embed means pointing it at a different
+   * env var. The key itself never leaves this component.
+   */
+  keyEnv?: string;
 }
 
-const { title, class: className = '' } = Astro.props;
+const {
+  title,
+  class: className = '',
+  keyEnv = 'SKI_OPERATOR_SECURE_KEY',
+} = Astro.props;
 
 const APP_URL = 'https://www.ski-operator.com';
 const EMBED_PATH = '/app/embed/products';
@@ -50,13 +65,16 @@ const TOKEN_ENDPOINT = `${APP_URL}/api/v1/embed/token/generate`;
 // astro.config.mjs — https://www.peaksnowsports.com.
 const domain = Astro.site?.origin ?? '';
 
-const secureKey = process.env.SKI_OPERATOR_SECURE_KEY;
+// Env var names are case-sensitive on Vercel, and these get typed into the
+// dashboard by hand, so accept either casing rather than silently falling back
+// to "not configured" over a capitalisation slip.
+const secureKey = process.env[keyEnv] ?? process.env[keyEnv.toLowerCase()];
 
 let src = '';
 let failure = '';
 
 if (!secureKey) {
-  failure = 'SKI_OPERATOR_SECURE_KEY is not set';
+  failure = `${keyEnv} is not set`;
 } else if (!domain) {
   failure = 'no `site` origin in astro.config.mjs to mint a token for';
 } else {

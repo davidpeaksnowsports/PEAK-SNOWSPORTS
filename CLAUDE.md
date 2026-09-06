@@ -278,7 +278,9 @@ Because tokens expire, both pages set `export const prerender = false` and
 Never prerender them or let a CDN cache them; a cached copy serves a dead token.
 
 **Required config**
-- `SKI_OPERATOR_SECURE_KEY` (the `sec_…` key) in Vercel Preview + Production. No `PUBLIC_` prefix, never committed, read from `process.env` at request time.
+- One `sec_…` key per embed in Vercel Preview + Production. No `PUBLIC_` prefix, never committed, read from `process.env` at request time. The key is what selects which embed renders, so a page changes embed by changing which env var it reads, via the component's `keyEnv` prop:
+  - `SKI_OPERATOR_SECURE_KEY` — default, used by `/book`
+  - `SKI_OPERATOR_PRIVATE_LESSONS` — used by `/lessons/private`
 - If the key is missing or the token call fails, the page renders the "get in touch" fallback rather than a broken iframe, and logs the reason server-side.
 
 ### Where it appears
