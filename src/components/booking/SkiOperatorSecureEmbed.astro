@@ -14,10 +14,11 @@
  * See src/pages/lessons/private.astro.
  *
  * Required env var (Vercel Preview + Production, and local .env), named by the
- * `keyEnv` prop — each embed in SkiOperator has its own sec_… key, and the key
- * is what decides which embed renders:
- *   SKI_OPERATOR_SECURE_KEY        , default — used by /book
- *   SKI_OPERATOR_PRIVATE_LESSONS   , the private-lessons embed
+ * `keyEnv` prop, which is required — each embed in SkiOperator has its own
+ * sec_… key, and the key is what decides which embed renders:
+ *   SKI_OPERATOR_ALL_PRODUCTS      , /book — everything sold online
+ *   SKI_OPERATOR_PRIVATE_LESSONS   , /lessons/private
+ * ...and one per remaining booking page; see CLAUDE.md for the full list.
  * NO PUBLIC_ prefix on any of them, never expose, never commit. Store them in
  * Vercel's env settings.
  *
@@ -47,14 +48,10 @@ interface Props {
    * so pointing a page at a different embed means pointing it at a different
    * env var. The key itself never leaves this component.
    */
-  keyEnv?: string;
+  keyEnv: string;
 }
 
-const {
-  title,
-  class: className = '',
-  keyEnv = 'SKI_OPERATOR_SECURE_KEY',
-} = Astro.props;
+const { title, class: className = '', keyEnv } = Astro.props;
 
 const APP_URL = 'https://www.ski-operator.com';
 const EMBED_PATH = '/app/embed/products';

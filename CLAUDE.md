@@ -269,7 +269,7 @@ don't drop it.
 
 ```
 POST /api/v1/embed/token/generate
-{ "secure_api_key": SKI_OPERATOR_SECURE_KEY, "domain": "https://www.peaksnowsports.com" }
+{ "secure_api_key": <the page's sec_ key>, "domain": "https://www.peaksnowsports.com" }
 → { "token": "…" }
 ```
 
@@ -279,7 +279,7 @@ Never prerender them or let a CDN cache them; a cached copy serves a dead token.
 
 **Required config**
 - One `sec_…` key per embed in Vercel Preview + Production. No `PUBLIC_` prefix, never committed, read from `process.env` at request time. The key is what selects which embed renders, so a page changes embed by changing which env var it reads, via the component's `keyEnv` prop:
-  - `SKI_OPERATOR_SECURE_KEY` — default, used by `/book`
+  - `SKI_OPERATOR_ALL_PRODUCTS` — `/book`, everything sold online
   - `SKI_OPERATOR_PRIVATE_LESSONS` — `/lessons/private`
   - `SKI_OPERATOR_GROUP_LESSONS` — `/lessons/group`
   - `SKI_OPERATOR_FAMILY_LESSONS` — `/lessons/family`
@@ -432,5 +432,5 @@ When working on this codebase:
 - All copy is short and declarative — flag to David if proposed copy reads as marketing-speak
 - Mobile-first responsive: design from 375px up
 - Every image goes through Astro's `<Image />` or Sanity's CDN for optimisation
-- Never break the booking system embed — `PUBLIC_SKI_OPERATOR_TENANT`, `PUBLIC_SKI_OPERATOR_PUBLIC_KEY`, `SKI_OPERATOR_SECURE_KEY` (Vercel env), and the origin allowlist in SkiOperator admin are the moving parts; test any change end-to-end
+- Never break the booking system embed — the per-page `SKI_OPERATOR_*` keys (Vercel env) and the origin allowlist in SkiOperator admin are the moving parts; test any change end-to-end, and check the embed actually renders products rather than just that the iframe is in the HTML
 - Update this CLAUDE.md when major decisions are made
