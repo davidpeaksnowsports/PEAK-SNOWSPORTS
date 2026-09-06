@@ -2,7 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/ui/Section.astro';
 import Hero from '../../components/hero/Hero.astro';
-import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
+import SkiOperatorSecureEmbed from '../../components/booking/SkiOperatorSecureEmbed.astro';
+
+// This page has its own SkiOperator embed, so its own sec_ key. Secure mode
+// mints a short-lived token per request, so the page renders per request and
+// must never be cached — a cached copy would serve an expired token.
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'no-store');
 
 const skills = [
   { title: 'Skiing foundations', body: 'Posture, movement, balance, the building blocks that everything else stacks on top of.' },
@@ -159,7 +165,7 @@ const faqs = [
       Live availability. Places go fast — a small deposit holds your child's spot.
     </p>
     <div class="mt-12">
-      <SkiOperatorEmbed title="Local Kids Club" />
+      <SkiOperatorSecureEmbed title="Local Kids Club" keyEnv="SKI_OPERATOR_KIDS_CLUB" />
     </div>
     <p class="meta mt-6 text-olive/55">
       Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a>.

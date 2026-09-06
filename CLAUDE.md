@@ -235,8 +235,8 @@ peaksnowsports-web/
 ### How it embeds
 **SkiOperator** hosts the booking experience on `ski-operator.com` and renders inside an iframe. Two modes are in use, both gated by SkiOperator's origin allowlist:
 
-- **Publishable-key mode** (`SkiOperatorEmbed.astro`) — pub_ key + tenant baked into the iframe URL at build time; no server token, no client-side JS. Used on the five per-product lesson pages.
-- **Secure server mode** (`SkiOperatorSecureEmbed.astro`) — the server mints a short-lived token per request from the `sec_` key. Used on `/book` and `/lessons/private`.
+- **Secure server mode** (`SkiOperatorSecureEmbed.astro`) — the server mints a short-lived token per request from a `sec_` key. Used on **every** booking page. Each page names its own key via the `keyEnv` prop, because the key is what selects which embed renders.
+- **Publishable-key mode** (`SkiOperatorEmbed.astro`) — pub_ key + tenant in the iframe URL at build time. No longer used by any page: the pub_ key stopped working in Sept 2026 (the embed returned "This embed link is invalid or has expired") and every page moved to secure mode. The component is kept but is dead code — delete it if pub-key mode is not coming back.
 
 `SkiOperatorEmbed.astro` renders:
 ```
@@ -273,20 +273,25 @@ POST /api/v1/embed/token/generate
 → { "token": "…" }
 ```
 
-Because tokens expire, both pages set `export const prerender = false` and
-`Cache-Control: no-store` — they are the only server-rendered pages on the site.
+Because tokens expire, every booking page sets `export const prerender = false` and
+`Cache-Control: no-store` — these seven are the only server-rendered pages on the site.
 Never prerender them or let a CDN cache them; a cached copy serves a dead token.
 
 **Required config**
 - One `sec_…` key per embed in Vercel Preview + Production. No `PUBLIC_` prefix, never committed, read from `process.env` at request time. The key is what selects which embed renders, so a page changes embed by changing which env var it reads, via the component's `keyEnv` prop:
   - `SKI_OPERATOR_SECURE_KEY` — default, used by `/book`
-  - `SKI_OPERATOR_PRIVATE_LESSONS` — used by `/lessons/private`
+  - `SKI_OPERATOR_PRIVATE_LESSONS` — `/lessons/private`
+  - `SKI_OPERATOR_GROUP_LESSONS` — `/lessons/group`
+  - `SKI_OPERATOR_FAMILY_LESSONS` — `/lessons/family`
+  - `SKI_OPERATOR_KIDS_CLUB` — `/lessons/kids-club`
+  - `SKI_OPERATOR_OFF_PISTE` — `/lessons/off-piste`
+  - `SKI_OPERATOR_RACE_COACHING` — `/lessons/race-coaching`
 - If the key is missing or the token call fails, the page renders the "get in touch" fallback rather than a broken iframe, and logs the reason server-side.
 
 ### Where it appears
 - `/book` — dedicated full-width embed in **secure server mode** (server-rendered, uncached). The primary conversion page for the "BOOK" nav link and every "Book a lesson" CTA.
 - `/lessons/private` — sidebar embed in **secure server mode** (server-rendered, uncached).
-- `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste`, `/lessons/race-coaching` — sidebar embed per product page, publishable-key mode.
+- `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste`, `/lessons/race-coaching` — one embed each, secure server mode, so a product can be shown or hidden per page.
 
 ### What we do NOT build
 - Booking flow, cart, payment — all SkiOperator.

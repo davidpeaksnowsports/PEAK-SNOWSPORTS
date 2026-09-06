@@ -2,7 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
-import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
+import SkiOperatorSecureEmbed from '../../components/booking/SkiOperatorSecureEmbed.astro';
+
+// This page has its own SkiOperator embed, so its own sec_ key. Secure mode
+// mints a short-lived token per request, so the page renders per request and
+// must never be cached — a cached copy would serve an expired token.
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'no-store');
 
 // Same 7-level system as /lessons/group, we grade kids on the same ladder.
 const levels = [
@@ -228,7 +234,7 @@ const faqs = [
       Strict on group sizes — six max in regular kids groups, four in Les P'tits (4–5 yrs). First come, first served. Pick a duration, level and week below.
     </p>
     <div class="mt-12">
-      <SkiOperatorEmbed title="Kids ski school" />
+      <SkiOperatorSecureEmbed title="Kids ski school" keyEnv="SKI_OPERATOR_FAMILY_LESSONS" />
     </div>
     <p class="meta mt-6 text-olive/55">
       Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a>.

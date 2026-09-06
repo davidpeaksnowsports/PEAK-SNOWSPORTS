@@ -2,7 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
-import SkiOperatorEmbed from '../../components/booking/SkiOperatorEmbed.astro';
+import SkiOperatorSecureEmbed from '../../components/booking/SkiOperatorSecureEmbed.astro';
+
+// This page has its own SkiOperator embed, so its own sec_ key. Secure mode
+// mints a short-lived token per request, so the page renders per request and
+// must never be cached — a cached copy would serve an expired token.
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'no-store');
 
 const programmes = [
   {
@@ -220,7 +226,7 @@ const faqs = [
 
   <!-- Availability -->
   <Section id="availability" kicker="Availability" title="Book race coaching.">
-    <SkiOperatorEmbed title="Race coaching" />
+    <SkiOperatorSecureEmbed title="Race coaching" keyEnv="SKI_OPERATOR_RACE_COACHING" />
     <p class="meta mt-6 text-olive/60">
       Booking delivered by SkiOperator. Châtel-based programmes: email <a href="mailto:chatel@peaksnowsports.com" class="underline-offset-4 hover:bg-pink hover:text-snow hover:underline">chatel@peaksnowsports.com</a> to arrange.
     </p>
