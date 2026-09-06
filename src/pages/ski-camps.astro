@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/hero/Hero.astro';
 import Section from '../components/ui/Section.astro';
+import SkiOperatorSecureEmbed from '../components/booking/SkiOperatorSecureEmbed.astro';
 import {
   sanity,
   urlFor,
@@ -9,6 +10,12 @@ import {
   skiCampsScheduleQuery,
   campLocationsQuery,
 } from '../lib/sanity';
+
+// The camps embed mints a short-lived SkiOperator token per request, so this
+// page renders per request and must never be cached. Note this also moves the
+// page's Sanity queries from build time to request time.
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'no-store');
 
 type Cta = { label?: string; href?: string };
 type FactT = { label?: string; value?: string };
@@ -539,5 +546,14 @@ const faqs = page?.faqs ?? [];
         <p class="meta font-bold mt-6 text-salt">{page.bookDisclaimer}</p>
       )}
     </div>
+
+    <SkiOperatorSecureEmbed
+      title="Adult ski camps"
+      keyEnv="SKI_OPERATOR_SKI_CAMPS"
+      class="mt-12 overflow-hidden rounded-none border border-olive/10 bg-snow"
+    />
+    <p class="meta mt-6 text-olive/55">
+      Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a> and we'll book you in directly.
+    </p>
   </Section>
 </BaseLayout>

@@ -274,7 +274,7 @@ POST /api/v1/embed/token/generate
 ```
 
 Because tokens expire, every booking page sets `export const prerender = false` and
-`Cache-Control: no-store` — these seven are the only server-rendered pages on the site.
+`Cache-Control: no-store` — these eight are the only server-rendered pages on the site. `/ski-camps` is the odd one out: it is also Sanity-driven, so opting it out of prerendering moved its Sanity queries to request time too.
 Never prerender them or let a CDN cache them; a cached copy serves a dead token.
 
 **Required config**
@@ -286,6 +286,7 @@ Never prerender them or let a CDN cache them; a cached copy serves a dead token.
   - `SKI_OPERATOR_KIDS_CLUB` — `/lessons/kids-club`
   - `SKI_OPERATOR_OFF_PISTE` — `/lessons/off-piste`
   - `SKI_OPERATOR_RACE_COACHING` — `/lessons/race-coaching`
+  - `SKI_OPERATOR_SKI_CAMPS` — `/ski-camps`
 - If the key is missing or the token call fails, the page renders the "get in touch" fallback rather than a broken iframe, and logs the reason server-side.
 
 ### Where it appears
