@@ -230,7 +230,7 @@ const jsonLd = [
             name: 'Standard package',
             price: '8999',
             priceCurrency: 'EUR',
-            availability: 'https://schema.org/InStock',
+            availability: 'https://schema.org/SoldOut',
             url: `${SITE}/gap-course#book`,
           },
           {
@@ -238,7 +238,7 @@ const jsonLd = [
             name: 'Upgraded room',
             price: '9499',
             priceCurrency: 'EUR',
-            availability: 'https://schema.org/LimitedAvailability',
+            availability: 'https://schema.org/SoldOut',
             url: `${SITE}/gap-course#book`,
           },
         ],
@@ -313,12 +313,12 @@ jsonLd.push({
 
 <BaseLayout
   title="How to Become a Ski Instructor in 6 Weeks · BASI Course · Peak Snowsports"
-  description="Become a ski instructor in six weeks. BASI Level 1 + 2 ski instructor course, coached by BASI Trainers, 8:1 max, two intakes a year (Hintertux autumn / Morzine winter). From €8,999, staged payments from €150. Enquire today."
+  description="Become a ski instructor in six weeks. BASI Level 1 + 2 ski instructor course, coached by BASI Trainers, 8:1 max, winter 2027 intake in Morzine now booking. From €8,999, staged payments from €150. Enquire today."
   image="/images/og/gap-course.jpg"
   jsonLd={jsonLd}
 >
   <Hero
-    kicker="Ski instructor course · BASI Level 1 + 2 · Hintertux or Morzine"
+    kicker="Ski instructor course · BASI Level 1 + 2 · Now booking Morzine winter 2027"
     headline="Become a ski instructor in six weeks."
     sub="The Peak GAP course takes you from confident skier to qualified BASI Level 1 and Level 2 instructor. Two intakes a year, coached by the people who run BASI exams."
     primaryCta={{ href: '#enquire', label: 'Enquire now' }}
@@ -353,7 +353,7 @@ jsonLd.push({
 
         <div class="space-y-5 text-base leading-relaxed text-olive/75 md:text-lg">
           <p>
-            <strong class="font-semibold text-olive">Two intakes this year.</strong> Autumn pre-season in Hintertux, Austria, or our winter course in Morzine. Same course, same standards, same price.
+            <strong class="font-semibold text-olive">Now booking winter.</strong> Our autumn pre-season in Hintertux, Austria is closed for bookings. The winter course in Morzine still has places.
           </p>
           <p>
             For winter, the whole course moves into a private Peak chalet, students, coaches and the wider team under one roof. You train in Avoriaz, the heart of the 650 km Portes du Soleil, and come home to Morzine.
@@ -364,15 +364,17 @@ jsonLd.push({
         </div>
       </div>
       <div class="space-y-4">
-        <div class="rounded-none border border-olive bg-cream p-6">
+        <div class="rounded-none border border-olive bg-cream p-6 opacity-70">
           <p class="meta text-olive">Autumn · pre-season</p>
           <p class="mt-2 font-display text-xl font-bold tracking-tight">Hintertux, Austria</p>
-          <p class="mt-1 text-sm text-olive/70">Sun 1 Nov – Fri 11 Dec 2026 · provisional</p>
+          <p class="mt-1 text-sm text-olive/70">Sun 1 Nov – Fri 11 Dec 2026</p>
+          <p class="mt-4 inline-flex rounded-sm bg-ink px-3 py-1 font-display text-xs font-semibold text-paper">Closed for bookings</p>
         </div>
         <div class="rounded-none border border-olive bg-cream p-6">
           <p class="meta text-olive">Winter · in-season</p>
           <p class="mt-2 font-display text-xl font-bold tracking-tight">Morzine + Avoriaz</p>
           <p class="mt-1 text-sm text-olive/70">3 Jan – 12 Feb 2027</p>
+          <p class="mt-4 inline-flex rounded-sm bg-accent px-3 py-1 font-display text-xs font-semibold text-paper">Places available</p>
         </div>
         <div class="rounded-none border border-olive bg-cream p-6">
           <p class="meta text-olive">Same for both intakes</p>
@@ -411,6 +413,9 @@ jsonLd.push({
 
   <!-- Book your place / pricing -->
   <Section id="book" kicker="Dates & pricing" title="How much the course costs.">
+    <p class="mb-8 max-w-2xl text-base leading-relaxed text-ink md:text-lg">
+      <strong class="font-semibold">Now booking: winter, Morzine + Avoriaz, 3 Jan – 12 Feb 2027.</strong> Autumn pre-season in Hintertux is closed for bookings.
+    </p>
     <div class="grid gap-6 lg:grid-cols-2">
       <div class="flex flex-col rounded-none border border-olive bg-cream p-8">
         <p class="meta text-olive/55">Standard package</p>
