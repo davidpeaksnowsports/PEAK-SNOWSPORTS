@@ -22,6 +22,7 @@ const PUBLIC_PORTAL_ROUTES = new Set([
 ]);
 
 const PUBLIC_GAP_ROUTES = new Set([
+  '/gap/join',
   '/gap/login',
   '/gap/logout',
   '/gap/forgot-password',

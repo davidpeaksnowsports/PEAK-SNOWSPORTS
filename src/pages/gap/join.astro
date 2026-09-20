@@ -1,0 +1,256 @@
+---
+/**
+ * Self-enrolment. A student gives their name, email and the code for their
+ * intake, and gets an account.
+ *
+ * The page checks the code first so a typo is an immediate, clear error rather
+ * than a confirmation email that leads nowhere. That check is a convenience —
+ * the code is enforced again by a database trigger when the account is
+ * created, which is the part that actually matters, because signing up is a
+ * plain Supabase call that anyone can make without going through this form. An
+ * account created with a bad code gets no profile and can see nothing.
+ *
+ * Email confirmation is on, so the account is not usable until the student
+ * clicks the link. That is what ties an account to an address someone can
+ * actually receive mail at.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, isGapConfigured } from '../../lib/gap/supabase';
+
+const MIN_PASSWORD = 10;
+
+let error: string | null = null;
+let done: { email: string; cohort: string } | null = null;
+let name = '';
+let email = '';
+let code = Astro.url.searchParams.get('code') ?? '';
+
+if (Astro.request.method === 'POST' && isGapConfigured) {
+  const form = await Astro.request.formData();
+  name = String(form.get('name') ?? '').trim();
+  email = String(form.get('email') ?? '').trim();
+  code = String(form.get('code') ?? '').trim();
+  const password = String(form.get('password') ?? '');
+  const confirm = String(form.get('confirm') ?? '');
+  // Bots fill every field they find. Real students never see this one.
+  const trap = String(form.get('company') ?? '');
+
+  const supabase = createGapClient(Astro.cookies, Astro.request);
+
+  if (trap) {
+    // Pretend it worked. Telling a bot it failed only invites a retry.
+    done = { email, cohort: '' };
+  } else if (!name || !email || !code) {
+    error = 'Fill in your name, email and course code.';
+  } else if (password.length < MIN_PASSWORD) {
+    error = `Use at least ${MIN_PASSWORD} characters for your password.`;
+  } else if (password !== confirm) {
+    error = 'The two passwords do not match.';
+  } else {
+    const { data: matches } = await supabase.rpc('gap_cohort_for_join_code', {
+      code,
+    });
+    const cohort = Array.isArray(matches) ? matches[0] : null;
+
+    if (!cohort) {
+      error =
+        'That course code was not recognised. Check it against the email we sent you, or ask the office.';
+    } else {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: new URL('/gap/login', Astro.url.origin).toString(),
+          // The trigger re-checks join_code and attaches the profile to the
+          // cohort the CODE names, not the one named here.
+          data: { gap: true, name, join_code: code },
+        },
+      });
+
+      if (signUpError) {
+        // Supabase returns "User already registered" for a known address. Say
+        // so plainly: this is an enrolment form for people we already have on
+        // a course list, so confirming an address exists tells an attacker
+        // nothing they could not guess, and hiding it strands a real student.
+        error = /already/i.test(signUpError.message)
+          ? 'There is already an account for that email. Sign in instead, or reset your password.'
+          : signUpError.message;
+      } else {
+        done = { email, cohort: cohort.cohort_name };
+      }
+    }
+  }
+}
+---
+
+<GapLayout title="Join your course" chrome={false}>
+  <div class="mx-auto max-w-md py-8">
+    <p class="meta mb-3 text-ink-45">Peak Snowsports</p>
+    <h1 class="font-display text-4xl font-bold">Join your course</h1>
+
+    {
+      !isGapConfigured ? (
+        <div class="mt-8">
+          <Notice tone="warn" label="Not configured yet">
+            <p>Sign-up is not available yet. Email the office and we will set you up.</p>
+          </Notice>
+        </div>
+      ) : done ? (
+        <div class="mt-8 space-y-6">
+          <Notice tone="good" label="Nearly there">
+            <p>
+              We have sent a confirmation link to <strong>{done.email}</strong>.
+              Click it and you are in.
+            </p>
+            {done.cohort && (
+              <p class="mt-3">
+                You are joining <strong>{done.cohort}</strong>.
+              </p>
+            )}
+          </Notice>
+          <p class="text-sm text-ink-70">
+            Nothing arrived within a few minutes? Check spam, then email{' '}
+            <a href="mailto:bonjour@peaksnowsports.com" class="text-accent">
+              bonjour@peaksnowsports.com
+            </a>
+            .
+          </p>
+        </div>
+      ) : (
+        <>
+          <p class="mt-4 text-ink-70">
+            Enrolled on a Peak GAP course? Use the course code from your
+            enrolment email to set up your portal account.
+          </p>
+
+          {error && (
+            <div class="mt-6">
+              <Notice tone="warn" alert>
+                <p class="text-ink">{error}</p>
+              </Notice>
+            </div>
+          )}
+
+          <form method="POST" class="mt-8 space-y-5">
+            <div>
+              <label for="code" class="meta mb-2 block text-ink-70">
+                Course code
+              </label>
+              <input
+                id="code"
+                name="code"
+                type="text"
+                required
+                value={code}
+                autocapitalize="characters"
+                autocomplete="off"
+                spellcheck="false"
+                class="w-full border border-ink/20 bg-paper px-4 py-3 font-mono uppercase tracking-widest text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <div>
+              <label for="name" class="meta mb-2 block text-ink-70">
+                Your name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={name}
+                autocomplete="name"
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <div>
+              <label for="email" class="meta mb-2 block text-ink-70">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={email}
+                autocomplete="email"
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+              <p class="mt-2 text-sm text-ink-45">
+                Use the address you enrolled with — it is how your coaches find
+                you.
+              </p>
+            </div>
+
+            <div>
+              <label for="password" class="meta mb-2 block text-ink-70">
+                Choose a password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minlength={MIN_PASSWORD}
+                autocomplete="new-password"
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+              <p class="mt-2 text-sm text-ink-45">
+                At least {MIN_PASSWORD} characters.
+              </p>
+            </div>
+
+            <div>
+              <label for="confirm" class="meta mb-2 block text-ink-70">
+                Again, to be sure
+              </label>
+              <input
+                id="confirm"
+                name="confirm"
+                type="password"
+                required
+                minlength={MIN_PASSWORD}
+                autocomplete="new-password"
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            {/* Honeypot. Hidden from people, irresistible to bots. */}
+            <div class="hidden" aria-hidden="true">
+              <label for="company">Company</label>
+              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+            >
+              Create my account
+            </button>
+          </form>
+
+          <p class="mt-6 text-sm text-ink-70">
+            Already have an account?{' '}
+            <a href="/gap/login" class="text-accent">
+              Sign in
+            </a>
+            .
+          </p>
+        </>
+      )
+    }
+
+    <p class="mt-12 border-t border-ink/10 pt-6 text-sm text-ink-45">
+      Not got a course code? It is in your enrolment email. If you cannot find
+      it, email{' '}
+      <a href="mailto:bonjour@peaksnowsports.com" class="text-accent">
+        bonjour@peaksnowsports.com
+      </a>
+      .
+    </p>
+  </div>
+</GapLayout>
