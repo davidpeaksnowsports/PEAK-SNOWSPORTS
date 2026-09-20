@@ -47,7 +47,6 @@ const db = createClient(url, key, { auth: { persistSession: false } });
 const L = {
   handbook: 'https://peakfrance.notion.site/Student-Home-71f0434890964d6493d414c2578085f6',
   workbooks: 'https://www.notion.so/peakfrance/BASI-Student-workbooks-5b0ee17869d54b1ea3519c4671563eb0',
-  workshop: 'https://www.notion.so/peakfrance/Workshop-e4fef4f41331445394bf06694466d4a9',
   packingList: 'https://www.notion.so/peakfrance/Packing-List-96dcbbce767c466da83332af8d959c6f',
   onboarding: 'https://share-eu1.hsforms.com/1dv43JwQ8TI-VN4R219eqsQ2e55qw',
   whatsapp: 'https://chat.whatsapp.com/CkewQsvuUBFDct8I1L4TEl',
@@ -223,7 +222,6 @@ const RESOURCES = [
     'The Notion handbook. Still the fullest reference until this portal replaces it.'],
   [null, 'Handbook', 'BASI student workbooks', 'template', L.workbooks,
     'Level 1 and Level 2 workbooks to work through alongside the course.'],
-  [null, 'Handbook', 'Workshop material', 'exercise', L.workshop, null],
   [null, 'Handbook', 'Six-week course calendar', 'link', L.calendar,
     'The live Google Calendar. The Programme page here is the same information.'],
 
@@ -248,15 +246,28 @@ const RESOURCES = [
   [null, 'Equipment', 'Solutions for Feet, Bicester', 'link', L.solutions4feet, 'Boot fitter.'],
   [null, 'Equipment', 'Profeet, West London', 'link', L.profeet, 'Boot fitter.'],
 
-  [1, 'Workshops', 'Equipment workshop (1h)', 'exercise', L.workshop, null],
-  [1, 'Workshops', 'Resort and local area (1h)', 'exercise', L.workshop, null],
-  [4, 'Workshops', 'Strands (1h)', 'exercise', L.workshop, null],
-  [4, 'Workshops', 'Fundamental elements (2h)', 'exercise', L.workshop, null],
-  [4, 'Workshops', 'Avalanche awareness (2h)', 'exercise', L.workshop, null],
-  [4, 'Workshops', 'Mountain environment (1h)', 'exercise', L.workshop, null],
-  [null, 'Workshops', 'Teaching models (2h)', 'exercise', L.workshop, null],
-  [null, 'Workshops', 'BASI admin and members area (2h)', 'exercise', L.workshop, null],
-  [null, 'Workshops', 'Careers and interview prep (1h)', 'exercise', L.workshop, null],
+  // The workshop decks themselves, hosted in the private gap-resources bucket
+  // and reached through /gap/resource/[id]. These replace nine entries that all
+  // pointed at one Notion page; the hours come from the planner's summary
+  // table, and the weeks from where the programme actually delivers them.
+  [1, 'Workshops', 'Equipment (1h)', 'slides', null,
+    'Skis, bindings, boots, poles and layers — what to choose and why.',
+    'morzine-2027/workshops/gap-workshop-equipment.pdf'],
+  [1, 'Workshops', 'Local area (1h)', 'slides', null,
+    'Customs, traditions and getting your bearings in the Portes du Soleil.',
+    'morzine-2027/workshops/gap-workshop-local-area.pdf'],
+  [4, 'Workshops', 'Teaching: central theme, TIED and skill acquisition (2h)', 'slides', null,
+    'What a Level 2 teacher is expected to produce, the central theme, the TIED loop and the three skills.',
+    'morzine-2027/workshops/gap-workshop-teaching.pdf'],
+  [4, 'Workshops', 'Avalanche awareness (2h)', 'slides', null,
+    'The four ingredients, the five red flags, the EU rating scale, rescue kit and burial times. Read this one before the session.',
+    'morzine-2027/workshops/gap-workshop-avalanche.pdf'],
+  [null, 'Workshops', 'Ski fit', 'slides', null,
+    'The physical side — pairs with the Body Mechanics videos below.',
+    'morzine-2027/workshops/gap-workshop-ski-fit.pdf'],
+  [null, 'Workshops', 'Career: what comes after Level 2 (1h)', 'slides', null,
+    'Partner ski schools, Swiss resorts, southern-hemisphere seasons, and what schools look for.',
+    'morzine-2027/workshops/gap-workshop-career.pdf'],
 
   [null, 'Peak', 'Peak Snowsports on YouTube', 'video', L.youtube, null],
 ];
@@ -463,9 +474,12 @@ async function main() {
     };
   });
 
-  const resources = RESOURCES.map(([week, topic, title, kind, href, description], i) => ({
-    cohort_id: cohort.id, week, topic, title, kind, url: href, description, sort: i,
-  }));
+  const resources = RESOURCES.map(
+    ([week, topic, title, kind, href, description, storagePath = null], i) => ({
+      cohort_id: cohort.id, week, topic, title, kind,
+      url: href, storage_path: storagePath, description, sort: i,
+    }),
+  );
 
   const guide = GUIDE.map(([category, name, detail, address, map_url, phone, hours], i) => ({
     cohort_id: cohort.id, category, name, detail, address, map_url, phone, hours, sort: i,

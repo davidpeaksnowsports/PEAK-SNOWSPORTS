@@ -91,10 +91,11 @@ const currentWeek = cohort ? courseWeek(cohort).week : 0;
                 <li class="border-t border-ink/10 pt-5 first:border-t-0 first:pt-0">
                   <p class="meta text-ink-45">
                     {r.topic} · {KIND_LABEL[r.kind] ?? r.kind}
+                    {r.storage_path && ' · Course material'}
                   </p>
                   <h3 class="mt-1 font-display text-lg font-bold">
                     <a
-                      href={r.url}
+                      href={r.storage_path ? `/gap/resource/${r.id}` : r.url}
                       target="_blank"
                       rel="noopener"
                       class="text-ink hover:text-accent"
