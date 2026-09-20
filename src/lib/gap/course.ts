@@ -195,7 +195,7 @@ export const dayKey = (value: string | Date) =>
 
 /** Navigation. Order is the order of a student's day, not an alphabet. */
 export const GAP_SECTIONS = [
-  { href: '/gap', label: 'Dashboard', exact: true },
+  { href: '/gap/dashboard', label: 'Dashboard' },
   { href: '/gap/programme', label: 'Programme' },
   { href: '/gap/progress', label: 'My progress' },
   { href: '/gap/workbook', label: 'Workbook' },

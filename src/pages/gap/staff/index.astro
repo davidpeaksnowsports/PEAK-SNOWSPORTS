@@ -30,7 +30,7 @@ import { listCriteria } from '../../../lib/gap/data';
 const user = Astro.locals.gapUser as GapUser;
 // Staff-only. A student who guesses the URL goes home rather than getting a
 // "forbidden" that confirms the page exists.
-if (!isStaff(user)) return Astro.redirect('/gap', 302);
+if (!isStaff(user)) return Astro.redirect('/gap/dashboard', 302);
 
 const db = createGapClient(Astro.cookies, Astro.request);
 const cohort = user.cohort;

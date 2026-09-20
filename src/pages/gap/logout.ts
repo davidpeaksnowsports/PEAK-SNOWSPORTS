@@ -16,4 +16,4 @@ export const POST: APIRoute = async ({ cookies, request, redirect }) => {
 };
 
 /** A GET here means someone typed the URL. Send them home rather than 405. */
-export const GET: APIRoute = ({ redirect }) => redirect('/gap', 302);
+export const GET: APIRoute = ({ redirect }) => redirect('/gap/dashboard', 302);

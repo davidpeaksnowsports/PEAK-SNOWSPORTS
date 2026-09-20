@@ -33,7 +33,7 @@ import {
 } from '../../../../lib/gap/data';
 
 const user = Astro.locals.gapUser as GapUser;
-if (!isStaff(user)) return Astro.redirect('/gap', 302);
+if (!isStaff(user)) return Astro.redirect('/gap/dashboard', 302);
 
 const db = createGapClient(Astro.cookies, Astro.request);
 const studentId = Astro.params.id!;

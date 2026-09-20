@@ -421,9 +421,11 @@ A second server-rendered area at `/gap`, behind the same Supabase login, for
 students on the six-week GAP course. See [`GAP-PORTAL.md`](./GAP-PORTAL.md) for
 setup and the full rationale.
 
-- **`/gap` is the portal; `/gap-course` is the public marketing page.** The
+- **`/gap/*` is the portal; `/gap-course` is the public marketing page.** The
   middleware prefix test is segment-exact for exactly this reason — a bare
   `startsWith('/gap')` would put the page that sells the course behind a login.
+  The portal home is `/gap/dashboard`, because `vercel.json` redirects `/gap`
+  itself to `/gap-course` as a legacy Squarespace URL.
 - **Its data is in Supabase Postgres, not Sanity.** Unlike the instructor
   portal, which stores documents, this is structured records — activities,
   criteria, scores, log entries — which want a schema and row-level security.

@@ -15,9 +15,12 @@ import { createGapClient, isGapConfigured } from '../../lib/gap/supabase';
  * discarded rather than followed.
  */
 function safeNext(raw: string | null): string {
-  if (!raw) return '/gap';
-  if (raw.startsWith('//')) return '/gap';
-  if (raw !== '/gap' && !raw.startsWith('/gap/')) return '/gap';
+  if (!raw) return '/gap/dashboard';
+  if (raw.startsWith('//')) return '/gap/dashboard';
+  // Bare /gap is excluded on purpose: vercel.json redirects it to the public
+  // /gap-course page, so returning a student there would bounce them out of
+  // the portal moments after signing in.
+  if (!raw.startsWith('/gap/')) return '/gap/dashboard';
   return raw;
 }
 

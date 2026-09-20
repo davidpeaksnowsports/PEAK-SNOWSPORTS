@@ -17,7 +17,7 @@ import { createGapClient, isStaff, type GapUser } from '../../../lib/gap/supabas
 import { fmtDate, toHours } from '../../../lib/gap/course';
 
 const user = Astro.locals.gapUser as GapUser;
-if (!isStaff(user)) return Astro.redirect('/gap', 302);
+if (!isStaff(user)) return Astro.redirect('/gap/dashboard', 302);
 
 const db = createGapClient(Astro.cookies, Astro.request);
 const cohort = user.cohort;

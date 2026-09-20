@@ -25,7 +25,7 @@ assessment readiness — not a content library.
 
 | Route | What it does |
 |---|---|
-| `/gap` | Dashboard: today, next three activities, readiness, actions, announcements |
+| `/gap/dashboard` | Dashboard: today, next three activities, readiness, actions, announcements |
 | `/gap/programme` | Today / this week / full course, plus `/gap/programme.ics` |
 | `/gap/progress` | The six-point benchmark. Self-assessment beside the coach's |
 | `/gap/workbook` | Module list with status, reflections, evidence, coach comments |
@@ -42,6 +42,12 @@ assessment readiness — not a content library.
 | `/gap/staff/student/[id]` | One student's whole record |
 
 Every route sets `prerender = false`; `src/middleware.ts` guards them.
+
+**The home is `/gap/dashboard`, not `/gap`.** `vercel.json` redirects `/gap` to
+`/gap-course` — a legacy Squarespace URL from before the portal existed, kept
+so old inbound links still reach the page that sells the course. A portal home
+at `/gap` would therefore redirect students onto the marketing page the moment
+they signed in. Send people to `/gap/login`; they land on the dashboard.
 
 ---
 

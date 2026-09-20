@@ -60,7 +60,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const configured = area === 'portal' ? isPortalConfigured : isGapConfigured;
   const loginPath = `/${area === 'portal' ? 'portal' : 'gap'}/login`;
   const publicRoutes = area === 'portal' ? PUBLIC_PORTAL_ROUTES : PUBLIC_GAP_ROUTES;
-  const home = area === 'portal' ? '/portal' : '/gap';
+  const home = area === 'portal' ? '/portal' : '/gap/dashboard';
 
   // Without Supabase configured there is no way to authenticate anyone. Let the
   // login page render its setup notice, and keep every other route shut.
