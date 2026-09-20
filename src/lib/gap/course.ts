@@ -133,6 +133,22 @@ export function readinessTone(
   return 'watch';
 }
 
+/**
+ * The weakest strand that has actually been assessed, or null if none has.
+ *
+ * A strand with no coach scores sits at 0%, which would otherwise make it the
+ * "weakest" and report a student as behind on something nobody has looked at
+ * yet. Not-yet-assessed and doing-badly are different states and must not be
+ * shown as the same one.
+ */
+export function weakestAssessed<T extends { percent: number; scored: number }>(
+  groups: T[],
+): T | null {
+  const assessed = groups.filter((g) => g.scored > 0);
+  if (assessed.length === 0) return null;
+  return assessed.reduce((low, g) => (g.percent < low.percent ? g : low));
+}
+
 export const TONE_LABEL: Record<string, string> = {
   ahead: 'Ahead of where we expect',
   'on-track': 'Developing as planned',

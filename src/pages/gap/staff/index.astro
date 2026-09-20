@@ -15,7 +15,16 @@ export const prerender = false;
 import GapLayout from '../../../layouts/GapLayout.astro';
 import Notice from '../../../components/gap-portal/Notice.astro';
 import { createGapClient, isStaff, type GapUser } from '../../../lib/gap/supabase';
-import { GROUPS, courseWeek, fmtDate, readiness, readinessTone, TONE_LABEL } from '../../../lib/gap/course';
+import {
+  GROUPS,
+  courseWeek,
+  fmtDate,
+  readiness,
+  readinessTone,
+  toHours,
+  weakestAssessed,
+  TONE_LABEL,
+} from '../../../lib/gap/course';
 import { listCriteria } from '../../../lib/gap/data';
 
 const user = Astro.locals.gapUser as GapUser;
@@ -134,22 +143,22 @@ const rows = students
       ...g,
       ...readiness(criteria, coach, g.key),
     }));
-    const weakest = groups.reduce(
-      (low, g) => (g.percent < low.percent ? g : low),
-      groups[0],
-    );
+    const weakest = weakestAssessed(groups);
+    const unassessed = groups.filter((g) => g.scored === 0);
     const checkin = latestCheckin.get(s.id);
     const pendingMinutes = pendingByStudent.get(s.id) ?? 0;
 
     const flags = [
       checkin?.wants_chat ? 'Asked for a chat' : null,
-      pendingMinutes > 0
-        ? `${Math.round((pendingMinutes / 60) * 10) / 10}h to verify`
-        : null,
+      pendingMinutes > 0 ? `${toHours(pendingMinutes)}h to verify` : null,
       coach.size === 0 ? 'Never assessed' : null,
-      coach.size > 0 &&
+      // "Behind" only ever describes a strand someone has looked at.
+      weakest &&
       readinessTone(weakest.percent, week.week, week.totalWeeks) === 'watch'
         ? `${weakest.label} behind`
+        : null,
+      coach.size > 0 && unassessed.length > 0
+        ? `${unassessed.map((g) => g.label).join(', ')} not assessed`
         : null,
       checkin && (checkin.confidence ?? 5) <= 2 ? 'Low confidence' : null,
       checkin && (checkin.energy ?? 5) <= 2 ? 'Low energy' : null,
@@ -201,7 +210,7 @@ const totalPending = [...pendingByStudent.values()].reduce((a, b) => a + b, 0);
     <a
       href="/gap/staff/verify"
       class="inline-block border border-ink/20 px-5 py-3 font-display font-bold text-ink no-underline transition-colors hover:border-ink hover:no-underline"
-      >Verify hours{totalPending > 0 && ` (${Math.round(totalPending / 60)}h)`}</a
+      >Verify hours{totalPending > 0 && ` (${toHours(totalPending)}h)`}</a
     >
   </div>
 

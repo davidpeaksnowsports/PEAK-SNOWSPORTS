@@ -154,6 +154,18 @@ Promote a coach:
 update public.gap_members set role = 'coach' where id = '<auth-uid>';
 ```
 
+### 4a. Promote a coach or admin
+
+```sql
+update public.gap_members set role = 'coach' where id = '<auth-uid>';
+```
+
+This works from the SQL editor or a service-role script. It did **not** before
+migration `0003` — the column guard reverted any write with no `auth.uid()`,
+which is every superuser and service-role connection, so the first admin could
+never be created and nothing reported an error. Same bug, same fix, for
+`public.instructors` in the instructor portal.
+
 ### 5. Password reset URLs
 
 Add to **Authentication → URL Configuration → Redirect URLs**:
@@ -208,6 +220,26 @@ guarantee of passing; the pages say so where a student will read it.
 
 ---
 
+## Gotchas found the hard way
+
+**Do not run `supabase config push`.** It pushes the entire auth/db/storage
+config, not just what you changed. Against this project it would have turned
+off email confirmations and MFA, shortened the OTP, and disabled Twilio SMS.
+Run `supabase config diff` first, and prefer the dashboard for one-off auth
+settings.
+
+**PostgREST batch inserts do not apply column defaults.** A multi-row insert is
+normalised to the union of the rows' keys, and any row missing a key gets
+`NULL` — not the column default. So a batch where one row sets `status` and
+another omits it fails the not-null constraint on the second row. Give every
+row in a batch the same keys. The portal's own inserts already do; it is seed
+and backfill scripts that get caught.
+
+**A null `auth.uid()` is a trusted backend, not an anonymous visitor.** Every
+policy here is granted `to authenticated`, so an anonymous request never
+reaches a trigger. Null means service role or superuser. Guards must pass those
+through — see `0003`.
+
 ## Known limits
 
 - **`/gap/programme.ics` is a download, not a live subscription.** Calendar apps
@@ -222,5 +254,12 @@ guarantee of passing; the pages say so where a student will read it.
   needs retention rules and access controls a tick-box list does not have. The
   `gap_members` columns exist for staff to record what the office holds; nothing
   in the student UI writes to them.
+- **Staff see one cohort — the one on their own `gap_members` row.** With
+  Hintertux and Morzine both live, a coach across both has to have their
+  `cohort_id` changed to switch. A cohort switcher is a small job and worth
+  doing before two intakes overlap.
+- **No change-password page for a signed-in user.** Rotating a password means
+  going through "Forgotten your password?", which needs the redirect URLs in
+  step 5 to be configured first.
 - **No automated readiness prediction, no CV builder, no parent access, no BASI
   platform integration.** All explicitly out of MVP scope.

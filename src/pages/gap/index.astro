@@ -26,6 +26,7 @@ import {
   daysBetween,
   readiness,
   readinessTone,
+  weakestAssessed,
   TONE_LABEL,
 } from '../../lib/gap/course';
 import {
@@ -87,15 +88,14 @@ const groupReadiness = GROUPS.map((g) => ({
   ...readiness(criteria, coachScores, g.key),
 }));
 
-// One headline tone for the whole course, taken from the weakest of the three
-// strands. Averaging them would let strong skiing hide weak teaching, which is
-// the exact failure mode this page is meant to catch.
-const weakest = groupReadiness.reduce(
-  (lowest, g) => (g.percent < lowest.percent ? g : lowest),
-  groupReadiness[0] ?? { percent: 0 },
-);
-const assessed = coachScores.size > 0;
-const tone = readinessTone(weakest.percent ?? 0, week.week, week.totalWeeks);
+// One headline tone for the whole course, taken from the weakest strand that
+// has been assessed. Averaging the three would let strong skiing hide weak
+// teaching, which is the exact failure this page exists to catch — and
+// including an unassessed strand would report a student as behind on something
+// nobody has looked at yet.
+const weakest = weakestAssessed(groupReadiness);
+const assessed = weakest !== null;
+const tone = readinessTone(weakest?.percent ?? 0, week.week, week.totalWeeks);
 
 const daysToAssessment =
   cohort?.assessment_on ? daysBetween(new Date(), cohort.assessment_on) : null;
