@@ -13,14 +13,14 @@
  *
  *   node --env-file=.env scripts/gap/load-morzine-2027.mjs [--dry-run]
  *
- * Two things the planner got wrong that are deliberately NOT reproduced:
+ * Dates are derived from the cohort's own starts_on rather than transcribed,
+ * so the timetable is internally consistent by construction. The reissued
+ * planner (2026-09-20) agrees with it week for week.
  *
- *   1. Week 1 in the spreadsheet carries 2026 date serials while weeks 2–6
- *      carry 2027 — last year's dates left in one block. Every date below is
- *      derived from the cohort's own starts_on instead, so the timetable is
- *      internally consistent by construction.
- *   2. The weekday labels and the date row in week 1 are off by one. The
- *      labels agree with weeks 2–6, so the labels win.
+ * The planner records each exam as a single cell on its opening day. The real
+ * blocks, confirmed by David, are Level 1 Mon–Thu of week 2 and Level 2 across
+ * two blocks: Tue–Fri of week 5 and Mon–Thu of week 6. Those are expanded
+ * below, which is what fills the days the planner left blank.
  */
 import { createClient } from '@supabase/supabase-js';
 
@@ -68,6 +68,9 @@ const L = {
   genevaT1: 'https://www.gva.ch/en/Site/Passagers/Acces-Transports/Plan-du-Terminal-1',
   liftPass: 'https://www.skipass-avoriaz.com/en/',
   youtube: 'https://www.youtube.com/channel/UC0TNo8KEVkGePmbiQiZUXYg',
+  basecampMap:
+    'https://www.google.com/maps/search/?api=1&query=' +
+    encodeURIComponent('1787 Rte de la Plagne, 74110 Morzine'),
 };
 
 const EMERGENCY = '+33 6 10 61 85 58';
@@ -99,7 +102,8 @@ const PROGRAMME = [
     ends_at: '14:00',
   }],
   [1, 0, '15:00', 'Arrivals and check-in', 'travel', {
-    meeting_point: 'Peak Basecamp',
+    meeting_point: 'Peak Basecamp, 1787 Rte de la Plagne, 74110 Morzine',
+    map_url: L.basecampMap,
     objective: 'Check in, collect your equipment and merch, and walk the resort.',
     bring: 'Passport, insurance documents, boots',
     preparation: ARRIVAL_BRIEF,
@@ -128,11 +132,13 @@ const PROGRAMME = [
 
   // ── Week 2 ────────────────────────────────────────────────────────────────
   [2, 0, '09:00', 'Rest day', 'rest', {}],
-  [2, 1, '09:00', 'BASI Level 1 exam', 'assessment', {
-    objective: 'Level 1 assessment.',
-    preparation: 'Level 1 student workbook completed. Kit checked the night before.',
-    workbook_module: 'Module 2 — The fundamental elements',
-  }],
+  ...[1, 2, 3, 4].map((d, i) => [2, d, '09:00', 'BASI Level 1 exam', 'assessment', {
+    objective: `Level 1 assessment, day ${i + 1} of 4.`,
+    preparation: i === 0
+      ? 'Level 1 student workbook completed. Kit checked the night before.'
+      : null,
+    workbook_module: i === 0 ? 'Module 2 — The fundamental elements' : null,
+  }]),
   [2, 5, '09:00', 'Training', 'on_snow', {}],
   [2, 5, '15:00', 'Training', 'on_snow', {}],
   [2, 6, '09:00', 'Rest day', 'rest', {}],
@@ -178,18 +184,20 @@ const PROGRAMME = [
   }],
   [5, 1, '09:00', 'Training', 'on_snow', {}],
   [5, 1, '15:00', 'Training', 'on_snow', {}],
-  [5, 2, '09:00', 'BASI Level 2 exam', 'assessment', {
-    objective: 'Level 2 assessment begins.',
-    preparation: 'Level 2 workbook complete. Everything you have been working on all course.',
-  }],
+  ...[2, 3, 4, 5].map((d, i) => [5, d, '09:00', 'BASI Level 2 exam', 'assessment', {
+    objective: `Level 2 assessment, first block — day ${i + 1} of 4.`,
+    preparation: i === 0
+      ? 'Level 2 workbook complete. Everything you have been working on all course.'
+      : null,
+  }]),
   [5, 6, '09:00', 'Rest day', 'rest', {}],
 
   // ── Week 6 ────────────────────────────────────────────────────────────────
   [6, 0, '09:00', 'Rest day', 'rest', {}],
   [6, 0, '15:00', 'Physical training', 'off_snow', {}],
-  [6, 1, '09:00', 'BASI Level 2 exam', 'assessment', {
-    objective: 'Level 2 assessment continues.',
-  }],
+  ...[1, 2, 3, 4].map((d, i) => [6, d, '09:00', 'BASI Level 2 exam', 'assessment', {
+    objective: `Level 2 assessment, second block — day ${i + 1} of 4.`,
+  }]),
   [6, 4, '18:00', 'End-of-course party', 'off_snow', {}],
   [6, 5, '09:00', 'Departures', 'travel', {
     objective: 'Course ends. Rooms cleared, kit returned.',
@@ -248,8 +256,8 @@ const RESOURCES = [
 // ---------------------------------------------------------------------------
 
 const GUIDE = [
-  ['Accommodation', 'Peak Basecamp, Morzine', 'Where the cohort lives for the six weeks — our own chalet, new for 26/27. The whole course under one roof, coaches included. Washing machines on site.',
-    null, null, null, null],
+  ['Accommodation', 'Peak Basecamp', 'Where the cohort lives for the six weeks — our own chalet, new for 26/27. The whole course under one roof, coaches included. Washing machines on site.',
+    '1787 Rte de la Plagne, 74110 Morzine', L.basecampMap, null, null],
   ['Getting to Avoriaz', 'Up the hill each morning', 'You sleep in Morzine and train in Avoriaz, so there is a journey up at the start of each day. The meeting point and time are posted in the WhatsApp group the night before — check it before you go to bed, not in the morning.',
     null, null, null, null],
   ['Getting here', 'Geneva Airport, Terminal 1', 'Airport meet is by the lime green Tekoe tea shop in the arrivals hall. Free wifi: connect to "Free Wifi GVA", enter your mobile number, use the code texted to you (120 minutes).',
@@ -297,7 +305,7 @@ const ESSENTIALS = [
   ['Arrival day', 'How the first day runs',
     ARRIVAL_BRIEF + '\n\nNotify us when you land, and straight away if you are delayed — message the WhatsApp group or call ' + EMERGENCY + '.'],
   ['Arrival day', 'Where you are staying',
-    'Peak Basecamp in Morzine — our own chalet, new for the 26/27 season. The whole course lives there together, coaches included. You train up in Avoriaz and come home to Morzine.\n\nWashing machines on site, so pack about two weeks of casual clothes rather than six. No cooking equipment needed.'],
+    'Peak Basecamp, 1787 Rte de la Plagne, 74110 Morzine — our own chalet, new for the 26/27 season. The whole course lives there together, coaches included. You train up in Avoriaz and come home to Morzine.\n\nWashing machines on site, so pack about two weeks of casual clothes rather than six. No cooking equipment needed.'],
 
   ['Assessment', 'How readiness is judged',
     'Your coaches assess you against the criteria on the My progress page, on a six-point acquisition scale. Readiness tells you how much of the assessment criteria you are currently showing. It is a coaching indicator, not a prediction, and not a guarantee of passing.'],
