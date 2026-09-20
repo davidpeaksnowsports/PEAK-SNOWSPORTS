@@ -54,8 +54,19 @@ supabase db push
 
 Or paste `supabase/migrations/0001_portal_instructors.sql` into the SQL editor.
 
-There is no public sign-up. Create accounts in **Authentication → Users**; a
-profile row is created automatically by trigger. Promote yourself with:
+There is no public sign-up. Create accounts in **Authentication → Users**, and
+mark them as instructor accounts in **User Metadata** so the trigger creates a
+profile:
+
+```json
+{ "portal": true, "name": "Ada Lovelace" }
+```
+
+**`"portal": true` is required as of migration 0004.** Before it, the trigger
+gave an `instructors` row to every account in the project — including GAP
+students, who were silently granted read access to tier 1 and tier 2 documents
+in this portal. Accounts without the flag get no instructor profile and cannot
+sign in here. Promote yourself with:
 
 ```sql
 update public.instructors set role = 'admin' where id = '<your-auth-uid>';
