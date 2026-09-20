@@ -167,7 +167,9 @@ const firstName = user.name.split(' ')[0];
             <h2 class="font-display text-2xl font-bold">
               {todays.length > 0 ? 'Today at Peak' : 'Next up'}
             </h2>
-            <p class="meta mt-2 text-ink-45">{fmtDate(new Date())}</p>
+            {todays.length > 0 && (
+              <p class="meta mt-2 text-ink-45">{fmtDate(new Date())}</p>
+            )}
 
             <div class="mt-6">
               {todays.length > 0 ? (
