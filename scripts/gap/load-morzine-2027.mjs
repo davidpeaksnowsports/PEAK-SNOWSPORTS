@@ -65,7 +65,6 @@ const L = {
   fitGuide: 'https://www.youtube.com/watch?v=kZyycdq19LA',
   solutions4feet: 'https://www.solutions4feet.com/about-us',
   profeet: 'https://profeet.co.uk/',
-  accommodationMap: 'https://maps.app.goo.gl/racjgNeaBT1V82J59',
   genevaT1: 'https://www.gva.ch/en/Site/Passagers/Acces-Transports/Plan-du-Terminal-1',
   liftPass: 'https://www.skipass-avoriaz.com/en/',
   youtube: 'https://www.youtube.com/channel/UC0TNo8KEVkGePmbiQiZUXYg',
@@ -100,8 +99,7 @@ const PROGRAMME = [
     ends_at: '14:00',
   }],
   [1, 0, '15:00', 'Arrivals and check-in', 'travel', {
-    meeting_point: 'Residence Saskia, 405 Rue du Douchka, 74110 Morzine-Avoriaz',
-    map_url: L.accommodationMap,
+    meeting_point: 'Peak Basecamp',
     objective: 'Check in, collect your equipment and merch, and walk the resort.',
     bring: 'Passport, insurance documents, boots',
     preparation: ARRIVAL_BRIEF,
@@ -250,8 +248,8 @@ const RESOURCES = [
 // ---------------------------------------------------------------------------
 
 const GUIDE = [
-  ['Accommodation', 'Residence Saskia', 'Where the cohort stays. Washing machines on site.',
-    '405 Rue du Douchka, 74110 Morzine-Avoriaz', L.accommodationMap, null, null],
+  ['Accommodation', 'Peak Basecamp', 'Where the cohort lives for the six weeks — new for 26/27. The whole course under one roof, coaches included. Washing machines on site.',
+    null, null, null, null],
   ['Getting here', 'Geneva Airport, Terminal 1', 'Airport meet is by the lime green Tekoe tea shop in the arrivals hall. Free wifi: connect to "Free Wifi GVA", enter your mobile number, use the code texted to you (120 minutes).',
     'Geneva Airport', L.genevaT1, null, null],
   ['Getting here', 'Geneva train station shops', 'Follow signs to "Gare CFF" from arrivals. Left luggage, Migros supermarket, restaurants.',
@@ -297,7 +295,7 @@ const ESSENTIALS = [
   ['Arrival day', 'How the first day runs',
     ARRIVAL_BRIEF + '\n\nNotify us when you land, and straight away if you are delayed — message the WhatsApp group or call ' + EMERGENCY + '.', false, 1],
   ['Arrival day', 'Where you are staying',
-    'Residence Saskia, 405 Rue du Douchka, 74110 Morzine-Avoriaz\n\n' + L.accommodationMap, false, 2],
+    'Peak Basecamp — our own chalet, new for the 26/27 season. The whole course lives there together, coaches included.\n\nWashing machines on site, so pack about two weeks of casual clothes rather than six. No cooking equipment needed.', false, 2],
 
   ['Assessment', 'How readiness is judged',
     'Your coaches assess you against the criteria on the My progress page, on a six-point acquisition scale. Readiness tells you how much of the assessment criteria you are currently showing. It is a coaching indicator, not a prediction, and not a guarantee of passing.', false, 1],
