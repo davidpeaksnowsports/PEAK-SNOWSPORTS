@@ -68,6 +68,9 @@ const L = {
   genevaT1: 'https://www.gva.ch/en/Site/Passagers/Acces-Transports/Plan-du-Terminal-1',
   liftPass: 'https://www.skipass-avoriaz.com/en/',
   youtube: 'https://www.youtube.com/channel/UC0TNo8KEVkGePmbiQiZUXYg',
+  prodainsMap:
+    'https://www.google.com/maps/search/?api=1&query=' +
+    encodeURIComponent('Telecabine des Prodains, Morzine'),
   basecampMap:
     'https://www.google.com/maps/search/?api=1&query=' +
     encodeURIComponent('1787 Rte de la Plagne, 74110 Morzine'),
@@ -83,6 +86,13 @@ const OFFICE_PHONE = '+44 1483 616 522';
 // the planner's own columns. Blank cells in the planner are left blank here:
 // inventing sessions to fill them would be worse than showing the gap.
 // ---------------------------------------------------------------------------
+
+/**
+ * Where the on-snow day starts. Students live in Morzine and train in Avoriaz,
+ * so the morning begins at the Prodains gondola and the session itself starts
+ * from Spot Café at the top.
+ */
+const MORNING_MEET = 'Prodains gondola, Morzine — 08:50. We ride up together and start from Spot Café, Avoriaz.';
 
 const ARRIVAL_BRIEF = [
   '13:00–14:00 Airport meet, Geneva Terminal 1 arrivals, by the lime green Tekoe tea shop.',
@@ -258,8 +268,12 @@ const RESOURCES = [
 const GUIDE = [
   ['Accommodation', 'Peak Basecamp', 'Where the cohort lives for the six weeks — our own chalet, new for 26/27. The whole course under one roof, coaches included. Washing machines on site.',
     '1787 Rte de la Plagne, 74110 Morzine', L.basecampMap, null, null],
-  ['Getting to Avoriaz', 'Up the hill each morning', 'You sleep in Morzine and train in Avoriaz, so there is a journey up at the start of each day. The meeting point and time are posted in the WhatsApp group the night before — check it before you go to bed, not in the morning.',
+  ['Getting to Avoriaz', 'Prodains gondola', 'How you get up the hill. On-snow mornings we meet here at 08:50 and ride up together, then start the session from Spot Café at the top.',
+    'Téléphérique des Prodains, Morzine', L.prodainsMap, null, 'Meet 08:50 on training days'],
+  ['Getting to Avoriaz', 'Free ski bus', 'The Morzine ski bus runs to Prodains and is free. It is the normal way up and down — you do not need a car and you do not need to pay.',
     null, null, null, null],
+  ['Course venues', 'Spot Café, Avoriaz', 'Where on-snow sessions start once everyone is up the hill.',
+    'Avoriaz', null, null, null],
   ['Getting here', 'Geneva Airport, Terminal 1', 'Airport meet is by the lime green Tekoe tea shop in the arrivals hall. Free wifi: connect to "Free Wifi GVA", enter your mobile number, use the code texted to you (120 minutes).',
     'Geneva Airport', L.genevaT1, null, null],
   ['Getting here', 'Geneva train station shops', 'Follow signs to "Gare CFF" from arrivals. Left luggage, Migros supermarket, restaurants.',
@@ -319,7 +333,7 @@ const ESSENTIALS = [
   ['Practical', 'What insurance do I need?',
     'Travel cover including medical and evacuation, personal-accident cover, and equipment cover.\n\nInstructing liability comes free with your BASI membership once you qualify — it does not cover you during the course.'],
   ['Practical', 'Getting between Morzine and Avoriaz',
-    'You live in Morzine and train in Avoriaz, so every training day starts with the trip up. The meeting point and time go in the WhatsApp group the night before.\n\nThe first aid assessments and some workshops are at Avoriaz venues — the tourist office in week 3, the Palais des Sports in week 5.'],
+    'You live in Morzine and train in Avoriaz, so every training day starts with the trip up.\n\nOn-snow mornings we meet at the Prodains gondola at 08:50 and ride up together, then start the session from Spot Café at the top. The Morzine ski bus to Prodains is free — no car needed, nothing to pay.\n\nThe first aid assessments and some workshops are at Avoriaz venues: the tourist office in week 3, the Palais des Sports in week 5.'],
   ['Practical', 'Laundry, cooking and kit',
     'You have access to washing machines, so pack about two weeks of casual clothes rather than six.\n\nNo cooking equipment is needed. A fondue set and raclette equipment are available free of charge.'],
   ['Practical', 'Avalanche equipment',
@@ -421,7 +435,14 @@ async function main() {
     return `${d.toISOString().slice(0, 10)}T${hhmm}:00+01:00`;
   };
 
-  const activities = PROGRAMME.map(([week, day, time, title, kind, extra]) => ({
+  const activities = PROGRAMME.map(([week, day, time, title, kind, extra]) => {
+    // Every morning on-snow session starts the same way, so it is a rule here
+    // rather than the same two lines copied onto forty activities. An activity
+    // that names its own meeting point keeps it.
+    const morning = kind === 'on_snow' && time === '09:00' && !extra.meeting_point;
+    const meetingPoint = extra.meeting_point ?? (morning ? MORNING_MEET : null);
+
+    return {
     cohort_id: cohort.id,
     starts_at: at(week, day, time),
     ends_at: extra.ends_at ? at(week, day, extra.ends_at) : null,
@@ -430,16 +451,17 @@ async function main() {
     // Deliberately null unless there is a real place to stand. The card falls
     // back to location when meeting_point is empty, and "Avoriaz" presented as
     // a meeting point is worse than showing nothing: it looks like an answer.
-    location: extra.meeting_point ? 'Avoriaz' : null,
-    meeting_point: extra.meeting_point ?? null,
-    map_url: extra.map_url ?? null,
+    location: meetingPoint ? 'Avoriaz' : null,
+    meeting_point: meetingPoint,
+    map_url: extra.map_url ?? (morning ? L.prodainsMap : null),
     coach: null,
     objective: extra.objective ?? null,
     bring: extra.bring ?? null,
     preparation: extra.preparation ?? null,
     workbook_module: extra.workbook_module ?? null,
     published: true,
-  }));
+    };
+  });
 
   const resources = RESOURCES.map(([week, topic, title, kind, href, description], i) => ({
     cohort_id: cohort.id, week, topic, title, kind, url: href, description, sort: i,
