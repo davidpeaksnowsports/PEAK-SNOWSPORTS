@@ -7,7 +7,9 @@
  * static HTML and served without ever passing through here — so each layout
  * asserts on its own `Astro.locals` user rather than trusting the guard alone.
  *
- * Everything outside those two prefixes passes straight through untouched.
+ * It also carries the site's CSRF check for form submissions — see
+ * `isSameSiteForm` below. Everything outside those two prefixes passes through
+ * untouched apart from that check.
  */
 import { defineMiddleware } from 'astro:middleware';
 import { getPortalUser, isPortalConfigured } from './lib/portal/supabase';
@@ -39,7 +41,81 @@ const normalise = (pathname: string) => pathname.replace(/\/+$/, '') || '/';
 const under = (path: string, prefix: string) =>
   path === prefix || path.startsWith(`${prefix}/`);
 
+/* ------------------------------------------------------------------ CSRF -- */
+
+const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+
+/**
+ * Content types a plain HTML form can produce, and therefore the ones a page on
+ * another origin can submit without CORS permission. JSON is excluded on
+ * purpose: a cross-origin fetch cannot set `Content-Type: application/json`
+ * without a preflight the browser will refuse.
+ */
+const FORM_CONTENT_TYPES = [
+  'application/x-www-form-urlencoded',
+  'multipart/form-data',
+  'text/plain',
+];
+
+/** First value of a possibly comma-joined proxy header. */
+const firstValue = (header: string | null) =>
+  header ? (header.split(',')[0] ?? '').trim() : '';
+
+/**
+ * Is this form submission coming from our own site?
+ *
+ * This replaces Astro's built-in `security.checkOrigin`, which is disabled in
+ * astro.config.mjs. That check compares the Origin header against the URL it
+ * reconstructs from the request, and behind Vercel's proxy that URL carries the
+ * internal host rather than the public one — so every form POST on the deployed
+ * site was rejected with "Cross-site POST form submissions are forbidden",
+ * while localhost, with no proxy in front of it, worked perfectly.
+ *
+ * Comparing against the forwarded host instead is what the built-in check is
+ * trying to do, done with the headers the proxy actually sets. It needs no
+ * allowlist: www, staging, preview deployments and localhost all satisfy it,
+ * and none of them satisfies it for a request originating anywhere else.
+ */
+function isSameSiteForm(request: Request): boolean {
+  const host = firstValue(
+    request.headers.get('x-forwarded-host') ?? request.headers.get('host'),
+  );
+  if (!host) return false;
+
+  const proto =
+    firstValue(request.headers.get('x-forwarded-proto')) ||
+    new URL(request.url).protocol.replace(':', '');
+
+  const origin = request.headers.get('origin');
+  if (origin) return origin === `${proto}://${host}`;
+
+  // A few clients omit Origin on same-origin form posts. Referer is a weaker
+  // signal but a real one; with neither, the request is refused.
+  const referer = request.headers.get('referer');
+  if (!referer) return false;
+  try {
+    return new URL(referer).host === host;
+  } catch {
+    return false;
+  }
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  const { request } = context;
+
+  // Site-wide, not just the portals: the no-JS fallback on the public enquiry
+  // and job-application forms posts urlencoded too.
+  if (UNSAFE_METHODS.has(request.method)) {
+    const contentType = request.headers.get('content-type') ?? '';
+    const isForm = FORM_CONTENT_TYPES.some((t) => contentType.includes(t));
+    if (isForm && !isSameSiteForm(request)) {
+      return new Response('Cross-site form submission blocked.', {
+        status: 403,
+        headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' },
+      });
+    }
+  }
+
   const path = normalise(context.url.pathname);
   const area = under(path, '/portal')
     ? 'portal'

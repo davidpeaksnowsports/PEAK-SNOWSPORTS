@@ -32,6 +32,12 @@ const jobLastmod = Object.fromEntries(
 // server-renders so it can mint a fresh SkiOperator embed token per request.
 export default defineConfig({
   site: 'https://www.peaksnowsports.com',
+  // Astro's own origin check reconstructs the request URL, which behind
+  // Vercel's proxy is the internal host — so it rejected every form POST on the
+  // deployed site while passing on localhost. src/middleware.ts does the same
+  // check against the forwarded host instead. Do not re-enable this without
+  // removing that one.
+  security: { checkOrigin: false },
   output: 'static',
   adapter: vercel(),
   integrations: [
