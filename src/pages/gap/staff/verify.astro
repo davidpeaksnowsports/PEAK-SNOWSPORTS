@@ -1,0 +1,221 @@
+---
+/**
+ * Experience verification queue.
+ *
+ * One list, oldest first, each row verifiable in a click. Hours only count
+ * towards a student's target once a coach has signed them off, so a queue that
+ * nobody works is a portal that tells every student they are behind.
+ *
+ * Rejection needs a reason — an entry pushed back without one just reappears
+ * unchanged next week.
+ */
+export const prerender = false;
+
+import GapLayout from '../../../layouts/GapLayout.astro';
+import Notice from '../../../components/gap-portal/Notice.astro';
+import { createGapClient, isStaff, type GapUser } from '../../../lib/gap/supabase';
+import { fmtDate, toHours } from '../../../lib/gap/course';
+
+const user = Astro.locals.gapUser as GapUser;
+if (!isStaff(user)) return Astro.redirect('/gap', 302);
+
+const db = createGapClient(Astro.cookies, Astro.request);
+const cohort = user.cohort;
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const id = String(form.get('id') ?? '');
+  const decision = String(form.get('decision') ?? '');
+  const note = String(form.get('note') ?? '').trim() || null;
+
+  if (!id || !['verified', 'rejected'].includes(decision)) {
+    flash = { tone: 'warn', message: 'That entry could not be updated.' };
+  } else if (decision === 'rejected' && !note) {
+    flash = {
+      tone: 'warn',
+      message: 'Say why you sent it back — otherwise it comes straight back.',
+    };
+  } else {
+    // verified_by and verified_at are stamped by the database trigger, not
+    // here, so they always reflect who actually made the call.
+    const { error } = await db
+      .from('gap_experience_log')
+      .update({ status: decision, verifier_note: note })
+      .eq('id', id);
+    flash = error
+      ? { tone: 'warn', message: `Could not save: ${error.message}` }
+      : {
+          tone: 'good',
+          message: decision === 'verified' ? 'Verified.' : 'Sent back.',
+        };
+  }
+}
+
+const { data: students } = cohort
+  ? await db
+      .from('gap_members')
+      .select('id, name')
+      .eq('cohort_id', cohort.id)
+      .eq('role', 'student')
+  : { data: [] };
+
+const nameOf = new Map((students ?? []).map((s) => [s.id as string, s.name as string]));
+
+const { data: queue } = await db
+  .from('gap_experience_log')
+  .select('*')
+  .eq('status', 'pending')
+  .order('happened_on');
+
+// RLS already limits this to the coach's own cohort; filtering again here keeps
+// an admin — who can see every cohort — looking at the one they are coaching.
+const entries = (queue ?? []).filter((e) => nameOf.has(e.student_id));
+
+const { data: recent } = await db
+  .from('gap_experience_log')
+  .select('id, student_id, happened_on, organisation, duration_minutes, status, verified_at')
+  .neq('status', 'pending')
+  .order('verified_at', { ascending: false })
+  .limit(8);
+---
+
+<GapLayout
+  title="Verify hours"
+  kicker={cohort?.name}
+  heading="Verification queue"
+  intro="Hours only count once you've signed them off. Oldest first."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {
+    entries.length === 0 ? (
+      <Notice tone="good" label="Nothing waiting">
+        <p>The queue is empty. Every logged hour has been signed off.</p>
+      </Notice>
+    ) : (
+      <ul class="space-y-10">
+        {entries.map((e) => (
+          <li class="border-t border-ink/10 pt-8 first:border-t-0 first:pt-0">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <h2 class="font-display text-xl font-bold">
+                <a
+                  href={`/gap/staff/student/${e.student_id}`}
+                  class="text-ink hover:text-accent"
+                >
+                  {nameOf.get(e.student_id) ?? 'Unknown'}
+                </a>
+                <span class="font-sans text-base font-normal text-ink-70">
+                  {' '}
+                  · {e.organisation}
+                </span>
+              </h2>
+              <p class="meta text-ink-45">
+                {fmtDate(e.happened_on)} · {toHours(e.duration_minutes)}h
+              </p>
+            </div>
+
+            <dl class="mt-3 grid gap-3 text-sm sm:grid-cols-4">
+              {[
+                ['Instructor', e.instructor_observed],
+                ['Location', e.location],
+                ['Level', e.group_level],
+                ['Role', e.student_role],
+              ].map(([label, value]) =>
+                value ? (
+                  <div>
+                    <dt class="meta text-ink-45">{label}</dt>
+                    <dd class="mt-1 text-ink-70">{value}</dd>
+                  </div>
+                ) : null,
+              )}
+            </dl>
+
+            {e.objective && (
+              <p class="mt-3 text-ink-70">
+                <span class="meta text-ink-45">Objective</span> {e.objective}
+              </p>
+            )}
+            {e.observations && (
+              <p class="mt-2 max-w-3xl text-ink-70">{e.observations}</p>
+            )}
+            {e.reflection && (
+              <p class="mt-2 max-w-3xl border-l-2 border-ink/20 pl-4 text-ink-70">
+                {e.reflection}
+              </p>
+            )}
+            {e.evidence_url && (
+              <p class="mt-2">
+                <a href={e.evidence_url} target="_blank" rel="noopener" class="text-accent">
+                  Evidence →
+                </a>
+              </p>
+            )}
+
+            <form method="POST" class="mt-5 flex flex-wrap items-end gap-3">
+              <input type="hidden" name="id" value={e.id} />
+
+              <label class="block flex-1 min-w-[16rem]">
+                <span class="meta text-ink-45">
+                  Note (required if you send it back)
+                </span>
+                <input
+                  type="text"
+                  name="note"
+                  class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                />
+              </label>
+
+              <button
+                type="submit"
+                name="decision"
+                value="verified"
+                class="bg-accent px-5 py-2 font-display font-bold text-paper transition-colors hover:bg-ink"
+              >
+                Verify
+              </button>
+              <button
+                type="submit"
+                name="decision"
+                value="rejected"
+                class="border border-ink/20 px-5 py-2 font-display font-bold text-ink transition-colors hover:border-ink"
+              >
+                Send back
+              </button>
+            </form>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  {
+    recent && recent.length > 0 && (
+      <section class="mt-16 border-t border-ink/10 pt-10">
+        <h2 class="font-display text-2xl font-bold">Recently decided</h2>
+        <ul class="mt-4 space-y-2">
+          {recent
+            .filter((r) => nameOf.has(r.student_id))
+            .map((r) => (
+              <li class="meta text-ink-45">
+                {nameOf.get(r.student_id)} · {r.organisation} ·{' '}
+                {toHours(r.duration_minutes)}h ·{' '}
+                <span class={r.status === 'verified' ? 'text-accent' : ''}>
+                  {r.status}
+                </span>
+              </li>
+            ))}
+        </ul>
+      </section>
+    )
+  }
+</GapLayout>

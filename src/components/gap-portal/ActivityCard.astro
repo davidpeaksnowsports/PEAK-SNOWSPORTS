@@ -1,0 +1,98 @@
+---
+/**
+ * One programme activity, everywhere it appears.
+ *
+ * Deliberately shows everything the student needs to turn up prepared — the
+ * meeting point and the kit list are the two fields that stop the WhatsApp
+ * questions, so they are never collapsed behind a "details" link.
+ */
+import { ACTIVITY_KINDS, fmtTime } from '../../lib/gap/course';
+
+interface Props {
+  activity: {
+    id: string;
+    title: string;
+    kind: string;
+    starts_at: string;
+    ends_at: string | null;
+    location: string | null;
+    meeting_point: string | null;
+    map_url: string | null;
+    coach: string | null;
+    objective: string | null;
+    bring: string | null;
+    preparation: string | null;
+    workbook_module: string | null;
+  };
+  /** Compact form for the dashboard's "next three". */
+  compact?: boolean;
+}
+
+const { activity: a, compact = false } = Astro.props;
+const kind = ACTIVITY_KINDS[a.kind] ?? { label: a.kind, tone: 'muted' };
+
+const when = a.ends_at
+  ? `${fmtTime(a.starts_at)}–${fmtTime(a.ends_at)}`
+  : fmtTime(a.starts_at);
+---
+
+<article class="border-t border-ink/10 py-5 first:border-t-0 first:pt-0">
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+    <span class="meta text-ink">{when}</span>
+    <span
+      class:list={[
+        'meta',
+        kind.tone === 'accent' ? 'text-accent' : 'text-ink-45',
+      ]}>{kind.label}</span
+    >
+    {a.coach && <span class="meta text-ink-45">{a.coach}</span>}
+  </div>
+
+  <h3 class="mt-2 font-display text-xl font-bold">{a.title}</h3>
+
+  {a.objective && <p class="mt-2 max-w-2xl text-ink-70">{a.objective}</p>}
+
+  {
+    (a.meeting_point || a.location) && (
+      <p class="mt-3 text-sm text-ink-70">
+        <span class="meta text-ink-45">Meet</span>{' '}
+        {a.meeting_point || a.location}
+        {a.map_url && (
+          <>
+            {' · '}
+            <a href={a.map_url} target="_blank" rel="noopener" class="text-accent">
+              Map
+            </a>
+          </>
+        )}
+      </p>
+    )
+  }
+
+  {
+    !compact && (a.bring || a.preparation || a.workbook_module) && (
+      <dl class="mt-4 grid gap-3 border-t border-ink/10 pt-4 text-sm sm:grid-cols-3">
+        {a.bring && (
+          <div>
+            <dt class="meta text-ink-45">Bring</dt>
+            <dd class="mt-1 text-ink-70">{a.bring}</dd>
+          </div>
+        )}
+        {a.preparation && (
+          <div>
+            <dt class="meta text-ink-45">Prepare</dt>
+            <dd class="mt-1 text-ink-70">{a.preparation}</dd>
+          </div>
+        )}
+        {a.workbook_module && (
+          <div>
+            <dt class="meta text-ink-45">Workbook</dt>
+            <dd class="mt-1 text-ink-70">
+              <a href="/gap/workbook" class="text-accent">{a.workbook_module}</a>
+            </dd>
+          </div>
+        )}
+      </dl>
+    )
+  }
+</article>

@@ -1,0 +1,342 @@
+---
+/**
+ * Feedback and support.
+ *
+ * Three genuinely different jobs, kept apart because merging them makes all
+ * three worse:
+ *
+ *  - Quick session feedback — high volume, low stakes, read in aggregate.
+ *  - Confidential course feedback — read by admins only, never by the coach it
+ *    might be about. That is enforced in the RLS policy, and this page says so
+ *    plainly, because feedback nobody believes is private is feedback nobody
+ *    gives.
+ *  - Support request — a problem that needs a person, so it also sends an
+ *    email rather than waiting for someone to check a dashboard.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, type GapUser } from '../../lib/gap/supabase';
+import { fmtDate } from '../../lib/gap/course';
+import { notifyStaff } from '../../lib/gap/notify';
+
+const user = Astro.locals.gapUser as GapUser;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+const SUPPORT_CATEGORIES = [
+  'Accommodation',
+  'Coaching',
+  'Welfare',
+  'Equipment',
+  'Travel',
+  'Portal or login',
+  'Something else',
+];
+
+const TABS = [
+  { key: 'session', label: "Today's session" },
+  { key: 'course', label: 'Course feedback' },
+  { key: 'support', label: 'Ask for help' },
+] as const;
+
+type Tab = (typeof TABS)[number]['key'];
+const raw = Astro.url.searchParams.get('kind');
+const tab: Tab = TABS.some((t) => t.key === raw) ? (raw as Tab) : 'session';
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const kind = String(form.get('kind') ?? '') as Tab;
+  const body = String(form.get('body') ?? '').trim();
+  const ratingRaw = form.get('rating');
+  const rating = ratingRaw ? Number(ratingRaw) : null;
+
+  if (!TABS.some((t) => t.key === kind)) {
+    flash = { tone: 'warn', message: 'Something went wrong — try again.' };
+  } else if (!body) {
+    flash = { tone: 'warn', message: 'Add a few words before sending.' };
+  } else {
+    const confidential =
+      kind === 'course' && form.get('confidential') === 'on';
+
+    const { error } = await db.from('gap_feedback').insert({
+      cohort_id: user.cohortId,
+      student_id: user.id,
+      kind,
+      category: String(form.get('category') ?? '').trim() || null,
+      subject: String(form.get('subject') ?? '').trim() || null,
+      rating: rating && rating >= 1 && rating <= 5 ? rating : null,
+      body,
+      confidential,
+    });
+
+    if (error) {
+      flash = { tone: 'warn', message: `Could not send: ${error.message}` };
+    } else {
+      // Support requests are the only kind that need someone to act today, so
+      // they are the only kind that email. A failure to send must not lose the
+      // request — it is already saved above, and notifyStaff never throws.
+      if (kind === 'support') {
+        await notifyStaff({
+          subject: `GAP support — ${form.get('category') || 'General'} — ${user.name}`,
+          lines: [
+            `From: ${user.name} <${user.email}>`,
+            `Cohort: ${user.cohort?.name ?? 'unassigned'}`,
+            `Category: ${form.get('category') || 'General'}`,
+            '',
+            body,
+          ],
+          replyTo: user.email,
+        });
+      }
+
+      flash = {
+        tone: 'good',
+        message:
+          kind === 'support'
+            ? "Sent. Someone will come back to you — if it's urgent, call the number on the essentials page."
+            : confidential
+              ? 'Sent confidentially. Only the Peak office can read it.'
+              : 'Sent. Thank you — this is how the course gets better.',
+      };
+    }
+  }
+}
+
+// A student's own history, so they can see what they've already said. Coach
+// replies are not a feature yet; a support request that needs a conversation
+// becomes an email thread.
+const { data: mine } = await db
+  .from('gap_feedback')
+  .select('id, kind, category, body, confidential, created_at, handled')
+  .eq('student_id', user.id)
+  .order('created_at', { ascending: false })
+  .limit(10);
+---
+
+<GapLayout
+  title="Feedback and support"
+  kicker={user.cohort?.name}
+  heading="Feedback and support"
+  intro="Three different things, on purpose. Quick feedback on a session, honest feedback on the course, or a problem you need someone to fix."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  <nav aria-label="Feedback type" class="border-b border-ink/10 pb-4">
+    <ul class="flex flex-wrap gap-1">
+      {
+        TABS.map((t) => (
+          <li>
+            <a
+              href={`/gap/feedback?kind=${t.key}`}
+              aria-current={tab === t.key ? 'page' : undefined}
+              class:list={[
+                'meta block px-4 py-2 no-underline transition-colors hover:no-underline',
+                tab === t.key
+                  ? 'bg-accent text-paper'
+                  : 'border border-ink/20 text-ink-70 hover:border-ink hover:text-ink',
+              ]}
+            >
+              {t.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  {/* ------------------------------------------------------ session feedback */}
+  {
+    tab === 'session' && (
+      <form method="POST" class="mt-10 max-w-2xl space-y-6">
+        <input type="hidden" name="kind" value="session" />
+
+        <div>
+          <label for="subject" class="meta mb-2 block text-ink-45">
+            Which session
+          </label>
+          <input
+            id="subject"
+            name="subject"
+            type="text"
+            placeholder="Morning on-snow, bumps"
+            class="w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        </div>
+
+        <fieldset>
+          <legend class="meta text-ink-45">How useful was it?</legend>
+          <div class="mt-2 flex gap-1">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <label class="cursor-pointer border border-ink/20 px-4 py-2 transition-colors hover:border-ink has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-paper">
+                <input type="radio" name="rating" value={n} class="sr-only" />
+                <span class="font-display font-bold">{n}</span>
+              </label>
+            ))}
+          </div>
+          <p class="mt-2 text-sm text-ink-45">1 = not much, 5 = a lot.</p>
+        </fieldset>
+
+        <div>
+          <label for="body" class="meta mb-2 block text-ink-45">
+            Was the level right? What's still unclear? What needs more time?
+          </label>
+          <textarea
+            id="body"
+            name="body"
+            rows="5"
+            required
+            class="w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+        >
+          Send feedback
+        </button>
+      </form>
+    )
+  }
+
+  {/* ------------------------------------------------------- course feedback */}
+  {
+    tab === 'course' && (
+      <form method="POST" class="mt-10 max-w-2xl space-y-6">
+        <input type="hidden" name="kind" value="course" />
+
+        <div>
+          <label for="body" class="meta mb-2 block text-ink-45">
+            What's working, and what isn't?
+          </label>
+          <textarea
+            id="body"
+            name="body"
+            rows="7"
+            required
+            class="w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        </div>
+
+        <label class="flex items-start gap-3">
+          <input
+            type="checkbox"
+            name="confidential"
+            class="mt-1 h-4 w-4 shrink-0 accent-accent"
+          />
+          <span>
+            <span class="text-ink">Send this confidentially</span>
+            <span class="block text-sm text-ink-70">
+              Only the Peak office can read confidential feedback. Your coaches
+              cannot — including the coach it might be about.
+            </span>
+          </span>
+        </label>
+
+        <button
+          type="submit"
+          class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+        >
+          Send feedback
+        </button>
+      </form>
+    )
+  }
+
+  {/* -------------------------------------------------------------- support */}
+  {
+    tab === 'support' && (
+      <form method="POST" class="mt-10 max-w-2xl space-y-6">
+        <input type="hidden" name="kind" value="support" />
+
+        <div>
+          <label for="category" class="meta mb-2 block text-ink-45">
+            What's it about?
+          </label>
+          <select
+            id="category"
+            name="category"
+            class="w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          >
+            {SUPPORT_CATEGORIES.map((c) => (
+              <option value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label for="body" class="meta mb-2 block text-ink-45">
+            Tell us what's happening
+          </label>
+          <textarea
+            id="body"
+            name="body"
+            rows="6"
+            required
+            class="w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+        >
+          Send request
+        </button>
+
+        <p class="text-sm text-ink-45">
+          This is not for emergencies. If someone is hurt or at risk, use the
+          numbers on the{' '}
+          <a href="/gap/essentials#emergency" class="text-accent">
+            essentials page
+          </a>
+          .
+        </p>
+      </form>
+    )
+  }
+
+  {/* ------------------------------------------------------------- weekly */}
+  <section class="mt-16 border-t border-ink/10 pt-10">
+    <h2 class="font-display text-2xl font-bold">Weekly check-in</h2>
+    <p class="mt-2 max-w-2xl text-ink-70">
+      Two minutes, once a week. It's the fastest way to tell us you're
+      struggling before it becomes a problem.
+    </p>
+    <p class="mt-4">
+      <a href="/gap/checkin" class="text-accent">Do this week's check-in →</a>
+    </p>
+  </section>
+
+  {
+    mine && mine.length > 0 && (
+      <section class="mt-16 border-t border-ink/10 pt-10">
+        <h2 class="font-display text-2xl font-bold">What you've sent</h2>
+        <ul class="mt-6 space-y-5">
+          {mine.map((f) => (
+            <li class="border-t border-ink/10 pt-4">
+              <p class="meta text-ink-45">
+                {fmtDate(f.created_at)} · {f.kind}
+                {f.category && ` · ${f.category}`}
+                {f.confidential && ' · Confidential'}
+                {f.handled && ' · Actioned'}
+              </p>
+              <p class="mt-1 text-ink-70">{f.body}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</GapLayout>

@@ -1,0 +1,257 @@
+---
+/**
+ * Weekly check-in.
+ *
+ * Two minutes, five questions, once a week. The point is not the answers —
+ * it is `wants_chat`, which is how a struggling student raises a hand without
+ * having to be the one who starts the conversation. That flag is what the
+ * coach dashboard sorts on.
+ *
+ * One row per (student, week), so a second submission in the same week edits
+ * the first rather than stacking up a second opinion.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, type GapUser } from '../../lib/gap/supabase';
+import { courseWeek } from '../../lib/gap/course';
+import { notifyStaff } from '../../lib/gap/notify';
+
+const user = Astro.locals.gapUser as GapUser;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+const progress = user.cohort
+  ? courseWeek(user.cohort)
+  : { week: 0, totalWeeks: 0, daysUntilStart: 0, finished: false };
+const currentWeek = progress.week;
+const totalWeeks = progress.totalWeeks;
+
+// Week 0 means the course hasn't started; file that under week 1 so a keen
+// student filling this in on the plane isn't rejected.
+const week = Math.max(1, currentWeek);
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const wantsChat = form.get('wants_chat') === 'on';
+  const num = (name: string) => {
+    const v = Number(form.get(name));
+    return Number.isInteger(v) && v >= 1 && v <= 5 ? v : null;
+  };
+
+  const { error } = await db.from('gap_checkins').upsert(
+    {
+      student_id: user.id,
+      week,
+      confidence: num('confidence'),
+      energy: num('energy'),
+      improved: String(form.get('improved') ?? '').trim() || null,
+      struggling: String(form.get('struggling') ?? '').trim() || null,
+      focus: String(form.get('focus') ?? '').trim() || null,
+      wants_chat: wantsChat,
+    },
+    { onConflict: 'student_id,week' },
+  );
+
+  if (error) {
+    flash = { tone: 'warn', message: `Could not save: ${error.message}` };
+  } else {
+    // A request to talk is the one answer that should not wait for someone to
+    // open a dashboard.
+    if (wantsChat) {
+      await notifyStaff({
+        subject: `GAP check-in — ${user.name} would like a chat (week ${week})`,
+        lines: [
+          `${user.name} <${user.email}> ticked "I'd like to speak to a coach privately".`,
+          `Cohort: ${user.cohort?.name ?? 'unassigned'} · Week ${week}`,
+          '',
+          `Struggling with: ${form.get('struggling') || '(not said)'}`,
+          `Focus next week: ${form.get('focus') || '(not said)'}`,
+        ],
+        replyTo: user.email,
+      });
+    }
+
+    flash = {
+      tone: 'good',
+      message: wantsChat
+        ? "Saved. A coach will find you — you don't need to do anything else."
+        : 'Saved. See you next week.',
+    };
+  }
+}
+
+const { data: existing } = await db
+  .from('gap_checkins')
+  .select('*')
+  .eq('student_id', user.id)
+  .eq('week', week)
+  .maybeSingle();
+
+const { data: history } = await db
+  .from('gap_checkins')
+  .select('week, confidence, energy, focus')
+  .eq('student_id', user.id)
+  .order('week');
+
+const SCALE_5 = [1, 2, 3, 4, 5];
+---
+
+<GapLayout
+  title="Weekly check-in"
+  kicker={`Week ${week}${totalWeeks ? ` of ${totalWeeks}` : ''}`}
+  heading="Weekly check-in"
+  intro="Two minutes. Honest answers are more useful than positive ones — nobody is marked on this."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {
+    existing && !flash && (
+      <div class="mb-8">
+        <Notice label={`Week ${week} already done`}>
+          <p>
+            You've checked in this week. Changing anything below updates that
+            answer rather than adding a second one.
+          </p>
+        </Notice>
+      </div>
+    )
+  }
+
+  <form method="POST" class="max-w-2xl space-y-8">
+    <fieldset>
+      <legend class="font-display text-lg font-bold">
+        How confident do you feel right now?
+      </legend>
+      <div class="mt-3 flex gap-1">
+        {
+          SCALE_5.map((n) => (
+            <label class="cursor-pointer border border-ink/20 px-4 py-2 transition-colors hover:border-ink has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-paper">
+              <input
+                type="radio"
+                name="confidence"
+                value={n}
+                checked={existing?.confidence === n}
+                class="sr-only"
+              />
+              <span class="font-display font-bold">{n}</span>
+            </label>
+          ))
+        }
+      </div>
+      <p class="mt-2 text-sm text-ink-45">1 = out of my depth, 5 = on it.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend class="font-display text-lg font-bold">
+        How's your physical energy?
+      </legend>
+      <div class="mt-3 flex gap-1">
+        {
+          SCALE_5.map((n) => (
+            <label class="cursor-pointer border border-ink/20 px-4 py-2 transition-colors hover:border-ink has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-paper">
+              <input
+                type="radio"
+                name="energy"
+                value={n}
+                checked={existing?.energy === n}
+                class="sr-only"
+              />
+              <span class="font-display font-bold">{n}</span>
+            </label>
+          ))
+        }
+      </div>
+      <p class="mt-2 text-sm text-ink-45">
+        1 = running on empty, 5 = fresh. Six weeks is a long time on snow.
+      </p>
+    </fieldset>
+
+    <label class="block">
+      <span class="font-display text-lg font-bold">What improved this week?</span>
+      <textarea
+        name="improved"
+        rows="3"
+        class="mt-2 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        >{existing?.improved ?? ''}</textarea
+      >
+    </label>
+
+    <label class="block">
+      <span class="font-display text-lg font-bold">
+        What are you struggling with?
+      </span>
+      <textarea
+        name="struggling"
+        rows="3"
+        class="mt-2 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        >{existing?.struggling ?? ''}</textarea
+      >
+    </label>
+
+    <label class="block">
+      <span class="font-display text-lg font-bold">
+        What's your focus for next week?
+      </span>
+      <textarea
+        name="focus"
+        rows="2"
+        class="mt-2 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        >{existing?.focus ?? ''}</textarea
+      >
+    </label>
+
+    <label class="flex items-start gap-3 border-t border-ink/10 pt-6">
+      <input
+        type="checkbox"
+        name="wants_chat"
+        checked={existing?.wants_chat ?? false}
+        class="mt-1 h-4 w-4 shrink-0 accent-accent"
+      />
+      <span>
+        <span class="font-display font-bold text-ink">
+          I'd like to speak to a coach privately
+        </span>
+        <span class="block text-sm text-ink-70">
+          Tick this and someone will find you. You don't have to say why here.
+        </span>
+      </span>
+    </label>
+
+    <button
+      type="submit"
+      class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+    >
+      {existing ? 'Update my check-in' : 'Send my check-in'}
+    </button>
+  </form>
+
+  {
+    history && history.length > 1 && (
+      <section class="mt-16 border-t border-ink/10 pt-10">
+        <h2 class="font-display text-2xl font-bold">Your weeks so far</h2>
+        <ul class="mt-6 space-y-4">
+          {history.map((h) => (
+            <li class="flex flex-wrap items-baseline gap-x-6 border-t border-ink/10 pt-4">
+              <span class="meta text-ink-45">Week {h.week}</span>
+              <span class="text-sm text-ink-70">
+                Confidence {h.confidence ?? '—'} · Energy {h.energy ?? '—'}
+              </span>
+              {h.focus && <span class="text-sm text-ink-70">{h.focus}</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</GapLayout>

@@ -1,0 +1,121 @@
+---
+/**
+ * Course essentials — the answers to everything students ask twice.
+ *
+ * Urgent entries (emergency procedure, key contacts) pin to the top of the
+ * page under a stable #emergency anchor the dashboard links to, so the fastest
+ * route to "what do I do if someone is hurt" is two taps from any page.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, type GapUser } from '../../lib/gap/supabase';
+
+const user = Astro.locals.gapUser as GapUser;
+const cohort = user.cohort;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+const { data } = cohort
+  ? await db
+      .from('gap_essentials')
+      .select('*')
+      .eq('cohort_id', cohort.id)
+      .order('urgent', { ascending: false })
+      .order('sort')
+  : { data: [] };
+
+const entries = data ?? [];
+const urgent = entries.filter((e) => e.urgent);
+const rest = entries.filter((e) => !e.urgent);
+
+const categories = new Map<string, typeof rest>();
+for (const e of rest) {
+  if (!categories.has(e.category)) categories.set(e.category, []);
+  categories.get(e.category)!.push(e);
+}
+
+const slug = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+---
+
+<GapLayout
+  title="Course essentials"
+  kicker={cohort?.name}
+  heading="Course essentials"
+  intro="Contacts, policies and the answers to the questions that come up every intake."
+>
+  {
+    entries.length === 0 ? (
+      <Notice>
+        <p>Nothing published yet.</p>
+      </Notice>
+    ) : (
+      <>
+        {urgent.length > 0 && (
+          <section id="emergency" class="scroll-mt-6">
+            <h2 class="font-display text-2xl font-bold">If something goes wrong</h2>
+            <div class="mt-5 space-y-px border border-ink/10 bg-ink/10">
+              {urgent.map((e) => (
+                <article class="bg-paper p-5">
+                  <p class="meta text-accent">{e.category}</p>
+                  <h3 class="mt-1 font-display text-lg font-bold">{e.title}</h3>
+                  <div class="mt-2 whitespace-pre-line text-ink-70">{e.body}</div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {categories.size > 0 && (
+          <>
+            <nav aria-label="Categories" class="mt-12 border-b border-ink/10 pb-4">
+              <ul class="flex flex-wrap gap-x-4 gap-y-2">
+                {[...categories.keys()].map((c) => (
+                  <li>
+                    <a href={`#${slug(c)}`} class="meta text-ink-70 hover:text-ink">
+                      {c}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div class="mt-10 space-y-14">
+              {[...categories.entries()].map(([category, rows]) => (
+                <section id={slug(category)} class="scroll-mt-6">
+                  <h2 class="font-display text-2xl font-bold">{category}</h2>
+                  <dl class="mt-5 space-y-6">
+                    {rows.map((e) => (
+                      <div class="border-t border-ink/10 pt-5">
+                        <dt class="font-display text-lg font-bold">{e.title}</dt>
+                        <dd class="mt-2 max-w-2xl whitespace-pre-line text-ink-70">
+                          {e.body}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              ))}
+            </div>
+          </>
+        )}
+      </>
+    )
+  }
+
+  <section class="mt-16 border-t border-ink/10 pt-10">
+    <h2 class="font-display text-2xl font-bold">Still stuck?</h2>
+    <p class="mt-2 max-w-2xl text-ink-70">
+      If the answer isn't here, ask — that is what the support form is for, and
+      a question asked twice means this page needs fixing.
+    </p>
+    <p class="mt-4">
+      <a
+        href="/gap/feedback"
+        class="inline-block bg-accent px-5 py-3 font-display font-bold text-paper no-underline transition-colors hover:bg-ink hover:no-underline"
+        >Ask for help</a
+      >
+    </p>
+  </section>
+</GapLayout>

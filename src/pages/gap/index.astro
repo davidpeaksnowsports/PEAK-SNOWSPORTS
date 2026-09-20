@@ -1,0 +1,366 @@
+---
+/**
+ * Student dashboard.
+ *
+ * The brief for this page is "useful immediately after login, not a menu", so
+ * it answers the three questions the portal exists to answer: what am I doing
+ * next, what do I need to complete, am I on track. Navigation is in the header
+ * where it belongs; nothing here is a tile whose only job is to be a link.
+ *
+ * Before the course starts it flips to a pre-arrival view — countdown,
+ * checklist, initial self-assessment — because a programme that hasn't begun
+ * and a readiness score from no assessments would both be noise.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import Stat from '../../components/gap-portal/Stat.astro';
+import ActivityCard from '../../components/gap-portal/ActivityCard.astro';
+import { createGapClient, isStaff, type GapUser } from '../../lib/gap/supabase';
+import {
+  GROUPS,
+  courseWeek,
+  dayKey,
+  fmtDate,
+  daysBetween,
+  readiness,
+  readinessTone,
+  TONE_LABEL,
+} from '../../lib/gap/course';
+import {
+  listCriteria,
+  listScores,
+  latestCoachScores,
+  experienceTotals,
+  upcomingActivities,
+  activitiesOn,
+  listAnnouncements,
+  openTasks,
+  checklistProgress,
+  workbookProgress,
+} from '../../lib/gap/data';
+
+const user = Astro.locals.gapUser as GapUser;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+const cohort = user.cohort;
+const today = dayKey(new Date());
+
+// A member with no cohort can't be shown a course. Happens between intakes and
+// for a freshly created account the office hasn't assigned yet.
+const hasCohort = Boolean(cohort);
+
+const [
+  todays,
+  next,
+  announcements,
+  tasks,
+  criteria,
+  scores,
+  experience,
+  workbook,
+  preArrival,
+  packing,
+] = hasCohort
+  ? await Promise.all([
+      activitiesOn(db, cohort!.id, today),
+      upcomingActivities(db, cohort!.id, 3),
+      listAnnouncements(db, cohort!.id, 3),
+      openTasks(db, user.id),
+      listCriteria(db),
+      listScores(db, user.id),
+      experienceTotals(db, user.id),
+      workbookProgress(db, cohort!.id, user.id),
+      checklistProgress(db, cohort!.id, user.id, true),
+      checklistProgress(db, cohort!.id, user.id, false),
+    ])
+  : [[], [], [], [], [], [], null, null, null, null];
+
+const week = cohort
+  ? courseWeek(cohort)
+  : { week: 0, totalWeeks: 0, daysUntilStart: 0, finished: false };
+
+const coachScores = latestCoachScores(scores);
+const groupReadiness = GROUPS.map((g) => ({
+  ...g,
+  ...readiness(criteria, coachScores, g.key),
+}));
+
+// One headline tone for the whole course, taken from the weakest of the three
+// strands. Averaging them would let strong skiing hide weak teaching, which is
+// the exact failure mode this page is meant to catch.
+const weakest = groupReadiness.reduce(
+  (lowest, g) => (g.percent < lowest.percent ? g : lowest),
+  groupReadiness[0] ?? { percent: 0 },
+);
+const assessed = coachScores.size > 0;
+const tone = readinessTone(weakest.percent ?? 0, week.week, week.totalWeeks);
+
+const daysToAssessment =
+  cohort?.assessment_on ? daysBetween(new Date(), cohort.assessment_on) : null;
+
+// The headline line from the brief: "Week 3 of 6 · Developing as planned ·
+// 14 days until assessment". Each part is dropped rather than faked when the
+// data isn't there yet.
+const headline = [
+  week.week > 0 ? `Week ${week.week} of ${week.totalWeeks}` : null,
+  assessed ? TONE_LABEL[tone] : null,
+  daysToAssessment !== null && daysToAssessment > 0
+    ? `${daysToAssessment} days until assessment`
+    : null,
+].filter(Boolean);
+
+// Remaining experience hours, which is the number students actually chase.
+const targetHours = cohort?.experience_target_hours ?? 0;
+const hoursLeft = experience
+  ? Math.max(0, Math.round((targetHours - experience.verified) * 10) / 10)
+  : 0;
+
+const firstName = user.name.split(' ')[0];
+---
+
+<GapLayout
+  title="Dashboard"
+  kicker={cohort ? `${cohort.name} · ${cohort.resort}` : 'Peak GAP'}
+  heading={week.daysUntilStart > 0
+    ? `${week.daysUntilStart} days to go, ${firstName}.`
+    : `Morning, ${firstName}.`}
+>
+  {
+    !hasCohort && (
+      <Notice tone="warn" label="No cohort yet">
+        <p>
+          Your account isn't on a course intake yet, so there's nothing to show.
+          Email{' '}
+          <a href="mailto:hello@peaksnowsports.com">hello@peaksnowsports.com</a>{' '}
+          and we'll sort it.
+        </p>
+      </Notice>
+    )
+  }
+
+  {
+    hasCohort && (
+      <>
+        {headline.length > 0 && (
+          <p class="-mt-6 mb-10 font-display text-xl font-bold text-ink md:text-2xl">
+            {headline.join(' · ')}
+          </p>
+        )}
+
+        {isStaff(user) && (
+          <div class="mb-10">
+            <Notice label="Coach account">
+              <p>
+                You're seeing the student view. The{' '}
+                <a href="/gap/staff">coach area</a> has the cohort overview, bulk
+                assessment and experience verification.
+              </p>
+            </Notice>
+          </div>
+        )}
+
+        {/* ------------------------------------------------ today / next up */}
+        <section class="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+          <div>
+            <h2 class="font-display text-2xl font-bold">
+              {todays.length > 0 ? 'Today at Peak' : 'Next up'}
+            </h2>
+            <p class="meta mt-2 text-ink-45">{fmtDate(new Date())}</p>
+
+            <div class="mt-6">
+              {todays.length > 0 ? (
+                todays.map((a) => <ActivityCard activity={a} />)
+              ) : next.length > 0 ? (
+                next.map((a) => (
+                  <div>
+                    <p class="meta mt-5 text-ink-45">{fmtDate(a.starts_at)}</p>
+                    <ActivityCard activity={a} compact />
+                  </div>
+                ))
+              ) : (
+                <Notice>
+                  <p>
+                    No sessions on the programme yet. Your coach publishes the
+                    week before it starts.
+                  </p>
+                </Notice>
+              )}
+            </div>
+
+            <p class="mt-6">
+              <a href="/gap/programme" class="text-accent">
+                Full programme →
+              </a>
+            </p>
+          </div>
+
+          {/* --------------------------------------------------- your actions */}
+          <div>
+            <h2 class="font-display text-2xl font-bold">Your actions</h2>
+            <p class="mt-2 text-sm text-ink-70">
+              Set by your coach. Everything here has a deadline.
+            </p>
+
+            {tasks.length > 0 ? (
+              <ul class="mt-6 space-y-4">
+                {tasks.map((t) => (
+                  <li class="border-t border-ink/10 pt-4">
+                    <p class="font-semibold text-ink">{t.title}</p>
+                    {t.detail && (
+                      <p class="mt-1 text-sm text-ink-70">{t.detail}</p>
+                    )}
+                    {t.due_on && (
+                      <p class="meta mt-2 text-ink-45">
+                        Due {fmtDate(t.due_on)}
+                      </p>
+                    )}
+                    <form method="POST" action="/gap/progress" class="mt-2">
+                      <input type="hidden" name="intent" value="complete-task" />
+                      <input type="hidden" name="task_id" value={t.id} />
+                      <button
+                        type="submit"
+                        class="meta text-accent underline-offset-4 hover:underline"
+                      >
+                        Mark done
+                      </button>
+                    </form>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="mt-6 border-t border-ink/10 pt-4 text-ink-70">
+                Nothing outstanding. Your coach will add actions after your next
+                assessment.
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* ------------------------------------------------------- the numbers */}
+        <section class="mt-16 border-t border-ink/10 pt-10">
+          <h2 class="font-display text-2xl font-bold">Where you are</h2>
+          <p class="mt-2 max-w-2xl text-ink-70">
+            Readiness is your coach's view of how much of the assessment
+            criteria you're currently showing — an informed coaching indicator,
+            not a prediction that you'll pass.
+          </p>
+
+          <div class="mt-6 grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
+            {groupReadiness.map((g) => (
+              <Stat
+                label={`${g.label} readiness`}
+                value={g.scored ? `${g.percent}%` : '—'}
+                hint={
+                  g.scored
+                    ? `${g.scored} of ${g.total} criteria assessed`
+                    : 'Not assessed yet'
+                }
+                href="/gap/progress"
+              />
+            ))}
+            <Stat
+              label="Experience"
+              value={`${experience?.verified ?? 0} / ${targetHours} h`}
+              hint={
+                experience && experience.pending > 0
+                  ? `${experience.pending}h awaiting verification`
+                  : hoursLeft > 0
+                    ? `${hoursLeft}h still to log`
+                    : 'Target met'
+              }
+              href="/gap/experience"
+            />
+            <Stat
+              label="Workbook"
+              value={
+                workbook && workbook.total
+                  ? `${workbook.done} / ${workbook.total}`
+                  : '—'
+              }
+              hint="Modules complete"
+              href="/gap/workbook"
+            />
+            <Stat
+              label="Pre-arrival"
+              value={
+                preArrival && preArrival.total
+                  ? `${preArrival.done} / ${preArrival.total}`
+                  : '—'
+              }
+              hint="Tasks done before you travel"
+              href="/gap/checklist"
+            />
+            <Stat
+              label="Packing"
+              value={
+                packing && packing.total ? `${packing.done} / ${packing.total}` : '—'
+              }
+              hint="Items ticked off"
+              href="/gap/checklist"
+            />
+          </div>
+
+          {!assessed && (
+            <p class="mt-6 text-ink-70">
+              No coach assessment yet.{' '}
+              <a href="/gap/progress" class="text-accent">
+                Complete your starting self-assessment
+              </a>{' '}
+              so your first session starts from something.
+            </p>
+          )}
+        </section>
+
+        {/* ----------------------------------------------------- announcements */}
+        {announcements.length > 0 && (
+          <section class="mt-16 border-t border-ink/10 pt-10">
+            <h2 class="font-display text-2xl font-bold">Announcements</h2>
+            <ul class="mt-6 space-y-6">
+              {announcements.map((a) => (
+                <li class="border-t border-ink/10 pt-5 first:border-t-0 first:pt-0">
+                  <p class="meta text-ink-45">
+                    {fmtDate(a.published_at)}
+                    {a.pinned && ' · Pinned'}
+                  </p>
+                  <h3 class="mt-1 font-display text-lg font-bold">{a.title}</h3>
+                  <p class="mt-2 whitespace-pre-line text-ink-70">{a.body}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* -------------------------------------------------------- quick links */}
+        <section class="mt-16 border-t border-ink/10 pt-10">
+          <h2 class="font-display text-2xl font-bold">In a hurry</h2>
+          <ul class="mt-6 flex flex-wrap gap-3">
+            {[
+              { href: '/gap/essentials#emergency', label: 'Emergency contacts' },
+              { href: '/gap/resort', label: 'Resort map' },
+              { href: '/gap/checklist', label: 'Packing list' },
+              { href: '/gap/experience', label: 'Log experience hours' },
+              { href: '/gap/checkin', label: 'Weekly check-in' },
+              { href: '/gap/feedback', label: 'Ask for help' },
+            ].map((l, i) => (
+              <li>
+                <a
+                  href={l.href}
+                  class:list={[
+                    'inline-block px-5 py-3 font-display font-bold no-underline transition-colors hover:no-underline',
+                    i === 0
+                      ? 'bg-accent text-paper hover:bg-ink'
+                      : 'border border-ink/20 text-ink hover:border-ink',
+                  ]}
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </>
+    )
+  }
+</GapLayout>

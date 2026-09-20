@@ -1,0 +1,142 @@
+---
+/**
+ * Shell for every GAP student portal page.
+ *
+ * Same reasoning as PortalLayout: no public nav, no footer sitemap, no
+ * analytics, no Open Graph — but the Winter Collection type and colour, so it
+ * still looks like Peak. Kept as a separate file rather than a prop on
+ * PortalLayout because the two have different navigation, different audiences
+ * and will diverge further, not less.
+ */
+import '../styles/global.css';
+import { GAP_SECTIONS } from '../lib/gap/course';
+import { isStaff, type GapUser } from '../lib/gap/supabase';
+
+interface Props {
+  title: string;
+  kicker?: string;
+  heading?: string;
+  intro?: string;
+  /** False on login and password pages, which have no signed-in user. */
+  chrome?: boolean;
+  /** Wider measure for the coach's bulk-assessment grid. */
+  wide?: boolean;
+}
+
+const { title, kicker, heading, intro, chrome = true, wide = false } = Astro.props;
+const user = Astro.locals.gapUser as GapUser | null;
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (href: string, exact = false) =>
+  exact ? path === href : path === href || path.startsWith(`${href}/`);
+
+// Staff get the student sections too — a coach needs to see what the students
+// see — with their own area appended rather than replacing it.
+const sections =
+  user && isStaff(user)
+    ? [...GAP_SECTIONS, { href: '/gap/staff', label: 'Coach' }]
+    : GAP_SECTIONS;
+
+const shell = wide ? 'max-w-7xl' : 'max-w-6xl';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} · Peak GAP</title>
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Source+Sans+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-paper text-ink">
+    <a
+      href="#gap-main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-ink focus:px-4 focus:py-2 focus:text-paper"
+      >Skip to content</a
+    >
+
+    {
+      chrome && user && (
+        <header class="border-b border-ink/10">
+          <div class:list={['mx-auto flex items-center justify-between gap-4 px-6 py-4', shell]}>
+            <a href="/gap" class="no-underline hover:no-underline">
+              <span class="meta text-ink-45">Peak Snowsports</span>
+              <span class="block font-display text-lg font-bold leading-none">
+                GAP course
+              </span>
+            </a>
+
+            <div class="flex items-center gap-4">
+              <span class="hidden text-sm text-ink-70 sm:inline">{user.name}</span>
+              <form method="POST" action="/gap/logout">
+                <button
+                  type="submit"
+                  class="meta border border-ink/20 px-3 py-2 text-ink-70 transition-colors hover:border-ink hover:text-ink"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <nav aria-label="Portal sections" class="border-t border-ink/10">
+            <ul class:list={['mx-auto flex gap-1 overflow-x-auto px-6 py-1', shell]}>
+              {sections.map((s) => (
+                <li>
+                  <a
+                    href={s.href}
+                    aria-current={isActive(s.href, (s as { exact?: boolean }).exact) ? 'page' : undefined}
+                    class:list={[
+                      'meta block whitespace-nowrap border-b-2 px-3 py-3 no-underline transition-colors hover:no-underline',
+                      isActive(s.href, (s as { exact?: boolean }).exact)
+                        ? 'border-accent text-accent'
+                        : 'border-transparent text-ink-70 hover:text-ink',
+                    ]}
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </header>
+      )
+    }
+
+    <main id="gap-main" class:list={['mx-auto px-6 py-10 md:py-14', shell]}>
+      {
+        (kicker || heading || intro) && (
+          <div class="mb-10 max-w-3xl">
+            {kicker && <p class="meta mb-3 text-ink-45">{kicker}</p>}
+            {heading && (
+              <h1 class="font-display text-4xl font-bold md:text-5xl">{heading}</h1>
+            )}
+            {intro && <p class="mt-4 text-lg text-ink-70">{intro}</p>}
+          </div>
+        )
+      }
+      <slot />
+    </main>
+
+    {
+      chrome && (
+        <footer class="mt-16 border-t border-ink/10">
+          <div class:list={['mx-auto px-6 py-8', shell]}>
+            <p class="meta text-ink-45">
+              Peak GAP · Course material for enrolled students
+            </p>
+          </div>
+        </footer>
+      )
+    }
+  </body>
+</html>

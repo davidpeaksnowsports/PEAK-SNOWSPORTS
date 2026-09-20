@@ -48,6 +48,9 @@ export default defineConfig({
         !page.includes('/api/') &&
         !page.includes('/admin') &&
         !page.includes('/portal') &&
+        // The GAP student portal. Note /gap-course, the public page, must
+        // stay in — hence the trailing slash rather than a bare '/gap'.
+        !page.includes('/gap/') &&
         !page.includes('/_'),
       changefreq: 'weekly',
       priority: 0.7,

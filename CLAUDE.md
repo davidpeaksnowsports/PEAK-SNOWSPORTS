@@ -415,6 +415,29 @@ Every portal route sets `prerender = false`; `src/middleware.ts` guards them.
 
 ---
 
+## 11b. GAP student portal
+
+A second server-rendered area at `/gap`, behind the same Supabase login, for
+students on the six-week GAP course. See [`GAP-PORTAL.md`](./GAP-PORTAL.md) for
+setup and the full rationale.
+
+- **`/gap` is the portal; `/gap-course` is the public marketing page.** The
+  middleware prefix test is segment-exact for exactly this reason — a bare
+  `startsWith('/gap')` would put the page that sells the course behind a login.
+- **Its data is in Supabase Postgres, not Sanity.** Unlike the instructor
+  portal, which stores documents, this is structured records — activities,
+  criteria, scores, log entries — which want a schema and row-level security.
+- **Students and instructors are separate tables.** A `gap_members` row and an
+  `instructors` row are unrelated even for the same person; neither area reads
+  the other's profile.
+- **Readiness is a coaching indicator, not a prediction.** Coach scores only,
+  three strands never averaged into one, and the headline takes the weakest
+  strand. Don't "improve" this into a single score.
+
+Every `/gap` route sets `prerender = false`.
+
+---
+
 ## 12. Stakeholders
 
 - **David Walton** — Director, founder voice, sign-off authority

@@ -1,0 +1,403 @@
+---
+/**
+ * My progress — the six-point benchmark.
+ *
+ * Every criterion shows the student's own view and the coach's side by side,
+ * with the movement since last time and whatever the coach wrote. The student
+ * can change their self-assessment at any point; the coach column is read-only
+ * here and written from /gap/staff/assess.
+ *
+ * Readiness percentages are coach scores only. A self-assessment sitting
+ * beside them is the point of the page — a student who rates themselves 5 where
+ * their coach says 3 has found the most useful conversation of their week — but
+ * it must never move the headline number.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, type GapUser } from '../../lib/gap/supabase';
+import {
+  GROUPS,
+  SCALE,
+  courseWeek,
+  fmtDate,
+  readiness,
+  readinessTone,
+  scaleLabel,
+  TONE_LABEL,
+} from '../../lib/gap/course';
+import {
+  byCriterion,
+  latestCoachScores,
+  listCriteria,
+  listScores,
+  experienceTotals,
+  openTasks,
+} from '../../lib/gap/data';
+
+const user = Astro.locals.gapUser as GapUser;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const intent = String(form.get('intent') ?? 'self-assess');
+
+  if (intent === 'complete-task') {
+    // Posted from the dashboard's action list as well as from this page.
+    const id = String(form.get('task_id') ?? '');
+    if (id) {
+      await db.from('gap_tasks').update({ status: 'done' }).eq('id', id);
+    }
+    return Astro.redirect(
+      String(form.get('return') ?? '/gap/progress?saved=task'),
+      303,
+    );
+  }
+
+  // Self-assessment. A changed criterion becomes a new row rather than an
+  // update, because the table is the history the trend is drawn from.
+  //
+  // The form submits every criterion, with each radio pre-checked at the
+  // student's current score — so only the ones that actually moved are
+  // written. Without this, one "Save" click would file 25 duplicate rows and
+  // flatten the trend on every criterion the student didn't touch.
+  const existing = byCriterion(await listScores(db, user.id), 'self');
+
+  const rows: {
+    student_id: string;
+    criterion_id: string;
+    source: 'self';
+    score: number;
+    comment: string | null;
+  }[] = [];
+
+  for (const [key, value] of form.entries()) {
+    const match = /^score:(.+)$/.exec(key);
+    if (!match) continue;
+    const score = Number(value);
+    if (!Number.isInteger(score) || score < 1 || score > 6) continue;
+
+    const criterionId = match[1];
+    const comment = String(form.get(`note:${criterionId}`) ?? '').trim() || null;
+    const last = existing.get(criterionId)?.latest;
+    if (last && last.score === score && (last.comment ?? null) === comment) {
+      continue;
+    }
+
+    rows.push({
+      student_id: user.id,
+      criterion_id: criterionId,
+      source: 'self',
+      score,
+      comment,
+    });
+  }
+
+  if (rows.length === 0) {
+    flash = { tone: 'good', message: 'Nothing changed, so nothing was saved.' };
+  } else {
+    const { error } = await db.from('gap_scores').insert(rows);
+    flash = error
+      ? { tone: 'warn', message: `Could not save: ${error.message}` }
+      : {
+          tone: 'good',
+          message: `Saved ${rows.length} ${rows.length === 1 ? 'rating' : 'ratings'}.`,
+        };
+  }
+}
+
+if (Astro.url.searchParams.get('saved') === 'task') {
+  flash = { tone: 'good', message: 'Action marked done.' };
+}
+
+const [criteria, scores, experience, tasks] = await Promise.all([
+  listCriteria(db),
+  listScores(db, user.id),
+  experienceTotals(db, user.id),
+  openTasks(db, user.id),
+]);
+
+const coach = byCriterion(scores, 'coach');
+const self = byCriterion(scores, 'self');
+const coachLatest = latestCoachScores(scores);
+
+const week = user.cohort
+  ? courseWeek(user.cohort)
+  : { week: 0, totalWeeks: 6, daysUntilStart: 0, finished: false };
+
+const groups = GROUPS.map((g) => ({
+  ...g,
+  criteria: criteria.filter((c) => c.group === g.key),
+  ...readiness(criteria, coachLatest, g.key),
+}));
+
+const targetHours = user.cohort?.experience_target_hours ?? 0;
+
+// The one line the brief asks for: priority this week. Take the lowest-scoring
+// assessed criterion — an unassessed one isn't evidence of a weakness, just of
+// a gap in the record.
+const priority = criteria
+  .map((c) => ({ c, score: coachLatest.get(c.id) }))
+  .filter((x): x is { c: (typeof criteria)[number]; score: number } =>
+    x.score !== undefined,
+  )
+  .sort((a, b) => a.score - b.score)[0];
+
+const TREND_MARK = { up: '↑', down: '↓', flat: '=' } as const;
+---
+
+<GapLayout
+  title="My progress"
+  kicker={user.cohort?.name}
+  heading="My progress"
+  intro="Your coach's assessment and your own, side by side. Exam readiness is an informed coaching indicator — it is not a guarantee of passing."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {/* ------------------------------------------------------------- headline */}
+  <section class="grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      groups.map((g) => {
+        const tone = readinessTone(g.percent, week.week, week.totalWeeks);
+        return (
+          <div class="bg-paper p-5">
+            <p class="meta text-ink-45">{g.label}</p>
+            <p class="mt-2 font-display text-3xl font-bold leading-none">
+              {g.scored ? `${g.percent}%` : '—'}
+            </p>
+            <p class="mt-2 text-sm text-ink-70">
+              {g.scored ? TONE_LABEL[tone] : 'Not assessed yet'}
+            </p>
+            <p class="meta mt-1 text-ink-45">
+              {g.scored} / {g.total} criteria
+            </p>
+          </div>
+        );
+      })
+    }
+    <div class="bg-paper p-5">
+      <p class="meta text-ink-45">Experience</p>
+      <p class="mt-2 font-display text-3xl font-bold leading-none">
+        {experience.verified} / {targetHours} h
+      </p>
+      <p class="mt-2 text-sm text-ink-70">
+        {experience.pending > 0
+          ? `${experience.pending}h awaiting verification`
+          : 'Verified hours'}
+      </p>
+      <p class="meta mt-1 text-ink-45">
+        <a href="/gap/experience" class="text-accent">Log hours</a>
+      </p>
+    </div>
+  </section>
+
+  {
+    priority && (
+      <p class="mt-6 font-display text-lg font-bold">
+        Priority this week: {priority.c.label.toLowerCase()} — currently{' '}
+        {scaleLabel(priority.score).toLowerCase()}.
+      </p>
+    )
+  }
+
+  {/* ------------------------------------------------------ outstanding work */}
+  {
+    tasks.length > 0 && (
+      <section class="mt-12 border-t border-ink/10 pt-8">
+        <h2 class="font-display text-2xl font-bold">Outstanding actions</h2>
+        <ul class="mt-4 space-y-4">
+          {tasks.map((t) => (
+            <li class="flex flex-wrap items-baseline justify-between gap-4 border-t border-ink/10 pt-4">
+              <div>
+                <p class="font-semibold">{t.title}</p>
+                {t.detail && <p class="mt-1 text-sm text-ink-70">{t.detail}</p>}
+                {t.due_on && (
+                  <p class="meta mt-1 text-ink-45">Due {fmtDate(t.due_on)}</p>
+                )}
+              </div>
+              <form method="POST">
+                <input type="hidden" name="intent" value="complete-task" />
+                <input type="hidden" name="task_id" value={t.id} />
+                <button
+                  type="submit"
+                  class="meta border border-ink/20 px-3 py-2 text-ink-70 transition-colors hover:border-ink hover:text-ink"
+                >
+                  Mark done
+                </button>
+              </form>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {/* ----------------------------------------------------------- the scale */}
+  <section class="mt-12 border-t border-ink/10 pt-8">
+    <h2 class="font-display text-2xl font-bold">The scale</h2>
+    <p class="mt-2 max-w-2xl text-ink-70">
+      Six is not "excellent" and one is not "bad". The scale describes how far a
+      skill has been acquired, so a 2 in week one is exactly where you should be.
+    </p>
+    <dl class="mt-6 grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        SCALE.map((s) => (
+          <div class="bg-paper p-4">
+            <dt class="font-display font-bold">
+              <span class="text-accent">{s.score}</span> {s.label}
+            </dt>
+            <dd class="mt-1 text-sm text-ink-70">{s.meaning}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  {/* ------------------------------------------------------- the criteria */}
+  {
+    criteria.length === 0 ? (
+      <div class="mt-12">
+        <Notice tone="warn" label="No framework loaded">
+          <p>
+            The benchmark criteria haven't been set up yet. Run the seed script
+            or add them in Supabase under <code>gap_criteria</code>.
+          </p>
+        </Notice>
+      </div>
+    ) : (
+      <form method="POST" class="mt-12">
+        {groups.map((g) => (
+          <section class="mt-12 border-t border-ink/10 pt-8 first:mt-0">
+            <h2 class="font-display text-2xl font-bold">{g.label}</h2>
+
+            <ul class="mt-6 space-y-8">
+              {g.criteria.map((c) => {
+                const mine = self.get(c.id);
+                const theirs = coach.get(c.id);
+                return (
+                  <li class="border-t border-ink/10 pt-6">
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+                      <h3 class="font-display text-lg font-bold">{c.label}</h3>
+                      <p class="meta text-ink-45">
+                        Coach:{' '}
+                        <span class="text-ink">
+                          {theirs?.latest
+                            ? `${theirs.latest.score} · ${scaleLabel(theirs.latest.score)}`
+                            : 'Not assessed'}
+                        </span>
+                        {theirs?.trend && (
+                          <span class="ml-2 text-accent">
+                            {TREND_MARK[theirs.trend]}{' '}
+                            {theirs.previous
+                              ? `was ${theirs.previous.score}`
+                              : ''}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+
+                    {c.help && <p class="mt-1 text-sm text-ink-45">{c.help}</p>}
+
+                    {/* Radio group rather than a select: on a phone six
+                        taps beat a picker, and the whole scale stays visible
+                        while you choose. */}
+                    <fieldset class="mt-4">
+                      <legend class="meta text-ink-45">
+                        Your self-assessment
+                        {mine?.latest && (
+                          <span class="ml-2 normal-case tracking-normal">
+                            (last set {fmtDate(mine.latest.assessed_at)})
+                          </span>
+                        )}
+                      </legend>
+                      <div class="mt-2 flex flex-wrap gap-1">
+                        {SCALE.map((s) => (
+                          <label
+                            class="cursor-pointer border border-ink/20 px-3 py-2 text-sm transition-colors hover:border-ink has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-paper"
+                            title={s.meaning}
+                          >
+                            <input
+                              type="radio"
+                              name={`score:${c.id}`}
+                              value={s.score}
+                              checked={mine?.latest?.score === s.score}
+                              class="sr-only"
+                            />
+                            <span class="font-display font-bold">{s.score}</span>
+                            <span class="ml-2 hidden sm:inline">{s.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+
+                    <label class="mt-3 block">
+                      <span class="meta text-ink-45">Your note (optional)</span>
+                      <input
+                        type="text"
+                        name={`note:${c.id}`}
+                        placeholder="What you're finding hard, or what changed"
+                        class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                      />
+                    </label>
+
+                    {theirs?.latest?.comment && (
+                      <div class="mt-4 border-l-2 border-accent bg-paper-2 p-4">
+                        <p class="meta text-ink-45">
+                          Coach feedback ·{' '}
+                          {fmtDate(theirs.latest.assessed_at)}
+                        </p>
+                        <p class="mt-1 text-ink-70">{theirs.latest.comment}</p>
+                        {theirs.latest.action && (
+                          <p class="mt-2 text-ink">
+                            <span class="meta text-ink-45">Do next:</span>{' '}
+                            {theirs.latest.action}
+                          </p>
+                        )}
+                        {theirs.latest.evidence_url && (
+                          <p class="mt-2">
+                            <a
+                              href={theirs.latest.evidence_url}
+                              target="_blank"
+                              rel="noopener"
+                              class="text-accent"
+                            >
+                              Supporting evidence
+                            </a>
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+
+        {/* Sticky so a long framework doesn't hide the only way to save it. */}
+        <div class="sticky bottom-0 mt-10 border-t border-ink/10 bg-paper py-4">
+          <button
+            type="submit"
+            class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+          >
+            Save my self-assessment
+          </button>
+          <p class="mt-2 text-sm text-ink-45">
+            Each save is kept, so you and your coach can see how things moved.
+          </p>
+        </div>
+      </form>
+    )
+  }
+</GapLayout>

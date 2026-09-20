@@ -22,6 +22,14 @@ interface ImportMetaEnv {
   readonly SANITY_PORTAL_DATASET: string;
   /** Read token for the private dataset. */
   readonly SANITY_PORTAL_TOKEN: string;
+
+  // --- GAP student portal -------------------------------------------------
+  // Shares SUPABASE_URL / SUPABASE_ANON_KEY above. Only the notification
+  // recipients are its own.
+  /** Where support requests and course feedback are emailed. */
+  readonly GAP_SUPPORT_TO: string;
+  /** From address for portal notifications. Must be Resend-verified. */
+  readonly GAP_SUPPORT_FROM: string;
 }
 
 interface ImportMeta {
@@ -32,5 +40,10 @@ declare namespace App {
   interface Locals {
     /** Set by middleware on /portal routes. Null when signed out. */
     portalUser: import('./lib/portal/supabase').PortalUser | null;
+    /**
+     * Set by middleware on /gap routes. Null when signed out — and always null
+     * on /portal routes, so a page cannot read the wrong area's user.
+     */
+    gapUser: import('./lib/gap/supabase').GapUser | null;
   }
 }
