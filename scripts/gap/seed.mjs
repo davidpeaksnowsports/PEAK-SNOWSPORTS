@@ -56,13 +56,18 @@ const CRITERIA = [
   ['technical', 'steeps', 'Steeps', 'Linked turns on a steep red or black, speed controlled safely'],
   ['technical', 'bumps', 'Bumps', 'Continuous linked, skidded turns in easy bumps, narrow corridor'],
 
-  // The performance threads underneath those activities. Not separately
-  // assessed by BASI, but they are what a coach actually works on.
-  ['technical', 'fe-1', 'Fundamental element 1', 'Balance and the centred stance'],
-  ['technical', 'fe-2', 'Fundamental element 2', 'Edging and the shape of the turn'],
-  ['technical', 'fe-3', 'Fundamental element 3', 'Rotational control'],
-  ['technical', 'fe-4', 'Fundamental element 4', 'Pressure management'],
-  ['technical', 'fe-5', 'Fundamental element 5', 'Timing and coordination'],
+  // The fundamentals underneath those activities. Not separately assessed by
+  // BASI, but they are what a coach actually works on, and they are the
+  // vocabulary feedback is given in. Inputs are what the skier does; outcomes
+  // are what the inputs produce, which is what an examiner sees.
+  ['technical', 'fund-posture', 'Posture', 'Fundamental input 1'],
+  ['technical', 'fund-movement', 'Movement', 'Fundamental input 2'],
+  ['technical', 'fund-balance', 'Balance', 'Fundamental input 3'],
+  ['technical', 'fund-rotation', 'Rotation', 'Fundamental input 4'],
+  ['technical', 'fund-edge', 'Edge', 'Fundamental input 5'],
+  ['technical', 'fund-pressure', 'Pressure', 'Fundamental input 6'],
+  ['technical', 'outcome-speed', 'Control of speed', 'Fundamental outcome 1. What the inputs produce.'],
+  ['technical', 'outcome-line', 'Control of line', 'Fundamental outcome 2. What the inputs produce.'],
 
   // Teaching — the three assessed criteria, plus the two workbook tools you
   // are expected to be able to use.
@@ -86,7 +91,7 @@ const CRITERIA = [
 
 const MODULES = [
   [1, 'Personal goals and starting benchmark', 'Where you are on day one, in your own words.'],
-  [2, 'The fundamental elements', null],
+  [2, 'The fundamentals', 'The six inputs and the two outcomes they produce.'],
   [3, 'Central theme and skier development', null],
   [4, 'Technical observation', null],
   [5, 'Lesson planning', null],

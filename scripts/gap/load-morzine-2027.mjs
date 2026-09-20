@@ -143,7 +143,7 @@ const PROGRAMME = [
     preparation: i === 0
       ? 'Level 1 student workbook completed. Kit checked the night before.'
       : null,
-    workbook_module: i === 0 ? 'Module 2: The fundamental elements' : null,
+    workbook_module: i === 0 ? 'Module 2: The fundamentals' : null,
   }]),
   [2, 5, '09:00', 'Training', 'on_snow', {}],
   [2, 5, '15:00', 'Training', 'on_snow', {}],
@@ -166,9 +166,9 @@ const PROGRAMME = [
   [3, 6, '15:00', 'Physical training', 'off_snow', {}],
 
   // ── Week 4 ────────────────────────────────────────────────────────────────
-  [4, 0, '09:00', 'Workshops: strands, fundamental elements and TIED', 'off_snow', {
+  [4, 0, '09:00', 'Workshops: strands, fundamentals and TIED', 'off_snow', {
     objective: 'The technical framework you are assessed against.',
-    workbook_module: 'Module 2: The fundamental elements',
+    workbook_module: 'Module 2: The fundamentals',
   }],
   [4, 0, '15:00', 'Workshops: avalanche and environment', 'off_snow', {
     objective: 'Avalanche awareness and transceiver use, plus mountain environment.',
