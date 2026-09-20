@@ -27,6 +27,7 @@ import {
   readiness,
   readinessTone,
   weakestAssessed,
+  TARGET_SCORE,
   TONE_LABEL,
 } from '../../lib/gap/course';
 import {
@@ -244,9 +245,11 @@ const firstName = user.name.split(' ')[0];
         <section class="mt-16 border-t border-ink/10 pt-10">
           <h2 class="font-display text-2xl font-bold">Where you are</h2>
           <p class="mt-2 max-w-2xl text-ink-70">
-            Readiness is your coach's view of how much of the assessment
-            criteria you're currently showing — an informed coaching indicator,
-            not a prediction that you'll pass.
+            Readiness is your coach's view of how much of the BASI workbook
+            criteria you're currently showing, measured against a target of
+            {TARGET_SCORE} out of 6 — late practise, the exam standard — across
+            the board. It is an informed coaching indicator, not a prediction
+            that you'll pass.
           </p>
 
           <div class="mt-6 grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
@@ -256,7 +259,7 @@ const firstName = user.name.split(' ')[0];
                 value={g.scored ? `${g.percent}%` : '—'}
                 hint={
                   g.scored
-                    ? `${g.scored} of ${g.total} criteria assessed`
+                    ? `${g.atTarget} of ${g.total} at ${TARGET_SCORE}+`
                     : 'Not assessed yet'
                 }
                 href="/gap/progress"

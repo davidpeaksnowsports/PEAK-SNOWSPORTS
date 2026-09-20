@@ -45,9 +45,6 @@ const db = createClient(url, key, { auth: { persistSession: false } });
 // ---------------------------------------------------------------------------
 
 const L = {
-  handbook: 'https://peakfrance.notion.site/Student-Home-71f0434890964d6493d414c2578085f6',
-  workbooks: 'https://www.notion.so/peakfrance/BASI-Student-workbooks-5b0ee17869d54b1ea3519c4671563eb0',
-  packingList: 'https://www.notion.so/peakfrance/Packing-List-96dcbbce767c466da83332af8d959c6f',
   onboarding: 'https://share-eu1.hsforms.com/1dv43JwQ8TI-VN4R219eqsQ2e55qw',
   whatsapp: 'https://chat.whatsapp.com/CkewQsvuUBFDct8I1L4TEl',
   calendar:
@@ -95,7 +92,7 @@ const MORNING_MEET = 'Prodains gondola, Morzine — 08:50. We ride up together a
 
 const ARRIVAL_BRIEF = [
   '13:00–14:00 Airport meet, Geneva Terminal 1 arrivals, by the lime green Tekoe tea shop.',
-  '16:00–17:00 Check in and admin: week 1 schedule, student handbook, equipment and merch hand out.',
+  '16:00–17:00 Check in and admin: week 1 schedule, portal walkthrough, equipment and merch hand out.',
   '17:00–18:00 Resort orientation walk around Morzine.',
   '18:00–19:00 Free time to settle in and check over your equipment.',
   '19:00 Team dinner.',
@@ -218,11 +215,15 @@ const PROGRAMME = [
 // ---------------------------------------------------------------------------
 
 const RESOURCES = [
-  [null, 'Handbook', 'Student handbook', 'link', L.handbook,
-    'The Notion handbook. Still the fullest reference until this portal replaces it.'],
-  [null, 'Handbook', 'BASI student workbooks', 'template', L.workbooks,
-    'Level 1 and Level 2 workbooks to work through alongside the course.'],
-  [null, 'Handbook', 'Six-week course calendar', 'link', L.calendar,
+  // The two documents students are assessed against. Everything on the My
+  // progress page comes out of these.
+  [null, 'BASI workbooks', 'Level 1 ski student workbook', 'template', null,
+    'The assessment criteria for Level 1, plus the exercises to work through during the course.',
+    'morzine-2027/workbooks/basi-level-1-ski-student-workbook.pdf'],
+  [null, 'BASI workbooks', 'Level 2 ski student workbook', 'template', null,
+    'Level 2 criteria, the Teaching Session Planner, the TIED performance-analysis model and the Performance Indicators and Actions.',
+    'morzine-2027/workbooks/basi-level-2-ski-student-workbook.pdf'],
+  [null, 'BASI workbooks', 'Six-week course calendar', 'link', L.calendar,
     'The live Google Calendar. The Programme page here is the same information.'],
 
   [null, 'Getting ski fit', 'The secret to ski fitness', 'video', L.fitSecret,
@@ -322,8 +323,8 @@ const ESSENTIALS = [
 
   ['Before you arrive', 'Student onboarding form',
     'Complete this first — it is how we get your details on file.\n\n' + L.onboarding],
-  ['Before you arrive', 'The student handbook',
-    'The handbook is the fullest reference for the course, including the student behaviour contract, which you need to read during onboarding.\n\n' + L.handbook],
+  ['Before you arrive', 'Get to know this portal',
+    'This is the course handbook now — programme, workbook, resort guide, essentials and your benchmark are all here, and it is kept up to date during the course in a way a document never was.\n\nThe two pages to look at before you travel are Checklist and My progress.'],
   ['Before you arrive', 'Getting ski fit',
     'We have partnered with The Body Mechanics on a short series of tests and exercises. Do the tests, find your weak link, work on it before you travel. Everything is on the Learning hub page.'],
 
@@ -372,7 +373,8 @@ const ESSENTIALS = [
 const CHECKLIST = [
   // ── Pre-arrival ───────────────────────────────────────────────────────────
   ['Admin', 'Complete the student onboarding form', L.onboarding, true, true],
-  ['Admin', 'Read the student handbook, including the behaviour contract', L.handbook, true, true],
+  ['Admin', 'Read the course essentials in this portal', 'Emergency procedure, insurance, what to expect', true, true],
+  ['Admin', 'Download both BASI workbooks', 'Learning hub — Level 1 and Level 2', true, true],
   ['Admin', 'Join the PEAK GAP WhatsApp group', L.whatsapp, true, true],
   ['Admin', 'Send us your travel details', 'Be at Geneva Terminal 1 by 13:00 on arrival day', true, true],
   ['Admin', 'Check your insurance', 'Medical + evacuation, personal accident, equipment', true, true],

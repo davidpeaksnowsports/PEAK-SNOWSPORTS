@@ -39,39 +39,41 @@ const db = createClient(url, key, { auth: { persistSession: false } });
 // ---------------------------------------------------------------------------
 // Benchmark framework
 //
-// Shaped to the BASI-style assessment the GAP course prepares people for. The
-// headings are meant to be edited — this is a starting point that matches the
-// current course, not a fixed standard. Change them in Supabase, not here,
-// once the season is running: existing scores reference the row by id.
+// Taken from the BASI Level 1 and Level 2 ski student workbooks, which are the
+// documents students are actually assessed against and which they can open from
+// the Learning hub. Change them in Supabase, not here, once the season is
+// running: existing scores reference the row by id.
 // ---------------------------------------------------------------------------
 
 const CRITERIA = [
-  // Technical skiing
+  // Technical — the assessed activities in the BASI Level 1 and Level 2 ski
+  // student workbooks. Level 2 is the superset, so these are its names; Level 1
+  // assesses Central Theme, Piste Short and Piste Long only.
+  ['technical', 'central-theme', 'Central Theme', 'All phases of the CT, on terrain appropriate to client needs'],
+  ['technical', 'piste-long', 'Piste Long', 'Cleanly carved turns on a blue piste, a variety of turn radii'],
+  ['technical', 'piste-short', 'Piste Short', 'Grippy, round, symmetrical short turns in various corridors, constant speed'],
+  ['technical', 'variables', 'Variables', 'Rounded, linked turns in a variety of conditions'],
+  ['technical', 'steeps', 'Steeps', 'Linked turns on a steep red or black, speed controlled safely'],
+  ['technical', 'bumps', 'Bumps', 'Continuous linked, skidded turns in easy bumps, narrow corridor'],
+
+  // The performance threads underneath those activities. Not separately
+  // assessed by BASI, but they are what a coach actually works on.
   ['technical', 'fe-1', 'Fundamental element 1', 'Balance and the centred stance'],
   ['technical', 'fe-2', 'Fundamental element 2', 'Edging and the shape of the turn'],
   ['technical', 'fe-3', 'Fundamental element 3', 'Rotational control'],
   ['technical', 'fe-4', 'Fundamental element 4', 'Pressure management'],
   ['technical', 'fe-5', 'Fundamental element 5', 'Timing and coordination'],
-  ['technical', 'piste', 'Piste performance', 'Groomed terrain at speed'],
-  ['technical', 'variable', 'Variable terrain', 'Soft, crud, tracked'],
-  ['technical', 'bumps', 'Bumps', null],
-  ['technical', 'steeps', 'Steeps', null],
-  ['technical', 'short-turns', 'Short turns', null],
-  ['technical', 'central-theme', 'Central theme demonstrations', 'The pathway, shown accurately at each stage'],
 
-  // Teaching
-  ['teaching', 'session-planning', 'Session planning', null],
-  ['teaching', 'safety-groups', 'Safety and group management', null],
-  ['teaching', 'communication', 'Communication', null],
-  ['teaching', 'observation', 'Observation', 'Seeing what is actually happening'],
-  ['teaching', 'analysis', 'Analysis', 'Working out why, and what matters most'],
-  ['teaching', 'task-selection', 'Task selection', null],
-  ['teaching', 'demonstration', 'Demonstration quality', null],
-  ['teaching', 'feedback', 'Feedback', null],
-  ['teaching', 'lesson-structure', 'Lesson structure', null],
-  ['teaching', 'adaptation', 'Adaptation and progression', null],
+  // Teaching — the three assessed criteria, plus the two workbook tools you
+  // are expected to be able to use.
+  ['teaching', 'teach-safety', 'Safety', 'Maintain the safety of the group and other slope users at all times'],
+  ['teaching', 'teach-delivery', 'Delivery', 'Enjoyable, engaging sessions'],
+  ['teaching', 'teach-understanding', 'Understanding', 'Goals appropriate to learner needs within the Central Theme, visiting each stage of TIED'],
+  ['teaching', 'teach-planning', 'Session planning', 'The workbook Teaching Session Planner, used for real'],
+  ['teaching', 'teach-analysis', 'Performance analysis', 'The TIED model applied to what you are actually seeing'],
 
-  // Professional
+  // Professional — Peak's own, not BASI assessment criteria. Kept because it is
+  // what makes someone employable once they are qualified.
   ['professional', 'conduct', 'Professional conduct', 'How you are to work alongside'],
   ['professional', 'punctuality', 'Punctuality and preparation', null],
   ['professional', 'client-care', 'Client care', null],
@@ -206,6 +208,22 @@ async function main() {
       .from('gap_criteria')
       .upsert(criteriaRows, { onConflict: 'code' });
     if (error) throw error;
+
+    // Anything this file no longer defines is retired rather than deleted:
+    // scores reference criteria by id, and a deleted criterion would take a
+    // student's history with it. `active` is what listCriteria filters on, so
+    // a retired criterion leaves the benchmark without leaving the record.
+    const keep = criteriaRows.map((c) => c.code);
+    const { data: retired, error: retireError } = await db
+      .from('gap_criteria')
+      .update({ active: false })
+      .not('code', 'in', `(${keep.join(',')})`)
+      .eq('active', true)
+      .select('code');
+    if (retireError) throw retireError;
+    if (retired?.length) {
+      console.log(`  retired ${retired.length}: ${retired.map((r) => r.code).join(', ')}`);
+    }
   }
 
   if (!hasCohort) {

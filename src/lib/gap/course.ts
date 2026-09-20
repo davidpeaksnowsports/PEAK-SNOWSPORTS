@@ -7,14 +7,30 @@
  * is this student.
  */
 
-/** The six-point acquisition scale. Developmental, not a mark out of six. */
+/**
+ * The score every criterion is aiming at.
+ *
+ * Not six. Six is full acquisition, which is a career's work; the exam asks for
+ * late practise — performing it unprompted in familiar conditions — and that is
+ * a 4. Readiness is measured against this, not against the top of the scale,
+ * so 100% means "at the exam standard on everything", not "perfect".
+ */
+export const TARGET_SCORE = 4;
+
+/**
+ * The six-point skill-acquisition scale.
+ *
+ * Awareness → practise → acquired, with the anchors at 1, 3 and 6. It
+ * describes how far a skill has been acquired, not how good the student is, so
+ * a 2 in week one is exactly where someone should be.
+ */
 export const SCALE: { score: number; label: string; meaning: string }[] = [
-  { score: 1, label: 'Introduced', meaning: 'Met the idea. Not yet doing it.' },
-  { score: 2, label: 'Understanding', meaning: 'Can explain it. Patchy in practice.' },
-  { score: 3, label: 'Developing', meaning: 'Doing it, with prompting and inconsistency.' },
-  { score: 4, label: 'Demonstrating', meaning: 'Doing it unprompted in familiar conditions.' },
-  { score: 5, label: 'Consistent', meaning: 'Holds up across terrain, groups and pressure.' },
-  { score: 6, label: 'Assessment ready', meaning: 'Would stand up on the day.' },
+  { score: 1, label: 'Awareness', meaning: "You have met it. You cannot do it yet." },
+  { score: 2, label: 'Early practise', meaning: 'Attempting it. Falls apart under any pressure.' },
+  { score: 3, label: 'Practise', meaning: 'Doing it, with thought and prompting.' },
+  { score: 4, label: 'Late practise', meaning: 'Unprompted, in familiar conditions. The exam standard.' },
+  { score: 5, label: 'Early acquired', meaning: 'Holds up across terrain, groups and pressure.' },
+  { score: 6, label: 'Acquired', meaning: 'Automatic. You can teach from it.' },
 ];
 
 export const scaleLabel = (score: number | null | undefined) =>
@@ -80,6 +96,12 @@ export function courseWeek(
  * the headline is what a coach is telling them, and a self-assessment that
  * inflated it would be worse than useless.
  *
+ * Measured against TARGET_SCORE rather than the top of the scale, and each
+ * criterion is capped at the target before summing. That cap is what makes the
+ * number mean "at the standard across the board": without it a 6 on carving
+ * would pay for a 2 on bumps and the average would look ready when the student
+ * plainly is not. Being brilliant at one thing cannot buy you out of another.
+ *
  * The denominator is every active criterion in the group, not every criterion
  * scored so far. An unassessed criterion counts as zero rather than being
  * skipped, so "78% ready" in week two means "we have seen 78% of what you need
@@ -89,26 +111,38 @@ export function readiness(
   criteria: { id: string; group: string }[],
   latestCoachScore: Map<string, number>,
   group: string,
-): { percent: number; scored: number; total: number; averaged: number | null } {
+): {
+  percent: number;
+  scored: number;
+  total: number;
+  /** How many criteria are at TARGET_SCORE or above — "ready" counted, not averaged. */
+  atTarget: number;
+  averaged: number | null;
+} {
   const inGroup = criteria.filter((c) => c.group === group);
   if (inGroup.length === 0) {
-    return { percent: 0, scored: 0, total: 0, averaged: null };
+    return { percent: 0, scored: 0, total: 0, atTarget: 0, averaged: null };
   }
 
+  let towardsTarget = 0;
   let sum = 0;
   let scored = 0;
+  let atTarget = 0;
   for (const c of inGroup) {
     const s = latestCoachScore.get(c.id);
     if (s !== undefined) {
+      towardsTarget += Math.min(s, TARGET_SCORE);
       sum += s;
       scored += 1;
+      if (s >= TARGET_SCORE) atTarget += 1;
     }
   }
 
   return {
-    percent: Math.round((sum / (inGroup.length * 6)) * 100),
+    percent: Math.round((towardsTarget / (inGroup.length * TARGET_SCORE)) * 100),
     scored,
     total: inGroup.length,
+    atTarget,
     averaged: scored ? Math.round((sum / scored) * 10) / 10 : null,
   };
 }
@@ -118,7 +152,8 @@ export function readiness(
  *
  * Thresholds are deliberately generous early and unforgiving late: 60% in week
  * one is fine, 60% in the final week is not. Passing the week lets one set of
- * thresholds serve the whole course.
+ * thresholds serve the whole course. The expected line now runs to 100%,
+ * because 100% is the exam standard rather than a perfect score.
  */
 export function readinessTone(
   percent: number,
@@ -126,8 +161,8 @@ export function readinessTone(
   totalWeeks: number,
 ): 'ahead' | 'on-track' | 'watch' {
   const through = totalWeeks > 0 ? Math.min(1, week / totalWeeks) : 0;
-  // Expect to land around 5/6 (83%) by the end, tracking linearly from 30%.
-  const expected = 30 + through * 53;
+  // Everyone at the target by the end, tracking linearly from a week-one 25%.
+  const expected = 25 + through * 75;
   if (percent >= expected + 8) return 'ahead';
   if (percent >= expected - 10) return 'on-track';
   return 'watch';
