@@ -254,7 +254,7 @@ const totalPending = [...pendingByStudent.values()].reduce((a, b) => a + b, 0);
                   {r.groups.map((g) => (
                     <td class="py-4 pr-4">
                       <span class="font-display text-lg font-bold">
-                        {g.scored ? `${g.percent}%` : '—'}
+                        {g.scored ? `${g.percent}%` : '–'}
                       </span>
                       <span class="meta block text-ink-45">
                         {g.scored
@@ -267,7 +267,7 @@ const totalPending = [...pendingByStudent.values()].reduce((a, b) => a + b, 0);
                   ))}
                   <td class="py-4 pr-4">
                     {r.flags.length === 0 ? (
-                      <span class="meta text-ink-45">—</span>
+                      <span class="meta text-ink-45">–</span>
                     ) : (
                       <ul class="space-y-1">
                         {r.flags.map((f) => (
@@ -291,7 +291,7 @@ const totalPending = [...pendingByStudent.values()].reduce((a, b) => a + b, 0);
       <section class="mt-16 border-t border-ink/10 pt-10">
         <h2 class="font-display text-2xl font-bold">Unactioned feedback</h2>
         <p class="mt-2 max-w-2xl text-ink-70">
-          Confidential course feedback is not listed here for coaches — only the
+          Confidential course feedback is not listed here for coaches. Only the
           office can read it.
         </p>
         <ul class="mt-6 space-y-5">
@@ -323,7 +323,7 @@ const totalPending = [...pendingByStudent.values()].reduce((a, b) => a + b, 0);
     <h2 class="font-display text-2xl font-bold">Post an announcement</h2>
     <p class="mt-2 max-w-2xl text-ink-70">
       Appears on every student's dashboard immediately. Use it for the things
-      that change the day — a moved meeting point, a weather call.
+      that change the day: a moved meeting point, a weather call.
     </p>
 
     <form method="POST" class="mt-6 max-w-2xl space-y-4">

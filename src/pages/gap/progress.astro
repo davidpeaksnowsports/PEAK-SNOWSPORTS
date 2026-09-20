@@ -154,7 +154,7 @@ const TREND_MARK = { up: '↑', down: '↓', flat: '=' } as const;
   title="My progress"
   kicker={user.cohort?.name}
   heading="My progress"
-  intro="Your coach's assessment and your own, side by side, against the criteria in the BASI Level 1 and Level 2 workbooks. Exam readiness is an informed coaching indicator — it is not a guarantee of passing."
+  intro="Your coach's assessment and your own, side by side, against the criteria in the BASI Level 1 and Level 2 workbooks. Exam readiness is an informed coaching indicator. It is not a guarantee of passing."
 >
   {
     flash && (
@@ -175,7 +175,7 @@ const TREND_MARK = { up: '↑', down: '↓', flat: '=' } as const;
           <div class="bg-paper p-5">
             <p class="meta text-ink-45">{g.label}</p>
             <p class="mt-2 font-display text-3xl font-bold leading-none">
-              {g.scored ? `${g.percent}%` : '—'}
+              {g.scored ? `${g.percent}%` : '–'}
             </p>
             <p class="mt-2 text-sm text-ink-70">
               {g.scored ? TONE_LABEL[tone] : 'Not assessed yet'}
@@ -206,7 +206,7 @@ const TREND_MARK = { up: '↑', down: '↓', flat: '=' } as const;
   {
     priority && (
       <p class="mt-6 font-display text-lg font-bold">
-        Priority this week: {priority.c.label.toLowerCase()} — currently{' '}
+        Priority this week: {priority.c.label.toLowerCase()}, currently{' '}
         {scaleLabel(priority.score).toLowerCase()}.
       </p>
     )
@@ -249,14 +249,14 @@ const TREND_MARK = { up: '↑', down: '↓', flat: '=' } as const;
     <h2 class="font-display text-2xl font-bold">The scale</h2>
     <p class="mt-2 max-w-2xl text-ink-70">
       This is a skill-acquisition scale, not a mark out of six. It describes how
-      far a skill has been acquired — awareness at 1, practise at 3, fully
-      acquired at 6 — so a 2 in week one is exactly where you should be.
+      far a skill has been acquired: awareness at 1, practise at 3, fully
+      acquired at 6. A 2 in week one is exactly where you should be.
     </p>
     <p class="mt-3 max-w-2xl font-display text-lg font-bold text-ink">
       You are aiming for {TARGET_SCORE} across the board, not 6.
     </p>
     <p class="mt-2 max-w-2xl text-ink-70">
-      Late practise — doing it unprompted in familiar conditions — is the exam
+      Late practise, doing it unprompted in familiar conditions, is the exam
       standard. Six is full acquisition, which is a career's work. Readiness
       below is measured against {TARGET_SCORE}, and each criterion is capped
       there, so a strong area cannot pay for a weak one.
@@ -341,7 +341,7 @@ const TREND_MARK = { up: '↑', down: '↓', flat: '=' } as const;
                                 ? 'border-ink/50 hover:border-ink'
                                 : 'border-ink/20 hover:border-ink',
                             ]}
-                            title={`${s.meaning}${s.score === TARGET_SCORE ? ' — the exam standard' : ''}`}
+                            title={`${s.meaning}${s.score === TARGET_SCORE ? ' (the exam standard)' : ''}`}
                           >
                             <input
                               type="radio"

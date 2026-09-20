@@ -55,7 +55,7 @@ if (Astro.request.method === 'GET' && isGapConfigured) {
   } else if (linkError) {
     notice =
       linkError === 'otp_expired'
-        ? 'That link has expired or had already been used. If you have confirmed your email, sign in below — otherwise request a new link.'
+        ? 'That link has expired or had already been used. If you have confirmed your email, sign in below. Otherwise request a new link.'
         : 'That link could not be used. Sign in below, or reset your password.';
   }
 }
@@ -174,7 +174,7 @@ if (Astro.request.method === 'POST' && isGapConfigured) {
     <p class="mt-12 border-t border-ink/10 pt-6 text-sm text-ink-45">
       Not got an account yet? If you are enrolled on a course,{' '}
       <a href="/gap/join" class="text-accent">set one up with your course code</a>{' '}
-      — it is in your enrolment email. Stuck? Email{' '}
+      and it is in your enrolment email. Stuck? Email{' '}
       <a href="mailto:bonjour@peaksnowsports.com" class="text-accent">
         bonjour@peaksnowsports.com
       </a>

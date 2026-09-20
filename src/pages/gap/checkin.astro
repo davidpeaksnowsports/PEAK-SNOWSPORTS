@@ -62,7 +62,7 @@ if (Astro.request.method === 'POST') {
     // open a dashboard.
     if (wantsChat) {
       await notifyStaff({
-        subject: `GAP check-in — ${user.name} would like a chat (week ${week})`,
+        subject: `GAP check-in: ${user.name} would like a chat (week ${week})`,
         lines: [
           `${user.name} <${user.email}> ticked "I'd like to speak to a coach privately".`,
           `Cohort: ${user.cohort?.name ?? 'unassigned'} · Week ${week}`,
@@ -77,7 +77,7 @@ if (Astro.request.method === 'POST') {
     flash = {
       tone: 'good',
       message: wantsChat
-        ? "Saved. A coach will find you — you don't need to do anything else."
+        ? "Saved. A coach will find you. You don't need to do anything else."
         : 'Saved. See you next week.',
     };
   }
@@ -103,7 +103,7 @@ const SCALE_5 = [1, 2, 3, 4, 5];
   title="Weekly check-in"
   kicker={`Week ${week}${totalWeeks ? ` of ${totalWeeks}` : ''}`}
   heading="Weekly check-in"
-  intro="Two minutes. Honest answers are more useful than positive ones — nobody is marked on this."
+  intro="Two minutes. Honest answers are more useful than positive ones. Nobody is marked on this."
 >
   {
     flash && (
@@ -245,7 +245,7 @@ const SCALE_5 = [1, 2, 3, 4, 5];
             <li class="flex flex-wrap items-baseline gap-x-6 border-t border-ink/10 pt-4">
               <span class="meta text-ink-45">Week {h.week}</span>
               <span class="text-sm text-ink-70">
-                Confidence {h.confidence ?? '—'} · Energy {h.energy ?? '—'}
+                Confidence {h.confidence ?? '–'} · Energy {h.energy ?? '–'}
               </span>
               {h.focus && <span class="text-sm text-ink-70">{h.focus}</span>}
             </li>

@@ -112,17 +112,17 @@ const CHECKLIST = [
   // Pre-arrival
   ['Admin', 'Confirm your travel details with the office', null, true, true],
   ['Admin', 'Send your emergency contact details', null, true, true],
-  ['Admin', 'Send dietary and medical information', 'Email it — we do not collect it in the portal', true, true],
+  ['Admin', 'Send dietary and medical information', 'Email it. We do not collect it in the portal', true, true],
   ['Admin', 'Check your travel and winter-sports insurance covers instruction', 'Off-piste and teaching are often excluded as standard', true, true],
-  ['Admin', 'Confirm your equipment — skis, boots, helmet', null, true, true],
+  ['Admin', 'Confirm your equipment: skis, boots, helmet', null, true, true],
   ['Admin', 'Complete your starting self-assessment', 'On the My progress page', true, true],
   ['Admin', 'Read the course essentials page end to end', null, false, true],
 
   // Packing
-  ['Ski equipment', 'Skis and bindings, serviced', 'Get them done before you travel — it is cheaper at home', true, false],
+  ['Ski equipment', 'Skis and bindings, serviced', 'Get them done before you travel. It is cheaper at home', true, false],
   ['Ski equipment', 'Boots', 'Fitted, and broken in if they are new', true, false],
   ['Ski equipment', 'Helmet', null, true, false],
-  ['Ski equipment', 'Goggles — two lenses if you have them', 'Flat light is most of December', false, false],
+  ['Ski equipment', 'Goggles, two lenses if you have them', 'Flat light is most of December', false, false],
   ['Ski equipment', 'Sunglasses', null, false, false],
   ['Ski equipment', 'Ski straps and a boot bag', null, false, false],
 
@@ -153,7 +153,7 @@ const CHECKLIST = [
   ['Study', 'Notebook and pens', 'Gloved hands and a phone do not mix on the hill', false, false],
 
   ['Personal', 'Any regular medication', 'Enough for six weeks, in its original packaging', true, false],
-  ['Personal', 'Sun cream — factor 50', 'Altitude and reflection, not heat', true, false],
+  ['Personal', 'Sun cream, factor 50', 'Altitude and reflection, not heat', true, false],
   ['Personal', 'Lip balm with SPF', null, true, false],
   ['Personal', 'Painkillers and blister plasters', null, false, false],
 
@@ -169,28 +169,28 @@ const CHECKLIST = [
 // ---------------------------------------------------------------------------
 
 const ESSENTIALS = [
-  ['Emergency', 'If someone is injured on the hill', 'Stop. Make the scene safe — cross skis uphill of the casualty. Call the piste rescue number for the resort, which is on the resort guide page, and give the piste name and the nearest marker number. Then call your coach. Do not move anyone with a suspected head, neck or back injury.', true, 1],
+  ['Emergency', 'If someone is injured on the hill', 'Stop. Make the scene safe: cross skis uphill of the casualty. Call the piste rescue number for the resort, which is on the resort guide page, and give the piste name and the nearest marker number. Then call your coach. Do not move anyone with a suspected head, neck or back injury.', true, 1],
   ['Emergency', 'European emergency number', 'Dial 112 from any phone, in any country, with any network. It works with no credit and no SIM.', true, 2],
-  ['Emergency', 'If you are worried about someone', 'Tell a coach the same day. You do not need to be sure, and you will not be getting anyone into trouble. If it is about a coach, use the confidential option on the feedback page — the office reads it and your coaches do not.', true, 3],
+  ['Emergency', 'If you are worried about someone', 'Tell a coach the same day. You do not need to be sure, and you will not be getting anyone into trouble. If it is about a coach, use the confidential option on the feedback page. The office reads it and your coaches do not.', true, 3],
 
-  ['Contacts', 'Your coaches', 'Names, numbers and WhatsApp group — confirm with the office before your cohort starts.', false, 1],
+  ['Contacts', 'Your coaches', 'Names, numbers and WhatsApp group. Confirm with the office before your cohort starts.', false, 1],
   ['Contacts', 'The Peak office', 'hello@peaksnowsports.com. Office hours are the right route for anything that is not happening right now.', false, 2],
 
   ['Attendance', 'What we expect', 'Every scheduled session, on time, ready to ski. If you are ill or injured, tell your coach before the session, not after it.', false, 1],
   ['Attendance', 'Illness and injury', 'Tell your coach, then rest properly. A day off early beats a week off later. Sessions missed through injury are not made up one-to-one, but your coach will adjust what you are working on.', false, 2],
 
-  ['Assessment', 'How readiness is judged', 'Your coaches assess you against the criteria on the My progress page, on a six-point acquisition scale. Readiness is a coaching indicator — it tells you how much of the assessment criteria you are currently showing. It is not a prediction, and it is not a guarantee of passing.', false, 1],
-  ['Assessment', 'Experience hours', 'Shadowing and assisting hours are logged in the portal and signed off by a coach. Log them the same day — the detail fades fast, and unverified hours do not count.', false, 2],
+  ['Assessment', 'How readiness is judged', 'Your coaches assess you against the criteria on the My progress page, on a six-point acquisition scale. Readiness is a coaching indicator. It tells you how much of the assessment criteria you are currently showing. It is not a prediction, and it is not a guarantee of passing.', false, 1],
+  ['Assessment', 'Experience hours', 'Shadowing and assisting hours are logged in the portal and signed off by a coach. Log them the same day. The detail fades fast, and unverified hours do not count.', false, 2],
 
   ['Practical', 'Lift passes', 'Collected on arrival. Bring a passport photo.', false, 1],
   ['Practical', 'Equipment servicing', 'Get skis serviced before you travel. In resort, the shops on the resort guide page do a next-day turnaround.', false, 2],
-  ['Practical', 'Insurance', 'You need winter-sports cover that includes instruction and, ideally, off-piste with a qualified guide. Standard travel insurance usually excludes both — check the wording rather than the summary.', false, 3],
+  ['Practical', 'Insurance', 'You need winter-sports cover that includes instruction and, ideally, off-piste with a qualified guide. Standard travel insurance usually excludes both, so check the wording rather than the summary.', false, 3],
 ];
 
 // ---------------------------------------------------------------------------
 
 async function main() {
-  console.log(dryRun ? 'Dry run — nothing will be written.\n' : '');
+  console.log(dryRun ? 'Dry run. Nothing will be written.\n' : '');
 
   // --- criteria ------------------------------------------------------------
   const criteriaRows = CRITERIA.map(([group, code, label, help], i) => ({
@@ -303,7 +303,7 @@ async function main() {
 
   console.log('\nDone.');
   console.log(
-    'Still to add by hand: the programme, the resort guide and the learning hub —\n' +
+    'Still to add by hand: the programme, the resort guide and the learning hub.\n' +
       'those are resort- and intake-specific, so there is nothing sensible to seed.',
   );
 }

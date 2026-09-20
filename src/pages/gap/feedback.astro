@@ -54,7 +54,7 @@ if (Astro.request.method === 'POST') {
   const rating = ratingRaw ? Number(ratingRaw) : null;
 
   if (!TABS.some((t) => t.key === kind)) {
-    flash = { tone: 'warn', message: 'Something went wrong — try again.' };
+    flash = { tone: 'warn', message: 'Something went wrong. Try again.' };
   } else if (!body) {
     flash = { tone: 'warn', message: 'Add a few words before sending.' };
   } else {
@@ -80,7 +80,7 @@ if (Astro.request.method === 'POST') {
       // request — it is already saved above, and notifyStaff never throws.
       if (kind === 'support') {
         await notifyStaff({
-          subject: `GAP support — ${form.get('category') || 'General'} — ${user.name}`,
+          subject: `GAP support: ${form.get('category') || 'General'}, ${user.name}`,
           lines: [
             `From: ${user.name} <${user.email}>`,
             `Cohort: ${user.cohort?.name ?? 'unassigned'}`,
@@ -96,10 +96,10 @@ if (Astro.request.method === 'POST') {
         tone: 'good',
         message:
           kind === 'support'
-            ? "Sent. Someone will come back to you — if it's urgent, call the number on the essentials page."
+            ? "Sent. Someone will come back to you. If it's urgent, call the number on the essentials page."
             : confidential
               ? 'Sent confidentially. Only the Peak office can read it.'
-              : 'Sent. Thank you — this is how the course gets better.',
+              : 'Sent. Thank you. This is how the course gets better.',
       };
     }
   }
@@ -239,7 +239,7 @@ const { data: mine } = await db
             <span class="text-ink">Send this confidentially</span>
             <span class="block text-sm text-ink-70">
               Only the Peak office can read confidential feedback. Your coaches
-              cannot — including the coach it might be about.
+              cannot, including the coach it might be about.
             </span>
           </span>
         </label>

@@ -35,7 +35,7 @@ if (Astro.request.method === 'POST') {
   } else if (decision === 'rejected' && !note) {
     flash = {
       tone: 'warn',
-      message: 'Say why you sent it back — otherwise it comes straight back.',
+      message: 'Say why you sent it back. Otherwise it comes straight back.',
     };
   } else {
     // verified_by and verified_at are stamped by the database trigger, not

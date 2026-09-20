@@ -246,7 +246,7 @@ for (const r of scoreRows ?? []) {
                           {SCALE.map((sc) => (
                             <label
                               class="cursor-pointer border border-ink/20 px-2 py-1 text-sm transition-colors hover:border-ink has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-paper"
-                              title={`${sc.label} — ${sc.meaning}`}
+                              title={`${sc.label}: ${sc.meaning}`}
                             >
                               <input
                                 type="radio"
@@ -270,7 +270,7 @@ for (const r of scoreRows ?? []) {
                     <input
                       type="text"
                       name={`note:${s.id}`}
-                      placeholder="Optional — overrides the shared note"
+                      placeholder="Optional, overrides the shared note"
                       class="w-56 border border-ink/20 bg-paper px-2 py-1 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                     />
                   </td>

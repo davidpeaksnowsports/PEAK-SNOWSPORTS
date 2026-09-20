@@ -194,7 +194,7 @@ const gaps = criteria
             <div class="bg-paper p-5">
               <p class="meta text-ink-45">{g.label}</p>
               <p class="mt-2 font-display text-3xl font-bold leading-none">
-                {g.scored ? `${g.percent}%` : '—'}
+                {g.scored ? `${g.percent}%` : '–'}
               </p>
               <p class="mt-2 text-sm text-ink-70">
                 {g.scored
@@ -277,10 +277,10 @@ const gaps = criteria
                           <td class="py-2 pr-4 text-ink-70">
                             {theirs
                               ? `${theirs.score} · ${scaleLabel(theirs.score)}`
-                              : '—'}
+                              : '–'}
                           </td>
                           <td class="py-2 pr-4 text-ink-70">
-                            {mine ? `${mine.score}` : '—'}
+                            {mine ? `${mine.score}` : '–'}
                           </td>
                           <td class="py-2 text-ink-70">
                             {theirs?.comment ?? mine?.comment ?? ''}
@@ -422,8 +422,8 @@ const gaps = criteria
               {(checkins ?? []).map((c) => (
                 <li class="border-t border-ink/10 pt-4">
                   <p class="meta text-ink-45">
-                    Week {c.week} · confidence {c.confidence ?? '—'} · energy{' '}
-                    {c.energy ?? '—'}
+                    Week {c.week} · confidence {c.confidence ?? '–'} · energy{' '}
+                    {c.energy ?? '–'}
                     {c.wants_chat && (
                       <span class="text-accent"> · asked for a chat</span>
                     )}
@@ -457,7 +457,7 @@ const gaps = criteria
               [
                 'Emergency contact',
                 student.emergency_name &&
-                  `${student.emergency_name}${student.emergency_relation ? ` (${student.emergency_relation})` : ''}${student.emergency_phone ? ` — ${student.emergency_phone}` : ''}`,
+                  `${student.emergency_name}${student.emergency_relation ? ` (${student.emergency_relation})` : ''}${student.emergency_phone ? `, ${student.emergency_phone}` : ''}`,
               ],
               ['Dietary', student.dietary],
               ['Medical', student.medical],
