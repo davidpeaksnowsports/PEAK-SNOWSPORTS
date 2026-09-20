@@ -19,6 +19,7 @@ export const prerender = false;
 import GapLayout from '../../layouts/GapLayout.astro';
 import Notice from '../../components/gap-portal/Notice.astro';
 import { createGapClient, isGapConfigured } from '../../lib/gap/supabase';
+import { publicUrl } from '../../lib/public-origin';
 
 const MIN_PASSWORD = 10;
 
@@ -63,7 +64,7 @@ if (Astro.request.method === 'POST' && isGapConfigured) {
         email,
         password,
         options: {
-          emailRedirectTo: new URL('/gap/login', Astro.url.origin).toString(),
+          emailRedirectTo: publicUrl('/gap/login', Astro.request, Astro.url),
           // The trigger re-checks join_code and attaches the profile to the
           // cohort the CODE names, not the one named here.
           data: { gap: true, name, join_code: code },

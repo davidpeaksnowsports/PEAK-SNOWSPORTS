@@ -27,7 +27,38 @@ function safeNext(raw: string | null): string {
 const next = safeNext(Astro.url.searchParams.get('next'));
 
 let error: string | null = null;
+let notice: string | null = null;
 let email = '';
+
+/**
+ * Arriving from an email link.
+ *
+ * Supabase sends confirmations and recoveries here with either a one-time
+ * `code` to exchange for a session, or, when something went wrong, an
+ * `error_description`. Handling both means a student who clicks the link in
+ * their confirmation email is simply signed in, rather than being shown a
+ * login form with no explanation of why they are looking at it.
+ */
+if (Astro.request.method === 'GET' && isGapConfigured) {
+  const code = Astro.url.searchParams.get('code');
+  const linkError = Astro.url.searchParams.get('error_code');
+
+  if (code) {
+    const supabase = createGapClient(Astro.cookies, Astro.request);
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+    if (!exchangeError) return Astro.redirect(next, 303);
+    // A spent or stale code is not worth an alarming message — the account is
+    // very often already confirmed, because mail providers follow links in
+    // messages before the recipient does and that consumes the one-time token.
+    notice =
+      'That link has already been used. If you have confirmed your email, sign in below.';
+  } else if (linkError) {
+    notice =
+      linkError === 'otp_expired'
+        ? 'That link has expired or had already been used. If you have confirmed your email, sign in below — otherwise request a new link.'
+        : 'That link could not be used. Sign in below, or reset your password.';
+  }
+}
 
 if (Astro.request.method === 'POST' && isGapConfigured) {
   const form = await Astro.request.formData();
@@ -76,6 +107,14 @@ if (Astro.request.method === 'POST' && isGapConfigured) {
           <p class="mt-4 text-ink-70">
             Sign in with the email address you enrolled with.
           </p>
+
+          {notice && !error && (
+            <div class="mt-6">
+              <Notice>
+                <p class="text-ink">{notice}</p>
+              </Notice>
+            </div>
+          )}
 
           {error && (
             <div class="mt-6">
