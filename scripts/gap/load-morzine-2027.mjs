@@ -84,7 +84,7 @@ const OFFICE_PHONE = '+44 1483 616 522';
 const ARRIVAL_BRIEF = [
   '13:00–14:00 Airport meet, Geneva Terminal 1 arrivals, by the lime green Tekoe tea shop.',
   '16:00–17:00 Check in and admin: week 1 schedule, student handbook, equipment and merch hand out.',
-  '17:00–18:00 Resort orientation walk around Avoriaz.',
+  '17:00–18:00 Resort orientation walk around Morzine.',
   '18:00–19:00 Free time to settle in and check over your equipment.',
   '19:00 Team dinner.',
 ].join('\n');
@@ -248,7 +248,9 @@ const RESOURCES = [
 // ---------------------------------------------------------------------------
 
 const GUIDE = [
-  ['Accommodation', 'Peak Basecamp', 'Where the cohort lives for the six weeks — new for 26/27. The whole course under one roof, coaches included. Washing machines on site.',
+  ['Accommodation', 'Peak Basecamp, Morzine', 'Where the cohort lives for the six weeks — our own chalet, new for 26/27. The whole course under one roof, coaches included. Washing machines on site.',
+    null, null, null, null],
+  ['Getting to Avoriaz', 'Up the hill each morning', 'You sleep in Morzine and train in Avoriaz, so there is a journey up at the start of each day. The meeting point and time are posted in the WhatsApp group the night before — check it before you go to bed, not in the morning.',
     null, null, null, null],
   ['Getting here', 'Geneva Airport, Terminal 1', 'Airport meet is by the lime green Tekoe tea shop in the arrivals hall. Free wifi: connect to "Free Wifi GVA", enter your mobile number, use the code texted to you (120 minutes).',
     'Geneva Airport', L.genevaT1, null, null],
@@ -274,57 +276,58 @@ const GUIDE = [
 
 const ESSENTIALS = [
   ['Emergency', 'If someone is injured on the hill',
-    'Stop. Make the scene safe — cross skis uphill of the casualty. Call the piste rescue number for the sector and give the piste name and the nearest marker number. Then call your coach.\n\nDo not move anyone with a suspected head, neck or back injury.\n\nPeak emergency line: ' + EMERGENCY + '\nEuropean emergency number: 112', true, 1],
+    'Stop. Make the scene safe — cross skis uphill of the casualty. Call the piste rescue number for the sector and give the piste name and the nearest marker number. Then call your coach.\n\nDo not move anyone with a suspected head, neck or back injury.\n\nPeak emergency line: ' + EMERGENCY + '\nEuropean emergency number: 112', true],
   ['Emergency', 'Peak emergency contact',
-    EMERGENCY + '\n\nThis is the number to call first, any hour. It is also the WhatsApp number for the course.', true, 2],
+    EMERGENCY + '\n\nThis is the number to call first, any hour. It is also the WhatsApp number for the course.', true],
   ['Emergency', 'If you are worried about someone',
-    'Tell a coach the same day. You do not need to be sure, and you will not be getting anyone into trouble.\n\nIf it is about a coach, use the confidential option on the Feedback page — the Peak office reads it and your coaches do not.', true, 3],
+    'Tell a coach the same day. You do not need to be sure, and you will not be getting anyone into trouble.\n\nIf it is about a coach, use the confidential option on the Feedback page — the Peak office reads it and your coaches do not.', true],
 
   ['Contacts', 'The Peak office',
-    'bonjour@peaksnowsports.com\n' + OFFICE_PHONE + '\n\nPEAK Snowsports France, 440 Route du Pre, Montriond, Morzine 74110', false, 1],
+    'bonjour@peaksnowsports.com\n' + OFFICE_PHONE + '\n\nPEAK Snowsports France, 440 Route du Pre, Montriond, Morzine 74110'],
   ['Contacts', 'The course WhatsApp group',
-    'Day-to-day comms run through WhatsApp: schedule changes, weather calls, where to meet.\n\nJoin: ' + L.whatsapp + '\n\nIf the link will not work for you, ask and we will add you manually.', false, 2],
+    'Day-to-day comms run through WhatsApp: schedule changes, weather calls, where to meet.\n\nJoin: ' + L.whatsapp + '\n\nIf the link will not work for you, ask and we will add you manually.'],
 
   ['Before you arrive', 'Student onboarding form',
-    'Complete this first — it is how we get your details on file.\n\n' + L.onboarding, false, 1],
+    'Complete this first — it is how we get your details on file.\n\n' + L.onboarding],
   ['Before you arrive', 'The student handbook',
-    'The handbook is the fullest reference for the course, including the student behaviour contract, which you need to read during onboarding.\n\n' + L.handbook, false, 2],
+    'The handbook is the fullest reference for the course, including the student behaviour contract, which you need to read during onboarding.\n\n' + L.handbook],
   ['Before you arrive', 'Getting ski fit',
-    'We have partnered with The Body Mechanics on a short series of tests and exercises. Do the tests, find your weak link, work on it before you travel. Everything is on the Learning hub page.', false, 3],
+    'We have partnered with The Body Mechanics on a short series of tests and exercises. Do the tests, find your weak link, work on it before you travel. Everything is on the Learning hub page.'],
 
   ['Arrival day', 'How the first day runs',
-    ARRIVAL_BRIEF + '\n\nNotify us when you land, and straight away if you are delayed — message the WhatsApp group or call ' + EMERGENCY + '.', false, 1],
+    ARRIVAL_BRIEF + '\n\nNotify us when you land, and straight away if you are delayed — message the WhatsApp group or call ' + EMERGENCY + '.'],
   ['Arrival day', 'Where you are staying',
-    'Peak Basecamp — our own chalet, new for the 26/27 season. The whole course lives there together, coaches included.\n\nWashing machines on site, so pack about two weeks of casual clothes rather than six. No cooking equipment needed.', false, 2],
+    'Peak Basecamp in Morzine — our own chalet, new for the 26/27 season. The whole course lives there together, coaches included. You train up in Avoriaz and come home to Morzine.\n\nWashing machines on site, so pack about two weeks of casual clothes rather than six. No cooking equipment needed.'],
 
   ['Assessment', 'How readiness is judged',
-    'Your coaches assess you against the criteria on the My progress page, on a six-point acquisition scale. Readiness tells you how much of the assessment criteria you are currently showing. It is a coaching indicator, not a prediction, and not a guarantee of passing.', false, 1],
+    'Your coaches assess you against the criteria on the My progress page, on a six-point acquisition scale. Readiness tells you how much of the assessment criteria you are currently showing. It is a coaching indicator, not a prediction, and not a guarantee of passing.'],
   ['Assessment', 'What do I need to pass?',
-    'Trust the training and attend every session. The curriculum is built to get you above the BASI standard for both levels — most of passing is showing up and putting the work in.', false, 2],
+    'Trust the training and attend every session. The curriculum is built to get you above the BASI standard for both levels — most of passing is showing up and putting the work in.'],
   ['Assessment', 'What if I fail an assessment?',
-    'Rare. If it is Level 1, we arrange a reassessment inside your six weeks. If it is Level 2, you rebook with BASI directly, within two years. Either way we keep coaching you.', false, 3],
+    'Rare. If it is Level 1, we arrange a reassessment inside your six weeks. If it is Level 2, you rebook with BASI directly, within two years. Either way we keep coaching you.'],
   ['Assessment', 'Experience hours',
-    'Shadowing and assisting hours are logged in this portal and signed off by a coach. The course is built around 24 hours. Log them the same day — the detail fades fast, and unverified hours do not count.', false, 4],
+    'Shadowing and assisting hours are logged in this portal and signed off by a coach. The course is built around 24 hours. Log them the same day — the detail fades fast, and unverified hours do not count.'],
 
   ['Practical', 'What insurance do I need?',
-    'Travel cover including medical and evacuation, personal-accident cover, and equipment cover.\n\nInstructing liability comes free with your BASI membership once you qualify — it does not cover you during the course.', false, 1],
+    'Travel cover including medical and evacuation, personal-accident cover, and equipment cover.\n\nInstructing liability comes free with your BASI membership once you qualify — it does not cover you during the course.'],
+  ['Practical', 'Getting between Morzine and Avoriaz',
+    'You live in Morzine and train in Avoriaz, so every training day starts with the trip up. The meeting point and time go in the WhatsApp group the night before.\n\nThe first aid assessments and some workshops are at Avoriaz venues — the tourist office in week 3, the Palais des Sports in week 5.'],
   ['Practical', 'Laundry, cooking and kit',
-    'You have access to washing machines, so pack about two weeks of casual clothes rather than six.\n\nNo cooking equipment is needed. A fondue set and raclette equipment are available free of charge.', false, 2],
+    'You have access to washing machines, so pack about two weeks of casual clothes rather than six.\n\nNo cooking equipment is needed. A fondue set and raclette equipment are available free of charge.'],
   ['Practical', 'Avalanche equipment',
-    'You will not need your own avalanche kit unless you plan to ski off-piste independently. There is an avalanche workshop in week 4 where you are trained on the equipment.', false, 3],
+    'You will not need your own avalanche kit unless you plan to ski off-piste independently. There is an avalanche workshop in week 4 where you are trained on the equipment.'],
   ['Practical', 'Helmets',
-    'Compulsory. Not a recommendation — you will not be able to train without one.', false, 4],
+    'Compulsory. Not a recommendation — you will not be able to train without one.'],
   ['Practical', 'Lift pass',
-    'Collected on arrival. Bring a passport photo.\n\n' + L.liftPass, false, 5],
+    'Collected on arrival. Bring a passport photo.\n\n' + L.liftPass],
   ['Practical', 'Supermarkets and suncream',
-    'There are supermarkets within walking distance.\n\nPALM&PINE suncream is 15% off with code PAPAP.', false, 6],
-
+    'There are supermarkets within walking distance.\n\nPALM&PINE suncream is 15% off with code PAPAP.'],
   ['After the course', 'What Level 1 and Level 2 let you do',
-    'Level 1 lets you teach at UK snow centres and dry slopes.\n\nLevel 2 is the first mountain qualification — teaching on marked pistes across the Alps for recognised ski schools.', false, 1],
+    'Level 1 lets you teach at UK snow centres and dry slopes.\n\nLevel 2 is the first mountain qualification — teaching on marked pistes across the Alps for recognised ski schools.'],
   ['After the course', 'Work',
-    'Our Champéry partner school interviews during the course and takes BASI Level 2s directly. The winter intake finishes just before February half-term, so you can be earning immediately.\n\nSwitzerland, New Zealand, the USA, Italy and Andorra all have country-specific routes and work permits — covered in the on-course career workshops.\n\nBASI Jobs: ' + L.basiJobs, false, 2],
+    'Our Champéry partner school interviews during the course and takes BASI Level 2s directly. The winter intake finishes just before February half-term, so you can be earning immediately.\n\nSwitzerland, New Zealand, the USA, Italy and Andorra all have country-specific routes and work permits — covered in the on-course career workshops.\n\nBASI Jobs: ' + L.basiJobs],
   ['After the course', 'BASI membership',
-    'You finish as a full BASI Level 2 member. That brings accredited training, a professional network, globally recognised qualifications, professional liability insurance within your remit, the members area, discipline manuals and member pro deals.\n\n' + L.basi, false, 3],
+    'You finish as a full BASI Level 2 member. That brings accredited training, a professional network, globally recognised qualifications, professional liability insurance within your remit, the members area, discipline manuals and member pro deals.\n\n' + L.basi],
 ];
 
 // ---------------------------------------------------------------------------
@@ -438,9 +441,15 @@ async function main() {
     cohort_id: cohort.id, category, name, detail, address, map_url, phone, hours, sort: i,
   }));
 
-  const essentials = ESSENTIALS.map(([category, title, body, urgent, sort]) => ({
-    cohort_id: cohort.id, category, title, body, urgent, sort,
-  }));
+  // sort is the entry's position within its own category, so adding one in
+  // the middle of the array puts it in the middle of the page — no hand
+  // numbering to drift out of step.
+  const seenInCategory = new Map();
+  const essentials = ESSENTIALS.map(([category, title, body, urgent = false]) => {
+    const n = (seenInCategory.get(category) ?? 0) + 1;
+    seenInCategory.set(category, n);
+    return { cohort_id: cohort.id, category, title, body, urgent, sort: n };
+  });
 
   const checklist = CHECKLIST.map(([section, label, note, required, pre_arrival], i) => ({
     cohort_id: cohort.id, section, label, note, required, pre_arrival, sort: i,
