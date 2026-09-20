@@ -1,0 +1,140 @@
+---
+/**
+ * GAP portal sign-in. Plain HTML form, posted to this same route and handled
+ * on the server — no client-side JS, no Supabase in the browser.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, isGapConfigured } from '../../lib/gap/supabase';
+
+/**
+ * Only same-area paths are accepted as a return destination. Anything else —
+ * a full URL, a protocol-relative //evil.com, a path outside /gap — is
+ * discarded rather than followed.
+ */
+function safeNext(raw: string | null): string {
+  if (!raw) return '/gap';
+  if (raw.startsWith('//')) return '/gap';
+  if (raw !== '/gap' && !raw.startsWith('/gap/')) return '/gap';
+  return raw;
+}
+
+const next = safeNext(Astro.url.searchParams.get('next'));
+
+let error: string | null = null;
+let email = '';
+
+if (Astro.request.method === 'POST' && isGapConfigured) {
+  const form = await Astro.request.formData();
+  email = String(form.get('email') ?? '').trim();
+  const password = String(form.get('password') ?? '');
+  const target = safeNext(String(form.get('next') ?? '') || null);
+
+  if (!email || !password) {
+    error = 'Enter your email address and password.';
+  } else {
+    const supabase = createGapClient(Astro.cookies, Astro.request);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      // Deliberately vague: distinguishing "no such account" from "wrong
+      // password" tells an attacker which emails are registered.
+      error = 'That email address and password do not match.';
+    } else {
+      return Astro.redirect(target, 303);
+    }
+  }
+}
+---
+
+<GapLayout title="Sign in" chrome={false}>
+  <div class="mx-auto max-w-md py-8">
+    <p class="meta mb-3 text-ink-45">Peak Snowsports</p>
+    <h1 class="font-display text-4xl font-bold">GAP course</h1>
+
+    {
+      !isGapConfigured ? (
+        <div class="mt-8">
+          <Notice tone="warn" label="Not configured yet">
+            <p>
+              The portal needs <code class="font-mono text-sm">SUPABASE_URL</code>{' '}
+              and <code class="font-mono text-sm">SUPABASE_ANON_KEY</code> before
+              anyone can sign in. Add them in Vercel and redeploy.
+            </p>
+          </Notice>
+        </div>
+      ) : (
+        <>
+          <p class="mt-4 text-ink-70">
+            Sign in with the email address you enrolled with.
+          </p>
+
+          {error && (
+            <div class="mt-6">
+              <Notice tone="warn" alert>
+                <p class="text-ink">{error}</p>
+              </Notice>
+            </div>
+          )}
+
+          <form method="POST" class="mt-8 space-y-5">
+            <input type="hidden" name="next" value={next} />
+
+            <div>
+              <label for="email" class="meta mb-2 block text-ink-70">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                value={email}
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <div>
+              <label for="password" class="meta mb-2 block text-ink-70">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+            >
+              Sign in
+            </button>
+          </form>
+
+          <p class="mt-6 text-sm text-ink-70">
+            <a href="/gap/forgot-password" class="text-accent">
+              Forgotten your password?
+            </a>
+          </p>
+        </>
+      )
+    }
+
+    <p class="mt-12 border-t border-ink/10 pt-6 text-sm text-ink-45">
+      Not got an account yet? Your login is sent out before you travel — email{' '}
+      <a href="mailto:hello@peaksnowsports.com" class="text-accent">
+        hello@peaksnowsports.com
+      </a>{' '}
+      if it hasn't arrived.
+    </p>
+  </div>
+</GapLayout>

@@ -1,0 +1,247 @@
+---
+/**
+ * Packing and pre-arrival checklist.
+ *
+ * Two lists on one page: things to do before you travel, and things to put in
+ * the bag. They share a table and a UI because to a student they are one job —
+ * "am I ready to go" — even though only the first has a deadline the office
+ * chases.
+ *
+ * Ticks save without JavaScript: the whole thing is a form with a Save button.
+ * A small inline script upgrades that to save-on-tick, because a packing list
+ * you tick over three evenings is miserable if every tick needs a round trip
+ * through a submit button you have to scroll to.
+ *
+ * Note what is NOT here: passport uploads, medical details and dietary
+ * requirements. Those are pre-arrival tasks that link out to a form the office
+ * handles, because personal data of that kind needs retention rules and access
+ * controls this checklist does not have.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, type GapUser } from '../../lib/gap/supabase';
+
+const user = Astro.locals.gapUser as GapUser;
+const cohort = user.cohort;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+
+  // Which items this submission is authoritative for. Sent as a hidden field
+  // so an unticked box — which browsers simply omit — is still recorded as
+  // "not done" rather than left at whatever it was.
+  const scope = String(form.get('scope') ?? '')
+    .split(',')
+    .filter(Boolean);
+  const ticked = new Set(form.getAll('item').map(String));
+
+  if (scope.length > 0) {
+    const { error } = await db.from('gap_checklist_progress').upsert(
+      scope.map((id) => ({
+        student_id: user.id,
+        item_id: id,
+        done: ticked.has(id),
+      })),
+      { onConflict: 'student_id,item_id' },
+    );
+    flash = error
+      ? { tone: 'warn', message: `Could not save: ${error.message}` }
+      : { tone: 'good', message: 'Checklist saved.' };
+  }
+}
+
+const [{ data: items }, { data: progressRows }] = await Promise.all([
+  cohort
+    ? db
+        .from('gap_checklist_items')
+        .select('*')
+        .eq('cohort_id', cohort.id)
+        .order('pre_arrival', { ascending: false })
+        .order('sort')
+    : Promise.resolve({ data: [] }),
+  db.from('gap_checklist_progress').select('item_id, done').eq('student_id', user.id),
+]);
+
+const done = new Set(
+  (progressRows ?? []).filter((p) => p.done).map((p) => p.item_id as string),
+);
+
+const all = items ?? [];
+
+/** Group one half of the list by its section heading. */
+const group = (preArrival: boolean) => {
+  const sections = new Map<string, typeof all>();
+  for (const i of all.filter((x) => x.pre_arrival === preArrival)) {
+    if (!sections.has(i.section)) sections.set(i.section, []);
+    sections.get(i.section)!.push(i);
+  }
+  return [...sections.entries()];
+};
+
+const lists = [
+  {
+    key: 'pre-arrival',
+    heading: 'Before you travel',
+    blurb:
+      'The office chases these. Everything here needs to be done before your first day, not on it.',
+    sections: group(true),
+  },
+  {
+    key: 'packing',
+    heading: 'Packing',
+    blurb:
+      'Six weeks in the Alps. Tick as you pack — your progress is saved to your account, so you can do it over several evenings.',
+    sections: group(false),
+  },
+];
+
+const countDone = (rows: typeof all) => rows.filter((i) => done.has(i.id)).length;
+---
+
+<GapLayout
+  title="Checklist"
+  kicker={cohort?.name}
+  heading="Getting ready"
+  intro="Two lists: what to sort before you travel, and what to put in the bag."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {
+    all.length === 0 ? (
+      <Notice>
+        <p>No checklist published for your cohort yet.</p>
+      </Notice>
+    ) : (
+      <div class="space-y-16">
+        {lists.map((list) =>
+          list.sections.length === 0 ? null : (
+            <section>
+              <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-ink/10 pb-3">
+                <h2 class="font-display text-2xl font-bold">{list.heading}</h2>
+                <p class="meta text-ink-45">
+                  {countDone(list.sections.flatMap(([, rows]) => rows))} of{' '}
+                  {list.sections.flatMap(([, rows]) => rows).length} done
+                </p>
+              </div>
+              <p class="mt-3 max-w-2xl text-ink-70">{list.blurb}</p>
+
+              <form method="POST" class="gap-checklist mt-8">
+                <input
+                  type="hidden"
+                  name="scope"
+                  value={list.sections
+                    .flatMap(([, rows]) => rows.map((r) => r.id))
+                    .join(',')}
+                />
+
+                <div class="grid gap-10 sm:grid-cols-2">
+                  {list.sections.map(([section, rows]) => (
+                    <fieldset>
+                      <legend class="meta text-ink-45">{section}</legend>
+                      <ul class="mt-3 space-y-2">
+                        {rows.map((i) => (
+                          <li>
+                            <label class="flex cursor-pointer items-start gap-3 py-1">
+                              <input
+                                type="checkbox"
+                                name="item"
+                                value={i.id}
+                                checked={done.has(i.id)}
+                                class="mt-1 h-4 w-4 shrink-0 accent-accent"
+                              />
+                              <span>
+                                <span class="text-ink">{i.label}</span>
+                                {i.required && (
+                                  <span class="meta ml-2 text-accent">
+                                    Required
+                                  </span>
+                                )}
+                                {i.note && (
+                                  <span class="block text-sm text-ink-45">
+                                    {i.note}
+                                  </span>
+                                )}
+                              </span>
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                    </fieldset>
+                  ))}
+                </div>
+
+                <div class="mt-8 flex items-center gap-4">
+                  <button
+                    type="submit"
+                    class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+                  >
+                    Save {list.heading.toLowerCase()}
+                  </button>
+                  <span class="gap-save-state meta text-ink-45" aria-live="polite"
+                  ></span>
+                </div>
+              </form>
+            </section>
+          ),
+        )}
+      </div>
+    )
+  }
+</GapLayout>
+
+<script>
+  /**
+   * Save on tick.
+   *
+   * The form already works without this — that is the whole design — so this
+   * only replaces the round trip, and puts the button back the moment a save
+   * fails so nothing is silently lost.
+   */
+  const DEBOUNCE_MS = 600;
+
+  document.querySelectorAll<HTMLFormElement>('form.gap-checklist').forEach((form) => {
+    const state = form.querySelector<HTMLElement>('.gap-save-state');
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    let timer: number | undefined;
+
+    // Only hide the button once we know scripting works and the listener is
+    // attached; a broken script must not leave an unsaveable list.
+    button?.classList.add('hidden');
+
+    const save = async () => {
+      if (state) state.textContent = 'Saving…';
+      try {
+        const response = await fetch(form.action || location.pathname, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'X-Requested-With': 'fetch' },
+        });
+        if (!response.ok) throw new Error(String(response.status));
+        if (state) state.textContent = 'Saved';
+      } catch {
+        if (state) state.textContent = 'Could not save — use the button';
+        button?.classList.remove('hidden');
+      }
+    };
+
+    form.addEventListener('change', (event) => {
+      if (!(event.target instanceof HTMLInputElement)) return;
+      window.clearTimeout(timer);
+      // Batch a burst of ticks into one request rather than one each.
+      timer = window.setTimeout(save, DEBOUNCE_MS);
+    });
+  });
+</script>

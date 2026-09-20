@@ -9,6 +9,7 @@
     "start": "astro dev",
     "build": "astro build",
     "check:whatsapp": "node scripts/check-whatsapp.mjs",
+    "gap:seed": "node --env-file=.env scripts/gap/seed.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "sanity:dev": "cd sanity && npm run dev",

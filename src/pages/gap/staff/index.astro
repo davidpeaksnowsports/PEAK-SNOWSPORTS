@@ -1,0 +1,376 @@
+---
+/**
+ * Coach dashboard.
+ *
+ * Sorted by who needs attention, not alphabetically. A coach opening this
+ * between sessions has about ninety seconds, so the first thing on the page is
+ * the list of students with a flag against them — asked for a chat, hours
+ * waiting to be verified, workbook stalled, no assessment yet.
+ *
+ * Everything else a coach does lives one click away: bulk assessment, the
+ * verification queue, and one student's full record.
+ */
+export const prerender = false;
+
+import GapLayout from '../../../layouts/GapLayout.astro';
+import Notice from '../../../components/gap-portal/Notice.astro';
+import { createGapClient, isStaff, type GapUser } from '../../../lib/gap/supabase';
+import {
+  GROUPS,
+  courseWeek,
+  fmtDate,
+  readiness,
+  readinessTone,
+  toHours,
+  weakestAssessed,
+  TONE_LABEL,
+} from '../../../lib/gap/course';
+import { listCriteria } from '../../../lib/gap/data';
+
+const user = Astro.locals.gapUser as GapUser;
+// Staff-only. A student who guesses the URL goes home rather than getting a
+// "forbidden" that confirms the page exists.
+if (!isStaff(user)) return Astro.redirect('/gap', 302);
+
+const db = createGapClient(Astro.cookies, Astro.request);
+const cohort = user.cohort;
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST' && cohort) {
+  const form = await Astro.request.formData();
+  const title = String(form.get('title') ?? '').trim();
+  const body = String(form.get('body') ?? '').trim();
+
+  if (!title || !body) {
+    flash = { tone: 'warn', message: 'An announcement needs a title and a body.' };
+  } else {
+    const { error } = await db.from('gap_announcements').insert({
+      cohort_id: cohort.id,
+      title,
+      body,
+      pinned: form.get('pinned') === 'on',
+      created_by: user.id,
+    });
+    flash = error
+      ? { tone: 'warn', message: `Could not post: ${error.message}` }
+      : { tone: 'good', message: 'Posted to the cohort.' };
+  }
+}
+
+const week = cohort
+  ? courseWeek(cohort)
+  : { week: 0, totalWeeks: 6, daysUntilStart: 0, finished: false };
+
+// One query per concern across the whole cohort, then assembled per student in
+// memory. A cohort is 8–12 people, so this is a handful of small reads rather
+// than four queries times twelve students.
+const [
+  { data: members },
+  criteria,
+  { data: scores },
+  { data: pendingLogs },
+  { data: checkins },
+  { data: feedback },
+  { data: announcements },
+] = await Promise.all([
+  cohort
+    ? db
+        .from('gap_members')
+        .select('id, name, role, active')
+        .eq('cohort_id', cohort.id)
+        .eq('role', 'student')
+        .eq('active', true)
+        .order('name')
+    : Promise.resolve({ data: [] }),
+  listCriteria(db),
+  db.from('gap_scores').select('student_id, criterion_id, source, score, assessed_at'),
+  db
+    .from('gap_experience_log')
+    .select('id, student_id, duration_minutes, status')
+    .eq('status', 'pending'),
+  db
+    .from('gap_checkins')
+    .select('student_id, week, wants_chat, struggling, confidence, energy')
+    .order('week', { ascending: false }),
+  db
+    .from('gap_feedback')
+    .select('id, kind, category, body, confidential, created_at, handled, student_id')
+    .eq('handled', false)
+    .order('created_at', { ascending: false })
+    .limit(10),
+  cohort
+    ? db
+        .from('gap_announcements')
+        .select('id, title, published_at, pinned')
+        .eq('cohort_id', cohort.id)
+        .order('published_at', { ascending: false })
+        .limit(5)
+    : Promise.resolve({ data: [] }),
+]);
+
+const students = members ?? [];
+
+/** Latest coach score per criterion, for one student. */
+const coachScoresFor = (studentId: string) => {
+  const map = new Map<string, number>();
+  const rows = (scores ?? [])
+    .filter((s) => s.student_id === studentId && s.source === 'coach')
+    .sort((a, b) => String(b.assessed_at).localeCompare(String(a.assessed_at)));
+  for (const s of rows) {
+    if (!map.has(s.criterion_id)) map.set(s.criterion_id, s.score);
+  }
+  return map;
+};
+
+const pendingByStudent = new Map<string, number>();
+for (const l of pendingLogs ?? []) {
+  pendingByStudent.set(
+    l.student_id,
+    (pendingByStudent.get(l.student_id) ?? 0) + l.duration_minutes,
+  );
+}
+
+const latestCheckin = new Map<string, NonNullable<typeof checkins>[number]>();
+for (const c of checkins ?? []) {
+  if (!latestCheckin.has(c.student_id)) latestCheckin.set(c.student_id, c);
+}
+
+const rows = students
+  .map((s) => {
+    const coach = coachScoresFor(s.id);
+    const groups = GROUPS.map((g) => ({
+      ...g,
+      ...readiness(criteria, coach, g.key),
+    }));
+    const weakest = weakestAssessed(groups);
+    const unassessed = groups.filter((g) => g.scored === 0);
+    const checkin = latestCheckin.get(s.id);
+    const pendingMinutes = pendingByStudent.get(s.id) ?? 0;
+
+    const flags = [
+      checkin?.wants_chat ? 'Asked for a chat' : null,
+      pendingMinutes > 0 ? `${toHours(pendingMinutes)}h to verify` : null,
+      coach.size === 0 ? 'Never assessed' : null,
+      // "Behind" only ever describes a strand someone has looked at.
+      weakest &&
+      readinessTone(weakest.percent, week.week, week.totalWeeks) === 'watch'
+        ? `${weakest.label} behind`
+        : null,
+      coach.size > 0 && unassessed.length > 0
+        ? `${unassessed.map((g) => g.label).join(', ')} not assessed`
+        : null,
+      checkin && (checkin.confidence ?? 5) <= 2 ? 'Low confidence' : null,
+      checkin && (checkin.energy ?? 5) <= 2 ? 'Low energy' : null,
+    ].filter((f): f is string => Boolean(f));
+
+    return { student: s, groups, weakest, flags, checkin, coachCount: coach.size };
+  })
+  // Most flags first — the list orders itself by who needs the coach.
+  .sort((a, b) => b.flags.length - a.flags.length || a.student.name.localeCompare(b.student.name));
+
+const needAttention = rows.filter((r) => r.flags.length > 0);
+const totalPending = [...pendingByStudent.values()].reduce((a, b) => a + b, 0);
+---
+
+<GapLayout
+  title="Coach"
+  wide
+  kicker={cohort ? `${cohort.name} · Week ${week.week} of ${week.totalWeeks}` : 'Peak GAP'}
+  heading="Coach dashboard"
+  intro="Who needs you, what's waiting to be signed off, and what the cohort has been told."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {
+    !cohort && (
+      <Notice tone="warn" label="No cohort">
+        <p>
+          Your account isn't attached to a cohort, so there are no students to
+          show. An admin can set that in <code>gap_members.cohort_id</code>.
+        </p>
+      </Notice>
+    )
+  }
+
+  <div class="flex flex-wrap gap-3">
+    <a
+      href="/gap/staff/assess"
+      class="inline-block bg-accent px-5 py-3 font-display font-bold text-paper no-underline transition-colors hover:bg-ink hover:no-underline"
+      >Assess the group</a
+    >
+    <a
+      href="/gap/staff/verify"
+      class="inline-block border border-ink/20 px-5 py-3 font-display font-bold text-ink no-underline transition-colors hover:border-ink hover:no-underline"
+      >Verify hours{totalPending > 0 && ` (${toHours(totalPending)}h)`}</a
+    >
+  </div>
+
+  {/* ------------------------------------------------------ needs attention */}
+  <section class="mt-12">
+    <h2 class="font-display text-2xl font-bold">
+      {needAttention.length > 0 ? 'Needs attention' : 'Cohort'}
+    </h2>
+
+    {
+      students.length === 0 ? (
+        <p class="mt-4 text-ink-70">No students on this cohort yet.</p>
+      ) : (
+        <div class="mt-6 overflow-x-auto">
+          <table class="w-full min-w-[46rem] border-collapse text-left">
+            <thead>
+              <tr class="border-b border-ink/20">
+                <th class="meta py-3 pr-4 text-ink-45">Student</th>
+                {GROUPS.map((g) => (
+                  <th class="meta py-3 pr-4 text-ink-45">{g.label}</th>
+                ))}
+                <th class="meta py-3 pr-4 text-ink-45">Flags</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr class="border-b border-ink/10 align-top">
+                  <td class="py-4 pr-4">
+                    <a
+                      href={`/gap/staff/student/${r.student.id}`}
+                      class="font-display font-bold text-ink hover:text-accent"
+                    >
+                      {r.student.name}
+                    </a>
+                    {r.checkin?.struggling && (
+                      <p class="mt-1 max-w-xs text-sm text-ink-45">
+                        “{r.checkin.struggling}”
+                      </p>
+                    )}
+                  </td>
+                  {r.groups.map((g) => (
+                    <td class="py-4 pr-4">
+                      <span class="font-display text-lg font-bold">
+                        {g.scored ? `${g.percent}%` : '—'}
+                      </span>
+                      <span class="meta block text-ink-45">
+                        {g.scored
+                          ? TONE_LABEL[
+                              readinessTone(g.percent, week.week, week.totalWeeks)
+                            ]
+                          : 'Not assessed'}
+                      </span>
+                    </td>
+                  ))}
+                  <td class="py-4 pr-4">
+                    {r.flags.length === 0 ? (
+                      <span class="meta text-ink-45">—</span>
+                    ) : (
+                      <ul class="space-y-1">
+                        {r.flags.map((f) => (
+                          <li class="meta text-accent">{f}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+  </section>
+
+  {/* -------------------------------------------------------- open feedback */}
+  {
+    feedback && feedback.length > 0 && (
+      <section class="mt-16 border-t border-ink/10 pt-10">
+        <h2 class="font-display text-2xl font-bold">Unactioned feedback</h2>
+        <p class="mt-2 max-w-2xl text-ink-70">
+          Confidential course feedback is not listed here for coaches — only the
+          office can read it.
+        </p>
+        <ul class="mt-6 space-y-5">
+          {feedback.map((f) => (
+            <li class="border-t border-ink/10 pt-4">
+              <p class="meta text-ink-45">
+                {fmtDate(f.created_at)} · {f.kind}
+                {f.category && ` · ${f.category}`}
+                {f.confidential && ' · Confidential'}
+              </p>
+              <p class="mt-1 text-ink-70">{f.body}</p>
+              <p class="mt-1">
+                <a
+                  href={`/gap/staff/student/${f.student_id}`}
+                  class="meta text-accent"
+                >
+                  Open student
+                </a>
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {/* -------------------------------------------------------- announcements */}
+  <section class="mt-16 border-t border-ink/10 pt-10">
+    <h2 class="font-display text-2xl font-bold">Post an announcement</h2>
+    <p class="mt-2 max-w-2xl text-ink-70">
+      Appears on every student's dashboard immediately. Use it for the things
+      that change the day — a moved meeting point, a weather call.
+    </p>
+
+    <form method="POST" class="mt-6 max-w-2xl space-y-4">
+      <label class="block">
+        <span class="meta text-ink-45">Title</span>
+        <input
+          type="text"
+          name="title"
+          required
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <label class="block">
+        <span class="meta text-ink-45">Message</span>
+        <textarea
+          name="body"
+          rows="4"
+          required
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        ></textarea>
+      </label>
+
+      <label class="flex items-center gap-3">
+        <input type="checkbox" name="pinned" class="h-4 w-4 accent-accent" />
+        <span class="text-ink-70">Pin to the top</span>
+      </label>
+
+      <button
+        type="submit"
+        class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+      >
+        Post
+      </button>
+    </form>
+
+    {
+      announcements && announcements.length > 0 && (
+        <ul class="mt-8 space-y-2">
+          {announcements.map((a) => (
+            <li class="meta text-ink-45">
+              {fmtDate(a.published_at)} · {a.title}
+              {a.pinned && ' · Pinned'}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</GapLayout>

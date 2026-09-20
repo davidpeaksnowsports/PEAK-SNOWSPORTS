@@ -1,0 +1,30 @@
+---
+/**
+ * The portal's one message box: form results, empty states, setup warnings.
+ *
+ * `tone` only changes the rule colour, never the background — the design
+ * system separates by hairline and structure rather than by coloured panels,
+ * and a red/green pair would be the only chroma on the page besides the accent.
+ */
+interface Props {
+  tone?: 'info' | 'good' | 'warn';
+  label?: string;
+  /** Renders as role="alert" so a form error is announced, not just shown. */
+  alert?: boolean;
+}
+
+const { tone = 'info', label, alert = false } = Astro.props;
+
+const rule = {
+  info: 'border-ink/30',
+  good: 'border-accent',
+  warn: 'border-ink',
+}[tone];
+---
+
+<div role={alert ? 'alert' : undefined} class:list={['border-l-2 bg-paper-2 p-5', rule]}>
+  {label && <p class="meta mb-2 text-ink-45">{label}</p>}
+  <div class="text-ink-70 [&_a]:text-accent [&_strong]:text-ink">
+    <slot />
+  </div>
+</div>

@@ -1,0 +1,29 @@
+---
+/**
+ * One figure in the dashboard's headline row.
+ *
+ * `hint` is where the caveat goes — "18 of 35 hours" means little without
+ * "12 still to verify" beside it.
+ */
+interface Props {
+  label: string;
+  value: string;
+  hint?: string;
+  href?: string;
+}
+
+const { label, value, hint, href } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag
+  href={href}
+  class:list={[
+    'block bg-paper p-5 no-underline',
+    href && 'transition-colors hover:bg-paper-2 hover:no-underline',
+  ]}
+>
+  <p class="meta text-ink-45">{label}</p>
+  <p class="mt-2 font-display text-3xl font-bold leading-none text-ink">{value}</p>
+  {hint && <p class="mt-2 text-sm text-ink-70">{hint}</p>}
+</Tag>

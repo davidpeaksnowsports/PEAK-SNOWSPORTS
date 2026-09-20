@@ -1,0 +1,397 @@
+---
+/**
+ * Ski-school experience log.
+ *
+ * BASI-compatible shape: one row per session observed or assisted, with the
+ * fields an external submission asks for, and a coach sign-off on each.
+ *
+ * Students cannot set `status` — the database trigger forces every student
+ * write back to `pending`, including an edit to an already-verified entry.
+ * That is deliberate: verified hours have to be the hours a coach actually
+ * saw, so changing the entry withdraws the signature.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, type GapUser } from '../../lib/gap/supabase';
+import { fmtDate, toHours } from '../../lib/gap/course';
+import { experienceTotals } from '../../lib/gap/data';
+
+const user = Astro.locals.gapUser as GapUser;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+
+  if (String(form.get('intent')) === 'delete') {
+    const id = String(form.get('id') ?? '');
+    // RLS allows deleting only your own row; a verified one is kept so the
+    // record of a signed-off session cannot quietly disappear.
+    if (id) {
+      await db
+        .from('gap_experience_log')
+        .delete()
+        .eq('id', id)
+        .eq('status', 'pending');
+    }
+    return Astro.redirect('/gap/experience?deleted=1', 303);
+  }
+
+  const minutes = Number(form.get('duration_minutes'));
+  const happened = String(form.get('happened_on') ?? '');
+  const organisation = String(form.get('organisation') ?? '').trim();
+
+  if (!happened || !organisation) {
+    flash = { tone: 'warn', message: 'Date and ski school are both needed.' };
+  } else if (!Number.isFinite(minutes) || minutes <= 0 || minutes > 1440) {
+    flash = { tone: 'warn', message: 'Enter a duration between 1 and 1440 minutes.' };
+  } else {
+    const { error } = await db.from('gap_experience_log').insert({
+      student_id: user.id,
+      happened_on: happened,
+      organisation,
+      instructor_observed:
+        String(form.get('instructor_observed') ?? '').trim() || null,
+      location: String(form.get('location') ?? '').trim() || null,
+      group_level: String(form.get('group_level') ?? '').trim() || null,
+      duration_minutes: Math.round(minutes),
+      student_role: String(form.get('student_role') ?? '').trim() || null,
+      objective: String(form.get('objective') ?? '').trim() || null,
+      observations: String(form.get('observations') ?? '').trim() || null,
+      reflection: String(form.get('reflection') ?? '').trim() || null,
+      evidence_url: String(form.get('evidence_url') ?? '').trim() || null,
+    });
+
+    flash = error
+      ? { tone: 'warn', message: `Could not save: ${error.message}` }
+      : { tone: 'good', message: 'Logged. Your coach will verify it.' };
+  }
+}
+
+if (Astro.url.searchParams.get('deleted')) {
+  flash = { tone: 'good', message: 'Entry removed.' };
+}
+
+const [{ data: entries }, totals] = await Promise.all([
+  db
+    .from('gap_experience_log')
+    .select('*')
+    .eq('student_id', user.id)
+    .order('happened_on', { ascending: false }),
+  experienceTotals(db, user.id),
+]);
+
+const log = entries ?? [];
+const target = user.cohort?.experience_target_hours ?? 0;
+const remaining = Math.max(0, Math.round((target - totals.verified) * 10) / 10);
+
+// Breadth matters as much as hours — 35 hours of the same beginner group is
+// not the same preparation as 35 across levels, and the log is where that
+// shows.
+const byLevel = new Map<string, number>();
+for (const e of log) {
+  if (e.status === 'rejected') continue;
+  const key = (e.group_level as string) || 'Unspecified';
+  byLevel.set(key, (byLevel.get(key) ?? 0) + e.duration_minutes);
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  pending: 'Awaiting verification',
+  verified: 'Verified',
+  rejected: 'Not accepted',
+};
+
+const today = new Date().toISOString().slice(0, 10);
+---
+
+<GapLayout
+  title="Experience log"
+  kicker={user.cohort?.name}
+  heading="Experience log"
+  intro="Every hour you shadow or assist, recorded in the shape an external submission asks for. Log it the same day — the detail is what makes it useful, and it goes fast."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  <section class="grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="bg-paper p-5">
+      <p class="meta text-ink-45">Verified</p>
+      <p class="mt-2 font-display text-3xl font-bold leading-none">
+        {totals.verified}h
+      </p>
+      <p class="mt-2 text-sm text-ink-70">of {target}h target</p>
+    </div>
+    <div class="bg-paper p-5">
+      <p class="meta text-ink-45">Awaiting verification</p>
+      <p class="mt-2 font-display text-3xl font-bold leading-none">
+        {totals.pending}h
+      </p>
+      <p class="mt-2 text-sm text-ink-70">Your coach signs these off</p>
+    </div>
+    <div class="bg-paper p-5">
+      <p class="meta text-ink-45">Still to log</p>
+      <p class="mt-2 font-display text-3xl font-bold leading-none">
+        {remaining}h
+      </p>
+      <p class="mt-2 text-sm text-ink-70">Counting verified hours only</p>
+    </div>
+    <div class="bg-paper p-5">
+      <p class="meta text-ink-45">Sessions</p>
+      <p class="mt-2 font-display text-3xl font-bold leading-none">
+        {totals.entries}
+      </p>
+      <p class="mt-2 text-sm text-ink-70">
+        <a href="/gap/experience.csv" class="text-accent">Export log sheet</a>
+      </p>
+    </div>
+  </section>
+
+  {
+    byLevel.size > 0 && (
+      <section class="mt-10">
+        <h2 class="font-display text-xl font-bold">Spread across levels</h2>
+        <ul class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+          {[...byLevel.entries()]
+            .sort((a, b) => b[1] - a[1])
+            .map(([level, minutes]) => (
+              <li class="text-sm text-ink-70">
+                <span class="meta text-ink-45">{level}</span> {toHours(minutes)}h
+              </li>
+            ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {/* ------------------------------------------------------------ new entry */}
+  <section class="mt-14 border-t border-ink/10 pt-10">
+    <h2 class="font-display text-2xl font-bold">Log a session</h2>
+
+    <form method="POST" class="mt-6 grid gap-5 md:grid-cols-2">
+      <label class="block">
+        <span class="meta text-ink-45">Date</span>
+        <input
+          type="date"
+          name="happened_on"
+          required
+          max={today}
+          value={today}
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <label class="block">
+        <span class="meta text-ink-45">Ski school or organisation</span>
+        <input
+          type="text"
+          name="organisation"
+          required
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <label class="block">
+        <span class="meta text-ink-45">Instructor observed</span>
+        <input
+          type="text"
+          name="instructor_observed"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <label class="block">
+        <span class="meta text-ink-45">Location</span>
+        <input
+          type="text"
+          name="location"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <label class="block">
+        <span class="meta text-ink-45">Group level</span>
+        <input
+          type="text"
+          name="group_level"
+          list="gap-levels"
+          placeholder="First timer, Level 2 kids, Adult intermediate…"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+        <datalist id="gap-levels">
+          <option value="First timer"></option>
+          <option value="Beginner"></option>
+          <option value="Intermediate"></option>
+          <option value="Advanced"></option>
+          <option value="Kids group"></option>
+          <option value="Private lesson"></option>
+        </datalist>
+      </label>
+
+      <label class="block">
+        <span class="meta text-ink-45">Duration (minutes)</span>
+        <input
+          type="number"
+          name="duration_minutes"
+          required
+          min="1"
+          max="1440"
+          step="15"
+          value="120"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <label class="block">
+        <span class="meta text-ink-45">Your role</span>
+        <input
+          type="text"
+          name="student_role"
+          placeholder="Shadowing, assisting, taking a warm-up…"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <label class="block">
+        <span class="meta text-ink-45">Lesson objective</span>
+        <input
+          type="text"
+          name="objective"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <label class="block md:col-span-2">
+        <span class="meta text-ink-45">Key observations</span>
+        <textarea
+          name="observations"
+          rows="3"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        ></textarea>
+      </label>
+
+      <label class="block md:col-span-2">
+        <span class="meta text-ink-45">Your reflection</span>
+        <textarea
+          name="reflection"
+          rows="3"
+          placeholder="What you'd do differently in your own lesson"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        ></textarea>
+      </label>
+
+      <label class="block md:col-span-2">
+        <span class="meta text-ink-45">Evidence link (optional)</span>
+        <input
+          type="url"
+          name="evidence_url"
+          placeholder="https://"
+          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </label>
+
+      <div class="md:col-span-2">
+        <button
+          type="submit"
+          class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+        >
+          Log this session
+        </button>
+      </div>
+    </form>
+  </section>
+
+  {/* ---------------------------------------------------------- the entries */}
+  <section class="mt-14 border-t border-ink/10 pt-10">
+    <h2 class="font-display text-2xl font-bold">Your log</h2>
+
+    {
+      log.length === 0 ? (
+        <p class="mt-4 text-ink-70">Nothing logged yet.</p>
+      ) : (
+        <ul class="mt-6 space-y-8">
+          {log.map((e) => (
+            <li class="border-t border-ink/10 pt-6 first:border-t-0 first:pt-0">
+              <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                <h3 class="font-display text-lg font-bold">
+                  {e.organisation}
+                  {e.group_level && (
+                    <span class="font-sans text-base font-normal text-ink-70">
+                      {' '}
+                      · {e.group_level}
+                    </span>
+                  )}
+                </h3>
+                <p class="meta text-ink-45">
+                  {fmtDate(e.happened_on)} · {toHours(e.duration_minutes)}h ·{' '}
+                  <span
+                    class={e.status === 'verified' ? 'text-accent' : 'text-ink-45'}
+                  >
+                    {STATUS_LABEL[e.status]}
+                  </span>
+                </p>
+              </div>
+
+              <dl class="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+                {e.instructor_observed && (
+                  <div>
+                    <dt class="meta text-ink-45">Instructor</dt>
+                    <dd class="mt-1 text-ink-70">{e.instructor_observed}</dd>
+                  </div>
+                )}
+                {e.location && (
+                  <div>
+                    <dt class="meta text-ink-45">Location</dt>
+                    <dd class="mt-1 text-ink-70">{e.location}</dd>
+                  </div>
+                )}
+                {e.student_role && (
+                  <div>
+                    <dt class="meta text-ink-45">Role</dt>
+                    <dd class="mt-1 text-ink-70">{e.student_role}</dd>
+                  </div>
+                )}
+              </dl>
+
+              {e.reflection && (
+                <p class="mt-3 max-w-2xl text-ink-70">{e.reflection}</p>
+              )}
+
+              {e.verifier_note && (
+                <div class="mt-3 border-l-2 border-accent bg-paper-2 p-4">
+                  <p class="meta text-ink-45">
+                    Coach note
+                    {e.verified_at && ` · ${fmtDate(e.verified_at)}`}
+                  </p>
+                  <p class="mt-1 text-ink-70">{e.verifier_note}</p>
+                </div>
+              )}
+
+              {e.status === 'pending' && (
+                <form method="POST" class="mt-3">
+                  <input type="hidden" name="intent" value="delete" />
+                  <input type="hidden" name="id" value={e.id} />
+                  <button
+                    type="submit"
+                    class="meta text-ink-45 underline-offset-4 hover:text-ink hover:underline"
+                  >
+                    Delete this entry
+                  </button>
+                </form>
+              )}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</GapLayout>

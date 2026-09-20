@@ -1,0 +1,319 @@
+---
+/**
+ * Bulk assessment.
+ *
+ * The brief is explicit about this one: a coach must not have to open 8–10
+ * separate pages to record what they saw in a single session. So the page is a
+ * grid — students down, one criterion across — and a coach scores the whole
+ * group against the two or three criteria that session was actually about.
+ *
+ * Which criteria appear is chosen by query string (?c=id&c=id), defaulting to
+ * a whole group. A session on short turns should show short turns, not
+ * twenty-five rows of everything.
+ *
+ * Only changed cells are written. The radios start on each student's current
+ * score, so saving a grid where a coach touched two cells files two rows, not
+ * thirty — the history has to mean something.
+ */
+export const prerender = false;
+
+import GapLayout from '../../../layouts/GapLayout.astro';
+import Notice from '../../../components/gap-portal/Notice.astro';
+import { createGapClient, isStaff, type GapUser } from '../../../lib/gap/supabase';
+import { GROUPS, SCALE, scaleLabel } from '../../../lib/gap/course';
+import { listCriteria } from '../../../lib/gap/data';
+
+const user = Astro.locals.gapUser as GapUser;
+if (!isStaff(user)) return Astro.redirect('/gap', 302);
+
+const db = createGapClient(Astro.cookies, Astro.request);
+const cohort = user.cohort;
+
+const criteria = await listCriteria(db);
+
+// Selection: explicit criteria win, otherwise a whole group, otherwise the
+// first group. A grid of every criterion by every student is unusable on the
+// phone a coach is holding in a lift queue.
+const picked = Astro.url.searchParams.getAll('c');
+const groupParam = Astro.url.searchParams.get('group') ?? GROUPS[0].key;
+const selected =
+  picked.length > 0
+    ? criteria.filter((c) => picked.includes(c.id))
+    : criteria.filter((c) => c.group === groupParam);
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+
+  // Current coach scores, so unchanged cells are skipped.
+  const { data: existingRows } = await db
+    .from('gap_scores')
+    .select('student_id, criterion_id, score, assessed_at')
+    .eq('source', 'coach')
+    .order('assessed_at', { ascending: false });
+
+  const current = new Map<string, number>();
+  for (const r of existingRows ?? []) {
+    const key = `${r.student_id}:${r.criterion_id}`;
+    if (!current.has(key)) current.set(key, r.score);
+  }
+
+  const rows: Record<string, unknown>[] = [];
+  const sharedComment = String(form.get('comment') ?? '').trim() || null;
+  const sharedAction = String(form.get('action') ?? '').trim() || null;
+
+  for (const [key, value] of form.entries()) {
+    const match = /^cell:([^:]+):(.+)$/.exec(key);
+    if (!match) continue;
+    const score = Number(value);
+    if (!Number.isInteger(score) || score < 1 || score > 6) continue;
+
+    const [, studentId, criterionId] = match;
+    // A per-student note beats the shared one when both are present.
+    const note =
+      String(form.get(`note:${studentId}`) ?? '').trim() || sharedComment;
+
+    const unchanged =
+      current.get(`${studentId}:${criterionId}`) === score && !note;
+    if (unchanged) continue;
+
+    rows.push({
+      student_id: studentId,
+      criterion_id: criterionId,
+      source: 'coach',
+      score,
+      comment: note,
+      action: sharedAction,
+    });
+  }
+
+  if (rows.length === 0) {
+    flash = { tone: 'good', message: 'Nothing changed, so nothing was saved.' };
+  } else {
+    const { error } = await db.from('gap_scores').insert(rows);
+    flash = error
+      ? { tone: 'warn', message: `Could not save: ${error.message}` }
+      : {
+          tone: 'good',
+          message: `Saved ${rows.length} ${rows.length === 1 ? 'assessment' : 'assessments'}.`,
+        };
+  }
+}
+
+const [{ data: members }, { data: scoreRows }] = await Promise.all([
+  cohort
+    ? db
+        .from('gap_members')
+        .select('id, name')
+        .eq('cohort_id', cohort.id)
+        .eq('role', 'student')
+        .eq('active', true)
+        .order('name')
+    : Promise.resolve({ data: [] }),
+  db
+    .from('gap_scores')
+    .select('student_id, criterion_id, score, assessed_at')
+    .eq('source', 'coach')
+    .order('assessed_at', { ascending: false }),
+]);
+
+const students = members ?? [];
+
+const latest = new Map<string, number>();
+for (const r of scoreRows ?? []) {
+  const key = `${r.student_id}:${r.criterion_id}`;
+  if (!latest.has(key)) latest.set(key, r.score);
+}
+---
+
+<GapLayout
+  title="Assess the group"
+  wide
+  kicker={cohort?.name}
+  heading="Assess the group"
+  intro="Pick what the session was about, score everyone in one pass, save once."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {/* ------------------------------------------------------ what to assess */}
+  <form method="GET" class="border-b border-ink/10 pb-6">
+    <fieldset>
+      <legend class="meta text-ink-45">Assess</legend>
+      <div class="mt-3 flex flex-wrap gap-1">
+        {
+          GROUPS.map((g) => (
+            <label class="cursor-pointer border border-ink/20 px-4 py-2 text-sm transition-colors hover:border-ink has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-paper">
+              <input
+                type="radio"
+                name="group"
+                value={g.key}
+                checked={picked.length === 0 && groupParam === g.key}
+                class="sr-only"
+              />
+              {g.label}
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <details class="mt-4">
+      <summary class="meta cursor-pointer text-accent">
+        Or pick individual criteria
+      </summary>
+      <div class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          criteria.map((c) => (
+            <label class="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="c"
+                value={c.id}
+                checked={picked.includes(c.id)}
+                class="mt-1 h-4 w-4 shrink-0 accent-accent"
+              />
+              <span class="text-ink-70">{c.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </details>
+
+    <button
+      type="submit"
+      class="meta mt-4 border border-ink/20 px-4 py-2 text-ink-70 transition-colors hover:border-ink hover:text-ink"
+    >
+      Show these
+    </button>
+  </form>
+
+  {
+    students.length === 0 || selected.length === 0 ? (
+      <div class="mt-8">
+        <Notice tone="warn">
+          <p>
+            {students.length === 0
+              ? 'No students on this cohort yet.'
+              : 'No criteria selected.'}
+          </p>
+        </Notice>
+      </div>
+    ) : (
+      <form method="POST" class="mt-8">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[50rem] border-collapse text-left">
+            <thead>
+              <tr class="border-b border-ink/20">
+                <th class="meta sticky left-0 bg-paper py-3 pr-4 text-ink-45">
+                  Student
+                </th>
+                {selected.map((c) => (
+                  <th class="meta py-3 pr-4 text-ink-45">{c.label}</th>
+                ))}
+                <th class="meta py-3 text-ink-45">Note for this student</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {students.map((s) => (
+                <tr class="border-b border-ink/10 align-top">
+                  <td class="sticky left-0 bg-paper py-4 pr-4">
+                    <a
+                      href={`/gap/staff/student/${s.id}`}
+                      class="font-display font-bold text-ink hover:text-accent"
+                    >
+                      {s.name}
+                    </a>
+                  </td>
+
+                  {selected.map((c) => {
+                    const now = latest.get(`${s.id}:${c.id}`);
+                    return (
+                      <td class="py-4 pr-4">
+                        {/* Six small radios rather than a select: a coach on a
+                            phone scores a whole row with six taps and no
+                            pickers. */}
+                        <div class="flex gap-0.5">
+                          {SCALE.map((sc) => (
+                            <label
+                              class="cursor-pointer border border-ink/20 px-2 py-1 text-sm transition-colors hover:border-ink has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-paper"
+                              title={`${sc.label} — ${sc.meaning}`}
+                            >
+                              <input
+                                type="radio"
+                                name={`cell:${s.id}:${c.id}`}
+                                value={sc.score}
+                                checked={now === sc.score}
+                                class="sr-only"
+                              />
+                              <span class="font-display font-bold">{sc.score}</span>
+                            </label>
+                          ))}
+                        </div>
+                        <span class="meta mt-1 block text-ink-45">
+                          {now ? scaleLabel(now) : 'Not assessed'}
+                        </span>
+                      </td>
+                    );
+                  })}
+
+                  <td class="py-4">
+                    <input
+                      type="text"
+                      name={`note:${s.id}`}
+                      placeholder="Optional — overrides the shared note"
+                      class="w-56 border border-ink/20 bg-paper px-2 py-1 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
+          <label class="block">
+            <span class="meta text-ink-45">Shared comment</span>
+            <input
+              type="text"
+              name="comment"
+              placeholder="Applies to everyone you scored"
+              class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+            />
+          </label>
+
+          <label class="block">
+            <span class="meta text-ink-45">Recommended action</span>
+            <input
+              type="text"
+              name="action"
+              placeholder="What they should do before next session"
+              class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+            />
+          </label>
+        </div>
+
+        <div class="sticky bottom-0 mt-8 border-t border-ink/10 bg-paper py-4">
+          <button
+            type="submit"
+            class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+          >
+            Save assessments
+          </button>
+          <p class="mt-2 text-sm text-ink-45">
+            Only the scores you changed are recorded.
+          </p>
+        </div>
+      </form>
+    )
+  }
+</GapLayout>

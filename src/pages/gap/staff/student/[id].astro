@@ -1,0 +1,475 @@
+---
+/**
+ * One student's whole record.
+ *
+ * The page a coach opens before a one-to-one, and the page the final course
+ * report is assembled from: benchmark with self-assessment beside it, workbook
+ * state, experience hours, check-ins, and the actions they've been set.
+ *
+ * Assigning an action is here rather than on the bulk grid because it is the
+ * one thing that is genuinely per-student — a shared action given to ten
+ * people is a session objective, not a personal development plan.
+ */
+export const prerender = false;
+
+import GapLayout from '../../../../layouts/GapLayout.astro';
+import Notice from '../../../../components/gap-portal/Notice.astro';
+import { createGapClient, isStaff, type GapUser } from '../../../../lib/gap/supabase';
+import {
+  GROUPS,
+  courseWeek,
+  fmtDate,
+  readiness,
+  readinessTone,
+  scaleLabel,
+  TONE_LABEL,
+} from '../../../../lib/gap/course';
+import {
+  byCriterion,
+  latestCoachScores,
+  listCriteria,
+  listScores,
+  experienceTotals,
+} from '../../../../lib/gap/data';
+
+const user = Astro.locals.gapUser as GapUser;
+if (!isStaff(user)) return Astro.redirect('/gap', 302);
+
+const db = createGapClient(Astro.cookies, Astro.request);
+const studentId = Astro.params.id!;
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const intent = String(form.get('intent') ?? '');
+
+  if (intent === 'assign') {
+    const title = String(form.get('title') ?? '').trim();
+    if (!title) {
+      flash = { tone: 'warn', message: 'An action needs a title.' };
+    } else {
+      const { error } = await db.from('gap_tasks').insert({
+        student_id: studentId,
+        title,
+        detail: String(form.get('detail') ?? '').trim() || null,
+        due_on: String(form.get('due_on') ?? '') || null,
+        created_by: user.id,
+      });
+      flash = error
+        ? { tone: 'warn', message: `Could not assign: ${error.message}` }
+        : { tone: 'good', message: 'Action assigned.' };
+    }
+  } else if (intent === 'module-comment') {
+    const moduleId = String(form.get('module_id') ?? '');
+    const comment = String(form.get('coach_comment') ?? '').trim() || null;
+    if (moduleId) {
+      const { error } = await db.from('gap_module_progress').upsert(
+        { student_id: studentId, module_id: moduleId, coach_comment: comment },
+        { onConflict: 'student_id,module_id' },
+      );
+      flash = error
+        ? { tone: 'warn', message: `Could not save: ${error.message}` }
+        : { tone: 'good', message: 'Comment saved.' };
+    }
+  }
+}
+
+// RLS returns nothing for a student on another coach's cohort, which is what
+// makes this a 404 rather than a permission error.
+const { data: student } = await db
+  .from('gap_members')
+  .select('id, name, role, cohort_id, phone, emergency_name, emergency_phone, emergency_relation, dietary, medical')
+  .eq('id', studentId)
+  .maybeSingle();
+
+if (!student) {
+  Astro.response.status = 404;
+}
+
+const [criteria, scores, experience] = student
+  ? await Promise.all([
+      listCriteria(db),
+      listScores(db, studentId),
+      experienceTotals(db, studentId),
+    ])
+  : [[], [], null];
+
+const [{ data: modules }, { data: moduleProgress }, { data: tasks }, { data: checkins }] =
+  student
+    ? await Promise.all([
+        // A member with no cohort has no modules; filtering on a null uuid
+        // would be an error rather than an empty result.
+        student.cohort_id
+          ? db
+              .from('gap_workbook_modules')
+              .select('id, number, title')
+              .eq('cohort_id', student.cohort_id)
+              .order('number')
+          : Promise.resolve({ data: [] }),
+        db.from('gap_module_progress').select('*').eq('student_id', studentId),
+        db
+          .from('gap_tasks')
+          .select('*')
+          .eq('student_id', studentId)
+          .order('status')
+          .order('due_on', { nullsFirst: false }),
+        db
+          .from('gap_checkins')
+          .select('*')
+          .eq('student_id', studentId)
+          .order('week', { ascending: false }),
+      ])
+    : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }];
+
+const coach = byCriterion(scores, 'coach');
+const self = byCriterion(scores, 'self');
+const coachLatest = latestCoachScores(scores);
+
+const week = user.cohort
+  ? courseWeek(user.cohort)
+  : { week: 0, totalWeeks: 6, daysUntilStart: 0, finished: false };
+
+const groups = GROUPS.map((g) => ({
+  ...g,
+  criteria: criteria.filter((c) => c.group === g.key),
+  ...readiness(criteria, coachLatest, g.key),
+}));
+
+const progressByModule = new Map(
+  (moduleProgress ?? []).map((p) => [p.module_id as string, p]),
+);
+
+const target = user.cohort?.experience_target_hours ?? 0;
+
+// Where the student's own view and the coach's differ by two or more. This is
+// the most useful thing on the page for a one-to-one — it is where the
+// conversation already has a subject.
+const gaps = criteria
+  .map((c) => {
+    const mine = self.get(c.id)?.latest?.score;
+    const theirs = coach.get(c.id)?.latest?.score;
+    if (mine === undefined || theirs === undefined) return null;
+    return { c, mine, theirs, delta: mine - theirs };
+  })
+  .filter((g): g is NonNullable<typeof g> => g !== null && Math.abs(g.delta) >= 2)
+  .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+---
+
+<GapLayout
+  title={student?.name ?? 'Student'}
+  wide
+  kicker={user.cohort?.name}
+  heading={student?.name ?? 'Not found'}
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {
+    !student ? (
+      <Notice tone="warn">
+        <p>
+          No such student on your cohort.{' '}
+          <a href="/gap/staff">Back to the dashboard</a>.
+        </p>
+      </Notice>
+    ) : (
+      <>
+        <p class="-mt-6 mb-10">
+          <a href="/gap/staff" class="meta text-accent">
+            ← Cohort
+          </a>
+        </p>
+
+        {/* -------------------------------------------------------- headline */}
+        <section class="grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
+          {groups.map((g) => (
+            <div class="bg-paper p-5">
+              <p class="meta text-ink-45">{g.label}</p>
+              <p class="mt-2 font-display text-3xl font-bold leading-none">
+                {g.scored ? `${g.percent}%` : '—'}
+              </p>
+              <p class="mt-2 text-sm text-ink-70">
+                {g.scored
+                  ? TONE_LABEL[readinessTone(g.percent, week.week, week.totalWeeks)]
+                  : 'Not assessed'}
+              </p>
+            </div>
+          ))}
+          <div class="bg-paper p-5">
+            <p class="meta text-ink-45">Experience</p>
+            <p class="mt-2 font-display text-3xl font-bold leading-none">
+              {experience?.verified ?? 0} / {target}h
+            </p>
+            <p class="mt-2 text-sm text-ink-70">
+              {experience?.pending ? `${experience.pending}h to verify` : 'Verified'}
+            </p>
+            <p class="meta mt-1">
+              <a href={`/gap/experience.csv?student=${student.id}`} class="text-accent">
+                Export log
+              </a>
+            </p>
+          </div>
+        </section>
+
+        {/* --------------------------------------------------- where they differ */}
+        {gaps.length > 0 && (
+          <section class="mt-12">
+            <h2 class="font-display text-2xl font-bold">
+              Where your view and theirs differ
+            </h2>
+            <p class="mt-2 max-w-2xl text-ink-70">
+              Two points or more apart. This is usually the most useful thing to
+              open a one-to-one with.
+            </p>
+            <ul class="mt-5 space-y-3">
+              {gaps.map((g) => (
+                <li class="border-t border-ink/10 pt-3">
+                  <span class="font-display font-bold">{g.c.label}</span>
+                  <span class="meta ml-3 text-ink-45">
+                    They say {g.mine} · you say {g.theirs}
+                  </span>
+                  <span class="meta ml-3 text-accent">
+                    {g.delta > 0 ? 'Over-rating' : 'Under-rating'}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ------------------------------------------------------- benchmark */}
+        <section class="mt-14 border-t border-ink/10 pt-10">
+          <div class="flex flex-wrap items-baseline justify-between gap-4">
+            <h2 class="font-display text-2xl font-bold">Benchmark</h2>
+            <a href="/gap/staff/assess" class="meta text-accent">
+              Assess the group →
+            </a>
+          </div>
+
+          <div class="mt-6 space-y-10">
+            {groups.map((g) => (
+              <div>
+                <h3 class="font-display text-lg font-bold">{g.label}</h3>
+                <table class="mt-3 w-full border-collapse text-left text-sm">
+                  <thead>
+                    <tr class="border-b border-ink/20">
+                      <th class="meta py-2 pr-4 text-ink-45">Criterion</th>
+                      <th class="meta py-2 pr-4 text-ink-45">Coach</th>
+                      <th class="meta py-2 pr-4 text-ink-45">Self</th>
+                      <th class="meta py-2 text-ink-45">Latest comment</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {g.criteria.map((c) => {
+                      const theirs = coach.get(c.id)?.latest;
+                      const mine = self.get(c.id)?.latest;
+                      return (
+                        <tr class="border-b border-ink/10 align-top">
+                          <td class="py-2 pr-4 text-ink">{c.label}</td>
+                          <td class="py-2 pr-4 text-ink-70">
+                            {theirs
+                              ? `${theirs.score} · ${scaleLabel(theirs.score)}`
+                              : '—'}
+                          </td>
+                          <td class="py-2 pr-4 text-ink-70">
+                            {mine ? `${mine.score}` : '—'}
+                          </td>
+                          <td class="py-2 text-ink-70">
+                            {theirs?.comment ?? mine?.comment ?? ''}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* -------------------------------------------------------- workbook */}
+        <section class="mt-14 border-t border-ink/10 pt-10">
+          <h2 class="font-display text-2xl font-bold">Workbook</h2>
+          {(modules ?? []).length === 0 ? (
+            <p class="mt-3 text-ink-70">No modules published.</p>
+          ) : (
+            <ul class="mt-5 space-y-6">
+              {(modules ?? []).map((m) => {
+                const p = progressByModule.get(m.id);
+                return (
+                  <li class="border-t border-ink/10 pt-4">
+                    <div class="flex flex-wrap items-baseline justify-between gap-4">
+                      <span class="font-display font-bold">
+                        {m.number}. {m.title}
+                      </span>
+                      <span class="meta text-ink-45">
+                        {p?.status?.replace('_', ' ') ?? 'not started'}
+                      </span>
+                    </div>
+                    {p?.notes && (
+                      <p class="mt-2 max-w-3xl text-sm text-ink-70">{p.notes}</p>
+                    )}
+                    {p?.evidence_url && (
+                      <p class="mt-1">
+                        <a href={p.evidence_url} target="_blank" rel="noopener" class="meta text-accent">
+                          Evidence
+                        </a>
+                      </p>
+                    )}
+                    <form method="POST" class="mt-3 flex flex-wrap items-end gap-3">
+                      <input type="hidden" name="intent" value="module-comment" />
+                      <input type="hidden" name="module_id" value={m.id} />
+                      <label class="block flex-1 min-w-[16rem]">
+                        <span class="meta text-ink-45">Coach comment</span>
+                        <input
+                          type="text"
+                          name="coach_comment"
+                          value={p?.coach_comment ?? ''}
+                          class="mt-1 w-full border border-ink/20 bg-paper px-3 py-1.5 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                        />
+                      </label>
+                      <button
+                        type="submit"
+                        class="meta border border-ink/20 px-3 py-2 text-ink-70 transition-colors hover:border-ink hover:text-ink"
+                      >
+                        Save
+                      </button>
+                    </form>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        {/* --------------------------------------------------------- actions */}
+        <section class="mt-14 border-t border-ink/10 pt-10">
+          <h2 class="font-display text-2xl font-bold">Personal action plan</h2>
+
+          <form method="POST" class="mt-5 grid max-w-3xl gap-4 sm:grid-cols-[2fr_1fr]">
+            <input type="hidden" name="intent" value="assign" />
+            <label class="block">
+              <span class="meta text-ink-45">Action</span>
+              <input
+                type="text"
+                name="title"
+                required
+                placeholder="Upload two short-turn videos"
+                class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </label>
+            <label class="block">
+              <span class="meta text-ink-45">Due</span>
+              <input
+                type="date"
+                name="due_on"
+                class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </label>
+            <label class="block sm:col-span-2">
+              <span class="meta text-ink-45">Detail (optional)</span>
+              <input
+                type="text"
+                name="detail"
+                class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </label>
+            <div class="sm:col-span-2">
+              <button
+                type="submit"
+                class="bg-accent px-5 py-2 font-display font-bold text-paper transition-colors hover:bg-ink"
+              >
+                Assign
+              </button>
+            </div>
+          </form>
+
+          {(tasks ?? []).length > 0 && (
+            <ul class="mt-8 space-y-3">
+              {(tasks ?? []).map((t) => (
+                <li class="flex flex-wrap items-baseline gap-x-4 border-t border-ink/10 pt-3">
+                  <span
+                    class:list={[
+                      'font-semibold',
+                      t.status === 'done' ? 'text-ink-45 line-through' : 'text-ink',
+                    ]}
+                  >
+                    {t.title}
+                  </span>
+                  <span class="meta text-ink-45">
+                    {t.status}
+                    {t.due_on && ` · due ${fmtDate(t.due_on)}`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        {/* -------------------------------------------------------- check-ins */}
+        {(checkins ?? []).length > 0 && (
+          <section class="mt-14 border-t border-ink/10 pt-10">
+            <h2 class="font-display text-2xl font-bold">Weekly check-ins</h2>
+            <ul class="mt-5 space-y-6">
+              {(checkins ?? []).map((c) => (
+                <li class="border-t border-ink/10 pt-4">
+                  <p class="meta text-ink-45">
+                    Week {c.week} · confidence {c.confidence ?? '—'} · energy{' '}
+                    {c.energy ?? '—'}
+                    {c.wants_chat && (
+                      <span class="text-accent"> · asked for a chat</span>
+                    )}
+                  </p>
+                  {c.struggling && (
+                    <p class="mt-1 max-w-3xl text-ink-70">
+                      <span class="meta text-ink-45">Struggling</span>{' '}
+                      {c.struggling}
+                    </p>
+                  )}
+                  {c.focus && (
+                    <p class="mt-1 max-w-3xl text-ink-70">
+                      <span class="meta text-ink-45">Focus</span> {c.focus}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ------------------------------------------------------- welfare */}
+        <section class="mt-14 border-t border-ink/10 pt-10">
+          <h2 class="font-display text-2xl font-bold">In an emergency</h2>
+          <p class="mt-2 max-w-2xl text-ink-70">
+            Held for safety, not for general reference. Use it when you need it.
+          </p>
+          <dl class="mt-5 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ['Phone', student.phone],
+              [
+                'Emergency contact',
+                student.emergency_name &&
+                  `${student.emergency_name}${student.emergency_relation ? ` (${student.emergency_relation})` : ''}${student.emergency_phone ? ` — ${student.emergency_phone}` : ''}`,
+              ],
+              ['Dietary', student.dietary],
+              ['Medical', student.medical],
+            ].map(([label, value]) => (
+              <div>
+                <dt class="meta text-ink-45">{label}</dt>
+                <dd class="mt-1 text-ink-70">{value || 'Not recorded'}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      </>
+    )
+  }
+</GapLayout>

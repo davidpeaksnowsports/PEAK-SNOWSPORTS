@@ -66,4 +66,4 @@ If you love skiing, yes. A Level 2 qualification opens the door to paid winters 
 
 ---
 
-**Thinking about it?** Our [GAP ski instructor course](/gap-course) runs two intakes a year — autumn pre-season in Hintertux, Austria, and winter in Morzine. [Send us an enquiry](/gap-course#enquire) and we'll tell you honestly whether you're ready and how to get started.
+**Thinking about it?** Our [GAP ski instructor course](/gap-course) runs each winter in Morzine. [Send us an enquiry](/gap-course#enquire) and we'll tell you honestly whether you're ready and how to get started.

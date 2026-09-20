@@ -1,0 +1,211 @@
+---
+/**
+ * Student workbook.
+ *
+ * MVP shape from the brief: the workbook itself stays a download, and the
+ * portal tracks completion around it. What the portal adds today is the thing
+ * a PDF cannot do — a per-module status, a place to put reflections and
+ * evidence links, and the coach's comment against each one.
+ *
+ * Interactive module pages replace the download later; nothing here has to
+ * change when they do, because status and notes already live per module.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, type GapUser } from '../../lib/gap/supabase';
+import { fmtDate } from '../../lib/gap/course';
+
+const user = Astro.locals.gapUser as GapUser;
+const cohort = user.cohort;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+const STATUSES = [
+  { key: 'not_started', label: 'Not started' },
+  { key: 'in_progress', label: 'In progress' },
+  { key: 'complete', label: 'Complete' },
+] as const;
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const moduleId = String(form.get('module_id') ?? '');
+  const status = String(form.get('status') ?? 'not_started');
+  const notes = String(form.get('notes') ?? '').trim() || null;
+  const evidence = String(form.get('evidence_url') ?? '').trim() || null;
+
+  if (!moduleId || !STATUSES.some((s) => s.key === status)) {
+    flash = { tone: 'warn', message: 'That module could not be updated.' };
+  } else {
+    // Upsert on the (student, module) unique key so a first save and a
+    // hundredth take the same path.
+    const { error } = await db.from('gap_module_progress').upsert(
+      {
+        student_id: user.id,
+        module_id: moduleId,
+        status,
+        notes,
+        evidence_url: evidence,
+      },
+      { onConflict: 'student_id,module_id' },
+    );
+    flash = error
+      ? { tone: 'warn', message: `Could not save: ${error.message}` }
+      : { tone: 'good', message: 'Saved.' };
+  }
+}
+
+const [{ data: modules }, { data: progressRows }] = await Promise.all([
+  cohort
+    ? db
+        .from('gap_workbook_modules')
+        .select('*')
+        .eq('cohort_id', cohort.id)
+        .order('number')
+    : Promise.resolve({ data: [] }),
+  db
+    .from('gap_module_progress')
+    .select('*')
+    .eq('student_id', user.id),
+]);
+
+const progress = new Map(
+  (progressRows ?? []).map((p) => [p.module_id as string, p]),
+);
+
+const list = modules ?? [];
+const complete = list.filter(
+  (m) => progress.get(m.id)?.status === 'complete',
+).length;
+---
+
+<GapLayout
+  title="Workbook"
+  kicker={cohort?.name}
+  heading="Workbook"
+  intro="Twelve modules across the six weeks. Mark each one as you go — your coach sees the same view, and an unfinished module in week five is the thing they'd rather catch in week two."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {
+    list.length === 0 ? (
+      <Notice>
+        <p>No modules published yet. They appear here as your coach adds them.</p>
+      </Notice>
+    ) : (
+      <>
+        <p class="meta border-b border-ink/10 pb-4 text-ink-45">
+          {complete} of {list.length} complete
+        </p>
+
+        <ul class="mt-8 space-y-10">
+          {list.map((m) => {
+            const p = progress.get(m.id);
+            const status = p?.status ?? 'not_started';
+            return (
+              <li class="border-t border-ink/10 pt-8 first:border-t-0 first:pt-0">
+                <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+                  <h2 class="font-display text-xl font-bold">
+                    <span class="text-accent">{m.number}.</span> {m.title}
+                  </h2>
+                  <p class="meta text-ink-45">
+                    {STATUSES.find((s) => s.key === status)?.label}
+                    {m.due_on && ` · due ${fmtDate(m.due_on)}`}
+                  </p>
+                </div>
+
+                {m.summary && (
+                  <p class="mt-2 max-w-2xl text-ink-70">{m.summary}</p>
+                )}
+
+                {m.download_url && (
+                  <p class="mt-3">
+                    <a
+                      href={m.download_url}
+                      target="_blank"
+                      rel="noopener"
+                      class="text-accent"
+                    >
+                      Open the module →
+                    </a>
+                  </p>
+                )}
+
+                <form method="POST" class="mt-5 grid gap-4 md:grid-cols-[auto_1fr]">
+                  <input type="hidden" name="module_id" value={m.id} />
+
+                  <fieldset>
+                    <legend class="meta text-ink-45">Status</legend>
+                    <div class="mt-2 flex gap-1">
+                      {STATUSES.map((s) => (
+                        <label class="cursor-pointer border border-ink/20 px-3 py-2 text-sm transition-colors hover:border-ink has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-paper">
+                          <input
+                            type="radio"
+                            name="status"
+                            value={s.key}
+                            checked={status === s.key}
+                            class="sr-only"
+                          />
+                          {s.label}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+
+                  <div class="space-y-3">
+                    <label class="block">
+                      <span class="meta text-ink-45">Your reflection</span>
+                      <textarea
+                        name="notes"
+                        rows="3"
+                        class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                        >{p?.notes ?? ''}</textarea
+                      >
+                    </label>
+
+                    <label class="block">
+                      <span class="meta text-ink-45">
+                        Evidence link (video, document — optional)
+                      </span>
+                      <input
+                        type="url"
+                        name="evidence_url"
+                        value={p?.evidence_url ?? ''}
+                        placeholder="https://"
+                        class="mt-1 w-full border border-ink/20 bg-paper px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                      />
+                    </label>
+
+                    <button
+                      type="submit"
+                      class="meta border border-ink/20 px-4 py-2 text-ink-70 transition-colors hover:border-ink hover:text-ink"
+                    >
+                      Save module
+                    </button>
+                  </div>
+                </form>
+
+                {p?.coach_comment && (
+                  <div class="mt-5 border-l-2 border-accent bg-paper-2 p-4">
+                    <p class="meta text-ink-45">Coach comment</p>
+                    <p class="mt-1 text-ink-70">{p.coach_comment}</p>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    )
+  }
+</GapLayout>
