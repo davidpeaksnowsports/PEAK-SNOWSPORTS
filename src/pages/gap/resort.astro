@@ -11,6 +11,8 @@ export const prerender = false;
 
 import GapLayout from '../../layouts/GapLayout.astro';
 import Notice from '../../components/gap-portal/Notice.astro';
+import PhotoBand from '../../components/gap-portal/PhotoBand.astro';
+import groupLesson from '../../assets/images/gap/group-lesson-village.jpg';
 import { createGapClient, type GapUser } from '../../lib/gap/supabase';
 
 const user = Astro.locals.gapUser as GapUser;
@@ -63,6 +65,14 @@ const slug = (s: string) =>
             ))}
           </ul>
         </nav>
+
+        <PhotoBand
+          image={groupLesson}
+          alt="A Peak coach talking two students through a movement on a gentle slope, a village of chalets and snowy mountains behind"
+          position="50% 62%"
+          aspect="aspect-[4/3]"
+          width="w-full max-w-3xl"
+        />
 
         <div class="mt-10 space-y-14">
           {[...categories.entries()].map(([category, rows]) => (

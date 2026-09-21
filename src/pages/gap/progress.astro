@@ -16,6 +16,8 @@ export const prerender = false;
 
 import GapLayout from '../../layouts/GapLayout.astro';
 import Notice from '../../components/gap-portal/Notice.astro';
+import PhotoBand from '../../components/gap-portal/PhotoBand.astro';
+import coachDemonstrating from '../../assets/images/gap/coach-demonstrating.jpg';
 import { createGapClient, type GapUser } from '../../lib/gap/supabase';
 import {
   GROUPS,
@@ -211,6 +213,12 @@ const TREND_MARK = { up: '↑', down: '↓', flat: '=' } as const;
       </p>
     )
   }
+
+  <PhotoBand
+    image={coachDemonstrating}
+    alt="A Peak coach in goggles and the olive uniform showing a hand position to the group, a steep snowy slope behind"
+    position="50% 40%"
+  />
 
   {/* ------------------------------------------------------ outstanding work */}
   {

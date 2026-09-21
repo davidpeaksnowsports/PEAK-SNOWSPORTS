@@ -1,0 +1,58 @@
+---
+/**
+ * A photograph that breaks up a long page.
+ *
+ * The design system separates sections by rule and column structure, not by
+ * coloured panels, and names photography as the one element allowed to carry
+ * real weight. In the portal that is what these are for: somewhere for the eye
+ * to rest between long runs of text, and a reminder of what all the admin is
+ * in service of.
+ *
+ * Rendered through astro:assets, like every other photo on the site, so each
+ * one ships as responsive WebP at the widths a screen actually needs. Widths
+ * never exceed the source: a 600px original is served at 600px, not stretched
+ * into a blurred band.
+ *
+ * `position` sets object-position, which is how a crop is steered. A portrait
+ * photo cut down to a landscape band keeps whatever sits at that point, so it
+ * is chosen per photo to keep heads and skis in frame.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  image: ImageMetadata;
+  /** Describe what is in the frame. Photos are content here, not decoration. */
+  alt: string;
+  /** object-position for the crop, e.g. "50% 60%". */
+  position?: string;
+  /** Aspect ratio classes. Defaults to a wide band that relaxes on phones. */
+  aspect?: string;
+  /** Width constraint, for photos too small or too tall to run full width. */
+  width?: string;
+}
+
+const {
+  image,
+  alt,
+  position = 'center',
+  aspect = 'aspect-[4/3] md:aspect-[21/9]',
+  width = 'w-full',
+} = Astro.props;
+
+const widths = [640, 1024, 1600, 2000].filter((w) => w < image.width);
+widths.push(image.width);
+---
+
+<figure class:list={['my-12 overflow-hidden bg-paper-2', aspect, width]}>
+  <Image
+    src={image}
+    alt={alt}
+    widths={widths}
+    sizes="(min-width: 1152px) 1104px, 100vw"
+    loading="lazy"
+    decoding="async"
+    class="h-full w-full object-cover"
+    style={`object-position: ${position}`}
+  />
+</figure>
