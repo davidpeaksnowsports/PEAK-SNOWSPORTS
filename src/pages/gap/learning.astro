@@ -127,7 +127,23 @@ function youtubeId(url: string | null): string | null {
                   {r.description && (
                     <p class="mt-1 max-w-2xl text-ink-70">{r.description}</p>
                   )}
-                  {r.kind === 'video' && youtubeId(r.url) && (
+                  {r.kind === 'video' && r.storage_path && (
+                    <div class="mt-4 max-w-2xl bg-ink">
+                      {/* Plays through the signing endpoint, so the file is
+                          only reachable by a signed-in member. #t=0.1 asks the
+                          browser to paint the first frame as a preview rather
+                          than a black box. */}
+                      <video
+                        controls
+                        playsinline
+                        preload="metadata"
+                        src={`/gap/resource/${r.id}#t=0.1`}
+                        class="block w-full"
+                        aria-label={r.title}
+                      />
+                    </div>
+                  )}
+                  {r.kind === 'video' && !r.storage_path && youtubeId(r.url) && (
                     <div class="mt-4">
                       <VideoEmbed videoId={youtubeId(r.url)!} title={r.title} />
                     </div>

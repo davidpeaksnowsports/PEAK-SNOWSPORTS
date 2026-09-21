@@ -26,6 +26,15 @@ export const prerender = false;
  */
 const SIGNED_URL_TTL_SECONDS = 120;
 
+/**
+ * Video needs longer. A <video> element follows the redirect once and then
+ * issues range requests against the signed URL for as long as the page is
+ * open. Pause for three minutes and seek, and a two-minute signature would
+ * fail mid-playback. An hour covers any realistic viewing and is still a URL
+ * nobody else can use by tomorrow.
+ */
+const VIDEO_SIGNED_URL_TTL_SECONDS = 3600;
+
 export const GET: APIRoute = async ({ params, locals, cookies, request }) => {
   const user = locals.gapUser as GapUser | null;
   if (!user) return new Response('Not found', { status: 404 });
@@ -39,7 +48,7 @@ export const GET: APIRoute = async ({ params, locals, cookies, request }) => {
   // from another intake returns nothing and is indistinguishable from a typo.
   const { data: resource } = await db
     .from('gap_resources')
-    .select('title, storage_path')
+    .select('title, kind, storage_path')
     .eq('id', id)
     .maybeSingle();
 
@@ -47,9 +56,13 @@ export const GET: APIRoute = async ({ params, locals, cookies, request }) => {
 
   const { data: signed, error } = await db.storage
     .from('gap-resources')
-    .createSignedUrl(resource.storage_path, SIGNED_URL_TTL_SECONDS, {
-      download: false,
-    });
+    .createSignedUrl(
+      resource.storage_path,
+      resource.kind === 'video' ? VIDEO_SIGNED_URL_TTL_SECONDS : SIGNED_URL_TTL_SECONDS,
+      {
+        download: false,
+      },
+    );
 
   if (error || !signed?.signedUrl) {
     return new Response('That file could not be opened. Tell a coach.', {

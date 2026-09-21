@@ -234,6 +234,16 @@ const RESOURCES = [
   [null, 'Getting ski fit', 'The Body Mechanics', 'link', L.bodyMechanics,
     'Our partner for the fitness series.'],
 
+  // Screen recordings of the BASI site, hosted privately like the decks. The
+  // first had David's members-area details blurred out before upload: his
+  // mobile, date of birth, email, membership number and licence codes were all
+  // on screen for its first four and a half seconds.
+  [null, 'BASI', 'Getting into BASI e-learning', 'video', null,
+    'Where to click: from your BASI members area, Online Courses takes you to BASI Study, the e-learning platform.',
+    'morzine-2027/videos/basi-members-area-to-e-learning.mp4'],
+  [null, 'BASI', 'The BASI e-learning courses', 'video', null,
+    'The free courses on BASI Study, including the Level 1 pre-course modules (TIED model, teaching, performance threads) and Level 2 home study.',
+    'morzine-2027/videos/basi-e-learning-courses.mp4'],
   [null, 'BASI', 'BASI', 'link', L.basi,
     'The governing body. You finish the course a full Level 2 member.'],
   [null, 'BASI', 'BASI Jobs', 'link', L.basiJobs, 'Members-only job board.'],
