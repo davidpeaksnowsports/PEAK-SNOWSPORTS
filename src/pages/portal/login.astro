@@ -6,7 +6,11 @@
 export const prerender = false;
 
 import PortalLayout from '../../layouts/PortalLayout.astro';
-import { createPortalClient, isPortalConfigured } from '../../lib/portal/supabase';
+import {
+  createPortalClient,
+  portalProfileFor,
+  isPortalConfigured,
+} from '../../lib/portal/supabase';
 
 /**
  * Only same-site portal paths are accepted as a return destination. Anything
@@ -35,15 +39,21 @@ if (Astro.request.method === 'POST' && isPortalConfigured) {
     error = 'Enter your email address and password.';
   } else {
     const supabase = createPortalClient(Astro.cookies, Astro.request);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data: signedIn, error: signInError } =
+      await supabase.auth.signInWithPassword({ email, password });
 
-    if (signInError) {
+    if (signInError || !signedIn.user) {
       // Deliberately vague: distinguishing "no such account" from "wrong
       // password" tells an attacker which emails are registered.
       error = 'That email address and password do not match.';
+    } else if (!(await portalProfileFor(supabase, signedIn.user))) {
+      // A real account, but not an instructor's — a GAP student or member of
+      // office staff sharing this Supabase project. Without this they would be
+      // signed in, redirected, and bounced straight back here by the middleware
+      // with no explanation. Sign them out so the session doesn't linger.
+      await supabase.auth.signOut();
+      error =
+        'This account does not have access to the instructor hub. If you think it should, ask the office.';
     } else {
       return Astro.redirect(target, 303);
     }

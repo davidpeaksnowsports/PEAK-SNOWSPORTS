@@ -16,7 +16,7 @@
  * request path should be able to bypass RLS.
  */
 import { createServerClient } from '@supabase/ssr';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
 import type { AstroCookies } from 'astro';
 
 const url = import.meta.env.SUPABASE_URL ?? process.env.SUPABASE_URL ?? '';
@@ -91,9 +91,47 @@ export interface PortalUser {
 }
 
 /**
- * Resolve the current user, or null. Uses getUser() rather than getSession()
- * because getUser() revalidates the JWT against Supabase — getSession() trusts
- * whatever is in the cookie, which is not good enough for an auth guard.
+ * The instructor profile for an authenticated user, or null.
+ *
+ * Takes the client rather than building one, because it must be the client
+ * that holds the session. Straight after signInWithPassword the new session
+ * exists only on that client and in the outgoing Set-Cookie headers — a client
+ * built from the incoming request would see nobody.
+ *
+ * No instructors row means not an instructor, full stop. This project also
+ * holds GAP students (who can self-enrol) and office staff, all with valid
+ * sessions. A signed-in account is not an authorised one; only an
+ * admin-created profile is. This used to fall back to a default 'instructor'
+ * profile, which let any account read tier 1 and 2 documents.
+ */
+export async function portalProfileFor(
+  supabase: SupabaseClient,
+  user: User,
+): Promise<PortalUser | null> {
+  // RLS lets a user read only their own row, so this cannot leak anyone
+  // else's profile.
+  const { data: profile } = await supabase
+    .from('instructors')
+    .select('name, role, resorts, active')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (!profile || profile.active === false) return null;
+
+  return {
+    id: user.id,
+    email: user.email ?? '',
+    name: profile.name || user.email?.split('@')[0] || 'Instructor',
+    role: profile.role as PortalUser['role'],
+    resorts: profile.resorts ?? [],
+  };
+}
+
+/**
+ * Resolve the current user from the request, or null. Uses getUser() rather
+ * than getSession() because getUser() revalidates the JWT against Supabase —
+ * getSession() trusts whatever is in the cookie, which is not good enough for
+ * an auth guard.
  */
 export async function getPortalUser(
   cookies: AstroCookies,
@@ -108,24 +146,7 @@ export async function getPortalUser(
   } = await supabase.auth.getUser();
 
   if (error || !user) return null;
-
-  // The profile row carries name, role and resorts. RLS lets a user read only
-  // their own row, so this cannot leak anyone else's profile.
-  const { data: profile } = await supabase
-    .from('instructors')
-    .select('name, role, resorts')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  return {
-    id: user.id,
-    email: user.email ?? '',
-    // Fall back to the local-part of the email so a user whose profile row
-    // hasn't been created yet still sees something sensible rather than blank.
-    name: profile?.name ?? user.email?.split('@')[0] ?? 'Instructor',
-    role: (profile?.role as PortalUser['role']) ?? 'instructor',
-    resorts: profile?.resorts ?? [],
-  };
+  return portalProfileFor(supabase, user);
 }
 
 /**
