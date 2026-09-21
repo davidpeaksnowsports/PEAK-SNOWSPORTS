@@ -11,7 +11,6 @@ export const prerender = false;
 import GapLayout from '../../layouts/GapLayout.astro';
 import Notice from '../../components/gap-portal/Notice.astro';
 import PhotoBand from '../../components/gap-portal/PhotoBand.astro';
-import coachHandRaised from '../../assets/images/gap/coach-hand-raised.jpg';
 import { createGapClient, type GapUser } from '../../lib/gap/supabase';
 
 const user = Astro.locals.gapUser as GapUser;
@@ -70,7 +69,7 @@ const slug = (s: string) =>
         )}
 
         <PhotoBand
-          image={coachHandRaised}
+          photo="coach-hand-raised"
           alt="A Peak coach in the olive uniform with one hand raised, mid-explanation, above a mountainside of pine trees"
           position="60% 72%"
         />

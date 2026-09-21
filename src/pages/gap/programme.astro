@@ -16,7 +16,6 @@ export const prerender = false;
 import GapLayout from '../../layouts/GapLayout.astro';
 import Notice from '../../components/gap-portal/Notice.astro';
 import PhotoBand from '../../components/gap-portal/PhotoBand.astro';
-import carving from '../../assets/images/gap/carving.jpg';
 import ActivityCard from '../../components/gap-portal/ActivityCard.astro';
 import { createGapClient, type GapUser } from '../../lib/gap/supabase';
 import { courseWeek, dayKey, fmtDate, fmtLongDate } from '../../lib/gap/course';
@@ -136,7 +135,7 @@ const views: { key: View; label: string }[] = [
   }
 
   <PhotoBand
-    image={carving}
+    photo="carving"
     alt="A skier in the olive uniform carving hard at speed, snow spraying off the skis, a chairlift overhead"
     aspect="aspect-[600/340]"
     width="w-full max-w-[600px]"
