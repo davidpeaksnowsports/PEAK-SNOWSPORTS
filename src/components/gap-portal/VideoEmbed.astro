@@ -1,0 +1,82 @@
+---
+/**
+ * A YouTube video that plays in the portal instead of sending the student off
+ * to YouTube.
+ *
+ * Renders as a thumbnail with a play button, and only builds the player when
+ * someone presses it. The learning hub has a dozen videos on one page; a dozen
+ * real iframes would each pull YouTube's player on load, which is several
+ * megabytes a student on chalet wifi did not ask for. A thumbnail is one small
+ * image.
+ *
+ * The player is served from youtube-nocookie.com, YouTube's privacy-enhanced
+ * domain, which does not set tracking cookies until the video is played.
+ *
+ * Without JavaScript the thumbnail is simply a link to the video, so nothing
+ * is lost — it just opens on YouTube.
+ */
+interface Props {
+  videoId: string;
+  title: string;
+}
+
+const { videoId, title } = Astro.props;
+const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+// hqdefault always exists for a public video; maxresdefault often does not.
+const thumb = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+---
+
+<div
+  class="gap-video relative aspect-video w-full max-w-2xl overflow-hidden bg-ink"
+  data-video-id={videoId}
+  data-video-title={title}
+>
+  <a
+    href={watchUrl}
+    target="_blank"
+    rel="noopener"
+    class="gap-video-trigger group absolute inset-0 block no-underline hover:no-underline"
+    aria-label={`Play video: ${title}`}
+  >
+    <img
+      src={thumb}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      class="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
+    />
+    <span
+      class="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-paper transition-transform group-hover:scale-110"
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 24 24" class="ml-1 h-6 w-6" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+    </span>
+  </a>
+</div>
+
+<script>
+  /**
+   * Swap the thumbnail for the player on click. Attached once per page, with
+   * delegation, so every video on the page shares one listener.
+   */
+  document.addEventListener('click', (event) => {
+    const trigger = (event.target as Element | null)?.closest<HTMLAnchorElement>(
+      '.gap-video-trigger',
+    );
+    if (!trigger) return;
+
+    const box = trigger.closest<HTMLElement>('.gap-video');
+    const id = box?.dataset.videoId;
+    if (!box || !id) return;
+
+    event.preventDefault();
+
+    const frame = document.createElement('iframe');
+    frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&modestbranding=1`;
+    frame.title = box.dataset.videoTitle ?? 'Video';
+    frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    frame.allowFullscreen = true;
+    frame.className = 'absolute inset-0 h-full w-full border-0';
+    box.replaceChildren(frame);
+  });
+</script>

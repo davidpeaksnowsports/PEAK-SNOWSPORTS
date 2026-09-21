@@ -270,6 +270,27 @@ const RESOURCES = [
     'Partner ski schools, Swiss resorts, southern-hemisphere seasons, and what schools look for.',
     'morzine-2027/workshops/gap-workshop-career.pdf'],
 
+  // Peak's own technique videos. Demonstrations show what the assessed
+  // activities look like done well; drills are how you get there. Titles are
+  // YouTube's, minus the "Watch" prefix the channel puts on demonstrations.
+  [null, 'Technique: demonstrations', 'Basic parallel turns', 'video',
+    'https://www.youtube.com/watch?v=zv-BLuO1jmM',
+    'The end point of the Central Theme.'],
+  [null, 'Technique: demonstrations', 'Medium carved turns', 'video',
+    'https://www.youtube.com/watch?v=4TzjjLmWPUQ',
+    'What Piste Long is asking for: clean carving and a variety of turn radii.'],
+  [null, 'Technique: demonstrations', 'Short turns', 'video',
+    'https://www.youtube.com/watch?v=To3Xzk8YUjc',
+    'What Piste Short is asking for: grippy, round, symmetrical turns at a constant speed.'],
+  [null, 'Technique: drills', 'One legged turns', 'video',
+    'https://www.youtube.com/watch?v=pKkNw75mjm4', null],
+  [null, 'Technique: drills', 'Stork turns', 'video',
+    'https://www.youtube.com/watch?v=eaqFCGxmJRQ', null],
+  [null, 'Technique: drills', 'Garlands', 'video',
+    'https://www.youtube.com/watch?v=MmOgErx4pho', null],
+  [null, 'Technique: drills', 'Swords', 'video',
+    'https://www.youtube.com/watch?v=l0LLKXqZNl4', null],
+
   [null, 'Peak', 'Peak Snowsports on YouTube', 'video', L.youtube, null],
 ];
 
