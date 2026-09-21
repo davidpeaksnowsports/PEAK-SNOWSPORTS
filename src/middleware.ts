@@ -1,19 +1,24 @@
 /**
- * Auth guard for the two signed-in areas: the instructor portal at /portal and
- * the GAP student portal at /gap.
+ * Auth guard for the three signed-in areas: the instructor portal at /portal,
+ * the GAP student portal at /gap and Peak HQ, the staff portal, at /hq.
  *
  * Middleware runs only for on-demand routes, so every guarded page sets
  * `export const prerender = false`. A page that forgets that would be built as
  * static HTML and served without ever passing through here — so each layout
  * asserts on its own `Astro.locals` user rather than trusting the guard alone.
  *
+ * All three share one Supabase project and so one session cookie. Each area
+ * resolves the visitor against its own profile table only — a valid session is
+ * never access by itself.
+ *
  * It also carries the site's CSRF check for form submissions — see
- * `isSameSiteForm` below. Everything outside those two prefixes passes through
+ * `isSameSiteForm` below. Everything outside those prefixes passes through
  * untouched apart from that check.
  */
 import { defineMiddleware } from 'astro:middleware';
 import { getPortalUser, isPortalConfigured } from './lib/portal/supabase';
 import { getGapUser, isGapConfigured } from './lib/gap/supabase';
+import { getHqUser, isHqConfigured } from './lib/hq/supabase';
 
 /** Reachable without a session. Everything else under /portal requires one. */
 const PUBLIC_PORTAL_ROUTES = new Set([
@@ -30,6 +35,56 @@ const PUBLIC_GAP_ROUTES = new Set([
   '/gap/forgot-password',
   '/gap/reset-password',
 ]);
+
+const PUBLIC_HQ_ROUTES = new Set([
+  '/hq/login',
+  '/hq/logout',
+  '/hq/forgot-password',
+  '/hq/reset-password',
+]);
+
+type Area = 'portal' | 'gap' | 'hq';
+
+/**
+ * Everything that differs between the signed-in areas. `home` is where a
+ * signed-in visitor on the login page is sent — /gap/dashboard, not /gap,
+ * because vercel.json redirects /gap to the marketing page.
+ */
+const AREAS: Record<
+  Area,
+  {
+    configured: boolean;
+    loginPath: string;
+    home: string;
+    publicRoutes: Set<string>;
+    resolve: (
+      cookies: Parameters<typeof getPortalUser>[0],
+      request: Request,
+    ) => Promise<unknown>;
+  }
+> = {
+  portal: {
+    configured: isPortalConfigured,
+    loginPath: '/portal/login',
+    home: '/portal',
+    publicRoutes: PUBLIC_PORTAL_ROUTES,
+    resolve: getPortalUser,
+  },
+  gap: {
+    configured: isGapConfigured,
+    loginPath: '/gap/login',
+    home: '/gap/dashboard',
+    publicRoutes: PUBLIC_GAP_ROUTES,
+    resolve: getGapUser,
+  },
+  hq: {
+    configured: isHqConfigured,
+    loginPath: '/hq/login',
+    home: '/hq',
+    publicRoutes: PUBLIC_HQ_ROUTES,
+    resolve: getHqUser,
+  },
+};
 
 const normalise = (pathname: string) => pathname.replace(/\/+$/, '') || '/';
 
@@ -117,11 +172,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const path = normalise(context.url.pathname);
-  const area = under(path, '/portal')
+  const area: Area | null = under(path, '/portal')
     ? 'portal'
     : under(path, '/gap')
       ? 'gap'
-      : null;
+      : under(path, '/hq')
+        ? 'hq'
+        : null;
 
   if (!area) return next();
 
@@ -134,35 +191,26 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return response;
   };
 
-  const configured = area === 'portal' ? isPortalConfigured : isGapConfigured;
-  const loginPath = `/${area === 'portal' ? 'portal' : 'gap'}/login`;
-  const publicRoutes = area === 'portal' ? PUBLIC_PORTAL_ROUTES : PUBLIC_GAP_ROUTES;
-  const home = area === 'portal' ? '/portal' : '/gap/dashboard';
+  const { configured, loginPath, home, publicRoutes, resolve } = AREAS[area];
+
+  // Only ever populate the locals for the area being served. One person can
+  // hold an instructors row and a staff_members row on the same session, but
+  // /portal must not read an HQ profile, or vice versa.
+  context.locals.portalUser = null;
+  context.locals.gapUser = null;
+  context.locals.hqUser = null;
 
   // Without Supabase configured there is no way to authenticate anyone. Let the
   // login page render its setup notice, and keep every other route shut.
   if (!configured) {
-    context.locals.portalUser = null;
-    context.locals.gapUser = null;
     if (path === loginPath) return finish();
     return context.redirect(loginPath, 302);
   }
 
-  const user =
-    area === 'portal'
-      ? await getPortalUser(context.cookies, context.request)
-      : await getGapUser(context.cookies, context.request);
-
-  // Only ever populate the locals for the area being served. A coach who is
-  // also an instructor holds one Supabase session, but /portal must not read a
-  // GAP profile or vice versa.
-  if (area === 'portal') {
-    context.locals.portalUser = user as App.Locals['portalUser'];
-    context.locals.gapUser = null;
-  } else {
-    context.locals.gapUser = user as App.Locals['gapUser'];
-    context.locals.portalUser = null;
-  }
+  const user = await resolve(context.cookies, context.request);
+  if (area === 'portal') context.locals.portalUser = user as App.Locals['portalUser'];
+  else if (area === 'gap') context.locals.gapUser = user as App.Locals['gapUser'];
+  else context.locals.hqUser = user as App.Locals['hqUser'];
 
   if (publicRoutes.has(path)) {
     // Already signed in and heading for the login page — send them onward.

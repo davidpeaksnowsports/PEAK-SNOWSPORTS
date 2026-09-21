@@ -1,0 +1,145 @@
+---
+/**
+ * Peak HQ sign-in. Plain HTML form, posted to this same route and handled on
+ * the server — no client-side JS and no Supabase in the browser. Same shape as
+ * the instructor hub's login, against the staff_members table.
+ */
+export const prerender = false;
+
+import HqLayout from '../../layouts/HqLayout.astro';
+import { createHqClient, hqProfileFor, isHqConfigured } from '../../lib/hq/supabase';
+
+/**
+ * Only same-site HQ paths are accepted as a return destination. Anything else
+ * — a full URL, a protocol-relative //evil.com, a path outside /hq, or /hqx
+ * which merely starts with the same letters — is discarded rather than
+ * followed.
+ */
+function safeNext(raw: string | null): string {
+  if (!raw) return '/hq';
+  if (raw.startsWith('//')) return '/hq';
+  if (raw !== '/hq' && !raw.startsWith('/hq/') && !raw.startsWith('/hq?')) return '/hq';
+  return raw;
+}
+
+const next = safeNext(Astro.url.searchParams.get('next'));
+
+let error: string | null = null;
+let email = '';
+
+if (Astro.request.method === 'POST' && isHqConfigured) {
+  const form = await Astro.request.formData();
+  email = String(form.get('email') ?? '').trim();
+  const password = String(form.get('password') ?? '');
+  const target = safeNext(String(form.get('next') ?? '') || null);
+
+  if (!email || !password) {
+    error = 'Enter your email address and password.';
+  } else {
+    const supabase = createHqClient(Astro.cookies, Astro.request);
+    const { data: signedIn, error: signInError } =
+      await supabase.auth.signInWithPassword({ email, password });
+
+    if (signInError || !signedIn.user) {
+      // Deliberately vague: distinguishing "no such account" from "wrong
+      // password" tells an attacker which emails are registered.
+      error = 'That email address and password do not match.';
+    } else if (!(await hqProfileFor(supabase, signedIn.user))) {
+      // A real account, but not a staff member's — an instructor or GAP
+      // student sharing this Supabase project. Without this they would be
+      // signed in, redirected, and bounced straight back here by the middleware
+      // with no explanation. Sign them out so the session doesn't linger.
+      await supabase.auth.signOut();
+      error =
+        'This account does not have access to Peak HQ. If you think it should, ask David or Marc.';
+    } else {
+      return Astro.redirect(target, 303);
+    }
+  }
+}
+---
+
+<HqLayout title="Sign in" chrome={false}>
+  <div class="mx-auto max-w-md py-8">
+    <p class="meta mb-3 text-ink-45">Peak Snowsports</p>
+    <h1 class="font-display text-4xl font-bold">Peak HQ</h1>
+
+    {
+      !isHqConfigured ? (
+        <div class="mt-8 border-l-2 border-accent bg-paper-2 p-5">
+          <p class="meta mb-2 text-accent">Not configured yet</p>
+          <p class="text-ink-70">
+            Peak HQ needs <code class="font-mono text-sm">SUPABASE_URL</code> and{' '}
+            <code class="font-mono text-sm">SUPABASE_ANON_KEY</code> before anyone
+            can sign in. Add them in Vercel and redeploy.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p class="mt-4 text-ink-70">
+            Sign in with the email address we hold for you.
+          </p>
+
+          {error && (
+            <p
+              role="alert"
+              class="mt-6 border-l-2 border-accent bg-paper-2 px-4 py-3 text-ink"
+            >
+              {error}
+            </p>
+          )}
+
+          <form method="POST" class="mt-8 space-y-5">
+            <input type="hidden" name="next" value={next} />
+
+            <div>
+              <label for="email" class="meta mb-2 block text-ink-70">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                value={email}
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <div>
+              <label for="password" class="meta mb-2 block text-ink-70">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+            >
+              Sign in
+            </button>
+          </form>
+
+          <p class="mt-6 text-sm text-ink-70">
+            <a href="/hq/forgot-password" class="text-accent">
+              Forgotten your password?
+            </a>
+          </p>
+        </>
+      )
+    }
+
+    <p class="mt-12 border-t border-ink/10 pt-6 text-sm text-ink-45">
+      No account yet? Ask David or Marc to set one up.
+    </p>
+  </div>
+</HqLayout>

@@ -85,7 +85,7 @@ export interface PortalUser {
   id: string;
   email: string;
   name: string;
-  /** 'instructor' | 'office' | 'admin' — drives which policy tier is visible. */
+  /** 'office' is legacy: office staff moved to Peak HQ (/hq). All roles see tiers 1–2. */
   role: 'instructor' | 'office' | 'admin';
   resorts: string[];
 }
@@ -150,10 +150,11 @@ export async function getPortalUser(
 }
 
 /**
- * Which document tiers a role may read. Tier 3 (employer policies) is never
- * returned for an instructor — not merely hidden in the nav, but filtered out
- * of every query, so a guessed URL returns a 404 rather than the document.
+ * Which document tiers the instructor hub shows. The same for every role:
+ * tier 3 (staff-only documents) lives in Peak HQ at /hq, and there is no role
+ * in this portal that should see it. It used to be visible to 'office' and
+ * 'admin' here, from before office staff had a portal of their own.
  */
-export function visibleTiers(role: PortalUser['role']): number[] {
-  return role === 'instructor' ? [1, 2] : [1, 2, 3];
+export function visibleTiers(_role: PortalUser['role']): number[] {
+  return [1, 2];
 }

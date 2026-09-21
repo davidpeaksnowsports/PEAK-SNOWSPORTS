@@ -1,0 +1,112 @@
+---
+/**
+ * One Peak HQ section. Static siblings (/hq/start, /hq/team, /hq/login…) take
+ * precedence over this dynamic route, and the section whitelist below 404s
+ * anything else.
+ *
+ * "What we do" also renders the product list, which lives in code rather than
+ * the document store: each summary is the public product page's own approved
+ * description, and staff need it working before any document is loaded.
+ */
+export const prerender = false;
+
+import HqLayout from '../../../layouts/HqLayout.astro';
+import {
+  HQ_SECTIONS,
+  PRODUCTS,
+  listHqDocs,
+  isHqContentConfigured,
+  type HqSection,
+} from '../../../lib/hq/content';
+
+const key = Astro.params.section as HqSection;
+const section = HQ_SECTIONS.find((s) => s.key === key);
+if (!section) Astro.response.status = 404;
+
+const docs = section ? await listHqDocs(key) : [];
+
+const dateFmt = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+---
+
+{
+  !section ? (
+    <HqLayout title="Not found" heading="Not found" intro="That section does not exist. It may have been renamed.">
+      <a href="/hq" class="text-accent">Back to Peak HQ</a>
+    </HqLayout>
+  ) : (
+    <HqLayout title={section.label} kicker="Peak HQ" heading={section.label} intro={section.blurb}>
+      {key === 'what-we-do' && (
+        <section aria-labelledby="products-heading" class="mb-16">
+          <div class="flex items-baseline justify-between gap-4 border-b border-ink pb-3">
+            <h2 id="products-heading" class="font-display text-2xl font-bold">What we sell</h2>
+            <p class="meta text-ink-45">Send the client the link</p>
+          </div>
+          <ul class="divide-y divide-ink/10">
+            {PRODUCTS.map((p) => (
+              <li class="grid gap-2 py-5 md:grid-cols-12 md:gap-6">
+                <p class="font-display text-lg font-bold md:col-span-3">{p.name}</p>
+                <p class="text-sm leading-relaxed text-ink-70 md:col-span-6">{p.summary}</p>
+                <p class="md:col-span-3 md:text-right">
+                  <a
+                    href={p.href}
+                    target="_blank"
+                    rel="noopener"
+                    title={`https://www.peaksnowsports.com${p.href}`}
+                    class="meta whitespace-nowrap text-accent"
+                  >
+                    {p.href}
+                  </a>
+                </p>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-4 text-sm text-ink-45">
+            Every product is booked through SkiOperator on its page. These
+            descriptions are the public pages' own, so they match what the client
+            sees.
+          </p>
+        </section>
+      )}
+
+      {docs.length === 0 ? (
+        <div class="border-l-2 border-ink/20 bg-paper-2 p-6">
+          <p class="text-ink-70">
+            {isHqContentConfigured
+              ? 'Nothing has been published to this section yet.'
+              : 'The document store is not connected yet, so this section is empty.'}
+          </p>
+        </div>
+      ) : (
+        <ul class="border-t border-ink/10">
+          {docs.map((doc) => (
+            <li class="border-b border-ink/10">
+              <a
+                href={`/hq/${key}/${doc.slug}`}
+                class="group flex flex-col gap-1 py-5 no-underline hover:no-underline sm:flex-row sm:items-baseline sm:gap-6"
+              >
+                <span class="flex-1">
+                  <span class="font-display text-lg font-bold text-ink group-hover:text-accent">
+                    {doc.title}
+                  </span>
+                  {doc.summary && (
+                    <span class="mt-1 block max-w-2xl text-sm leading-relaxed text-ink-70">
+                      {doc.summary}
+                    </span>
+                  )}
+                </span>
+                <span class="meta flex shrink-0 items-center gap-3 text-ink-45">
+                  {doc.version && <span class="border border-ink/20 px-2 py-1">v{doc.version}</span>}
+                  {doc.updatedAt && <span>{dateFmt.format(new Date(doc.updatedAt))}</span>}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </HqLayout>
+  )
+}

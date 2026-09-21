@@ -404,10 +404,11 @@ Three things to know before touching it:
   Sanity dataset, whose reads are public. They live in a separate **private**
   dataset read server-side with a token.
 - **Instructors are self-employed contractors, not employees.** Documents are
-  tiered: tier 3 (employer policies such as paid time off and working from home)
-  is filtered out of the query for an instructor entirely, not merely hidden in
-  the nav. Do not move a document between tiers without asking David — the split
-  is a requirement, and the reasoning is recorded outside this repo.
+  tiered: tier 3 (staff-only documents such as paid time off and working from
+  home) lives in Peak HQ at `/hq`, and the instructor hub's query excludes it for
+  every role, not merely hides it in the nav. Do not move a document between
+  tiers without asking David — the split is a requirement, and the reasoning is
+  recorded outside this repo.
 - **No contracts and no signatures.** Those are issued and signed offline, by
   David's decision. Do not re-introduce a signing flow unless asked.
 
@@ -437,6 +438,31 @@ setup and the full rationale.
   strand. Don't "improve" this into a single score.
 
 Every `/gap` route sets `prerender = false`.
+
+---
+
+## 11c. Peak HQ (staff portal)
+
+A third server-rendered area at `/hq`, for employed office and booking staff:
+onboarding, then a knowledge hub (what we do, how we work, playbook, policies,
+people). See [`HQ.md`](./HQ.md).
+
+- **A session is not access.** `/portal`, `/gap` and `/hq` share one Supabase
+  project. Each resolves the visitor against its own table only
+  (`instructors`, `gap_members`, `staff_members`) and returns null without a
+  row. Never add a fallback profile: that exact bug let any account into
+  `/portal` until September 2026.
+- **Staff profiles are inserted by an admin.** No sign-up trigger. Public
+  sign-up is on for GAP enrolment, and nothing in a sign-up can be trusted.
+- **One document type, two placements.** `portalDoc.section` puts a document in
+  the instructor hub, `hqSection` in HQ. Tier 3 is staff only and can never
+  carry a hub `section`: the Studio, the importer and the hub's query all
+  enforce that.
+- **The onboarding form holds no payroll identifiers.** No NIR, IBAN or ID
+  documents, by David's decision. Don't add them.
+- **No em dashes in user-facing portal copy**, in any of the three areas.
+
+Every `/hq` route sets `prerender = false`.
 
 ---
 

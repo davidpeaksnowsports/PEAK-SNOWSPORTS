@@ -45,5 +45,7 @@ declare namespace App {
      * on /portal routes, so a page cannot read the wrong area's user.
      */
     gapUser: import('./lib/gap/supabase').GapUser | null;
+    /** Set by middleware on /hq routes. Null when signed out or not staff. */
+    hqUser: import('./lib/hq/supabase').HqUser | null;
   }
 }

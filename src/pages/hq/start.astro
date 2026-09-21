@@ -1,0 +1,243 @@
+---
+/**
+ * Start here — onboarding for a new member of staff.
+ *
+ * Two parts: the details form (phone, emergency contact, kit size, which
+ * accounts they need), then the first-week checklist. Until the form has been
+ * submitted, /hq sends people here.
+ *
+ * Plain HTML forms with POST-redirect-GET: no client JS, and refreshing the
+ * page never resubmits. Row-level security scopes every read and write to the
+ * signed-in member; nothing here trusts a member id from the form.
+ */
+export const prerender = false;
+
+import HqLayout from '../../layouts/HqLayout.astro';
+import { createHqClient, type HqUser } from '../../lib/hq/supabase';
+import {
+  ACCOUNT_OPTIONS,
+  JACKET_SIZES,
+  getChecklist,
+  getOnboarding,
+  saveOnboarding,
+  setTick,
+  type Onboarding,
+} from '../../lib/hq/onboarding';
+
+const user = Astro.locals.hqUser as HqUser;
+const supabase = createHqClient(Astro.cookies, Astro.request);
+
+let errors: string[] = [];
+let posted: Onboarding | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const intent = String(form.get('intent') ?? '');
+
+  if (intent === 'onboarding') {
+    const result = await saveOnboarding(supabase, user.id, form);
+    if (result.ok) return Astro.redirect('/hq/start?saved=1', 303);
+    errors = result.errors;
+    posted = result.values;
+  } else if (intent === 'tick') {
+    const itemId = String(form.get('item_id') ?? '');
+    // A UUID or nothing: the item id goes into a query, and RLS already limits
+    // the write to this member, so this is about rejecting junk, not access.
+    if (/^[0-9a-f-]{36}$/i.test(itemId)) {
+      await setTick(supabase, user.id, itemId, form.get('done') === '1');
+    }
+    return Astro.redirect(`/hq/start#item-${itemId}`, 303);
+  }
+}
+
+const saved = Astro.url.searchParams.get('saved') === '1';
+const onboarding = posted ?? (await getOnboarding(supabase, user.id));
+const checklist = await getChecklist(supabase, user.id);
+const doneCount = checklist.filter((i) => i.done).length;
+
+// A submitted form folds away so the checklist leads; an unsubmitted one, or
+// one with errors, stays open because it is the thing to do next.
+const formOpen = !onboarding.submitted_at || errors.length > 0;
+const firstName = (onboarding.preferred_name || user.name).split(' ')[0];
+
+const field =
+  'w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
+const label = 'meta mb-2 block text-ink-70';
+---
+
+<HqLayout
+  title="Start here"
+  kicker={user.jobTitle ?? 'Peak HQ'}
+  heading={user.onboarded ? `Welcome back, ${firstName}.` : `Welcome to Peak, ${firstName}.`}
+  intro={user.onboarded
+    ? 'Your first-week checklist, and your details if anything has changed.'
+    : 'Two minutes of details first, so we can reach you and get your accounts ready. Then your first week, one step at a time.'}
+>
+  {
+    saved && (
+      <p role="status" class="mb-10 border-l-2 border-accent bg-paper-2 px-5 py-4 text-ink">
+        Saved. Your first week is below.
+      </p>
+    )
+  }
+
+  <div class="grid gap-16 lg:grid-cols-12">
+    <!-- Checklist first once the form is done; the form leads until then, at every width: most staff open this on a phone. -->
+    <section
+      aria-labelledby="checklist-heading"
+      class:list={['lg:col-span-7', formOpen && 'order-2']}
+    >
+      <div class="flex items-baseline justify-between gap-4 border-b border-ink pb-3">
+        <h2 id="checklist-heading" class="font-display text-2xl font-bold">
+          Your first week
+        </h2>
+        <p class="meta text-ink-45 tabular-nums">
+          {doneCount} of {checklist.length} done
+        </p>
+      </div>
+
+      {
+        checklist.length === 0 ? (
+          <p class="mt-6 text-ink-70">No checklist has been set up yet.</p>
+        ) : (
+          <ol class="divide-y divide-ink/10">
+            {checklist.map((item) => (
+              <li id={`item-${item.id}`} class="flex gap-4 py-5">
+                <form method="POST" class="shrink-0 pt-0.5">
+                  <input type="hidden" name="intent" value="tick" />
+                  <input type="hidden" name="item_id" value={item.id} />
+                  <input type="hidden" name="done" value={item.done ? '0' : '1'} />
+                  <button
+                    type="submit"
+                    aria-label={item.done ? `Mark "${item.title}" as not done` : `Mark "${item.title}" as done`}
+                    aria-pressed={item.done ? 'true' : 'false'}
+                    class:list={[
+                      'flex h-6 w-6 items-center justify-center border transition-colors',
+                      item.done
+                        ? 'border-accent bg-accent text-paper'
+                        : 'border-ink/30 bg-paper hover:border-ink',
+                    ]}
+                  >
+                    {item.done && (
+                      <svg viewBox="0 0 16 16" class="h-4 w-4" fill="none" aria-hidden="true">
+                        <path d="M3 8.5l3.2 3L13 5" stroke="currentColor" stroke-width="2" />
+                      </svg>
+                    )}
+                  </button>
+                </form>
+
+                <div class="min-w-0">
+                  <p class:list={['font-semibold', item.done ? 'text-ink-45 line-through' : 'text-ink']}>
+                    {item.link ? (
+                      <a href={item.link} class="text-inherit">{item.title}</a>
+                    ) : (
+                      item.title
+                    )}
+                  </p>
+                  {item.detail && <p class="mt-1 text-sm text-ink-70">{item.detail}</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        )
+      }
+    </section>
+
+    <section aria-labelledby="details-heading" class:list={['lg:col-span-5', formOpen && 'order-1']}>
+      <details open={formOpen} class="group">
+        <summary class="flex cursor-pointer list-none items-baseline justify-between gap-4 border-b border-ink pb-3">
+          <h2 id="details-heading" class="font-display text-2xl font-bold">Your details</h2>
+          <span class="meta text-ink-45 group-open:hidden">Edit</span>
+        </summary>
+
+        {
+          errors.length > 0 && (
+            <ul role="alert" class="mt-6 space-y-1 border-l-2 border-accent bg-paper-2 px-5 py-4 text-ink">
+              {errors.map((e) => <li>{e}</li>)}
+            </ul>
+          )
+        }
+
+        <form method="POST" class="mt-6 space-y-6">
+          <input type="hidden" name="intent" value="onboarding" />
+
+          <div>
+            <label for="preferred_name" class={label}>What should we call you?</label>
+            <input id="preferred_name" name="preferred_name" type="text" maxlength="80"
+              autocomplete="nickname" placeholder={user.name}
+              value={onboarding.preferred_name ?? ''} class={field} />
+          </div>
+
+          <div>
+            <label for="phone" class={label}>Your phone <span class="text-accent">*</span></label>
+            <input id="phone" name="phone" type="tel" maxlength="40" required
+              autocomplete="tel" value={onboarding.phone ?? ''} class={field} />
+          </div>
+
+          <fieldset class="space-y-4">
+            <legend class="meta mb-2 text-ink">Emergency contact <span class="text-accent">*</span></legend>
+            <div>
+              <label for="emergency_name" class={label}>Name</label>
+              <input id="emergency_name" name="emergency_name" type="text" maxlength="120" required
+                value={onboarding.emergency_name ?? ''} class={field} />
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="emergency_relationship" class={label}>Relationship</label>
+                <input id="emergency_relationship" name="emergency_relationship" type="text" maxlength="60"
+                  placeholder="Partner, parent…" value={onboarding.emergency_relationship ?? ''} class={field} />
+              </div>
+              <div>
+                <label for="emergency_phone" class={label}>Their phone</label>
+                <input id="emergency_phone" name="emergency_phone" type="tel" maxlength="40" required
+                  value={onboarding.emergency_phone ?? ''} class={field} />
+              </div>
+            </div>
+          </fieldset>
+
+          <div>
+            <label for="jacket_size" class={label}>Jacket size, for your uniform</label>
+            <select id="jacket_size" name="jacket_size" class={field}>
+              <option value="">Choose a size</option>
+              {JACKET_SIZES.map((size) => (
+                <option value={size} selected={onboarding.jacket_size === size}>{size}</option>
+              ))}
+            </select>
+          </div>
+
+          <fieldset>
+            <legend class="meta mb-3 text-ink-70">Accounts you'll need</legend>
+            <div class="space-y-3">
+              {ACCOUNT_OPTIONS.map((opt) => (
+                <label class="flex items-center gap-3 text-ink">
+                  <input type="checkbox" name="accounts_needed" value={opt.key}
+                    checked={onboarding.accounts_needed.includes(opt.key)}
+                    class="h-5 w-5 border-ink/30 text-accent focus:ring-accent" />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div>
+            <label for="notes" class={label}>Anything we should know?</label>
+            <textarea id="notes" name="notes" rows="3" maxlength="2000"
+              placeholder="Access needs, dates you can't start, questions…"
+              class={field}>{onboarding.notes ?? ''}</textarea>
+          </div>
+
+          <button type="submit"
+            class="w-full bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink">
+            {onboarding.submitted_at ? 'Save changes' : 'Save and see my first week'}
+          </button>
+
+          <p class="text-sm text-ink-45">
+            Managers at Peak can see these details, and they are deleted when your
+            account is closed. We don't ask for bank or social security details
+            here. Those go to payroll directly.
+          </p>
+        </form>
+      </details>
+    </section>
+  </div>
+</HqLayout>

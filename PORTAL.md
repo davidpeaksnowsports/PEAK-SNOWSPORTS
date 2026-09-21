@@ -32,7 +32,7 @@ not a "forbidden" that confirms it exists.
 |---|---|---|
 | 1 | Everyone, versioned | Documents the offline contract points at — code of conduct, rates and benefits. Breach of the code of conduct is a stated termination trigger, so these carry a version number and a material change means notifying people. |
 | 2 | Everyone who teaches | Mountain standards — safeguarding, health and safety, accident procedure. Written as standards and duties, not as instructions about how, when or where someone works. |
-| 3 | Employed office staff only | Employer policies — paid time off, separation, working from home. Never rendered for an instructor, and not visible in their navigation. |
+| 3 | Staff only, in Peak HQ | Employer policies, such as paid time off, separation and working from home. They live in the staff portal at `/hq` (see `HQ.md`). The instructor hub's query excludes tier 3 for every role, including admins. |
 
 **Why tier 3 is separate.** Instructors are self-employed contractors, and their
 contract sets out how they engage with Peak. Employer policies written for
@@ -135,7 +135,9 @@ Two workspaces, deliberately separated so a portal document cannot be created in
 the public dataset by accident:
 
 - `/admin` — public site content (`production` dataset)
-- `/admin/portal` — portal documents (private dataset)
+- `/admin/portal` — portal documents (private dataset), for both the instructor
+  hub and Peak HQ. Each document's `section` places it in the hub, and its
+  `hqSection` in HQ.
 
 ---
 
