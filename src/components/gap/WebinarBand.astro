@@ -1,0 +1,37 @@
+---
+/**
+ * Promotes the parents' webinar from inside /gap-course.
+ *
+ * A hairline band rather than an ink one: the page already spends its single
+ * ink band on the pricing panel. Renders nothing at all once the date has
+ * passed, so a stale deploy cannot advertise an hour that has been and gone.
+ */
+import { WEBINAR, webinarHasPassed } from '../../lib/webinar';
+
+const past = webinarHasPassed();
+---
+
+{!past && (
+  <section class="border-y border-ink/10 bg-paper-2">
+    <div class="mx-auto flex max-w-screen-2xl flex-col gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between md:px-10">
+      <div class="max-w-2xl space-y-3">
+        <p class="meta text-accent">Free webinar for parents</p>
+        <h2 class="font-display text-3xl font-bold leading-tight tracking-tight md:text-4xl">
+          Parents: come and ask us anything.
+        </h2>
+        <p class="text-base leading-relaxed text-ink-70 md:text-lg">
+          An hour on {WEBINAR.platform}, {WEBINAR.dateLabel}, {WEBINAR.timeLabel}. What the six weeks involve, how we look
+          after students in resort, what it costs and what the qualification is worth after. Free, and recorded if you
+          cannot make it.
+        </p>
+      </div>
+      <a
+        href={WEBINAR.path}
+        data-analytics-event="Webinar Band"
+        class="inline-flex shrink-0 items-center justify-center rounded-sm bg-accent px-8 py-4 font-display text-base font-semibold text-paper no-underline transition hover:bg-ink"
+      >
+        Save your place →
+      </a>
+    </div>
+  </section>
+)}
