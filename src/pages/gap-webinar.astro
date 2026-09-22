@@ -1,0 +1,266 @@
+---
+/**
+ * Registration page for the parents' webinar on the GAP course.
+ *
+ * Its own page rather than a section of /gap-course, so it can be linked
+ * straight from an email, a WhatsApp message or an ad without dragging a
+ * reader through the whole sales page first.
+ *
+ * The date lives in src/lib/webinar.ts, never here. Joining details are not
+ * on this page at all: a Meet link on a public page is a link anyone can walk
+ * into, so it goes out in the confirmation email instead.
+ *
+ * Prerendered, so `past` is fixed at build time. The inline script at the
+ * bottom re-checks in the browser, which covers the window between the
+ * webinar finishing and the next deploy.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import Section from '../components/ui/Section.astro';
+import WebinarForm from '../components/gap/WebinarForm.astro';
+import heroImage from '../assets/images/hero-gap.jpg';
+import { WEBINAR, webinarHasPassed } from '../lib/webinar';
+
+const SITE = 'https://www.peaksnowsports.com';
+const past = webinarHasPassed();
+
+const covers = [
+  {
+    title: 'What they actually come home with.',
+    body: 'BASI Level 1 and Level 2, what each one lets them teach, and how the qualification is recognised across the Alps and beyond.',
+  },
+  {
+    title: 'How the six weeks run.',
+    body: 'A normal day on the course: training hours, exams, workshops and where the pressure points are.',
+  },
+  {
+    title: 'How we look after them.',
+    body: 'The chalet, the 24/7 care line, weekly one to ones, room reviews and who to call when something goes wrong at 11pm.',
+  },
+  {
+    title: 'What it costs, and how to pay it.',
+    body: 'What the price covers, what it does not, staged payments, and the extras to budget for on top.',
+  },
+  {
+    title: 'What happens after.',
+    body: 'Where a newly qualified instructor can work, what they can earn, and how our partner ski schools hire straight off the course.',
+  },
+  {
+    title: 'Whether they ski well enough.',
+    body: 'The honest answer on the standard needed to start, and what to do between now and the course if they are not there yet.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Do I need my son or daughter on the call?',
+    a: 'No. Plenty of parents come alone and pass on what they learn. They are very welcome if they want to be there, and the questions are usually better when they are.',
+  },
+  {
+    q: 'Is this a sales pitch?',
+    a: 'No. It is an hour of straight answers, including the ones that talk people out of it. If the course is wrong for your family we would rather you found that out now than in January.',
+  },
+  {
+    q: 'What if I cannot make it?',
+    a: 'Register anyway. We record the session and email it to everyone on the list, so you can watch it whenever suits.',
+  },
+  {
+    q: 'Do I have to be on camera?',
+    a: 'Not at all. Come with your camera off and your microphone muted and ask everything in the chat if you prefer.',
+  },
+];
+
+const jsonLd: object[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'Ski Instructor Course', item: `${SITE}/gap-course` },
+      { '@type': 'ListItem', position: 3, name: 'Webinar for parents', item: `${SITE}${WEBINAR.path}` },
+    ],
+  },
+];
+
+// Event markup only while the event is ahead of us. Google issues manual
+// actions for stale event listings, the same way it does for job postings,
+// so a past webinar drops its markup rather than lingering in search.
+if (!past) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: `${WEBINAR.title} | Peak Snowsports`,
+    description:
+      'A free one-hour online session for parents on the Peak GAP ski instructor course: the qualification, the six weeks, pastoral care, cost and what comes after.',
+    startDate: WEBINAR.startLocal,
+    endDate: WEBINAR.endLocal,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
+    // The registration page, not the joining link. The joining link is private.
+    location: { '@type': 'VirtualLocation', url: `${SITE}${WEBINAR.path}` },
+    image: [`${SITE}/images/og/gap-course.jpg`],
+    organizer: { '@type': 'Organization', name: 'Peak Snowsports', url: SITE },
+    isAccessibleForFree: true,
+    inLanguage: 'en',
+    audience: { '@type': 'Audience', audienceType: 'Parents of prospective ski instructors' },
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'EUR',
+      availability: 'https://schema.org/InStock',
+      url: `${SITE}${WEBINAR.path}`,
+      validFrom: '2026-09-22T09:00:00+02:00',
+    },
+  });
+}
+---
+
+<BaseLayout
+  title={`GAP Course Webinar for Parents · ${WEBINAR.dateLabel} · Peak Snowsports`}
+  description={`Free online webinar for parents on the Peak GAP ski instructor course. ${WEBINAR.dateLabel}, ${WEBINAR.timeLabel}. The qualification, the six weeks, pastoral care, cost and what comes after. Register free.`}
+  image="/images/og/gap-course.jpg"
+  jsonLd={jsonLd}
+>
+  <Hero
+    kicker={past ? 'Webinar for parents · This one has run' : `Free online webinar for parents · ${WEBINAR.dateLabel}`}
+    headline="The GAP course, explained for parents."
+    sub="An hour with the people who run the course. What your son or daughter would actually be doing for six weeks, how we look after them, what it costs, and what the qualification is worth afterwards. Bring every question you have."
+    primaryCta={past ? { href: '/gap-course', label: 'See the course' } : { href: '#register', label: 'Save your place' }}
+    secondaryCta={past ? { href: '/gap-course#enquire', label: 'Talk to us' } : { href: '/gap-course', label: 'See the course' }}
+    variant="full"
+    image={heroImage}
+    imageAlt="Ski instructor course students regrouping on the mountain above Avoriaz."
+    facts={[
+      { label: 'Date', value: WEBINAR.dateLabel.replace(' 2026', '') },
+      { label: 'Time', value: '5pm FR / 4pm UK' },
+      { label: 'Where', value: WEBINAR.platform },
+      { label: 'Cost', value: 'Free' },
+    ]}
+  />
+
+  {past && (
+    <Section size="tight" rule={false}>
+      <div class="border border-ink p-8 md:p-10">
+        <p class="meta text-accent">This webinar has run</p>
+        <p class="mt-4 max-w-2xl text-xl leading-snug md:text-2xl">
+          We recorded it. Email <a class="underline underline-offset-4" href="mailto:hello@peaksnowsports.com">hello@peaksnowsports.com</a>
+          and we will send you the link, along with the date of the next one.
+        </p>
+      </div>
+    </Section>
+  )}
+
+  <Section kicker="What we cover" title="The questions parents actually ask." rule={!past}>
+    <div class="grid gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+      {covers.map((c) => (
+        <div class="space-y-3 border-t border-ink/10 pt-5">
+          <h3 class="font-display text-xl font-bold leading-tight tracking-tight">{c.title}</h3>
+          <p class="text-base leading-relaxed text-ink-70">{c.body}</p>
+        </div>
+      ))}
+    </div>
+    <p class="mt-12 max-w-2xl text-lg leading-relaxed text-ink-70">
+      Roughly half the hour is us talking and half is your questions. Ask them live or drop them in the chat. If you would
+      rather not ask in front of other parents, put it in the form below and we will cover it without naming you.
+    </p>
+  </Section>
+
+  {!past && (
+    <Section id="register" kicker="Register" title="Save your place.">
+      <div class="grid items-start gap-12 lg:grid-cols-[minmax(0,560px)_1fr] lg:gap-20">
+        <WebinarForm />
+
+        <div class="space-y-8">
+          <dl class="grid gap-x-6 gap-y-6 border-y border-ink/10 py-6 sm:grid-cols-2">
+            <div>
+              <dt class="meta text-ink-70">Date</dt>
+              <dd class="mt-1 font-display text-2xl font-bold tracking-tight">{WEBINAR.dateLabel}</dd>
+            </div>
+            <div>
+              <dt class="meta text-ink-70">Time</dt>
+              <dd class="mt-1 font-display text-2xl font-bold tracking-tight">{WEBINAR.timeShort}</dd>
+              <dd class="mt-1 text-base text-ink-70">{WEBINAR.timeNote}</dd>
+            </div>
+            <div>
+              <dt class="meta text-ink-70">Where</dt>
+              <dd class="mt-1 font-display text-2xl font-bold tracking-tight">{WEBINAR.platform}</dd>
+              <dd class="mt-1 text-base text-ink-70">The link comes by email.</dd>
+            </div>
+            <div>
+              <dt class="meta text-ink-70">How long</dt>
+              <dd class="mt-1 font-display text-2xl font-bold tracking-tight">{WEBINAR.durationLabel}</dd>
+              <dd class="mt-1 text-base text-ink-70">Half of it your questions.</dd>
+            </div>
+          </dl>
+
+          <div class="space-y-4 text-base leading-relaxed text-ink-70 md:text-lg">
+            <p>
+              Register and we email you the joining link straight away, plus a calendar invite so the hour is in your diary.
+              We send a reminder on the morning.
+            </p>
+            <p>
+              Cannot make it live? Register anyway. Everyone on the list gets the recording.
+            </p>
+            <p>
+              Want to talk sooner, or one to one? <a class="underline underline-offset-4" href="/gap-course#enquire">Send us an enquiry</a>
+              and we will call you.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Section>
+  )}
+
+  <Section kicker="Before the call" title="Worth a read first.">
+    <div class="grid gap-x-6 gap-y-10 md:grid-cols-3">
+      <div class="space-y-3 border-t border-ink/10 pt-5">
+        <h3 class="font-display text-xl font-bold leading-tight tracking-tight">The course itself.</h3>
+        <p class="text-base leading-relaxed text-ink-70">
+          Dates, pricing, what is included and the full FAQ.
+        </p>
+        <p><a class="underline underline-offset-4" href="/gap-course">The GAP course →</a></p>
+      </div>
+      <div class="space-y-3 border-t border-ink/10 pt-5">
+        <h3 class="font-display text-xl font-bold leading-tight tracking-tight">How you become an instructor.</h3>
+        <p class="text-base leading-relaxed text-ink-70">
+          The route from confident skier to qualified, in plain English.
+        </p>
+        <p><a class="underline underline-offset-4" href="/journal/how-to-become-a-ski-instructor">Read the guide →</a></p>
+      </div>
+      <div class="space-y-3 border-t border-ink/10 pt-5">
+        <h3 class="font-display text-xl font-bold leading-tight tracking-tight">What it costs.</h3>
+        <p class="text-base leading-relaxed text-ink-70">
+          The full picture, including the costs that sit outside the course fee.
+        </p>
+        <p><a class="underline underline-offset-4" href="/journal/how-much-does-a-ski-instructor-course-cost">Read the guide →</a></p>
+      </div>
+    </div>
+  </Section>
+
+  <Section kicker="FAQ" title="About the webinar.">
+    <div class="grid gap-x-6 gap-y-10 md:grid-cols-2">
+      {faqs.map((f) => (
+        <div class="space-y-3 border-t border-ink/10 pt-5">
+          <h3 class="font-display text-xl font-bold leading-tight tracking-tight">{f.q}</h3>
+          <p class="text-base leading-relaxed text-ink-70">{f.a}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!--
+    The page is prerendered, so `past` above was decided at build time. If the
+    webinar finishes before the next deploy, hide the form here rather than
+    take registrations for an hour that has been and gone.
+  -->
+  <script is:inline define:vars={{ endUtc: WEBINAR.endUtc }}>
+    if (Date.now() > new Date(endUtc).getTime()) {
+      const section = document.getElementById('register');
+      if (section) {
+        section.innerHTML =
+          '<div class="mx-auto max-w-screen-2xl"><div class="border border-ink p-8 md:p-10"><p class="meta text-accent">This webinar has run</p>' +
+          '<p class="mt-4 max-w-2xl text-xl leading-snug md:text-2xl">We recorded it. Email <a class="underline underline-offset-4" href="mailto:hello@peaksnowsports.com">hello@peaksnowsports.com</a> and we will send you the link, along with the date of the next one.</p></div></div>';
+      }
+    }
+  </script>
+</BaseLayout>

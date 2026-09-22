@@ -1,0 +1,204 @@
+---
+/**
+ * Registration form for the parents' webinar on /gap-webinar.
+ *
+ * Progressive enhancement, same shape as the GAP enquiry form: posts JSON to
+ * /api/webinar-registration via fetch and swaps in a success panel, and falls
+ * back to a plain form POST without JS. If the endpoint is not configured, or
+ * the send fails, it reveals the email fallback rather than swallowing the
+ * registration.
+ *
+ * Deliberately short. Every extra field costs registrations, and the only
+ * thing we actually need is a name and an inbox to send the link to.
+ */
+import { WEBINAR } from '../../lib/webinar';
+
+const EMAIL = 'hello@peaksnowsports.com';
+const SUBJECT = encodeURIComponent(`Webinar on ${WEBINAR.dateLabel}`);
+---
+
+<div id="webinar-register" class="rounded-none border border-ink bg-paper-2 p-8 md:p-10">
+  <form id="webinar-form" class="space-y-6" action="/api/webinar-registration" method="post">
+    <div class="grid gap-6 sm:grid-cols-2">
+      <label class="block">
+        <span class="meta text-ink-70">Your name *</span>
+        <input
+          type="text"
+          name="name"
+          required
+          autocomplete="name"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-ink-70">Email *</span>
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-ink-70">Phone / WhatsApp</span>
+        <input
+          type="tel"
+          name="phone"
+          autocomplete="tel"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-ink-70">Can you make it live?</span>
+        <select
+          name="attendance"
+          class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+        >
+          <option value="Joining live">Yes, I will be there</option>
+          <option value="Wants the recording">No, send me the recording</option>
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="block">
+      <span class="meta text-ink-70">Who is thinking of doing the course?</span>
+      <input
+        type="text"
+        name="student"
+        placeholder="Their name, and their age if you like"
+        class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+      />
+    </label>
+
+    <label class="block">
+      <span class="meta text-ink-70">Anything you want us to cover?</span>
+      <textarea
+        name="question"
+        rows="3"
+        placeholder="Cost and payments, safety in resort, what happens after they qualify, whether they ski well enough…"
+        class="mt-2 w-full border-b border-ink/30 bg-transparent py-3 focus:border-accent focus:outline-none"
+      ></textarea>
+    </label>
+
+    <!-- Honeypot: hidden from people, tempting to bots. Real users leave it empty. -->
+    <input
+      type="text"
+      name="company"
+      tabindex="-1"
+      autocomplete="off"
+      class="absolute left-[-9999px] h-0 w-0 opacity-0"
+      aria-hidden="true"
+    />
+
+    <div class="flex flex-wrap items-center gap-4">
+      <button
+        type="submit"
+        data-analytics-event="Webinar Register"
+        class="inline-flex items-center rounded-sm bg-accent px-8 py-4 font-display text-base font-semibold text-paper no-underline transition hover:bg-ink"
+      >
+        Save me a place →
+      </button>
+      <p class="meta text-ink-70">Free. The joining link comes by email.</p>
+    </div>
+
+    <p class="meta text-ink-70">
+      We use your details to run this webinar and to talk to you about the course. Nothing else, and never sold on. See our
+      <a class="underline underline-offset-4" href="/privacy">privacy policy</a>.
+    </p>
+
+    <p id="webinar-status" class="hidden text-base leading-relaxed" role="status" aria-live="polite"></p>
+  </form>
+
+  <div id="webinar-done" class="hidden space-y-4">
+    <p class="meta text-accent">You are in</p>
+    <p class="font-display text-3xl font-bold leading-tight tracking-tight">See you on {WEBINAR.dateLabel.split(' ')[0]}.</p>
+    <p id="webinar-done-body" class="text-lg leading-relaxed text-ink-70">
+      Check your inbox. The joining link and a calendar invite are on their way. If nothing lands in a few minutes, look in
+      spam, then email us at <a class="underline underline-offset-4" href={`mailto:${EMAIL}`}>{EMAIL}</a>.
+    </p>
+  </div>
+
+  <noscript>
+    <p class="meta mt-4 text-ink-70">
+      Form not working? <a class="underline" href={`mailto:${EMAIL}?subject=${SUBJECT}`}>Email us</a> and we will register you by hand.
+    </p>
+  </noscript>
+</div>
+
+<script is:inline define:vars={{ EMAIL, SUBJECT }}>
+  const form = document.getElementById('webinar-form');
+  const done = document.getElementById('webinar-done');
+  const doneBody = document.getElementById('webinar-done-body');
+  const status = document.getElementById('webinar-status');
+  const LABEL = 'Save me a place →';
+
+  function show(msg, ok) {
+    status.innerHTML = msg;
+    status.classList.remove('hidden');
+    status.classList.toggle('text-ink', ok);
+    status.classList.toggle('text-accent', !ok);
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      const data = Object.fromEntries(new FormData(form).entries());
+      btn.disabled = true;
+      btn.textContent = 'Saving your place…';
+      try {
+        const res = await fetch('/api/webinar-registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+
+        if (res.ok && body.ok) {
+          // Registered either way. Only the confirmation email is in doubt, so
+          // only that half of the message changes.
+          if (body.confirmed === false && doneBody) {
+            doneBody.innerHTML =
+              'You are on the list. Our confirmation email did not go out, so we will send you the joining link by hand. Any problems, email us at <a class="underline underline-offset-4" href="mailto:' +
+              EMAIL +
+              '">' +
+              EMAIL +
+              '</a>.';
+          }
+          form.classList.add('hidden');
+          done.classList.remove('hidden');
+          done.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if (window.peakTrack) window.peakTrack('Webinar Register');
+          return;
+        }
+
+        if (res.status === 422) {
+          show(body.error || 'Please check your name and email.', false);
+        } else {
+          show(
+            (body.error || 'Something went wrong at our end.') +
+              ' <a class="underline" href="mailto:' +
+              EMAIL +
+              '?subject=' +
+              SUBJECT +
+              '">Email us</a> and we will register you by hand.',
+            false,
+          );
+        }
+      } catch {
+        show(
+          'Something went wrong at our end. <a class="underline" href="mailto:' +
+            EMAIL +
+            '?subject=' +
+            SUBJECT +
+            '">Email us</a> and we will register you by hand.',
+          false,
+        );
+      }
+      btn.disabled = false;
+      btn.textContent = LABEL;
+    });
+  }
+</script>
