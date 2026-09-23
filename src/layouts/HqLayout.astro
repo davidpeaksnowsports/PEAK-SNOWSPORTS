@@ -1,0 +1,135 @@
+---
+/**
+ * Shell for every signed-in Peak HQ page — the staff portal at /hq.
+ *
+ * Mirrors the instructor hub's layout on purpose: same Winter Collection type
+ * and colour, no public nav, no analytics, nothing indexable. What differs is
+ * the navigation, and that managers get a Team link to see onboarding across
+ * the office.
+ */
+import '../styles/global.css';
+import { HQ_SECTIONS } from '../lib/hq/content';
+import { isManager, type HqUser } from '../lib/hq/supabase';
+
+interface Props {
+  title: string;
+  kicker?: string;
+  heading?: string;
+  intro?: string;
+  /** Set false on login and password pages, which have no signed-in user. */
+  chrome?: boolean;
+}
+
+const { title, kicker, heading, intro, chrome = true } = Astro.props;
+const user = Astro.locals.hqUser as HqUser | null;
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+
+const nav = [
+  { label: 'Start here', href: '/hq/start' },
+  ...HQ_SECTIONS.map((s) => ({ label: s.label, href: s.href })),
+  ...(user && isManager(user) ? [{ label: 'Team', href: '/hq/team' }] : []),
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} · Peak HQ</title>
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Source+Sans+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-paper text-ink">
+    <a
+      href="#hq-main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-ink focus:px-4 focus:py-2 focus:text-paper"
+      >Skip to content</a
+    >
+
+    {
+      chrome && user && (
+        <header class="border-b border-ink/10">
+          <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+            <a href="/hq" class="no-underline hover:no-underline">
+              <span class="meta text-ink-45">Peak Snowsports</span>
+              <span class="block font-display text-lg font-bold leading-none">
+                Peak HQ
+              </span>
+            </a>
+
+            <div class="flex items-center gap-4">
+              <span class="hidden text-sm text-ink-70 sm:inline">{user.name}</span>
+              <form method="POST" action="/hq/logout">
+                <button
+                  type="submit"
+                  class="meta border border-ink/20 px-3 py-2 text-ink-70 transition-colors hover:border-ink hover:text-ink"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <nav aria-label="HQ sections" class="border-t border-ink/10">
+            <ul class="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-6 py-1">
+              {nav.map((s) => (
+                <li>
+                  <a
+                    href={s.href}
+                    aria-current={isActive(s.href) ? 'page' : undefined}
+                    class:list={[
+                      'meta block whitespace-nowrap border-b-2 px-3 py-3 no-underline transition-colors hover:no-underline',
+                      isActive(s.href)
+                        ? 'border-accent text-accent'
+                        : 'border-transparent text-ink-70 hover:text-ink',
+                    ]}
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </header>
+      )
+    }
+
+    <main id="hq-main" class="mx-auto max-w-6xl px-6 py-12 md:py-16">
+      {
+        (kicker || heading || intro) && (
+          <div class="mb-10 max-w-3xl">
+            {kicker && <p class="meta mb-3 text-ink-45">{kicker}</p>}
+            {heading && (
+              <h1 class="font-display text-4xl font-bold md:text-5xl">{heading}</h1>
+            )}
+            {intro && <p class="mt-4 text-lg text-ink-70">{intro}</p>}
+          </div>
+        )
+      }
+      <slot />
+    </main>
+
+    {
+      chrome && (
+        <footer class="mt-16 border-t border-ink/10">
+          <div class="mx-auto max-w-6xl px-6 py-8">
+            <p class="meta text-ink-45">
+              Internal · not for circulation outside Peak Snowsports
+            </p>
+          </div>
+        </footer>
+      )
+    }
+  </body>
+</html>

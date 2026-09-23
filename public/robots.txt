@@ -9,6 +9,8 @@ User-agent: *
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 Disallow: /api/
 Disallow: /admin
 Disallow: /admin/
@@ -18,16 +20,22 @@ User-agent: Googlebot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: Bingbot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: DuckDuckBot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # ─── AI / answer-engine crawlers (explicit allow) ───
 
@@ -36,107 +44,145 @@ User-agent: GPTBot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Anthropic
 User-agent: ClaudeBot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: Claude-Web
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: anthropic-ai
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Google (separate flag for AI training / Bard / Gemini / AI Overviews)
 User-agent: Google-Extended
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Perplexity
 User-agent: PerplexityBot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: Perplexity-User
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Common Crawl (foundation for many LLM training sets)
 User-agent: CCBot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Apple Intelligence / Siri
 User-agent: Applebot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: Applebot-Extended
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Meta (Llama family training crawler)
 User-agent: Meta-ExternalAgent
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 User-agent: FacebookBot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # ByteDance / Doubao
 User-agent: Bytespider
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Amazon
 User-agent: Amazonbot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Mistral
 User-agent: MistralAI-User
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # You.com
 User-agent: YouBot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # Diffbot (commonly used by AI products to ingest web content)
 User-agent: Diffbot
 Allow: /
 Disallow: /portal
 Disallow: /portal/
+Disallow: /hq
+Disallow: /hq/
 
 # ─── Sitemap ───
 Sitemap: https://www.peaksnowsports.com/sitemap-index.xml

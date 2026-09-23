@@ -37,7 +37,7 @@ export const isContentConfigured = Boolean(projectId && dataset && token);
  * useCdn is false and the token is required: the CDN caches responses and we
  * never want a private document sitting in an edge cache.
  */
-const client = isContentConfigured
+export const portalSanity = isContentConfigured
   ? createClient({
       projectId,
       dataset,
@@ -47,6 +47,7 @@ const client = isContentConfigured
       perspective: 'published',
     })
   : null;
+const client = portalSanity;
 
 /** The seven areas of the portal. Matches the routes under /portal. */
 export type PortalSection =
@@ -63,10 +64,12 @@ export interface PortalDoc {
   title: string;
   slug: string;
   section: PortalSection;
+  /** Set when the document also appears in Peak HQ, the staff portal. */
+  hqSection?: string;
   /**
    * 1 — versioned, referenced by the offline contract (code of conduct, rates)
-   * 2 — mountain standards, everyone who teaches
-   * 3 — employer policies, employed office staff only
+   * 2 — shared standard, instructors and staff
+   * 3 — staff only; never returned by any query in this module
    */
   tier: 1 | 2 | 3;
   summary?: string;
@@ -82,6 +85,7 @@ const DOC_FIELDS = `
   title,
   "slug": slug.current,
   section,
+  hqSection,
   tier,
   summary,
   version,
@@ -99,9 +103,11 @@ export async function listDocs(
   section?: PortalSection,
 ): Promise<PortalDoc[]> {
   if (!client) return [];
-  const filter = section
-    ? `_type == "portalDoc" && tier in $tiers && section == $section`
-    : `_type == "portalDoc" && tier in $tiers`;
+  // `defined(section)` keeps out documents placed only in Peak HQ, and
+  // `tier != 3` keeps out staff-only documents even if one were ever given a
+  // hub section — the Studio forbids that, and this doesn't rely on it.
+  const base = `_type == "portalDoc" && defined(section) && tier != 3 && tier in $tiers`;
+  const filter = section ? `${base} && section == $section` : base;
 
   return client.fetch(
     `*[${filter}] | order(coalesce(order, 99) asc, title asc){${DOC_FIELDS}}`,
@@ -120,7 +126,7 @@ export async function getDoc(
 ): Promise<PortalDoc | null> {
   if (!client) return null;
   return client.fetch(
-    `*[_type == "portalDoc" && slug.current == $slug && tier in $tiers][0]{
+    `*[_type == "portalDoc" && slug.current == $slug && defined(section) && tier != 3 && tier in $tiers][0]{
       ${DOC_FIELDS},
       body
     }`,

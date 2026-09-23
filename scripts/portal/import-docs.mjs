@@ -20,6 +20,9 @@
  * These are verbatim policy documents; automated conversion gets structure
  * right but can still mangle a table or drop a footnote. Check each one in the
  * studio at /admin/portal.
+ *
+ * One run serves both signed-in areas. `section` places a document in the
+ * instructor hub, `hqSection` in Peak HQ; see manifest.json.
  */
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -169,15 +172,39 @@ function stripFrontMatter(blocks, title) {
   return blocks.slice(i);
 }
 
-async function convert(absPath, title) {
+/**
+ * Apply the manifest's literal [find, replace] pairs to every text span, and
+ * count how many times each one fired. A pair that fires zero times is
+ * reported: it means the source changed and the substitution is now stale.
+ */
+function applyReplacements(blocks, pairs = []) {
+  const hits = pairs.map(() => 0);
+  for (const block of blocks) {
+    for (const child of block.children ?? []) {
+      if (typeof child.text !== 'string') continue;
+      pairs.forEach(([find, replace], i) => {
+        const parts = child.text.split(find);
+        if (parts.length > 1) {
+          hits[i] += parts.length - 1;
+          child.text = parts.join(replace);
+        }
+      });
+    }
+  }
+  return pairs.map(([find, replace], i) => ({ find, replace, hits: hits[i] }));
+}
+
+async function convert(absPath, title, pairs) {
   const { value: html, messages } = await mammoth.convertToHtml({ path: absPath });
   const raw = htmlToBlocks(html, blockContentType, {
     parseHtml: (h) => new JSDOM(h).window.document,
   });
   const blocks = stripFrontMatter(raw, title);
+  const replaced = applyReplacements(blocks, pairs);
   return {
     blocks: withKeys(blocks),
     stripped: raw.length - blocks.length,
+    replaced,
     warnings: messages.filter((m) => m.type === 'warning'),
   };
 }
@@ -204,6 +231,18 @@ console.log(
 let ok = 0;
 const problems = [];
 
+// Refuse the one placement that must never happen: a staff-only document in
+// the instructor hub. The Studio has the same rule and the hub's query ignores
+// tier 3 anyway; this stops it being written in the first place.
+for (const doc of manifest.documents) {
+  if (doc.tier === 3 && doc.section) {
+    fail(`${doc.slug} is tier 3 (staff only) but has an instructor hub section. Remove "section".`);
+  }
+  if (!doc.section && !doc.hqSection) {
+    fail(`${doc.slug} has neither "section" nor "hqSection", so it would appear nowhere.`);
+  }
+}
+
 for (const doc of manifest.documents) {
   const abs = path.join(SOURCE_DIR, doc.file);
 
@@ -214,7 +253,7 @@ for (const doc of manifest.documents) {
   }
 
   try {
-    const { blocks, stripped, warnings } = await convert(abs, doc.title);
+    const { blocks, stripped, replaced, warnings } = await convert(abs, doc.title, doc.replace);
 
     if (!blocks.length) {
       problems.push(`${doc.slug}: converted to zero blocks`);
@@ -228,7 +267,8 @@ for (const doc of manifest.documents) {
         _type: 'portalDoc',
         title: doc.title,
         slug: { _type: 'slug', current: doc.slug },
-        section: doc.section,
+        ...(doc.section ? { section: doc.section } : {}),
+        ...(doc.hqSection ? { hqSection: doc.hqSection } : {}),
         tier: doc.tier,
         summary: doc.summary,
         ...(doc.version ? { version: doc.version } : {}),
@@ -241,7 +281,11 @@ for (const doc of manifest.documents) {
     const notes = [
       stripped ? `${stripped} front-matter blocks stripped` : null,
       warnings.length ? `${warnings.length} conversion warnings` : null,
+      ...replaced.map((r) => `"${r.find}" → "${r.replace}" ×${r.hits}`),
     ].filter(Boolean);
+    for (const r of replaced) {
+      if (r.hits === 0) problems.push(`${doc.slug}: substitution "${r.find}" matched nothing; the source has changed`);
+    }
     console.log(
       `  ✓ ${doc.slug.padEnd(34)} ${String(blocks.length).padStart(3)} blocks` +
         (notes.length ? `  (${notes.join(', ')})` : ''),

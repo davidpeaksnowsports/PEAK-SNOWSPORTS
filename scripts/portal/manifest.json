@@ -6,14 +6,20 @@
     "repo. The .docx sources are NOT in the repo and must not be: put them in a",
     "local folder and point PORTAL_SOURCE_DIR at it.",
     "",
-    "tier 1 — versioned, referenced by the offline contract",
-    "tier 2 — mountain standards, everyone who teaches",
-    "tier 3 — employer policies, employed office staff only (never an instructor)",
+    "section    — instructor hub (/portal) section. Omit to keep a document out of it.",
+    "hqSection  — Peak HQ (/hq) section. Omit to keep a document out of HQ.",
+    "tier 1     — versioned, referenced by the instructor contract",
+    "tier 2     — shared standard, instructors and staff",
+    "tier 3     — staff only; must NOT have a `section` (the importer refuses)",
+    "replace    — literal [find, replace] pairs applied to the converted text, for",
+    "             stale references (HubSpot merge tags, Rezdy, Pipedrive) now that",
+    "             SkiOperator is the only system. Visible here so they get reviewed.",
     "",
-    "Only documents cleared in the audit appear here. Third-party copyright,",
-    "board material and anything still marked 'decide' is deliberately absent."
+    "Deliberately absent: third-party copyright, board material (cash flow,",
+    "dividend), Customer payments (documents Rezdy end to end; needs rewriting for",
+    "SkiOperator), the HubSpot guides (retired), and the Sales & Marketing JD",
+    "(.pages format, needs re-exporting)."
   ],
-
   "documents": [
     {
       "file": "Policies/Safeguarding Policy.docx",
@@ -22,7 +28,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 1,
-      "summary": "How we protect children and young people using our services, and what to do if you have a concern."
+      "summary": "How we protect children and young people using our services, and what to do if you have a concern.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Health and Safety Policy for Peak Snowsports.docx",
@@ -31,7 +38,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 2,
-      "summary": "Our commitment to a safe teaching environment, and the standards that go with it."
+      "summary": "Our commitment to a safe teaching environment, and the standards that go with it.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Code of conduct.docx",
@@ -41,7 +49,8 @@
       "tier": 1,
       "order": 3,
       "version": "2026.1",
-      "summary": "The standards every person representing Peak is held to. Referenced by your contract."
+      "summary": "The standards every person representing Peak is held to. Referenced by your contract.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Mission and Values.docx",
@@ -50,7 +59,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 4,
-      "summary": "What we are trying to do, and how we expect to do it."
+      "summary": "What we are trying to do, and how we expect to do it.",
+      "hqSection": "what-we-do"
     },
     {
       "file": "Policies/Anti-harassment and discrimination policy.docx",
@@ -59,7 +69,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 5,
-      "summary": "What is not acceptable, and how to raise it if it happens."
+      "summary": "What is not acceptable, and how to raise it if it happens.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Anti-bribary and corruption policy.docx",
@@ -68,7 +79,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 6,
-      "summary": "Gifts, hospitality and payments — what you can accept and what you must decline."
+      "summary": "Gifts, hospitality and payments: what you can accept and what you must decline.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Ethics and compliance hotline.docx",
@@ -77,7 +89,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 7,
-      "summary": "How to report something anonymously if the usual routes are not right."
+      "summary": "How to report something anonymously if the usual routes are not right.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Equal opportunity employer statement.docx",
@@ -86,7 +99,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 8,
-      "summary": "Our position on fair treatment, in hiring and in work allocation."
+      "summary": "Our position on fair treatment, in hiring and in work allocation.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Background checks.docx",
@@ -95,7 +109,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 9,
-      "summary": "What we check before you teach, and why."
+      "summary": "What we check before you teach, and why.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Smoking and E-Cigarette Policy.docx",
@@ -104,7 +119,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 10,
-      "summary": "Where smoking and vaping are and are not acceptable while representing Peak."
+      "summary": "Where smoking and vaping are and are not acceptable while representing Peak.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Email Policy.docx",
@@ -113,7 +129,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 11,
-      "summary": "Using a Peak email address, and what not to put in one."
+      "summary": "Using a Peak email address, and what not to put in one.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Social Media Policy.docx",
@@ -122,7 +139,8 @@
       "section": "marketing",
       "tier": 2,
       "order": 3,
-      "summary": "Sharing your season online — including consent for filming clients, and the extra care needed for under-18s."
+      "summary": "Sharing your season online, including consent for filming clients and the extra care needed for under-18s.",
+      "hqSection": "policies"
     },
     {
       "file": "Ops/Accident report checklist and procedure and lost skier .docx",
@@ -131,7 +149,8 @@
       "section": "ops",
       "tier": 2,
       "order": 1,
-      "summary": "What to do on the hill, in order. Read this before you need it."
+      "summary": "What to do on the hill, in order. Read this before you need it.",
+      "hqSection": "how-we-work"
     },
     {
       "file": "Ops/Peak Systems of Work & Habits Guide.docx",
@@ -140,7 +159,8 @@
       "section": "ops",
       "tier": 2,
       "order": 2,
-      "summary": "The working principles that keep a team spread across four resorts consistent."
+      "summary": "The working principles that keep a team spread across four resorts consistent.",
+      "hqSection": "how-we-work"
     },
     {
       "file": "Ops/🧭 Google Chat Space Structure by Department.docx",
@@ -149,7 +169,8 @@
       "section": "ops",
       "tier": 2,
       "order": 3,
-      "summary": "Which channel to use for what, so nothing important gets lost in a group chat."
+      "summary": "Which channel to use for what, so nothing important gets lost in a group chat.",
+      "hqSection": "how-we-work"
     },
     {
       "file": "Admin : hr : finance/Carte Pro Guide.docx",
@@ -176,7 +197,8 @@
       "section": "hr",
       "tier": 2,
       "order": 2,
-      "summary": "What you can claim, what needs approving first, and what we need to see."
+      "summary": "What you can claim, what needs approving first, and what we need to see.",
+      "hqSection": "policies"
     },
     {
       "file": "Policies/Trainee Shadowing Policy for Ski Instructing.docx",
@@ -194,7 +216,8 @@
       "section": "handbook",
       "tier": 2,
       "order": 12,
-      "summary": "Three brothers, four resorts, and what we set out to build."
+      "summary": "Three brothers, four resorts, and what we set out to build.",
+      "hqSection": "what-we-do"
     },
     {
       "file": "Policies/Ideas.docx",
@@ -204,6 +227,181 @@
       "tier": 2,
       "order": 1,
       "summary": "No idea is perfect. Here is how we want them brought forward."
+    },
+    {
+      "file": "Policies/Peak’s office manual.docx",
+      "slug": "office-manual",
+      "title": "Office manual",
+      "hqSection": "how-we-work",
+      "order": 1,
+      "summary": "The Morzine office: hours, wifi, desks, out-of-hours access and house rules.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Culture.docx",
+      "slug": "culture",
+      "title": "Culture",
+      "hqSection": "how-we-work",
+      "order": 5,
+      "summary": "The traditions and habits that make Peak what it is.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Phone Etiquette.docx",
+      "slug": "phone-etiquette",
+      "title": "Phone etiquette",
+      "hqSection": "playbook",
+      "order": 1,
+      "summary": "How we sound on the phone, from the first hello.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Email Templates.docx",
+      "slug": "email-templates",
+      "title": "Email templates",
+      "hqSection": "playbook",
+      "order": 2,
+      "summary": "Enquiry replies, follow-ups and partner emails, ready to adapt.",
+      "replace": [
+        [
+          "{{ contact.firstname }}",
+          "[first name]"
+        ],
+        [
+          "Rezdy",
+          "SkiOperator"
+        ]
+      ],
+      "tier": 3
+    },
+    {
+      "file": "Policies/Sales training.docx",
+      "slug": "sales-training",
+      "title": "Sales training",
+      "hqSection": "playbook",
+      "order": 3,
+      "summary": "Own your pricing. Show the value instead of defending the number.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/GAP Deals.docx",
+      "slug": "gap-pipeline",
+      "title": "GAP course pipeline",
+      "hqSection": "playbook",
+      "order": 4,
+      "summary": "How a GAP enquiry moves from first contact to a deposit.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Chalet script.docx",
+      "slug": "chalet-script",
+      "title": "Chalet presentation script",
+      "hqSection": "playbook",
+      "order": 5,
+      "summary": "What to say when a chalet invites us in to present. Fill in your own name and role.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Partner commission _ guide.docx",
+      "slug": "partner-commission",
+      "title": "Partner commission",
+      "hqSection": "playbook",
+      "order": 6,
+      "summary": "Reconciling commission for agents and partners at the end of the season.",
+      "replace": [
+        [
+          "Rezdy",
+          "SkiOperator"
+        ]
+      ],
+      "tier": 3
+    },
+    {
+      "file": "Policies/Paid time off policy.docx",
+      "slug": "paid-time-off",
+      "title": "Paid time off",
+      "hqSection": "policies",
+      "order": 20,
+      "summary": "Thirty days a year, how they accrue, and the June to May holiday year.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Working from home policy.docx",
+      "slug": "working-from-home",
+      "title": "Working from home",
+      "hqSection": "policies",
+      "order": 21,
+      "summary": "When working from home works, and what we need from you.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Morale Events Policy.docx",
+      "slug": "morale-events",
+      "title": "Morale events",
+      "hqSection": "policies",
+      "order": 22,
+      "summary": "Pizza Fridays, fitness Wednesdays, gym sessions, and why we do them.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Duty of loyalty.docx",
+      "slug": "duty-of-loyalty",
+      "title": "Duty of loyalty",
+      "hqSection": "policies",
+      "order": 23,
+      "summary": "Acting in Peak's interests: outside work, conflicts of interest and what to declare.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Immigration policy.docx",
+      "slug": "immigration",
+      "title": "Immigration",
+      "hqSection": "policies",
+      "order": 24,
+      "summary": "How we hire and employ non-citizen workers, within immigration law.",
+      "tier": 3
+    },
+    {
+      "file": "Policies/Separation of employment.docx",
+      "slug": "separation-of-employment",
+      "title": "Separation of employment",
+      "hqSection": "policies",
+      "order": 25,
+      "summary": "How a resignation, or a dismissal, is handled.",
+      "tier": 3
+    },
+    {
+      "file": "Sales and marketing/Marketing_Plan_26_27.docx",
+      "slug": "marketing-plan-2627",
+      "title": "The 26/27 season plan",
+      "hqSection": "what-we-do",
+      "order": 2,
+      "summary": "What we are pushing this winter, to whom, and through which channels.",
+      "replace": [
+        [
+          "Pipedrive-driven",
+          "SkiOperator-driven"
+        ]
+      ],
+      "tier": 3
+    },
+    {
+      "file": "Sales and marketing/Explainer __ Ski camps.docx",
+      "slug": "ski-camps-explainer",
+      "title": "Ski camps, explained",
+      "hqSection": "what-we-do",
+      "order": 3,
+      "summary": "Why we are expanding the camps, and how each one runs.",
+      "tier": 3
+    },
+    {
+      "file": "Admin : hr : finance/JD__ Booking specialist.docx",
+      "slug": "jd-booking-specialist",
+      "title": "Booking specialist",
+      "hqSection": "people",
+      "order": 1,
+      "summary": "Job description. Enquiries, conversion and keeping instructors busy.",
+      "tier": 3
     }
   ]
 }

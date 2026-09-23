@@ -1,0 +1,129 @@
+---
+/**
+ * Team — managers only. Who is onboarding, how far through the first week
+ * they are, which accounts still need setting up, and emergency contacts.
+ *
+ * Refused at the page for anyone else, and row-level security refuses the
+ * data too: a non-manager's query returns only their own row. Holding personal
+ * data, this page is never linked for a non-manager and 404s rather than
+ * confirming it exists.
+ */
+export const prerender = false;
+
+import HqLayout from '../../layouts/HqLayout.astro';
+import { createHqClient, isManager, type HqUser } from '../../lib/hq/supabase';
+import { ACCOUNT_OPTIONS, getTeam } from '../../lib/hq/onboarding';
+
+const user = Astro.locals.hqUser as HqUser;
+const allowed = isManager(user);
+if (!allowed) Astro.response.status = 404;
+
+const { rows, totalItems } = allowed
+  ? await getTeam(createHqClient(Astro.cookies, Astro.request))
+  : { rows: [], totalItems: 0 };
+
+const accountLabel = new Map<string, string>(ACCOUNT_OPTIONS.map((a) => [a.key, a.label]));
+const dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const active = rows.filter((r) => r.active);
+const waiting = active.filter((r) => !r.onboarding?.submitted_at).length;
+---
+
+{
+  !allowed ? (
+    <HqLayout title="Not found" heading="Not found" intro="That page does not exist.">
+      <a href="/hq" class="text-accent">Back to Peak HQ</a>
+    </HqLayout>
+  ) : (
+    <HqLayout
+      title="Team"
+      kicker="Managers only"
+      heading="Team"
+      intro={
+        waiting === 0
+          ? 'Everyone active has submitted their details.'
+          : `${waiting} ${waiting === 1 ? 'person has' : 'people have'} not submitted their details yet.`
+      }
+    >
+      {active.length === 0 ? (
+        <p class="text-ink-70">
+          No staff accounts yet. Add one in Supabase, then a staff_members row.
+          The steps are in HQ.md.
+        </p>
+      ) : (
+        <ul class="border-t border-ink">
+          {active.map((r) => {
+            const o = r.onboarding;
+            const submitted = Boolean(o?.submitted_at);
+            return (
+              <li class="border-b border-ink/10">
+                <details class="group">
+                  <summary class="grid cursor-pointer list-none gap-2 py-5 sm:grid-cols-12 sm:items-baseline sm:gap-6">
+                    <span class="sm:col-span-4">
+                      <span class="font-display text-lg font-bold">{r.name}</span>
+                      {r.job_title && <span class="block text-sm text-ink-70">{r.job_title}</span>}
+                    </span>
+                    <span class="meta text-ink-45 sm:col-span-3">
+                      {r.start_date ? `Starts ${dateFmt.format(new Date(r.start_date))}` : 'No start date'}
+                    </span>
+                    <span
+                      class:list={[
+                        'meta sm:col-span-3',
+                        submitted ? 'text-ink-70' : 'text-accent',
+                      ]}
+                    >
+                      {submitted ? 'Details in' : 'Details not in'}
+                    </span>
+                    <span class="meta text-ink-45 tabular-nums sm:col-span-2 sm:text-right">
+                      {r.ticks} of {totalItems}
+                    </span>
+                  </summary>
+
+                  <div class="grid gap-6 pb-6 text-sm sm:grid-cols-3">
+                    {o ? (
+                      <>
+                        <dl class="space-y-2">
+                          <dt class="meta text-ink-45">Phone</dt>
+                          <dd>{o.phone ? <a href={`tel:${o.phone}`} class="text-accent">{o.phone}</a> : 'Not given'}</dd>
+                          <dt class="meta pt-2 text-ink-45">Goes by</dt>
+                          <dd>{o.preferred_name ?? r.name}</dd>
+                        </dl>
+                        <dl class="space-y-2">
+                          <dt class="meta text-ink-45">Emergency contact</dt>
+                          <dd>
+                            {o.emergency_name ?? 'Not given'}
+                            {o.emergency_relationship && <span class="text-ink-70"> ({o.emergency_relationship})</span>}
+                          </dd>
+                          <dd>
+                            {o.emergency_phone && (
+                              <a href={`tel:${o.emergency_phone}`} class="text-accent">{o.emergency_phone}</a>
+                            )}
+                          </dd>
+                        </dl>
+                        <dl class="space-y-2">
+                          <dt class="meta text-ink-45">Needs accounts on</dt>
+                          <dd>
+                            {o.accounts_needed.length
+                              ? o.accounts_needed.map((k) => accountLabel.get(k) ?? k).join(', ')
+                              : 'None ticked'}
+                          </dd>
+                          <dt class="meta pt-2 text-ink-45">Jacket</dt>
+                          <dd>{o.jacket_size ?? 'Not given'}</dd>
+                        </dl>
+                        {o.notes && (
+                          <p class="border-l-2 border-ink/20 pl-4 text-ink-70 sm:col-span-3">{o.notes}</p>
+                        )}
+                      </>
+                    ) : (
+                      <p class="text-ink-70 sm:col-span-3">Nothing submitted yet.</p>
+                    )}
+                  </div>
+                </details>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </HqLayout>
+  )
+}

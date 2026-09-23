@@ -32,7 +32,7 @@ not a "forbidden" that confirms it exists.
 |---|---|---|
 | 1 | Everyone, versioned | Documents the offline contract points at — code of conduct, rates and benefits. Breach of the code of conduct is a stated termination trigger, so these carry a version number and a material change means notifying people. |
 | 2 | Everyone who teaches | Mountain standards — safeguarding, health and safety, accident procedure. Written as standards and duties, not as instructions about how, when or where someone works. |
-| 3 | Employed office staff only | Employer policies — paid time off, separation, working from home. Never rendered for an instructor, and not visible in their navigation. |
+| 3 | Staff only, in Peak HQ | Employer policies, such as paid time off, separation and working from home. They live in the staff portal at `/hq` (see `HQ.md`). The instructor hub's query excludes tier 3 for every role, including admins. |
 
 **Why tier 3 is separate.** Instructors are self-employed contractors, and their
 contract sets out how they engage with Peak. Employer policies written for
@@ -54,23 +54,23 @@ supabase db push
 
 Or paste `supabase/migrations/0001_portal_instructors.sql` into the SQL editor.
 
-There is no public sign-up. Create accounts in **Authentication → Users**, and
-mark them as instructor accounts in **User Metadata** so the trigger creates a
-profile:
+Instructor profiles are created **explicitly by an admin**, never by a
+trigger. This Supabase project also holds GAP students, who can self-enrol, and
+office staff — every one of them has a valid session, and a valid session is
+not access. Only an `instructors` row is. Migration 0006 explains why no
+sign-up trigger can do this safely.
 
-```json
-{ "portal": true, "name": "Ada Lovelace" }
-```
-
-**`"portal": true` is required as of migration 0004.** Before it, the trigger
-gave an `instructors` row to every account in the project — including GAP
-students, who were silently granted read access to tier 1 and tier 2 documents
-in this portal. Accounts without the flag get no instructor profile and cannot
-sign in here. Promote yourself with:
+1. **Authentication → Users → Add user.** No special metadata.
+2. Then, in the SQL editor:
 
 ```sql
-update public.instructors set role = 'admin' where id = '<your-auth-uid>';
+insert into public.instructors (id, name, role, resorts)
+select id, 'Ada Lovelace', 'instructor', array['Morzine']
+from auth.users where email = 'ada@example.com';
 ```
+
+Use `role = 'admin'` for yourself. An account with no `instructors` row, or
+with `active = false`, is refused at sign-in with an explanation.
 
 Set the site URL and redirect allow-list in **Authentication → URL
 Configuration** so password reset emails come back to the right host:
@@ -135,7 +135,9 @@ Two workspaces, deliberately separated so a portal document cannot be created in
 the public dataset by accident:
 
 - `/admin` — public site content (`production` dataset)
-- `/admin/portal` — portal documents (private dataset)
+- `/admin/portal` — portal documents (private dataset), for both the instructor
+  hub and Peak HQ. Each document's `section` places it in the hub, and its
+  `hqSection` in HQ.
 
 ---
 

@@ -30,9 +30,8 @@ if (!section) Astro.response.status = 404;
 const tiers = visibleTiers(user.role);
 const docs = section ? await listDocs(tiers, key) : [];
 
-/** Tier 3 is office-only, so the badge only ever renders for office and admin. */
-const tierLabel = (tier: number) =>
-  tier === 1 ? 'Versioned' : tier === 3 ? 'Office' : null;
+/** Only tier 1 gets a badge. Tier 3 never reaches this page. */
+const tierLabel = (tier: number) => (tier === 1 ? 'Versioned' : null);
 
 const dateFmt = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',

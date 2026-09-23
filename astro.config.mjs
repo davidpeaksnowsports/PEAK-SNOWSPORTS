@@ -57,6 +57,9 @@ export default defineConfig({
         // The GAP student portal. Note /gap-course, the public page, must
         // stay in — hence the trailing slash rather than a bare '/gap'.
         !page.includes('/gap/') &&
+        // Peak HQ, the staff portal. Segment-exact, so a future public page
+        // such as /journal/hq-tour is not dropped by accident.
+        !/\/hq(\/|$)/.test(new URL(page).pathname) &&
         !page.includes('/_'),
       changefreq: 'weekly',
       priority: 0.7,

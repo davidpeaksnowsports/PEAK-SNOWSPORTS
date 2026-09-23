@@ -1,0 +1,97 @@
+---
+/**
+ * Peak HQ home. Until someone has submitted their onboarding details, this
+ * sends them to /hq/start — the form is the one thing a new starter has to do,
+ * and a directory of policies is the wrong first screen.
+ */
+export const prerender = false;
+
+import HqLayout from '../../layouts/HqLayout.astro';
+import { HQ_SECTIONS, listHqDocs, isHqContentConfigured } from '../../lib/hq/content';
+import { createHqClient, isManager, type HqUser } from '../../lib/hq/supabase';
+import { getChecklist } from '../../lib/hq/onboarding';
+
+const user = Astro.locals.hqUser as HqUser;
+if (!user.onboarded) return Astro.redirect('/hq/start', 302);
+
+const supabase = createHqClient(Astro.cookies, Astro.request);
+const [docs, checklist] = await Promise.all([
+  listHqDocs(),
+  getChecklist(supabase, user.id),
+]);
+
+const countFor = (key: string) => docs.filter((d) => d.hqSection === key).length;
+const remaining = checklist.filter((i) => !i.done);
+const firstName = user.name.split(' ')[0];
+---
+
+<HqLayout
+  title="Peak HQ"
+  kicker={user.jobTitle ?? 'Peak HQ'}
+  heading={`Hello, ${firstName}.`}
+  intro="Everything about how Peak works, in one place."
+>
+  {
+    remaining.length > 0 && (
+      <section class="mb-12 border-l-2 border-accent bg-paper-2 p-6">
+        <p class="meta mb-2 text-accent">
+          First week · {checklist.length - remaining.length} of {checklist.length} done
+        </p>
+        <p class="text-ink">
+          Next up: <strong>{remaining[0].title}</strong>.
+        </p>
+        <a href="/hq/start" class="mt-3 inline-block text-accent">Your checklist</a>
+      </section>
+    )
+  }
+
+  {
+    !isHqContentConfigured && (
+      <div class="mb-12 border-l-2 border-accent bg-paper-2 p-5">
+        <p class="meta mb-2 text-accent">No documents yet</p>
+        <p class="text-ink-70">
+          The private document store is not connected, so the sections below are
+          empty. The product list under What we do works regardless.
+        </p>
+      </div>
+    )
+  }
+
+  <ul class="grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      HQ_SECTIONS.map((section) => {
+        const count = countFor(section.key);
+        return (
+          <li class="bg-paper">
+            <a
+              href={section.href}
+              class="flex h-full flex-col gap-2 p-6 no-underline transition-colors hover:bg-paper-2 hover:no-underline"
+            >
+              <span class="font-display text-xl font-bold text-ink">{section.label}</span>
+              <span class="text-sm leading-relaxed text-ink-70">{section.blurb}</span>
+              <span class="meta mt-auto pt-4 text-ink-45">
+                {count === 0 ? 'Nothing yet' : `${count} ${count === 1 ? 'document' : 'documents'}`}
+              </span>
+            </a>
+          </li>
+        );
+      })
+    }
+    {
+      isManager(user) && (
+        <li class="bg-paper">
+          <a
+            href="/hq/team"
+            class="flex h-full flex-col gap-2 p-6 no-underline transition-colors hover:bg-paper-2 hover:no-underline"
+          >
+            <span class="font-display text-xl font-bold text-ink">Team</span>
+            <span class="text-sm leading-relaxed text-ink-70">
+              Who has started, who is still onboarding, and emergency contacts.
+            </span>
+            <span class="meta mt-auto pt-4 text-ink-45">Managers only</span>
+          </a>
+        </li>
+      )
+    }
+  </ul>
+</HqLayout>

@@ -1,26 +1,24 @@
 ---
 /**
- * Portal sign-in. Plain HTML form, posted to this same route and handled on the
- * server — no client-side JS and no Supabase in the browser.
+ * Peak HQ sign-in. Plain HTML form, posted to this same route and handled on
+ * the server — no client-side JS and no Supabase in the browser. Same shape as
+ * the instructor hub's login, against the staff_members table.
  */
 export const prerender = false;
 
-import PortalLayout from '../../layouts/PortalLayout.astro';
-import {
-  createPortalClient,
-  portalProfileFor,
-  isPortalConfigured,
-} from '../../lib/portal/supabase';
+import HqLayout from '../../layouts/HqLayout.astro';
+import { createHqClient, hqProfileFor, isHqConfigured } from '../../lib/hq/supabase';
 
 /**
- * Only same-site portal paths are accepted as a return destination. Anything
- * else — a full URL, a protocol-relative //evil.com, a path outside /portal —
- * is discarded rather than followed.
+ * Only same-site HQ paths are accepted as a return destination. Anything else
+ * — a full URL, a protocol-relative //evil.com, a path outside /hq, or /hqx
+ * which merely starts with the same letters — is discarded rather than
+ * followed.
  */
 function safeNext(raw: string | null): string {
-  if (!raw) return '/portal';
-  if (!raw.startsWith('/portal')) return '/portal';
-  if (raw.startsWith('//')) return '/portal';
+  if (!raw) return '/hq';
+  if (raw.startsWith('//')) return '/hq';
+  if (raw !== '/hq' && !raw.startsWith('/hq/') && !raw.startsWith('/hq?')) return '/hq';
   return raw;
 }
 
@@ -29,7 +27,7 @@ const next = safeNext(Astro.url.searchParams.get('next'));
 let error: string | null = null;
 let email = '';
 
-if (Astro.request.method === 'POST' && isPortalConfigured) {
+if (Astro.request.method === 'POST' && isHqConfigured) {
   const form = await Astro.request.formData();
   email = String(form.get('email') ?? '').trim();
   const password = String(form.get('password') ?? '');
@@ -38,7 +36,7 @@ if (Astro.request.method === 'POST' && isPortalConfigured) {
   if (!email || !password) {
     error = 'Enter your email address and password.';
   } else {
-    const supabase = createPortalClient(Astro.cookies, Astro.request);
+    const supabase = createHqClient(Astro.cookies, Astro.request);
     const { data: signedIn, error: signInError } =
       await supabase.auth.signInWithPassword({ email, password });
 
@@ -46,14 +44,14 @@ if (Astro.request.method === 'POST' && isPortalConfigured) {
       // Deliberately vague: distinguishing "no such account" from "wrong
       // password" tells an attacker which emails are registered.
       error = 'That email address and password do not match.';
-    } else if (!(await portalProfileFor(supabase, signedIn.user))) {
-      // A real account, but not an instructor's — a GAP student or member of
-      // office staff sharing this Supabase project. Without this they would be
+    } else if (!(await hqProfileFor(supabase, signedIn.user))) {
+      // A real account, but not a staff member's — an instructor or GAP
+      // student sharing this Supabase project. Without this they would be
       // signed in, redirected, and bounced straight back here by the middleware
       // with no explanation. Sign them out so the session doesn't linger.
       await supabase.auth.signOut();
       error =
-        'This account does not have access to the instructor hub. If you think it should, ask the office.';
+        'This account does not have access to Peak HQ. If you think it should, ask David or Marc.';
     } else {
       return Astro.redirect(target, 303);
     }
@@ -61,17 +59,17 @@ if (Astro.request.method === 'POST' && isPortalConfigured) {
 }
 ---
 
-<PortalLayout title="Sign in" chrome={false}>
+<HqLayout title="Sign in" chrome={false}>
   <div class="mx-auto max-w-md py-8">
     <p class="meta mb-3 text-ink-45">Peak Snowsports</p>
-    <h1 class="font-display text-4xl font-bold">Instructor hub</h1>
+    <h1 class="font-display text-4xl font-bold">Peak HQ</h1>
 
     {
-      !isPortalConfigured ? (
+      !isHqConfigured ? (
         <div class="mt-8 border-l-2 border-accent bg-paper-2 p-5">
           <p class="meta mb-2 text-accent">Not configured yet</p>
           <p class="text-ink-70">
-            The portal needs <code class="font-mono text-sm">SUPABASE_URL</code> and{' '}
+            Peak HQ needs <code class="font-mono text-sm">SUPABASE_URL</code> and{' '}
             <code class="font-mono text-sm">SUPABASE_ANON_KEY</code> before anyone
             can sign in. Add them in Vercel and redeploy.
           </p>
@@ -132,7 +130,7 @@ if (Astro.request.method === 'POST' && isPortalConfigured) {
           </form>
 
           <p class="mt-6 text-sm text-ink-70">
-            <a href="/portal/forgot-password" class="text-accent">
+            <a href="/hq/forgot-password" class="text-accent">
               Forgotten your password?
             </a>
           </p>
@@ -141,7 +139,7 @@ if (Astro.request.method === 'POST' && isPortalConfigured) {
     }
 
     <p class="mt-12 border-t border-ink/10 pt-6 text-sm text-ink-45">
-      Not got an account? Ask the office to set one up for you.
+      No account yet? Ask David or Marc to set one up.
     </p>
   </div>
-</PortalLayout>
+</HqLayout>
