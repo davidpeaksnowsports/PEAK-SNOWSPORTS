@@ -286,7 +286,8 @@ Never prerender them or let a CDN cache them; a cached copy serves a dead token.
   - `SKI_OPERATORS_LOCAL_KIDS_CLUB` — `/lessons/kids-club` (note: `operatorS`, inconsistent with the rest, but it is what is in Vercel)
   - `SKI_OPERATOR_OFF_PISTE` — `/lessons/off-piste`
   - `SKI_OPERATOR_RACE_COACHING` — `/lessons/race-coaching`
-  - `SKI_OPERATOR_SKI_CAMPS` — `/ski-camps`
+  - `SKI_OPERATOR_SKI_CAMP_INTERMEDIATE`, `SKI_OPERATOR_SKI_CAMP_ADVANCED` — `/ski-camps`, one product-only embed per level (`#book-intermediate`, `#book-advanced`)
+  - `SKI_OPERATOR_SKI_CAMPS` — `/ski-camps` fallback only, via the component's `fallbackKeyEnv` prop: the combined camps embed shown in a level's slot if that level's key is missing
 - If the key is missing or the token call fails, the page renders the "get in touch" fallback rather than a broken iframe, and logs the reason server-side.
 
 ### Where it appears

@@ -282,7 +282,7 @@ const faqs = page?.faqs ?? [];
           </ul>
 
           <a
-            href="#book"
+            href={l.name ? `#book-${l.name.toLowerCase()}` : '#book'}
             class="mt-8 inline-flex items-center rounded-sm bg-yellow px-6 py-3 font-display text-sm font-semibold text-snow no-underline transition hover:bg-ink"
           >
             Check availability →
@@ -547,11 +547,23 @@ const faqs = page?.faqs ?? [];
       )}
     </div>
 
-    <SkiOperatorSecureEmbed
-      title="Adult ski camps"
-      keyEnv="SKI_OPERATOR_SKI_CAMPS"
-      class="mt-12 overflow-hidden rounded-none border border-olive/10 bg-snow"
-    />
+    <!-- One embed per level, each with its own SkiOperator key. Until a level's
+         key is in Vercel, that slot shows the combined camps embed instead. -->
+    {[
+      { id: 'book-intermediate', name: 'Intermediate', keyEnv: 'SKI_OPERATOR_SKI_CAMP_INTERMEDIATE' },
+      { id: 'book-advanced', name: 'Advanced', keyEnv: 'SKI_OPERATOR_SKI_CAMP_ADVANCED' },
+    ].map((e) => (
+      <div id={e.id} class="mt-16 scroll-mt-24">
+        <p class="meta text-olive/50">Ski camp</p>
+        <h3 class="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">{e.name}</h3>
+        <SkiOperatorSecureEmbed
+          title={`${e.name} ski camp`}
+          keyEnv={e.keyEnv}
+          fallbackKeyEnv="SKI_OPERATOR_SKI_CAMPS"
+          class="mt-6 overflow-hidden rounded-none border border-olive/10 bg-snow"
+        />
+      </div>
+    ))}
     <p class="meta mt-6 text-olive/55">
       Booking delivered by SkiOperator. Trouble loading? <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">Get in touch</a> and we'll book you in directly.
     </p>

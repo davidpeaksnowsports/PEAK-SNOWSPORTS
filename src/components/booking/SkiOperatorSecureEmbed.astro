@@ -49,9 +49,14 @@ interface Props {
    * env var. The key itself never leaves this component.
    */
   keyEnv: string;
+  /**
+   * Optional second env var to use when `keyEnv` is not set, so a page that
+   * moves to a new embed keeps its old one until the new key reaches Vercel.
+   */
+  fallbackKeyEnv?: string;
 }
 
-const { title, class: className = '', keyEnv } = Astro.props;
+const { title, class: className = '', keyEnv, fallbackKeyEnv } = Astro.props;
 
 const APP_URL = 'https://www.ski-operator.com';
 const EMBED_PATH = '/app/embed/products';
@@ -65,7 +70,12 @@ const domain = Astro.site?.origin ?? '';
 // Env var names are case-sensitive on Vercel, and these get typed into the
 // dashboard by hand, so accept either casing rather than silently falling back
 // to "not configured" over a capitalisation slip.
-const secureKey = process.env[keyEnv] ?? process.env[keyEnv.toLowerCase()];
+const readKey = (name: string) => process.env[name] ?? process.env[name.toLowerCase()];
+let secureKey = readKey(keyEnv);
+if (!secureKey && fallbackKeyEnv) {
+  secureKey = readKey(fallbackKeyEnv);
+  if (secureKey) console.warn(`[SkiOperatorSecureEmbed] ${keyEnv} is not set, using ${fallbackKeyEnv}`);
+}
 
 let src = '';
 let failure = '';
