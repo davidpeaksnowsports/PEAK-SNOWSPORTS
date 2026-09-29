@@ -1,0 +1,204 @@
+---
+/**
+ * Race-coaching enquiry form on /lessons/race-coaching. Progressive
+ * enhancement: posts JSON to /api/race-coaching-enquiry via fetch and shows an
+ * inline success state. Without JS it falls back to a normal form POST to the
+ * same endpoint.
+ */
+interface Props {
+  programmes: string[];
+  levels: string[];
+}
+
+const { programmes, levels } = Astro.props;
+const EMAIL = 'hello@peaksnowsports.com';
+---
+
+<div class="rounded-none border border-olive bg-cream p-8 md:p-10">
+  <form id="race-enquiry-form" class="space-y-6" action="/api/race-coaching-enquiry" method="post">
+    <div class="grid gap-6 sm:grid-cols-2">
+      <label class="block">
+        <span class="meta text-olive/60">Your name *</span>
+        <input
+          type="text"
+          name="name"
+          required
+          autocomplete="name"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Email *</span>
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Phone / WhatsApp</span>
+        <input
+          type="tel"
+          name="phone"
+          autocomplete="tel"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Which programme?</span>
+        <select
+          id="race-enquiry-programme"
+          name="programme"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        >
+          <option value="">Choose one…</option>
+          {programmes.map((p) => <option value={p}>{p}</option>)}
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Number of racers</span>
+        <input
+          type="number"
+          name="racers"
+          min="1"
+          inputmode="numeric"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Age(s)</span>
+        <input
+          type="text"
+          name="ages"
+          placeholder="e.g. 11 and 14"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Race level</span>
+        <select
+          name="level"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        >
+          <option value="">Choose one…</option>
+          {levels.map((l) => <option value={l}>{l}</option>)}
+        </select>
+      </label>
+      <label class="block">
+        <span class="meta text-olive/60">Preferred dates</span>
+        <input
+          type="text"
+          name="dates"
+          placeholder="e.g. February half term"
+          class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+        />
+      </label>
+    </div>
+
+    <label class="block">
+      <span class="meta text-olive/60">Anything else?</span>
+      <textarea
+        name="message"
+        rows="4"
+        placeholder="Race results, club, goals for the season, kit questions…"
+        class="mt-2 w-full border-b border-olive/30 bg-transparent py-3 focus:border-pink focus:outline-none"
+      ></textarea>
+    </label>
+
+    <!-- Honeypot: hidden from people, tempting to bots. Real users leave it empty. -->
+    <input
+      type="text"
+      name="company"
+      tabindex="-1"
+      autocomplete="off"
+      class="absolute left-[-9999px] h-0 w-0 opacity-0"
+      aria-hidden="true"
+    />
+
+    <div class="flex flex-wrap items-center gap-4">
+      <button
+        type="submit"
+        class="inline-flex items-center rounded-sm bg-pink px-8 py-4 font-display text-base font-semibold text-snow no-underline transition hover:bg-olive"
+      >
+        Send my enquiry →
+      </button>
+      <p class="meta text-olive/55">We reply within two working days.</p>
+    </div>
+
+    <p id="race-enquiry-status" class="hidden text-base leading-relaxed" role="status" aria-live="polite"></p>
+  </form>
+
+  <noscript>
+    <p class="mt-4 meta text-olive/70">
+      Prefer not to use the form? <a class="underline" href={`mailto:${EMAIL}?subject=Race%20coaching%20enquiry`}>Email us</a>.
+    </p>
+  </noscript>
+</div>
+
+<script is:inline define:vars={{ EMAIL }}>
+  const form = document.getElementById('race-enquiry-form');
+  const status = document.getElementById('race-enquiry-status');
+  const programmeSelect = document.getElementById('race-enquiry-programme');
+  const LABEL = 'Send my enquiry →';
+  const MAILTO =
+    "<a class='underline' href='mailto:" + EMAIL + "?subject=Race%20coaching%20enquiry'>" + EMAIL + '</a>';
+
+  // Any link with data-preselect-programme="…" pre-fills the dropdown, so the
+  // enquire links on each programme card land on the right form state.
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest && e.target.closest('[data-preselect-programme]');
+    if (trigger && programmeSelect) {
+      const val = trigger.getAttribute('data-preselect-programme');
+      const match = Array.from(programmeSelect.options).find((o) => o.value === val);
+      if (match) programmeSelect.value = val;
+    }
+  });
+
+  function show(msg, ok) {
+    status.innerHTML = msg;
+    status.classList.remove('hidden');
+    status.classList.toggle('text-olive', ok);
+    status.classList.toggle('text-pink', !ok);
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      const data = Object.fromEntries(new FormData(form).entries());
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/race-coaching-enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok) {
+          if (window.peakTrack)
+            window.peakTrack('Race Coaching Enquiry', { programme: data.programme || 'Unspecified' });
+          form.querySelector('.grid').style.display = 'none';
+          form.querySelector('textarea').closest('label').style.display = 'none';
+          btn.parentElement.style.display = 'none';
+          show("Thanks, we've got your enquiry. One of our race coaches will be in touch within two working days.", true);
+        } else if (body.fallback) {
+          show("Our form's having a moment. Email us at " + MAILTO + " and we'll pick it up from there.", false);
+          btn.disabled = false;
+          btn.textContent = LABEL;
+        } else {
+          show(body.error || 'Something went wrong. Please try again.', false);
+          btn.disabled = false;
+          btn.textContent = LABEL;
+        }
+      } catch {
+        show("Couldn't send just now. Email us at " + MAILTO + ' instead?', false);
+        btn.disabled = false;
+        btn.textContent = LABEL;
+      }
+    });
+  }
+</script>

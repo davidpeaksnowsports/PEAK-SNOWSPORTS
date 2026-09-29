@@ -285,7 +285,6 @@ Never prerender them or let a CDN cache them; a cached copy serves a dead token.
   - `SKI_OPERATOR_KIDS_GROUPS` — `/lessons/family` (kids' group lessons)
   - `SKI_OPERATORS_LOCAL_KIDS_CLUB` — `/lessons/kids-club` (note: `operatorS`, inconsistent with the rest, but it is what is in Vercel)
   - `SKI_OPERATOR_OFF_PISTE` — `/lessons/off-piste`
-  - `SKI_OPERATOR_RACE_COACHING` — `/lessons/race-coaching`
   - `SKI_OPERATOR_SKI_CAMP_INTERMEDIATE`, `SKI_OPERATOR_SKI_CAMP_ADVANCED` — `/ski-camps`, one product-only embed per level (`#book-intermediate`, `#book-advanced`)
   - `SKI_OPERATOR_SKI_CAMPS` — `/ski-camps` fallback only, via the component's `fallbackKeyEnv` prop: the combined camps embed shown in a level's slot if that level's key is missing
 - If the key is missing or the token call fails, the page renders the "get in touch" fallback rather than a broken iframe, and logs the reason server-side.
@@ -293,7 +292,8 @@ Never prerender them or let a CDN cache them; a cached copy serves a dead token.
 ### Where it appears
 - `/book` — dedicated full-width embed in **secure server mode** (server-rendered, uncached). The primary conversion page for the "BOOK" nav link and every "Book a lesson" CTA.
 - `/lessons/private` — sidebar embed in **secure server mode** (server-rendered, uncached).
-- `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste`, `/lessons/race-coaching` — one embed each, secure server mode, so a product can be shown or hidden per page.
+- `/lessons/group`, `/lessons/family`, `/lessons/kids-club`, `/lessons/off-piste` — one embed each, secure server mode, so a product can be shown or hidden per page.
+- `/lessons/race-coaching` has no embed: it carries an enquiry form (`RaceEnquiryForm.astro` → `/api/race-coaching-enquiry` → Resend → hello@peaksnowsports.com).
 
 ### What we do NOT build
 - Booking flow, cart, payment — all SkiOperator.

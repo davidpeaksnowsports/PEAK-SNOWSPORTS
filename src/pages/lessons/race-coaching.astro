@@ -2,13 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/hero/Hero.astro';
 import Section from '../../components/ui/Section.astro';
-import SkiOperatorSecureEmbed from '../../components/booking/SkiOperatorSecureEmbed.astro';
-
-// This page has its own SkiOperator embed, so its own sec_ key. Secure mode
-// mints a short-lived token per request, so the page renders per request and
-// must never be cached — a cached copy would serve an expired token.
-export const prerender = false;
-Astro.response.headers.set('Cache-Control', 'no-store');
+import RaceEnquiryForm from '../../components/race/RaceEnquiryForm.astro';
 
 const programmes = [
   {
@@ -47,7 +41,7 @@ const programmes = [
     name: 'FIS / Eurotest / Masters · Châtel',
     audience: 'Serious racers, 16+',
     body:
-      'A five-day intensive in Châtel refining slalom and giant slalom with expert coaching. Half-day sessions Monday to Friday. Drop-in option available, train when it suits you. Email chatel@peaksnowsports.com to arrange.',
+      'A five-day intensive in Châtel refining slalom and giant slalom with expert coaching. Half-day sessions Monday to Friday. Drop-in option available, train when it suits you.',
     facts: [
       { label: 'Location', value: 'Châtel' },
       { label: 'Format', value: 'Half-day sessions, Mon, Fri' },
@@ -134,7 +128,7 @@ const faqs = [
     kicker="Lessons · Race coaching"
     headline="Gates. Times. Repeat."
     sub="Outlier camps for superstar racers pushing through the junior ranks. Plus pre-season camps in Austria and FIS / Eurotest / Masters training in Châtel."
-    primaryCta={{ href: '#availability', label: 'Check availability' }}
+    primaryCta={{ href: '#enquire', label: 'Enquire now' }}
     secondaryCta={{ href: '#programmes', label: 'See the programmes' }}
     variant="full"
     video="/videos/carving.mp4"
@@ -187,10 +181,11 @@ const faqs = [
             ))}
           </dl>
           <a
-            href="#availability"
+            href="#enquire"
+            data-preselect-programme={p.name}
             class="meta mt-6 inline-flex items-center gap-2 text-olive transition-colors hover:bg-pink hover:text-snow"
           >
-            Check availability →
+            Enquire about this camp →
           </a>
         </li>
       ))}
@@ -224,12 +219,12 @@ const faqs = [
     </ol>
   </Section>
 
-  <!-- Availability -->
-  <Section id="availability" kicker="Availability" title="Book race coaching.">
-    <SkiOperatorSecureEmbed title="Race coaching" keyEnv="SKI_OPERATOR_RACE_COACHING" />
-    <p class="meta mt-6 text-olive/60">
-      Booking delivered by SkiOperator. Châtel-based programmes: email <a href="mailto:chatel@peaksnowsports.com" class="underline-offset-4 hover:bg-pink hover:text-snow hover:underline">chatel@peaksnowsports.com</a> to arrange.
+  <!-- Enquire -->
+  <Section id="enquire" kicker="Enquire" title="Talk to a race coach.">
+    <p class="mb-10 max-w-3xl text-lg leading-relaxed text-olive/80 md:text-xl">
+      Tell us who's racing and what you're after. We'll come back with dates, groups and prices within two working days.
     </p>
+    <RaceEnquiryForm programmes={programmes.map((p) => p.name)} levels={levels.map((l) => l.name)} />
   </Section>
 
   <!-- FAQs -->
