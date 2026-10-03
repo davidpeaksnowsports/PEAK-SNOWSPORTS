@@ -76,7 +76,7 @@ async function seedLocations() {
     pricingTbc: false,
     pricingSubtitle: 'The Fat Fox Lodge, Montriond',
     tiers: [
-      { _type: 'tier', _key: 'coaching', name: 'Coaching only', price: 699 },
+      { _type: 'tier', _key: 'coaching', name: 'Coaching only', price: 799 },
       { _type: 'tier', _key: 'shared', name: 'Shared accommodation', price: 1899 },
       { _type: 'tier', _key: 'private', name: 'Private accommodation', price: 2494 },
     ],
@@ -158,8 +158,8 @@ const camps = [
   { date: '2027-01-11', locs: ['morzine-avoriaz'], tag: 'New date' },
   { date: '2027-01-18', locs: ['morzine-avoriaz', 'val-disere'], tag: null },
   { date: '2027-03-01', locs: ['morzine-avoriaz'], tag: null },
-  { date: '2027-03-15', locs: ['morzine-avoriaz'], tag: 'New date' },
-  { date: '2027-03-22', locs: ['morzine-avoriaz', 'val-disere'], tag: null },
+  { date: '2027-03-15', locs: ['morzine-avoriaz', 'val-disere'], tag: 'New date' },
+  { date: '2027-03-22', locs: ['morzine-avoriaz'], tag: null },
 ];
 
 async function seedCamps() {
@@ -189,7 +189,7 @@ const page = {
   _type: 'skiCampsPage',
   seoTitle: "Adult ski camps · Morzine-Avoriaz, Verbier & Val d'Isère · Peak Snowsports",
   seoDescription:
-    "Five-day small-group ski camps in Morzine-Avoriaz, Verbier and Val d'Isère for intermediate and advanced skiers. Coached by BASI L4 ISTD and Trainers. 8 max per group. From €699 coaching only.",
+    "Five-day small-group ski camps in Morzine-Avoriaz, Verbier and Val d'Isère for intermediate and advanced skiers. Coached by BASI L4 ISTD and Trainers. 8 max per group. From €799 coaching only.",
   heroKicker: "Adult ski camps · Morzine-Avoriaz · Verbier · Val d'Isère",
   heroHeadline: 'Five days on snow. One serious step up.',
   heroSub:
@@ -217,7 +217,7 @@ const page = {
       _type: 'tile',
       _key: 'pricing',
       kicker: 'Pricing from',
-      headline: '€699 coaching only',
+      headline: '€799 coaching only',
       body: 'Shared and private accommodation packages available.',
     },
     {

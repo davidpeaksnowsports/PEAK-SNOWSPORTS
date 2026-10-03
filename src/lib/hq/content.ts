@@ -157,7 +157,7 @@ export const PRODUCTS: {
   {
     name: 'Ski camps',
     summary:
-      "Five-day small-group ski camps in Morzine-Avoriaz, Verbier and Val d'Isère for intermediate and advanced skiers. Coached by BASI L4 ISTD and Trainers. 8 max per group. From €699 coaching only.",
+      "Five-day small-group ski camps in Morzine-Avoriaz, Verbier and Val d'Isère for intermediate and advanced skiers. Coached by BASI L4 ISTD and Trainers. 8 max per group. From €799 coaching only.",
     href: '/ski-camps',
   },
   {
