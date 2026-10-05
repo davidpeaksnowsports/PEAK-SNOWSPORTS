@@ -453,8 +453,12 @@ people). See [`HQ.md`](./HQ.md).
   (`instructors`, `gap_members`, `staff_members`) and returns null without a
   row. Never add a fallback profile: that exact bug let any account into
   `/portal` until September 2026.
-- **Staff profiles are inserted by an admin.** No sign-up trigger. Public
-  sign-up is on for GAP enrolment, and nothing in a sign-up can be trusted.
+- **Sign-up is gated on a join code checked in the database.** The metadata on
+  a sign-up is written by whoever is signing up, so it carries a claim and
+  `area_join_codes` decides whether it is true (migration 0009). The code names
+  the area, new accounts always get the lowest role, and no browser-facing role
+  can read the codes table or call the function that matches a code. Never
+  reintroduce a trigger that trusts metadata on its own.
 - **One document type, two placements.** `portalDoc.section` puts a document in
   the instructor hub, `hqSection` in HQ. Tier 3 is staff only and can never
   carry a hub `section`: the Studio, the importer and the hub's query all
