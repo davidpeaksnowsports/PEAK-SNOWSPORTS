@@ -1,0 +1,184 @@
+---
+/**
+ * Sign up for Peak HQ with a join code.
+ *
+ * Two routes in: a new account, or adding HQ to a Peak login you already have.
+ * The second is how someone who already teaches, and so has an instructor
+ * profile, ends up with both on one password.
+ *
+ * The code is checked in the database, not here. See src/lib/join.ts.
+ */
+export const prerender = false;
+
+import HqLayout from '../../layouts/HqLayout.astro';
+import { createHqClient, isHqConfigured } from '../../lib/hq/supabase';
+import { publicUrl } from '../../lib/public-origin';
+import {
+  AREA_HOME,
+  MIN_PASSWORD,
+  linkExistingAccount,
+  readFields,
+  signUpWithCode,
+} from '../../lib/join';
+
+let error: string | null = null;
+let linkError: string | null = null;
+let sent = false;
+let fields = { name: '', email: '', code: '', password: '' };
+
+if (Astro.request.method === 'POST' && isHqConfigured) {
+  const form = await Astro.request.formData();
+  const intent = String(form.get('intent') ?? '');
+  fields = readFields(form);
+  const supabase = createHqClient(Astro.cookies, Astro.request);
+
+  if (intent === 'signup') {
+    const result = await signUpWithCode(
+      supabase,
+      fields,
+      publicUrl('/hq/login', Astro.request, Astro.url),
+    );
+    if (result.ok) sent = true;
+    else error = result.error;
+  } else if (intent === 'link') {
+    const result = await linkExistingAccount(
+      supabase,
+      fields.email,
+      fields.password,
+      fields.code,
+      fields.name,
+    );
+    if (result.ok) return Astro.redirect(AREA_HOME[result.area], 303);
+    linkError = result.error;
+  }
+}
+
+const field =
+  'w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
+const label = 'meta mb-2 block text-ink-70';
+---
+
+<HqLayout title="Join Peak HQ" chrome={false}>
+  <div class="mx-auto max-w-md py-8">
+    <p class="meta mb-3 text-ink-45">Peak Snowsports</p>
+    <h1 class="font-display text-4xl font-bold">Join Peak HQ</h1>
+
+    {
+      !isHqConfigured ? (
+        <div class="mt-8 border-l-2 border-accent bg-paper-2 p-5">
+          <p class="meta mb-2 text-accent">Not configured yet</p>
+          <p class="text-ink-70">Sign-up is not available until Peak HQ is connected.</p>
+        </div>
+      ) : sent ? (
+        <div class="mt-8 border-l-2 border-accent bg-paper-2 p-5">
+          <p class="text-ink">
+            Account created. Check <strong>{fields.email}</strong> for a link to
+            confirm it, then sign in.
+          </p>
+          <p class="mt-4 text-sm text-ink-70">
+            If the join code was wrong, you will be able to sign in but will not
+            see anything. Ask the office for the right one and we will sort it.
+          </p>
+          <p class="mt-4">
+            <a href="/hq/login" class="text-accent">Go to sign in</a>
+          </p>
+        </div>
+      ) : (
+        <>
+          <p class="mt-4 text-ink-70">
+            You need the join code from David or Marc. It is the same code for
+            everyone in the office.
+          </p>
+
+          {error && (
+            <p role="alert" class="mt-6 border-l-2 border-accent bg-paper-2 px-4 py-3 text-ink">
+              {error}
+            </p>
+          )}
+
+          <form method="POST" class="mt-8 space-y-5">
+            <input type="hidden" name="intent" value="signup" />
+
+            <div>
+              <label for="name" class={label}>Your name</label>
+              <input id="name" name="name" type="text" maxlength="120" required
+                autocomplete="name" value={fields.name} class={field} />
+            </div>
+
+            <div>
+              <label for="email" class={label}>Email</label>
+              <input id="email" name="email" type="email" maxlength="200" required
+                autocomplete="email" value={fields.email} class={field} />
+            </div>
+
+            <div>
+              <label for="password" class={label}>Choose a password</label>
+              <input id="password" name="password" type="password" required
+                minlength={MIN_PASSWORD} autocomplete="new-password" class={field} />
+              <p class="mt-2 text-sm text-ink-45">At least {MIN_PASSWORD} characters.</p>
+            </div>
+
+            <div>
+              <label for="code" class={label}>Join code</label>
+              <input id="code" name="code" type="text" maxlength="64" required
+                autocapitalize="characters" spellcheck="false" value={fields.code} class={field} />
+            </div>
+
+            <button type="submit"
+              class="w-full bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink">
+              Create my account
+            </button>
+          </form>
+
+          <details class="mt-10 border-t border-ink/10 pt-6">
+            <summary class="cursor-pointer font-display font-bold text-ink">
+              Already have a Peak login?
+            </summary>
+            <p class="mt-3 text-sm text-ink-70">
+              If you already teach for Peak, or are on the GAP course, sign in
+              here with the join code and Peak HQ is added to the account you
+              have. One password for everything.
+            </p>
+
+            {linkError && (
+              <p role="alert" class="mt-5 border-l-2 border-accent bg-paper-2 px-4 py-3 text-ink">
+                {linkError}
+              </p>
+            )}
+
+            <form method="POST" class="mt-5 space-y-5">
+              <input type="hidden" name="intent" value="link" />
+
+              <div>
+                <label for="link-email" class={label}>Email</label>
+                <input id="link-email" name="email" type="email" maxlength="200" required
+                  autocomplete="email" class={field} />
+              </div>
+
+              <div>
+                <label for="link-password" class={label}>Your password</label>
+                <input id="link-password" name="password" type="password" required
+                  autocomplete="current-password" class={field} />
+              </div>
+
+              <div>
+                <label for="link-code" class={label}>Join code</label>
+                <input id="link-code" name="code" type="text" maxlength="64" required
+                  autocapitalize="characters" spellcheck="false" class={field} />
+              </div>
+
+              <button type="submit"
+                class="w-full border border-ink/20 px-6 py-3 font-display font-bold text-ink transition-colors hover:border-ink">
+                Add Peak HQ to my login
+              </button>
+            </form>
+          </details>
+        </>
+      )
+    }
+
+    <p class="mt-12 border-t border-ink/10 pt-6 text-sm">
+      <a href="/hq/login" class="text-accent">Back to sign in</a>
+    </p>
+  </div>
+</HqLayout>

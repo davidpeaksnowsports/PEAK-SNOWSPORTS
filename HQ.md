@@ -164,3 +164,51 @@ disallowed in every crawler group in `robots.txt` and kept out of the sitemap.
 - **Documents:** blocked on the private `portal` Sanity dataset, same as the
   instructor hub. Until it exists, the document sections say so. Onboarding,
   the checklist, the team view and the product list all work without it.
+
+---
+
+## Sign-up and join codes
+
+People create their own accounts at **`/portal/join`** (instructors) and
+**`/hq/join`** (office staff). Each needs the join code for that area.
+
+**The code decides the area, not the page.** Someone using the HQ code on the
+instructor page gets an HQ profile and nothing else. New accounts always land on
+the lowest role, `instructor` or `staff`; nobody signs themselves up as a
+manager or an admin.
+
+**One login, both areas.** The "Already have a Peak login?" form on either join
+page signs you in and adds that area to the account you already have. Redeeming
+a code you have already used changes nothing, and never changes a role you hold.
+
+### Where the codes live
+
+In `area_join_codes`, one row per area. The table has row-level security on and
+**no policies at all**, so no signed-in user can read it: staff cannot look up
+the instructor code, and the function that matches a code cannot be called from
+a browser either. Only the service role and the sign-up machinery see them.
+
+The codes are not in this repo, which is public. To read or rotate them, use the
+SQL editor:
+
+```sql
+select area, code, label, active, expires_at from public.area_join_codes;
+
+update public.area_join_codes
+set code = 'PEAK-SKI-NEWCODE1', label = 'Instructors, 27/28 season'
+where area = 'portal';
+```
+
+To close sign-up for an area, `set active = false`. To let a code lapse on its
+own, set `expires_at`.
+
+### What a wrong code does
+
+It still creates an account, but with no profile, so it reaches nothing: every
+area refuses a session without a profile row. There is no endpoint that will
+tell you whether a code is right before an account exists, deliberately, because
+that would let someone test codes from the outside. Clear out the leftovers
+occasionally with the query at the bottom of migration 0009.
+
+Treat a code like the office door key. Anyone holding it can make an account, so
+rotate it each season and when someone leaves.

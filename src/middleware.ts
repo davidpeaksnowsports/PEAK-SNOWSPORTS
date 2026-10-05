@@ -22,6 +22,7 @@ import { getHqUser, isHqConfigured } from './lib/hq/supabase';
 
 /** Reachable without a session. Everything else under /portal requires one. */
 const PUBLIC_PORTAL_ROUTES = new Set([
+  '/portal/join',
   '/portal/login',
   '/portal/logout',
   '/portal/forgot-password',
@@ -37,6 +38,7 @@ const PUBLIC_GAP_ROUTES = new Set([
 ]);
 
 const PUBLIC_HQ_ROUTES = new Set([
+  '/hq/join',
   '/hq/login',
   '/hq/logout',
   '/hq/forgot-password',
