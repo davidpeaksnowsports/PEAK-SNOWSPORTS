@@ -283,6 +283,7 @@ Never prerender them or let a CDN cache them; a cached copy serves a dead token.
   - `SKI_OPERATOR_PRIVATE_LESSONS` — `/lessons/private`
   - `SKI_OPERATOR_GROUP_LESSONS` — `/lessons/group`
   - `SKI_OPERATOR_KIDS_GROUPS` — `/lessons/family` (kids' group lessons)
+  - `SKI_OPERATOR_GCSE_SKI_PE` — `/lessons/family#book-gcse`, the GCSE Ski PE embed (public group course), the page's second embed
   - `SKI_OPERATORS_LOCAL_KIDS_CLUB` — `/lessons/kids-club` (note: `operatorS`, inconsistent with the rest, but it is what is in Vercel)
   - `SKI_OPERATOR_OFF_PISTE` — `/lessons/off-piste`
   - `SKI_OPERATOR_SKI_CAMP_INTERMEDIATE`, `SKI_OPERATOR_SKI_CAMP_ADVANCED` — `/ski-camps`, one product-only embed per level (`#book-intermediate`, `#book-advanced`)
