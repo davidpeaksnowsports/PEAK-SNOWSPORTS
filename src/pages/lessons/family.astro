@@ -139,7 +139,6 @@ const gcseSkills = [
   { name: 'Skiing at speed', detail: 'Slalom, tight turns or moguls. Clear line choice and control at pace.' },
 ];
 
-const gcseWeeks = ['Christmas', 'New Year', 'February half term, weeks 1 and 2', 'Easter, week 1'];
 
 const whyJoin = [
   {
@@ -356,34 +355,22 @@ const faqs = [
 
   <!-- GCSE Ski PE -->
   <Section id="gcse" kicker="GCSE Ski PE · Teens 14 – 16" title="Taking GCSE PE on skis? This is the course.">
-    <div class="grid items-start gap-12 lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-20">
-      <div class="space-y-6 text-lg leading-relaxed text-olive/85 md:text-xl">
-        <p class="text-xl font-medium leading-snug text-olive md:text-2xl">
-          Three days of coaching and filming for the GCSE PE skiing assessment. We aim for top marks, and for skiing that carries on long after school.
-        </p>
-        <p>
-          The footage we shoot is the evidence your child is graded on. The instructor coaches every skill to the exam board's criteria, films it on the spot and uploads it during the lesson. If a skill isn't clear on camera, we film it again there and then.
-        </p>
-        <p class="text-base text-olive/70 md:text-lg">
-          For AQA, OCR and Edexcel candidates assessed in skiing (not snowboarding). Tell us your exam board when you book, so we can prepare the right criteria.
-        </p>
-      </div>
-      <div class="rounded-none border border-olive bg-cream p-6 md:p-8">
-        <p class="meta text-olive/55">Public groups, holiday weeks</p>
-        <ul class="mt-4 space-y-2">
-          {gcseWeeks.map((w) => (
-            <li class="flex gap-3 text-base text-olive/85 md:text-lg">
-              <span aria-hidden="true" class="mt-2.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-              <span>{w}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div class="max-w-3xl space-y-6 text-lg leading-relaxed text-olive/85 md:text-xl">
+      <p class="text-xl font-medium leading-snug text-olive md:text-2xl">
+        Three days of coaching and filming for the GCSE PE skiing assessment. We aim for top marks, and for skiing that carries on long after school.
+      </p>
+      <p>
+        The footage we shoot is the evidence your child is graded on. The instructor coaches every skill to the exam board's criteria, films it on the spot and uploads it during the lesson. If a skill isn't clear on camera, we film it again there and then.
+      </p>
+      <p class="text-base text-olive/70 md:text-lg">
+        For AQA, OCR and Edexcel candidates assessed in skiing (not snowboarding). Tell us your exam board when you book, so we can prepare the right criteria.
+      </p>
     </div>
 
-    <!-- The course -->
-    <article class="mt-16 grid gap-10 rounded-none border border-olive bg-cream p-8 md:p-10 lg:grid-cols-[1fr_minmax(0,380px)] lg:gap-16">
-      <div>
+    <!-- The course, with its booking embed alongside. The embed is the
+         source of truth for dates, so there is no separate week list. -->
+    <article class="mt-16 grid rounded-none border border-olive bg-cream lg:grid-cols-[minmax(0,1fr)_minmax(0,540px)]">
+      <div class="p-8 md:p-10">
         <p class="meta text-olive/50">GCSE Ski PE · Group course</p>
         <p class="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">{gcseCourse.price}</p>
         <p class="meta mt-1 text-olive/60">{gcseCourse.priceNote}</p>
@@ -396,16 +383,8 @@ const faqs = [
           ))}
         </dl>
         <p class="mt-6 text-base leading-relaxed text-olive/80 md:text-lg">{gcseCourse.body}</p>
-        <a
-          href="#book-gcse"
-          class="mt-8 inline-flex items-center rounded-sm bg-accent px-6 py-3 font-display text-sm font-semibold text-paper no-underline transition hover:bg-ink"
-        >
-          Check availability
-        </a>
-      </div>
-      <div class="lg:border-l lg:border-olive/10 lg:pl-16">
-        <p class="meta text-olive/55">How the three days run</p>
-        <ol class="mt-6 space-y-5">
+        <p class="meta mt-10 text-olive/55">How the three days run</p>
+        <ol class="mt-4 space-y-4">
           {gcseCourse.plan.map(([label, text]) => (
             <li class="border-t border-olive/15 pt-4">
               <p class="meta text-accent">{label}</p>
@@ -413,6 +392,10 @@ const faqs = [
             </li>
           ))}
         </ol>
+      </div>
+      <div id="book-gcse" class="scroll-mt-24 border-t border-olive bg-paper p-4 md:p-6 lg:border-l lg:border-t-0">
+        <p class="meta px-1 pb-4 text-olive/60">Book · add your child's exam board in the skier details</p>
+        <SkiOperatorSecureEmbed title="GCSE Ski PE" keyEnv="SKI_OPERATOR_GCSE_SKI_PE" />
       </div>
     </article>
 
@@ -452,17 +435,6 @@ const faqs = [
             Two timed runs around poles or gates, the same setup each time, just like a race. These need a closed piste, which we only have when the race club is running, so we'll confirm whether your week includes them.
           </p>
         </div>
-      </div>
-    </div>
-
-    <!-- GCSE booking -->
-    <div id="book-gcse" class="mt-20 scroll-mt-24 border-t border-olive/15 pt-12">
-      <h3 class="font-display text-2xl font-bold tracking-tight md:text-3xl">Book GCSE Ski PE.</h3>
-      <p class="mt-4 max-w-3xl text-base leading-relaxed text-olive/75 md:text-lg">
-        Pick your week. Add your child's exam board in the skier details.
-      </p>
-      <div class="mt-10">
-        <SkiOperatorSecureEmbed title="GCSE Ski PE" keyEnv="SKI_OPERATOR_GCSE_SKI_PE" />
       </div>
     </div>
   </Section>
