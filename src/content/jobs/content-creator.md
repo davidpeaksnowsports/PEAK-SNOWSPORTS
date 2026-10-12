@@ -5,6 +5,7 @@ summary: Shoot, edit and publish the season as it happens - social, journal and 
 employmentType: Seasonal, with a route to year-round
 datePosted: 2026-09-04
 validThrough: 2026-12-31
+open: false
 schemaEmploymentType: ['FULL_TIME', 'TEMPORARY']
 locations: [Morzine, Avoriaz, Les Gets, Chatel]
 dates: December 2026 - April 2027

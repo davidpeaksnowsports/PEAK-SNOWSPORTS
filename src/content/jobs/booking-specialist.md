@@ -5,6 +5,7 @@ summary: Own the enquiries and the diary - convert bookings, keep the system cle
 employmentType: Seasonal, reducing to part-time at the end of the season
 datePosted: 2026-09-04
 validThrough: 2026-11-30
+open: false
 schemaEmploymentType: ['FULL_TIME', 'PART_TIME', 'TEMPORARY']
 locations: [Morzine]
 dates: November 2026 - April 2027
