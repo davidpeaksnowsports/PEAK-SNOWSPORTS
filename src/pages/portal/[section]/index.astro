@@ -52,6 +52,28 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
   ) : (
 <PortalLayout title={section.label} kicker="Peak Snowsports" heading={section.label} intro={section.blurb}>
   {
+    key === 'ops' && (
+      <section aria-labelledby="accidents-heading" class="mb-16 border-b border-ink/10 pb-10">
+        <h2 id="accidents-heading" class="font-display text-2xl font-bold">Accidents</h2>
+        <p class="mt-2 max-w-2xl text-ink-70">
+          File a report the same day, while you still remember the detail. It is
+          what protects you if an accident later turns into a claim.
+        </p>
+        <p class="mt-5 flex flex-wrap gap-3">
+          <a href="/portal/ops/report"
+            class="inline-block bg-accent px-5 py-3 font-display font-bold text-paper no-underline transition-colors hover:bg-ink hover:no-underline">
+            File an accident report
+          </a>
+          <a href="/portal/ops/reports"
+            class="inline-block border border-ink/20 px-5 py-3 font-display font-bold text-ink no-underline transition-colors hover:border-ink hover:no-underline">
+            Read filed reports
+          </a>
+        </p>
+      </section>
+    )
+  }
+
+  {
     docs.length === 0 ? (
       <div class="border-l-2 border-ink/20 bg-paper-2 p-6">
         <p class="text-ink-70">

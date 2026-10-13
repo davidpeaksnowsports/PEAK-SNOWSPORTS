@@ -1,0 +1,223 @@
+---
+/**
+ * One accident report.
+ *
+ * Also where the person who filed it adds the things they could not reasonably
+ * fill in standing on a piste: binding settings, witness details, what the
+ * clinic said. Only the author and admins may amend, enforced by row-level
+ * security, not by this page.
+ */
+export const prerender = false;
+
+import PortalLayout from '../../../../layouts/PortalLayout.astro';
+import { createPortalClient, type PortalUser } from '../../../../lib/portal/supabase';
+import { getReport } from '../../../../lib/portal/accidents';
+
+const user = Astro.locals.portalUser as PortalUser;
+const supabase = createPortalClient(Astro.cookies, Astro.request);
+const id = Astro.params.id as string;
+
+let saved = false;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const patch = {
+    casualty_contact: String(form.get('casualty_contact') ?? '').trim() || null,
+    casualty_age: String(form.get('casualty_age') ?? '').trim() || null,
+    casualty_injury: String(form.get('casualty_injury') ?? '').trim() || null,
+    witness_name: String(form.get('witness_name') ?? '').trim() || null,
+    witness_contact: String(form.get('witness_contact') ?? '').trim() || null,
+    equipment: String(form.get('equipment') ?? '').trim() || null,
+    binding_settings: String(form.get('binding_settings') ?? '').trim() || null,
+    evidence_notes: String(form.get('evidence_notes') ?? '').trim() || null,
+    actions_taken: String(form.get('actions_taken') ?? '').trim() || null,
+    lessons: String(form.get('lessons') ?? '').trim() || null,
+  };
+  // RLS refuses this for anyone but the author or an admin, so no check here.
+  await supabase.from('accident_reports').update(patch).eq('id', id);
+  return Astro.redirect(`/portal/ops/reports/${id}?saved=1`, 303);
+}
+
+const report = await getReport(supabase, id);
+if (!report) Astro.response.status = 404;
+
+saved = Astro.url.searchParams.get('saved') === '1';
+const filed = Astro.url.searchParams.get('filed') === '1';
+const mine = report?.filed_by === user.id || user.role === 'admin';
+
+const dateFmt = new Intl.DateTimeFormat('en-GB', {
+  dateStyle: 'full',
+  timeStyle: 'short',
+  timeZone: 'Europe/Paris',
+});
+
+const field =
+  'w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
+const label = 'meta mb-2 block text-ink-70';
+
+/** Rows render only when there is something in them. */
+const rows: [string, string | null | undefined][] = report
+  ? [
+      ['Resort', report.resort === 'Other' ? report.resort_other : report.resort],
+      ['Where exactly', report.location],
+      ['Terrain', report.terrain],
+      ['Gradient', report.gradient],
+      ['Weather', report.weather],
+      ['Snow', report.snow],
+      ['Activity', report.activity],
+      ['Group standard', report.group_standard],
+      ['Experience', report.group_detail],
+    ]
+  : [];
+
+const casualty: [string, string | null | undefined][] = report
+  ? [
+      ['Name', report.casualty_name],
+      ['Age', report.casualty_age],
+      ['Contact', report.casualty_contact],
+      ['Injury', report.casualty_injury],
+      ['Beforehand', report.prior_conditions],
+    ]
+  : [];
+
+const after: [string, string | null | undefined][] = report
+  ? [
+      ['First aid', report.first_aid],
+      ['What happened next', report.actions_taken],
+      ['Who helped', report.who_helped],
+      ['Piste patrol', report.patrol_involved ? 'Attended' : null],
+      ['Police', report.police_involved ? 'Involved' : null],
+      ['Witness', report.witness_name],
+      ['Witness contact', report.witness_contact],
+      ['Equipment', report.equipment],
+      ['Bindings', report.binding_settings],
+      ['Other evidence', report.evidence_notes],
+    ]
+  : [];
+---
+
+{
+  !report ? (
+    <PortalLayout title="Not found" heading="Not found" intro="That report does not exist.">
+      <a href="/portal/ops/reports" class="text-accent">All reports</a>
+    </PortalLayout>
+  ) : (
+    <PortalLayout title={`Report: ${report.casualty_name ?? 'Accident'}`}>
+      <nav aria-label="Breadcrumb" class="mb-8">
+        <a href="/portal/ops/reports" class="meta text-ink-45 hover:text-ink">&larr; Accident reports</a>
+      </nav>
+
+      {(filed || saved) && (
+        <p role="status" class="mb-8 border-l-2 border-accent bg-paper-2 px-5 py-4 text-ink">
+          {filed
+            ? 'Report filed. The office has been told. Add anything else below when you can.'
+            : 'Saved.'}
+        </p>
+      )}
+
+      <article class="max-w-3xl">
+        <header class="border-b border-ink/10 pb-8">
+          <p class="meta text-ink-45">{dateFmt.format(new Date(report.occurred_at))}</p>
+          <h1 class="mt-3 font-display text-4xl font-bold md:text-5xl">
+            {report.casualty_name ?? 'Accident report'}
+          </h1>
+          <p class="mt-4 text-ink-70">
+            Filed by {report.filed_by_name}
+            {report.updated_at !== report.created_at ? ', amended since' : ''}
+          </p>
+        </header>
+
+        <section class="border-b border-ink/10 py-8">
+          <h2 class="meta mb-4 text-ink-45">What happened</h2>
+          <p class="whitespace-pre-line text-lg leading-relaxed text-ink">{report.description}</p>
+        </section>
+
+        {[
+          ['The incident', rows],
+          ['The casualty', casualty],
+          ['Afterwards', after],
+        ].map(([heading, list]) => {
+          const shown = (list as [string, string | null | undefined][]).filter(([, value]) => value);
+          return shown.length === 0 ? null : (
+            <section class="border-b border-ink/10 py-8">
+              <h2 class="meta mb-4 text-ink-45">{heading}</h2>
+              <dl class="grid gap-x-8 gap-y-3 sm:grid-cols-[10rem_1fr]">
+                {shown.map(([k, value]) => (
+                  <>
+                    <dt class="meta text-ink-45">{k}</dt>
+                    <dd class="whitespace-pre-line text-ink">{value}</dd>
+                  </>
+                ))}
+              </dl>
+            </section>
+          );
+        })}
+
+        {report.lessons && (
+          <section class="border-b border-ink/10 py-8">
+            <h2 class="meta mb-4 text-ink-45">What we should learn</h2>
+            <p class="whitespace-pre-line text-ink">{report.lessons}</p>
+          </section>
+        )}
+
+        {mine && (
+          <details class="py-8">
+            <summary class="cursor-pointer font-display text-lg font-bold">
+              Add or correct details
+            </summary>
+            <form method="POST" class="mt-6 space-y-5">
+              <div>
+                <label for="casualty_injury" class={label}>Injury</label>
+                <textarea id="casualty_injury" name="casualty_injury" rows="3" class={field}>{report.casualty_injury ?? ''}</textarea>
+              </div>
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label for="casualty_age" class={label}>Age</label>
+                  <input id="casualty_age" name="casualty_age" type="text" value={report.casualty_age ?? ''} class={field} />
+                </div>
+                <div>
+                  <label for="casualty_contact" class={label}>Contact</label>
+                  <input id="casualty_contact" name="casualty_contact" type="text" value={report.casualty_contact ?? ''} class={field} />
+                </div>
+              </div>
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label for="witness_name" class={label}>Witness</label>
+                  <input id="witness_name" name="witness_name" type="text" value={report.witness_name ?? ''} class={field} />
+                </div>
+                <div>
+                  <label for="witness_contact" class={label}>Witness contact</label>
+                  <input id="witness_contact" name="witness_contact" type="text" value={report.witness_contact ?? ''} class={field} />
+                </div>
+              </div>
+              <div>
+                <label for="equipment" class={label}>Equipment</label>
+                <input id="equipment" name="equipment" type="text" value={report.equipment ?? ''} class={field} />
+              </div>
+              <div>
+                <label for="binding_settings" class={label}>Bindings</label>
+                <input id="binding_settings" name="binding_settings" type="text" value={report.binding_settings ?? ''} class={field} />
+              </div>
+              <div>
+                <label for="actions_taken" class={label}>What happened next</label>
+                <textarea id="actions_taken" name="actions_taken" rows="3" class={field}>{report.actions_taken ?? ''}</textarea>
+              </div>
+              <div>
+                <label for="evidence_notes" class={label}>Other evidence</label>
+                <textarea id="evidence_notes" name="evidence_notes" rows="3" class={field}>{report.evidence_notes ?? ''}</textarea>
+              </div>
+              <div>
+                <label for="lessons" class={label}>What we should learn</label>
+                <textarea id="lessons" name="lessons" rows="3" class={field}>{report.lessons ?? ''}</textarea>
+              </div>
+              <button type="submit"
+                class="w-full bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink sm:w-auto">
+                Save changes
+              </button>
+            </form>
+          </details>
+        )}
+      </article>
+    </PortalLayout>
+  )
+}
