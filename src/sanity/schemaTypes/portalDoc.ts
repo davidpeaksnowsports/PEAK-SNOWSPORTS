@@ -66,6 +66,22 @@ export const portalDoc = defineType({
         }),
     }),
     defineField({
+      name: 'knowledgeCategory',
+      title: 'Knowledge hub category',
+      type: 'string',
+      description:
+        'Groups this document on the knowledge hub page. Only used when the instructor hub section is Knowledge hub.',
+      options: {
+        list: [
+          { title: 'Teaching knowledge', value: 'teaching' },
+          { title: 'Race coaching', value: 'race' },
+          { title: 'Technical', value: 'technical' },
+          { title: 'Mountain and qualifications', value: 'mountain' },
+        ],
+      },
+      hidden: ({ parent }) => parent?.section !== 'knowledge',
+    }),
+    defineField({
       name: 'hqSection',
       title: 'Peak HQ section',
       type: 'string',

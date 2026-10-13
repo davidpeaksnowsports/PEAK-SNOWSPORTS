@@ -1,0 +1,102 @@
+---
+/**
+ * Every filed accident report.
+ *
+ * Visible to every active instructor, in full, by decision of 2026-10-13. The
+ * list deliberately shows who was hurt and where, because that is what makes
+ * the record useful to the team; the detail page carries the rest.
+ */
+export const prerender = false;
+
+import PortalLayout from '../../../layouts/PortalLayout.astro';
+import { createPortalClient } from '../../../lib/portal/supabase';
+import { listReports } from '../../../lib/portal/accidents';
+
+const supabase = createPortalClient(Astro.cookies, Astro.request);
+const reports = await listReports(supabase);
+
+const dateFmt = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'Europe/Paris',
+});
+
+const season = (iso: string) => {
+  const d = new Date(iso);
+  const y = d.getUTCFullYear();
+  // A season runs from the autumn into the spring, so anything before July
+  // belongs to the season that started the previous year.
+  return d.getUTCMonth() < 6 ? `${y - 1}/${String(y).slice(2)}` : `${y}/${String(y + 1).slice(2)}`;
+};
+
+const bySeason = new Map<string, typeof reports>();
+for (const r of reports) {
+  const key = season(r.occurred_at);
+  bySeason.set(key, [...(bySeason.get(key) ?? []), r]);
+}
+---
+
+<PortalLayout
+  title="Accident reports"
+  kicker="Operations"
+  heading="Accident reports"
+  intro="Every report filed by the team. Read them: most of what goes wrong on the hill has gone wrong to someone else first."
+>
+  <p class="mb-10">
+    <a href="/portal/ops/report"
+      class="inline-block bg-accent px-5 py-3 font-display font-bold text-paper no-underline transition-colors hover:bg-ink hover:no-underline">
+      File a report
+    </a>
+  </p>
+
+  {
+    reports.length === 0 ? (
+      <div class="border-l-2 border-ink/20 bg-paper-2 p-6">
+        <p class="text-ink-70">Nothing has been filed yet.</p>
+      </div>
+    ) : (
+      [...bySeason.entries()].map(([label, rows]) => (
+        <section class="mb-12">
+          <h2 class="meta border-b border-ink pb-3 text-ink-45">
+            {label} season · {rows.length} {rows.length === 1 ? 'report' : 'reports'}
+          </h2>
+          <ul>
+            {rows.map((r) => (
+              <li class="border-b border-ink/10">
+                <a href={`/portal/ops/reports/${r.id}`}
+                  class="group flex flex-col gap-1 py-5 no-underline hover:no-underline sm:flex-row sm:items-baseline sm:gap-6">
+                  <span class="meta shrink-0 text-ink-45 sm:w-32">
+                    {dateFmt.format(new Date(r.occurred_at))}
+                  </span>
+                  <span class="flex-1">
+                    <span class="font-display text-lg font-bold text-ink group-hover:text-accent">
+                      {r.casualty_name ?? 'Unnamed'}
+                    </span>
+                    {r.casualty_injury && (
+                      <span class="mt-1 block max-w-xl text-sm leading-relaxed text-ink-70">
+                        {r.casualty_injury.length > 140
+                          ? `${r.casualty_injury.slice(0, 140)}…`
+                          : r.casualty_injury}
+                      </span>
+                    )}
+                  </span>
+                  <span class="meta shrink-0 text-ink-45">
+                    {r.resort === 'Other' ? r.resort_other ?? 'Other' : r.resort}
+                    {r.terrain ? ` · ${r.terrain}` : ''}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    )
+  }
+
+  <p class="mt-12 border-t border-ink/10 pt-6 text-sm text-ink-45">
+    These records name injured clients and describe their injuries. They stay in
+    the portal: do not forward them, screenshot them into chats, or share them
+    outside Peak. We keep them for ten years in case an accident leads to a claim.
+  </p>
+</PortalLayout>

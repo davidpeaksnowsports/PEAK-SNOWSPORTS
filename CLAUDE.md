@@ -413,6 +413,13 @@ Three things to know before touching it:
   recorded outside this repo.
 - **No contracts and no signatures.** Those are issued and signed offline, by
   David's decision. Do not re-introduce a signing flow unless asked.
+- **Accident reports hold health data about named people, often children.**
+  Every active instructor can read them in full, and retention is ten years;
+  both are David's decisions, recorded in migration 0010 and PORTAL.md. The
+  privacy notice still needs to say instructors can view them.
+- **Portal content is never committed.** Authored documents live in
+  `portal-content/`, which is gitignored, and are seeded to the private Sanity
+  dataset. Downloadable files live in a private Supabase bucket, not `public/`.
 
 Every portal route sets `prerender = false`; `src/middleware.ts` guards them.
 

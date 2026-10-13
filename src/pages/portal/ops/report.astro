@@ -1,0 +1,317 @@
+---
+/**
+ * File an accident report.
+ *
+ * Written to be filled in on a phone, outside, shortly after an incident. The
+ * four things that matter are at the top and nothing else is required; the
+ * rest sits in sections you can open now or add later from the report page.
+ *
+ * Plain HTML, no client JS, POST-redirect-GET. A failed submission keeps every
+ * word that was typed: losing someone's account of an accident because a field
+ * was missing would be unforgivable.
+ */
+export const prerender = false;
+
+import PortalLayout from '../../../layouts/PortalLayout.astro';
+import { createPortalClient, type PortalUser } from '../../../lib/portal/supabase';
+import { publicOrigin } from '../../../lib/public-origin';
+import {
+  RESORTS,
+  WEATHER,
+  SNOW,
+  TERRAIN,
+  STANDARD,
+  fileReport,
+  notifyOffice,
+  getReport,
+} from '../../../lib/portal/accidents';
+
+const user = Astro.locals.portalUser as PortalUser;
+const supabase = createPortalClient(Astro.cookies, Astro.request);
+
+let errors: string[] = [];
+let v: Record<string, string> = {};
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const result = await fileReport(supabase, { id: user.id, name: user.name }, form);
+  if (result.ok) {
+    const saved = await getReport(supabase, result.id);
+    if (saved) {
+      await notifyOffice(saved, publicOrigin(Astro.request, Astro.url));
+    }
+    return Astro.redirect(`/portal/ops/reports/${result.id}?filed=1`, 303);
+  }
+  errors = result.errors;
+  v = result.values;
+}
+
+const today = new Date().toISOString().slice(0, 10);
+
+const field =
+  'w-full border border-ink/20 bg-paper px-4 py-3 text-base text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
+const label = 'meta mb-2 block text-ink-70';
+const group = 'border-b border-ink/10 py-6';
+const summary =
+  'flex cursor-pointer list-none items-center justify-between font-display text-lg font-bold text-ink';
+---
+
+<PortalLayout
+  title="File an accident report"
+  kicker="Operations"
+  heading="File an accident report"
+  intro="Do this while it is fresh. Only the first four questions are required; everything else can be added later."
+>
+  <div class="max-w-2xl">
+    {
+      errors.length > 0 && (
+        <ul role="alert" class="mb-8 space-y-1 border-l-2 border-accent bg-paper-2 px-5 py-4 text-ink">
+          {errors.map((e) => <li>{e}</li>)}
+        </ul>
+      )
+    }
+
+    <form method="POST" class="space-y-2">
+      <!-- The essentials, always open -->
+      <div class={group}>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="occurred_date" class={label}>Date <span class="text-accent">*</span></label>
+            <input id="occurred_date" name="occurred_date" type="date" required
+              value={v.occurred_date ?? today} max={today} class={field} />
+          </div>
+          <div>
+            <label for="occurred_time" class={label}>Time</label>
+            <input id="occurred_time" name="occurred_time" type="time"
+              value={v.occurred_time ?? ''} class={field} />
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <label for="resort" class={label}>Resort <span class="text-accent">*</span></label>
+          <select id="resort" name="resort" required class={field}>
+            <option value="">Choose</option>
+            {RESORTS.map((r) => (
+              <option value={r} selected={v.resort === r}>{r}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="mt-5">
+          <label for="resort_other" class={label}>If other, where?</label>
+          <input id="resort_other" name="resort_other" type="text" maxlength="120"
+            value={v.resort_other ?? ''} class={field} />
+        </div>
+
+        <div class="mt-5">
+          <label for="casualty_name" class={label}>
+            Who was hurt? <span class="text-accent">*</span>
+          </label>
+          <input id="casualty_name" name="casualty_name" type="text" maxlength="200" required
+            value={v.casualty_name ?? ''} class={field} />
+        </div>
+
+        <div class="mt-5">
+          <label for="description" class={label}>
+            What happened? <span class="text-accent">*</span>
+          </label>
+          <textarea id="description" name="description" rows="6" required maxlength="8000"
+            placeholder="Where everyone was, what each person did, how it happened, and whether anything could have prevented it."
+            class={field}>{v.description ?? ''}</textarea>
+        </div>
+      </div>
+
+      <!-- Everything else -->
+      <details class={group}>
+        <summary class={summary}>
+          Conditions and terrain
+          <span class="meta text-ink-45 group-open:hidden">Open</span>
+        </summary>
+        <div class="mt-5 grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="weather" class={label}>Weather</label>
+            <select id="weather" name="weather" class={field}>
+              <option value="">Not recorded</option>
+              {WEATHER.map((w) => <option value={w} selected={v.weather === w}>{w}</option>)}
+            </select>
+          </div>
+          <div>
+            <label for="snow" class={label}>Snow</label>
+            <select id="snow" name="snow" class={field}>
+              <option value="">Not recorded</option>
+              {SNOW.map((s) => <option value={s} selected={v.snow === s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label for="terrain" class={label}>Terrain</label>
+            <select id="terrain" name="terrain" class={field}>
+              <option value="">Not recorded</option>
+              {TERRAIN.map((t) => <option value={t} selected={v.terrain === t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label for="gradient" class={label}>Gradient</label>
+            <input id="gradient" name="gradient" type="text" maxlength="200"
+              placeholder="Blue pitch, or degrees" value={v.gradient ?? ''} class={field} />
+          </div>
+        </div>
+        <div class="mt-5">
+          <label for="location" class={label}>Exactly where</label>
+          <input id="location" name="location" type="text" maxlength="500"
+            placeholder="Piste name and marker, or gates from the top" value={v.location ?? ''} class={field} />
+        </div>
+        <div class="mt-5">
+          <label for="activity" class={label}>What the group was doing</label>
+          <input id="activity" name="activity" type="text" maxlength="300"
+            value={v.activity ?? ''} class={field} />
+        </div>
+      </details>
+
+      <details class={group}>
+        <summary class={summary}>
+          The casualty
+          <span class="meta text-ink-45">Open</span>
+        </summary>
+        <div class="mt-5 space-y-5">
+          <div>
+            <label for="casualty_injury" class={label}>Injury</label>
+            <textarea id="casualty_injury" name="casualty_injury" rows="3" maxlength="2000"
+              class={field}>{v.casualty_injury ?? ''}</textarea>
+          </div>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="casualty_age" class={label}>Age or date of birth</label>
+              <input id="casualty_age" name="casualty_age" type="text" maxlength="60"
+                value={v.casualty_age ?? ''} class={field} />
+            </div>
+            <div>
+              <label for="casualty_contact" class={label}>Contact details</label>
+              <input id="casualty_contact" name="casualty_contact" type="text" maxlength="300"
+                value={v.casualty_contact ?? ''} class={field} />
+            </div>
+          </div>
+          <div>
+            <label for="prior_conditions" class={label}>Anything relevant beforehand</label>
+            <input id="prior_conditions" name="prior_conditions" type="text" maxlength="1000"
+              placeholder="Old injury, tiredness, first day on skis" value={v.prior_conditions ?? ''} class={field} />
+          </div>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="group_standard" class={label}>Group standard</label>
+              <select id="group_standard" name="group_standard" class={field}>
+                <option value="">Not recorded</option>
+                {STANDARD.map((s) => <option value={s} selected={v.group_standard === s}>{s}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="group_detail" class={label}>Experience</label>
+              <input id="group_detail" name="group_detail" type="text" maxlength="500"
+                placeholder="Day 2, or ten weeks" value={v.group_detail ?? ''} class={field} />
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class={group}>
+        <summary class={summary}>
+          What happened next
+          <span class="meta text-ink-45">Open</span>
+        </summary>
+        <div class="mt-5 space-y-5">
+          <div>
+            <label for="first_aid" class={label}>First aid given</label>
+            <textarea id="first_aid" name="first_aid" rows="2" maxlength="2000"
+              class={field}>{v.first_aid ?? ''}</textarea>
+          </div>
+          <div>
+            <label for="actions_taken" class={label}>What you did</label>
+            <textarea id="actions_taken" name="actions_taken" rows="3" maxlength="2000"
+              placeholder="Carried on, went to the clinic with them, called the office"
+              class={field}>{v.actions_taken ?? ''}</textarea>
+          </div>
+          <div>
+            <label for="who_helped" class={label}>Who else helped</label>
+            <input id="who_helped" name="who_helped" type="text" maxlength="500"
+              value={v.who_helped ?? ''} class={field} />
+          </div>
+          <label class="flex items-center gap-3 text-ink">
+            <input type="checkbox" name="patrol_involved" checked={v.patrol_involved === 'on'}
+              class="h-5 w-5 border-ink/30 text-accent focus:ring-accent" />
+            Piste patrol attended
+          </label>
+          <label class="flex items-center gap-3 text-ink">
+            <input type="checkbox" name="police_involved" checked={v.police_involved === 'on'}
+              class="h-5 w-5 border-ink/30 text-accent focus:ring-accent" />
+            Police involved
+          </label>
+        </div>
+      </details>
+
+      <details class={group}>
+        <summary class={summary}>
+          Witnesses and evidence
+          <span class="meta text-ink-45">Open</span>
+        </summary>
+        <div class="mt-5 space-y-5">
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="witness_name" class={label}>Witness name</label>
+              <input id="witness_name" name="witness_name" type="text" maxlength="200"
+                value={v.witness_name ?? ''} class={field} />
+            </div>
+            <div>
+              <label for="witness_contact" class={label}>Witness contact</label>
+              <input id="witness_contact" name="witness_contact" type="text" maxlength="300"
+                value={v.witness_contact ?? ''} class={field} />
+            </div>
+          </div>
+          <div>
+            <label for="equipment" class={label}>Equipment</label>
+            <input id="equipment" name="equipment" type="text" maxlength="500"
+              placeholder="Make, model, length, condition" value={v.equipment ?? ''} class={field} />
+          </div>
+          <div>
+            <label for="binding_settings" class={label}>Binding settings, and which ski released</label>
+            <input id="binding_settings" name="binding_settings" type="text" maxlength="200"
+              value={v.binding_settings ?? ''} class={field} />
+          </div>
+          <div>
+            <label for="evidence_notes" class={label}>Anything else worth recording</label>
+            <textarea id="evidence_notes" name="evidence_notes" rows="3" maxlength="2000"
+              placeholder="Photos you took and where they are, patrol report reference, police reference"
+              class={field}>{v.evidence_notes ?? ''}</textarea>
+          </div>
+          <p class="text-sm text-ink-45">
+            Take photos on your phone of the spot, the slope and the kit. Keep
+            them safe and note here that you have them. The portal does not
+            store photos yet.
+          </p>
+        </div>
+      </details>
+
+      <details class={group}>
+        <summary class={summary}>
+          Anything we should learn
+          <span class="meta text-ink-45">Open</span>
+        </summary>
+        <div class="mt-5">
+          <textarea id="lessons" name="lessons" rows="3" maxlength="2000"
+            placeholder="What would you tell another instructor about this spot, this group or this day?"
+            class={field}>{v.lessons ?? ''}</textarea>
+        </div>
+      </details>
+
+      <div class="pt-8">
+        <button type="submit"
+          class="w-full bg-accent px-6 py-4 font-display text-lg font-bold text-paper transition-colors hover:bg-ink">
+          File this report
+        </button>
+        <p class="mt-4 text-sm text-ink-45">
+          The office is told straight away that a report exists, with the resort
+          and the time. The details stay in here. Every instructor can read
+          filed reports.
+        </p>
+      </div>
+    </form>
+  </div>
+</PortalLayout>
