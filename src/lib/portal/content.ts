@@ -66,6 +66,8 @@ export interface PortalDoc {
   section: PortalSection;
   /** Set when the document also appears in Peak HQ, the staff portal. */
   hqSection?: string;
+  /** Groups a knowledge hub document. Unused in other sections. */
+  knowledgeCategory?: KnowledgeCategory;
   /**
    * 1 — versioned, referenced by the offline contract (code of conduct, rates)
    * 2 — shared standard, instructors and staff
@@ -86,6 +88,7 @@ const DOC_FIELDS = `
   "slug": slug.current,
   section,
   hqSection,
+  knowledgeCategory,
   tier,
   summary,
   version,
@@ -133,6 +136,36 @@ export async function getDoc(
     { slug, tiers },
   );
 }
+
+export type KnowledgeCategory = 'teaching' | 'race' | 'technical' | 'mountain';
+
+/**
+ * How the knowledge hub is grouped. More technical material is coming, so this
+ * is a category on the document rather than four more entries in the nav,
+ * which is already seven wide.
+ */
+export const KNOWLEDGE_CATEGORIES: { key: KnowledgeCategory; label: string; blurb: string }[] = [
+  {
+    key: 'teaching',
+    label: 'Teaching knowledge',
+    blurb: 'How we teach, and why it keeps clients coming back.',
+  },
+  {
+    key: 'race',
+    label: 'Race coaching',
+    blurb: 'Line, course setting and the numbers behind them.',
+  },
+  {
+    key: 'technical',
+    label: 'Technical',
+    blurb: 'Analysing a performance, and the vocabulary we use to do it.',
+  },
+  {
+    key: 'mountain',
+    label: 'Mountain and qualifications',
+    blurb: 'Carte professionnelle, safety and the BASI pathway.',
+  },
+];
 
 /** Section metadata used by the portal nav and the dashboard. */
 export const SECTIONS: {

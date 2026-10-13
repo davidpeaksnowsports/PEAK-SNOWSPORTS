@@ -219,3 +219,81 @@ occasionally with the query at the bottom of migration 0009.
 
 Treat a code like the office door key. Anyone holding it can make an account, so
 rotate it each season and when someone leaves.
+
+---
+
+## Accident reports
+
+Instructors file at `/portal/ops/report`, read everything filed at
+`/portal/ops/reports`. The form is built for a phone: four required questions,
+then optional sections that can be filled in afterwards from the report page.
+
+Three decisions are baked in, all David's, on 2026-10-13:
+
+- **Every active instructor can read every report in full**, including the
+  casualty's name, contact details and injury. Offered the alternative of
+  showing the incident to everyone and keeping identities admin-only, he
+  confirmed full visibility. The identifying fields sit in their own columns in
+  migration 0010, so narrowing this later is a policy change, not a data
+  migration.
+- **Retention is ten years** from the incident. French personal injury claims
+  can be brought up to ten years from consolidation. Nothing expires by itself;
+  the delete query is at the bottom of the migration, to run once a season.
+- **Filing one emails the office** the resort and the time, and nothing about
+  the casualty or the injury. Reading the report means signing in. Set
+  `ACCIDENT_NOTIFY_TO` to change the recipient from hello@peaksnowsports.com.
+
+Only the author and admins may amend a report; only an admin may delete one.
+`filed_by` is pinned by trigger, so a report cannot be filed in someone else's
+name.
+
+**The privacy notice must say that instructors can view these records.** It is
+health data about identifiable people, often children, and clients are entitled
+to know who sees it. The notice still predates the portal.
+
+Peak HQ has no access to accident reports. Add a policy if the booking team
+needs them for insurer or client follow-up.
+
+---
+
+## Downloadable files
+
+Files live in the private Supabase bucket `portal-files`, never in `public/`.
+The page links to `/portal/file/<slug>`, which checks the session and mints a
+120-second signed URL.
+
+To add one:
+
+```bash
+node --env-file=.env scripts/portal/upload-file.mjs ~/path/to/file.docx templates/file.docx
+```
+
+Then add it to `PORTAL_FILES` in `src/lib/portal/files.ts` with the section that
+should list it. Writes are service-role only: there is no insert policy, so
+nothing the site serves can put a file in the bucket.
+
+---
+
+## Knowledge hub categories
+
+Knowledge hub documents carry a `knowledgeCategory`, and the section page groups
+by it: teaching, race, technical, mountain. A document with no category still
+appears, under "Everything else", so nothing is invisible because a field was
+missed. More categories go in `KNOWLEDGE_CATEGORIES` in
+`src/lib/portal/content.ts` and in the Studio's field options.
+
+### Authored documents
+
+Not everything is converted from a `.docx`. Documents written from scratch live
+as markdown with frontmatter in `portal-content/knowledge/`, which is gitignored
+because this repo is public, and are published with:
+
+```bash
+node --env-file=.env scripts/portal/seed-knowledge.mjs --dry-run
+```
+
+Drop `--dry-run` to write. Frontmatter: `title`, `slug`, `category`, `summary`,
+`order`. **No markdown tables:** `portalDoc.body` holds blocks and images only,
+so a table silently loses its contents. The script refuses one rather than
+publishing a hole.
+
