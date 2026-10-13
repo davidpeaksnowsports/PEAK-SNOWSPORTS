@@ -10,6 +10,7 @@
 export const prerender = false;
 
 import PortalLayout from '../../../layouts/PortalLayout.astro';
+import { filesForSection } from '../../../lib/portal/files';
 import {
   SECTIONS,
   listDocs,
@@ -29,6 +30,7 @@ if (!section) Astro.response.status = 404;
 
 const tiers = visibleTiers(user.role);
 const docs = section ? await listDocs(tiers, key) : [];
+const files = section ? filesForSection(key) : [];
 
 /** Only tier 1 gets a badge. Tier 3 never reaches this page. */
 const tierLabel = (tier: number) => (tier === 1 ? 'Versioned' : null);
@@ -69,6 +71,30 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
             Read filed reports
           </a>
         </p>
+      </section>
+    )
+  }
+
+  {
+    files.length > 0 && (
+      <section aria-labelledby="downloads-heading" class="mb-16 border-b border-ink/10 pb-10">
+        <h2 id="downloads-heading" class="font-display text-2xl font-bold">Downloads</h2>
+        <ul class="mt-5 divide-y divide-ink/10 border-t border-ink/10">
+          {files.map((f) => (
+            <li class="flex flex-col gap-2 py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+              <span class="flex-1">
+                <span class="font-display text-lg font-bold text-ink">{f.title}</span>
+                <span class="mt-1 block max-w-2xl text-sm leading-relaxed text-ink-70">
+                  {f.description}
+                </span>
+              </span>
+              <a href={`/portal/file/${f.slug}`}
+                class="meta shrink-0 border border-ink/20 px-4 py-3 text-ink no-underline transition-colors hover:border-ink hover:no-underline">
+                Download
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
     )
   }
