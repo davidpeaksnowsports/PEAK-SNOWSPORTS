@@ -18,6 +18,28 @@ export default defineType({
       of: [{ type: 'reference', to: [{ type: 'campLocation' }] }],
     }),
     defineField({
+      name: 'closedLocations',
+      title: 'Closed locations',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'campLocation' }] }],
+      description: 'Locations no longer running on this date. Shown as "closed" on the schedule row.',
+    }),
+    defineField({
+      name: 'note',
+      type: 'string',
+      description: 'Optional line under the row (e.g. "Coaching only. The Fat Fox Lodge is sold out,").',
+    }),
+    defineField({
+      name: 'noteLink',
+      title: 'Note link',
+      type: 'object',
+      description: 'Optional link that follows the note.',
+      fields: [
+        defineField({ name: 'label', type: 'string' }),
+        defineField({ name: 'href', type: 'string' }),
+      ],
+    }),
+    defineField({
       name: 'tag',
       type: 'string',
       description: 'Optional chip on the schedule row (e.g. "New date").',

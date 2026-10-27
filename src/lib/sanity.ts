@@ -31,10 +31,16 @@ export const skiCampsScheduleQuery = `*[_type == "skiCamp"] | order(startDate as
   startDate,
   tag,
   confirmed,
+  note,
+  noteLink,
   "locations": locations[]->{
     _id,
     name,
     slug,
+  },
+  "closedLocations": closedLocations[]->{
+    _id,
+    name,
   }
 }`;
 

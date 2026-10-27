@@ -46,7 +46,10 @@ interface ScheduleEntry {
   startDate: string;
   tag?: string | null;
   confirmed?: boolean;
+  note?: string | null;
+  noteLink?: Cta | null;
   locations?: { _id: string; name?: string }[];
+  closedLocations?: { _id: string; name?: string }[] | null;
 }
 
 interface SkiCampsPage {
@@ -123,6 +126,7 @@ const camps = schedule.map((c) => ({
   ...c,
   start: formatStart(c.startDate),
   locationNames: (c.locations ?? []).map((l) => l.name).filter(isDefined),
+  closedNames: (c.closedLocations ?? []).map((l) => l.name).filter(isDefined),
 }));
 
 // Aggregate offer range for structured data.
@@ -301,7 +305,27 @@ const faqs = page?.faqs ?? [];
       {camps.map((c) => (
         <li class="grid gap-3 py-5 sm:grid-cols-[minmax(0,11rem)_1fr_auto] sm:items-center sm:gap-6">
           <p class="font-display text-lg font-bold tracking-tight md:text-xl">{c.start}</p>
-          <p class="text-base leading-snug text-olive/80 md:text-lg">{c.locationNames.join(' · ')}</p>
+          <div>
+            <p class="text-base leading-snug text-olive/80 md:text-lg">
+              {c.locationNames.join(' · ')}
+              {c.closedNames.map((name) => (
+                <span class="text-olive/50"> · {name}: <span class="font-semibold">closed</span></span>
+              ))}
+            </p>
+            {(c.note || c.noteLink?.href) && (
+              <p class="mt-1 text-sm leading-snug text-olive/70 md:text-base">
+                {c.note}
+                {c.noteLink?.href && (
+                  <>
+                    {' '}
+                    <a href={c.noteLink.href} class="font-semibold text-olive underline underline-offset-2 hover:text-ink">
+                      {c.noteLink.label ?? 'Find out more'}
+                    </a>
+                  </>
+                )}
+              </p>
+            )}
+          </div>
           {c.tag ? (
             <span class="meta inline-flex w-fit items-center rounded-sm bg-yellow px-3 py-1 text-snow">{c.tag}</span>
           ) : (
