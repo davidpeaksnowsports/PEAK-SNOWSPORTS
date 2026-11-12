@@ -13,14 +13,26 @@ export const prerender = false;
 import HqLayout from '../../layouts/HqLayout.astro';
 import { createHqClient, isManager, type HqUser } from '../../lib/hq/supabase';
 import { ACCOUNT_OPTIONS, getTeam } from '../../lib/hq/onboarding';
+import { openFeedback, resolveFeedback } from '../../lib/hq/feedback';
 
 const user = Astro.locals.hqUser as HqUser;
 const allowed = isManager(user);
 if (!allowed) Astro.response.status = 404;
 
-const { rows, totalItems } = allowed
-  ? await getTeam(createHqClient(Astro.cookies, Astro.request))
-  : { rows: [], totalItems: 0 };
+const supabase = createHqClient(Astro.cookies, Astro.request);
+
+if (allowed && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const id = String(form.get('feedback_id') ?? '');
+  if (form.get('intent') === 'resolve' && /^[0-9a-f-]{36}$/i.test(id)) {
+    await resolveFeedback(supabase, id);
+  }
+  return Astro.redirect('/hq/team#unclear', 303);
+}
+
+const [{ rows, totalItems }, feedback] = allowed
+  ? await Promise.all([getTeam(supabase), openFeedback(supabase)])
+  : [{ rows: [], totalItems: 0 }, []];
 
 const accountLabel = new Map<string, string>(ACCOUNT_OPTIONS.map((a) => [a.key, a.label]));
 const dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -124,6 +136,35 @@ const waiting = active.filter((r) => !r.onboarding?.submitted_at).length;
           })}
         </ul>
       )}
+
+      <section id="unclear" aria-labelledby="unclear-heading" class="mt-16">
+        <div class="flex items-baseline justify-between gap-4 border-b border-ink pb-3">
+          <h2 id="unclear-heading" class="font-display text-2xl font-bold">Marked unclear</h2>
+          <p class="meta text-ink-45">{feedback.length} open</p>
+        </div>
+        {feedback.length === 0 ? (
+          <p class="py-5 text-ink-70">Nobody has marked a page unclear.</p>
+        ) : (
+          <ul class="divide-y divide-ink/10">
+            {feedback.map((f) => (
+              <li class="grid gap-2 py-5 sm:grid-cols-12 sm:gap-6">
+                <div class="sm:col-span-9">
+                  <p class="font-display font-bold">{f.doc_title}</p>
+                  <p class="meta mt-1 text-ink-45">
+                    {f.member?.name ?? 'Someone'} · {dateFmt.format(new Date(f.created_at))}
+                  </p>
+                  {f.note && <p class="mt-2 whitespace-pre-line text-sm text-ink-70">{f.note}</p>}
+                </div>
+                <form method="POST" class="sm:col-span-3 sm:text-right">
+                  <input type="hidden" name="intent" value="resolve" />
+                  <input type="hidden" name="feedback_id" value={f.id} />
+                  <button type="submit" class="meta text-accent hover:text-ink">Mark dealt with</button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </HqLayout>
   )
 }

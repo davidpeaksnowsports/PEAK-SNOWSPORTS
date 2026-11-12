@@ -14,6 +14,7 @@ import type { PortableTextBlock } from '@portabletext/types';
 import { portalSanity } from '../portal/content';
 
 export type HqSection =
+  | 'booking-team'
   | 'what-we-do'
   | 'how-we-work'
   | 'playbook'
@@ -30,6 +31,8 @@ export interface HqDoc {
   body?: PortableTextBlock[];
   version?: string;
   updatedAt?: string;
+  owner?: string;
+  reviewedAt?: string;
 }
 
 const DOC_FIELDS = `
@@ -40,6 +43,8 @@ const DOC_FIELDS = `
   tier,
   summary,
   version,
+  owner,
+  reviewedAt,
   "updatedAt": coalesce(updatedAt, _updatedAt)
 `;
 
@@ -73,6 +78,12 @@ export const HQ_SECTIONS: {
   href: string;
   blurb: string;
 }[] = [
+  {
+    key: 'booking-team',
+    label: 'Booking team',
+    href: '/hq/booking-team',
+    blurb: 'Start here if you take bookings: your first week, the booking path and the rate card.',
+  },
   {
     key: 'what-we-do',
     label: 'What we do',
