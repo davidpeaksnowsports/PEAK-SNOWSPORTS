@@ -134,6 +134,20 @@ page. A file whose front matter `status` starts with `outline` is held back,
 and links to it become plain text. The SkiOperator walkthrough is held back
 until it has screenshots.
 
+### People
+
+The top of `/hq/people` shows how the roles fit together, as a diagram and as
+cards, then the whole team with headshots. Roles and their hand-offs live in
+`src/lib/hq/people.ts`, following the Basecamp framework (October 2026); pay
+and Basecamp deliberations are deliberately left out. The teaching team is
+the website's instructor list (`src/content/instructors`), so it updates with
+the site. Office roles that are not on the website are listed in
+`PeopleOverview.astro`.
+
+Job descriptions are documents in the People section. The instructor,
+Operations Lead and Marketing and Brand Lead ones are authored in
+`portal-content/hq/people/` and published with `seed-hq.mjs` as tier 2.
+
 ### Was this unclear?
 
 Every HQ document ends with a "Was this unclear?" form. Notes land in

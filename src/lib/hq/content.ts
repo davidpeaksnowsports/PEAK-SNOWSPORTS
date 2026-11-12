@@ -112,7 +112,7 @@ export const HQ_SECTIONS: {
     key: 'people',
     label: 'People',
     href: '/hq/people',
-    blurb: 'Who does what, and the job descriptions behind it.',
+    blurb: 'Who does what, how the roles fit together, and every job description.',
   },
 ];
 
