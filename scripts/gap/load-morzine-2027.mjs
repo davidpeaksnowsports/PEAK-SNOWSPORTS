@@ -45,7 +45,6 @@ const db = createClient(url, key, { auth: { persistSession: false } });
 // ---------------------------------------------------------------------------
 
 const L = {
-  onboarding: 'https://share-eu1.hsforms.com/1dv43JwQ8TI-VN4R219eqsQ2e55qw',
   whatsapp: 'https://chat.whatsapp.com/CkewQsvuUBFDct8I1L4TEl',
   calendar:
     'https://calendar.google.com/calendar/embed?src=c_6d851197d5f7ced0d1c71eaa0042ecfbe202f25cec207ea2ed5e2fbb9e8cc0a3%40group.calendar.google.com&ctz=Europe%2FParis',
@@ -352,8 +351,8 @@ const ESSENTIALS = [
   ['Contacts', 'The course WhatsApp group',
     'Day-to-day comms run through WhatsApp: schedule changes, weather calls, where to meet.\n\nJoin: ' + L.whatsapp + '\n\nIf the link will not work for you, ask and we will add you manually.'],
 
-  ['Before you arrive', 'Student onboarding form',
-    'Complete this first. It is how we get your details on file.\n\n' + L.onboarding],
+  ['Before you arrive', 'Send us your details',
+    'The pre-arrival form on the Your details page. Emergency contact, anything medical, insurance, kit sizes and how you are travelling. Five minutes, and you can change it later.'],
   ['Before you arrive', 'Get to know this portal',
     'This is the course handbook now. Programme, workbook, resort guide, essentials and your benchmark are all here, and it is kept up to date during the course in a way a document never was.\n\nThe two pages to look at before you travel are Checklist and My progress.'],
   ['Before you arrive', 'Getting ski fit',
@@ -403,12 +402,11 @@ const ESSENTIALS = [
 
 const CHECKLIST = [
   // ── Pre-arrival ───────────────────────────────────────────────────────────
-  ['Admin', 'Complete the student onboarding form', L.onboarding, true, true],
+  ['Admin', 'Send us your details on the pre-arrival form', '/gap/onboarding', true, true],
   ['Admin', 'Read the course essentials in this portal', 'Emergency procedure, insurance, what to expect', true, true],
   ['Admin', 'Download both BASI workbooks', 'Learning hub: Level 1 and Level 2', true, true],
   ['Admin', 'Join the PEAK GAP WhatsApp group', L.whatsapp, true, true],
-  ['Admin', 'Send us your travel details', 'Be at Geneva Terminal 1 by 13:00 on arrival day', true, true],
-  ['Admin', 'Check your insurance', 'Medical + evacuation, personal accident, equipment', true, true],
+  ['Admin', 'Check your insurance covers instruction', 'Medical and evacuation, personal accident, equipment. Record it on the pre-arrival form.', true, true],
   ['Admin', 'Complete your starting self-assessment', 'On the My progress page', true, true],
   ['Equipment', 'Sort your skis, boots and poles', 'Fluid Lines for the Peak discount, password Peaksnowsports', true, true],
   ['Equipment', 'Get your boots fitted', 'Custom inner sole and shell or liner adjustments if needed', true, true],

@@ -1,0 +1,324 @@
+---
+/**
+ * Pre-arrival onboarding.
+ *
+ * Replaces the HubSpot form the portal used to link out to. The answers now
+ * land on the student's own record, so a coach who needs an emergency contact
+ * finds it next to everything else about that student rather than in another
+ * system, and staff can see who has filled it in.
+ *
+ * The form is editable after submission. Details change between booking and
+ * travelling, and a student who moves house should not have to email the
+ * office. The submission timestamp is set once, by the database, and is not
+ * reset by later edits.
+ */
+export const prerender = false;
+
+import GapLayout from '../../layouts/GapLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import { createGapClient, type GapUser } from '../../lib/gap/supabase';
+import { fmtLongDate } from '../../lib/gap/course';
+
+const user = Astro.locals.gapUser as GapUser;
+const db = createGapClient(Astro.cookies, Astro.request);
+
+/** Trim to null, so an emptied field clears rather than storing "". */
+const text = (form: FormData, key: string, max = 400) => {
+  const v = String(form.get(key) ?? '').trim();
+  return v ? v.slice(0, max) : null;
+};
+
+/** A number in range, or null. Out-of-range is rejected by the check constraint. */
+const number = (form: FormData, key: string, min: number, max: number) => {
+  const raw = String(form.get(key) ?? '').trim();
+  if (!raw) return null;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= min && n <= max ? Math.round(n) : null;
+};
+
+let flash: { tone: 'good' | 'warn'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+
+  const name = text(form, 'name', 120);
+  const emergencyName = text(form, 'emergency_name', 120);
+  const emergencyPhone = text(form, 'emergency_phone', 60);
+
+  if (!name) {
+    flash = { tone: 'warn', message: 'We need your name.' };
+  } else if (!emergencyName || !emergencyPhone) {
+    flash = {
+      tone: 'warn',
+      message: 'An emergency contact name and phone number are both needed.',
+    };
+  } else {
+    const { error } = await db
+      .from('gap_members')
+      .update({
+        name,
+        date_of_birth: text(form, 'date_of_birth', 10),
+        phone: text(form, 'phone', 60),
+        emergency_name: emergencyName,
+        emergency_phone: emergencyPhone,
+        emergency_relation: text(form, 'emergency_relation', 60),
+        dietary: text(form, 'dietary', 1000),
+        medical: text(form, 'medical', 2000),
+        insurance_provider: text(form, 'insurance_provider', 160),
+        insurance_policy: text(form, 'insurance_policy', 120),
+        height_cm: number(form, 'height_cm', 100, 250),
+        weight_kg: number(form, 'weight_kg', 30, 250),
+        ski_boot_size: text(form, 'ski_boot_size', 20),
+        arrival_notes: text(form, 'arrival_notes', 2000),
+      })
+      .eq('id', user.id);
+
+    if (error) {
+      flash = { tone: 'warn', message: `Could not save: ${error.message}` };
+    } else {
+      // onboarding_submitted_at is stamped by the database on this write; see
+      // migration 0013. Nothing to do here.
+
+      // Tick the matching pre-arrival task. A student should not have to tell
+      // the portal they did something it watched them do.
+      const { data: item } = await db
+        .from('gap_checklist_items')
+        .select('id')
+        .eq('cohort_id', user.cohortId ?? '')
+        .eq('note', '/gap/onboarding')
+        .maybeSingle();
+      if (item) {
+        await db
+          .from('gap_checklist_progress')
+          .upsert(
+            { student_id: user.id, item_id: item.id, done: true },
+            { onConflict: 'student_id,item_id' },
+          );
+      }
+
+      flash = { tone: 'good', message: 'Saved. Thank you, that is everything we need.' };
+    }
+  }
+}
+
+const { data: me } = await db
+  .from('gap_members')
+  .select(
+    'name, date_of_birth, phone, emergency_name, emergency_phone, emergency_relation, dietary, medical, insurance_provider, insurance_policy, height_cm, weight_kg, ski_boot_size, arrival_notes, onboarding_submitted_at',
+  )
+  .eq('id', user.id)
+  .maybeSingle();
+
+const submitted = me?.onboarding_submitted_at ?? null;
+
+const field =
+  'mt-1 w-full border border-ink/20 bg-paper px-3 py-2 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
+---
+
+<GapLayout
+  title="Pre-arrival form"
+  kicker={user.cohort?.name}
+  heading="Before you travel"
+  intro="The details we need on file before the course starts. It takes about five minutes, and you can come back and change any of it later."
+>
+  {
+    flash && (
+      <div class="mb-8">
+        <Notice tone={flash.tone} alert>
+          <p class="text-ink">{flash.message}</p>
+        </Notice>
+      </div>
+    )
+  }
+
+  {
+    submitted && !flash && (
+      <div class="mb-8">
+        <Notice tone="good" label="Already submitted">
+          <p>
+            You sent this on {fmtLongDate(submitted)}. Anything you change below
+            updates it.
+          </p>
+        </Notice>
+      </div>
+    )
+  }
+
+  <form method="POST" class="max-w-2xl space-y-12">
+    {/* ------------------------------------------------------------- you */}
+    <section>
+      <h2 class="font-display text-2xl font-bold">You</h2>
+
+      <div class="mt-5 grid gap-5 sm:grid-cols-2">
+        <label class="block">
+          <span class="meta text-ink-45">Full name</span>
+          <input type="text" name="name" required value={me?.name ?? ''} autocomplete="name" class={field} />
+        </label>
+
+        <label class="block">
+          <span class="meta text-ink-45">Date of birth</span>
+          <input type="date" name="date_of_birth" value={me?.date_of_birth ?? ''} class={field} />
+          <span class="mt-1 block text-sm text-ink-45">BASI need this to register you.</span>
+        </label>
+
+        <label class="block sm:col-span-2">
+          <span class="meta text-ink-45">Your mobile</span>
+          <input type="tel" name="phone" value={me?.phone ?? ''} autocomplete="tel" class={field} />
+          <span class="mt-1 block text-sm text-ink-45">
+            Include the country code, so it works from a French SIM.
+          </span>
+        </label>
+      </div>
+    </section>
+
+    {/* --------------------------------------------------- emergency contact */}
+    <section class="border-t border-ink/10 pt-10">
+      <h2 class="font-display text-2xl font-bold">Emergency contact</h2>
+      <p class="mt-2 text-ink-70">
+        Someone we would call if you could not. Your coaches can see this, and
+        nobody else on the course can.
+      </p>
+
+      <div class="mt-5 grid gap-5 sm:grid-cols-2">
+        <label class="block">
+          <span class="meta text-ink-45">Their name</span>
+          <input type="text" name="emergency_name" required value={me?.emergency_name ?? ''} class={field} />
+        </label>
+
+        <label class="block">
+          <span class="meta text-ink-45">Their phone</span>
+          <input type="tel" name="emergency_phone" required value={me?.emergency_phone ?? ''} class={field} />
+        </label>
+
+        <label class="block sm:col-span-2">
+          <span class="meta text-ink-45">Relationship to you</span>
+          <input
+            type="text"
+            name="emergency_relation"
+            value={me?.emergency_relation ?? ''}
+            placeholder="Mum, partner, brother"
+            class={field}
+          />
+        </label>
+      </div>
+    </section>
+
+    {/* ----------------------------------------------------- health and food */}
+    <section class="border-t border-ink/10 pt-10">
+      <h2 class="font-display text-2xl font-bold">Health and food</h2>
+      <p class="mt-2 text-ink-70">
+        Tell us what a coach would need to know on the hill, and what the chalet
+        needs to know at dinner. If there is nothing, leave it blank.
+      </p>
+
+      <div class="mt-5 space-y-5">
+        <label class="block">
+          <span class="meta text-ink-45">
+            Medication, allergies or conditions
+          </span>
+          <textarea
+            name="medical"
+            rows="4"
+            placeholder="Asthma inhaler, nut allergy, a knee that goes. Anything we should know if something happens."
+            class={field}>{me?.medical ?? ''}</textarea
+          >
+        </label>
+
+        <label class="block">
+          <span class="meta text-ink-45">Dietary requirements</span>
+          <textarea
+            name="dietary"
+            rows="3"
+            placeholder="Vegetarian, coeliac, no fish"
+            class={field}>{me?.dietary ?? ''}</textarea
+          >
+        </label>
+      </div>
+    </section>
+
+    {/* ------------------------------------------------------------ insurance */}
+    <section class="border-t border-ink/10 pt-10">
+      <h2 class="font-display text-2xl font-bold">Insurance</h2>
+      <p class="mt-2 text-ink-70">
+        You need winter sports cover that includes instruction. Instructing
+        liability comes with BASI membership once you qualify, and does not
+        cover you during the course.
+      </p>
+
+      <div class="mt-5 grid gap-5 sm:grid-cols-2">
+        <label class="block">
+          <span class="meta text-ink-45">Provider</span>
+          <input type="text" name="insurance_provider" value={me?.insurance_provider ?? ''} class={field} />
+        </label>
+
+        <label class="block">
+          <span class="meta text-ink-45">Policy number</span>
+          <input type="text" name="insurance_policy" value={me?.insurance_policy ?? ''} class={field} />
+        </label>
+      </div>
+    </section>
+
+    {/* ------------------------------------------------------------ equipment */}
+    <section class="border-t border-ink/10 pt-10">
+      <h2 class="font-display text-2xl font-bold">Equipment</h2>
+      <p class="mt-2 text-ink-70">
+        Height and weight set your bindings. Boot size is for anything we order
+        on your behalf.
+      </p>
+
+      <div class="mt-5 grid gap-5 sm:grid-cols-3">
+        <label class="block">
+          <span class="meta text-ink-45">Height (cm)</span>
+          <input type="number" name="height_cm" min="100" max="250" value={me?.height_cm ?? ''} class={field} />
+        </label>
+
+        <label class="block">
+          <span class="meta text-ink-45">Weight (kg)</span>
+          <input type="number" name="weight_kg" min="30" max="250" value={me?.weight_kg ?? ''} class={field} />
+        </label>
+
+        <label class="block">
+          <span class="meta text-ink-45">Ski boot size</span>
+          <input
+            type="text"
+            name="ski_boot_size"
+            value={me?.ski_boot_size ?? ''}
+            placeholder="UK 9 or 27.5"
+            class={field}
+          />
+        </label>
+      </div>
+    </section>
+
+    {/* -------------------------------------------------------------- travel */}
+    <section class="border-t border-ink/10 pt-10">
+      <h2 class="font-display text-2xl font-bold">Travel</h2>
+      <p class="mt-2 text-ink-70">
+        How you are getting here. The airport meet is at Geneva Terminal 1 at
+        13:00 on arrival day.
+      </p>
+
+      <label class="mt-5 block">
+        <span class="meta text-ink-45">Flight or train details, and arrival time</span>
+        <textarea
+          name="arrival_notes"
+          rows="4"
+          placeholder="BA2756, lands Geneva 11:40. Flying home on the 13th."
+          class={field}>{me?.arrival_notes ?? ''}</textarea
+        >
+      </label>
+    </section>
+
+    <div class="sticky bottom-0 border-t border-ink/10 bg-paper py-4">
+      <button
+        type="submit"
+        class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+      >
+        {submitted ? 'Save changes' : 'Send my details'}
+      </button>
+      <p class="mt-2 text-sm text-ink-45">
+        Only you and the Peak team can see any of this.
+      </p>
+    </div>
+  </form>
+</GapLayout>

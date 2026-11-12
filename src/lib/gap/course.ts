@@ -237,6 +237,7 @@ export const GAP_SECTIONS = [
   { href: '/gap/learning', label: 'Learning hub' },
   { href: '/gap/experience', label: 'Experience log' },
   { href: '/gap/resort', label: 'Resort guide' },
+  { href: '/gap/onboarding', label: 'Your details' },
   { href: '/gap/checklist', label: 'Checklist' },
   { href: '/gap/essentials', label: 'Essentials' },
   { href: '/gap/feedback', label: 'Feedback' },

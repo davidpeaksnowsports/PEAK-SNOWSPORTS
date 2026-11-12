@@ -1,0 +1,234 @@
+---
+/**
+ * Who has signed up, and how far through getting ready they are.
+ *
+ * The coach dashboard answers "who needs coaching attention", which is a
+ * different question from "who has joined, did they confirm their email, and
+ * have they sent their details in". That one used to need a database query.
+ *
+ * Email address, confirmation and last sign-in live in auth.users, which RLS
+ * cannot reach, so they come from the gap_cohort_signups() function. It
+ * returns nothing at all unless the caller is staff on the cohort.
+ */
+export const prerender = false;
+
+import GapLayout from '../../../layouts/GapLayout.astro';
+import Notice from '../../../components/gap-portal/Notice.astro';
+import { createGapClient, isStaff, type GapUser } from '../../../lib/gap/supabase';
+import { courseWeek, fmtDate, daysBetween } from '../../../lib/gap/course';
+
+const user = Astro.locals.gapUser as GapUser;
+if (!isStaff(user)) return Astro.redirect('/gap/dashboard', 302);
+
+const db = createGapClient(Astro.cookies, Astro.request);
+const cohort = user.cohort;
+
+interface Signup {
+  id: string;
+  name: string;
+  role: 'student' | 'coach' | 'admin';
+  email: string;
+  active: boolean;
+  joined_at: string;
+  email_confirmed: boolean;
+  last_sign_in_at: string | null;
+  onboarding_submitted_at: string | null;
+}
+
+const { data: signupData } = await db.rpc('gap_cohort_signups');
+const signups = ((signupData ?? []) as Signup[]).filter((s) => s.role === 'student');
+
+// Pre-arrival progress, counted the same way the student's own checklist does.
+const [{ data: items }, { data: progress }] = cohort
+  ? await Promise.all([
+      db
+        .from('gap_checklist_items')
+        .select('id')
+        .eq('cohort_id', cohort.id)
+        .eq('pre_arrival', true),
+      db.from('gap_checklist_progress').select('student_id, item_id').eq('done', true),
+    ])
+  : [{ data: [] }, { data: [] }];
+
+const preArrivalIds = new Set((items ?? []).map((i) => i.id as string));
+const tickedBy = new Map<string, number>();
+for (const row of progress ?? []) {
+  if (!preArrivalIds.has(row.item_id as string)) continue;
+  tickedBy.set(row.student_id as string, (tickedBy.get(row.student_id as string) ?? 0) + 1);
+}
+
+const week = cohort
+  ? courseWeek(cohort)
+  : { week: 0, totalWeeks: 6, daysUntilStart: 0, finished: false };
+
+const rows = signups.map((s) => {
+  const ticked = tickedBy.get(s.id) ?? 0;
+  const neverSignedIn = !s.last_sign_in_at;
+  // A sign-up that was never confirmed is an account nobody can use, and the
+  // student almost certainly thinks they have joined.
+  const flags = [
+    !s.email_confirmed ? 'Never confirmed their email' : null,
+    s.email_confirmed && neverSignedIn ? 'Never signed in' : null,
+    !s.onboarding_submitted_at ? 'No details sent' : null,
+    !s.active ? 'Account switched off' : null,
+  ].filter((f): f is string => Boolean(f));
+  return { ...s, ticked, flags };
+});
+
+const needChasing = rows.filter((r) => r.flags.length > 0).length;
+const onboarded = rows.filter((r) => r.onboarding_submitted_at).length;
+const preArrivalTotal = preArrivalIds.size;
+
+const daysToStart = cohort ? daysBetween(new Date(), cohort.starts_on) : null;
+---
+
+<GapLayout
+  title="Sign-ups"
+  wide
+  kicker={cohort
+    ? `${cohort.name}${week.week > 0 ? ` · Week ${week.week} of ${week.totalWeeks}` : ''}`
+    : 'Peak GAP'}
+  heading="Sign-ups"
+  intro="Who has joined the portal, whether their account works, and how much of their pre-arrival admin is done."
+>
+  {
+    !cohort && (
+      <Notice tone="warn" label="No cohort">
+        <p>
+          Your account is not attached to a cohort, so there are no sign-ups to
+          show.
+        </p>
+      </Notice>
+    )
+  }
+
+  {
+    cohort && (
+      <>
+        <section class="grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="bg-paper p-5">
+            <p class="meta text-ink-45">Signed up</p>
+            <p class="mt-2 font-display text-3xl font-bold leading-none">{rows.length}</p>
+            <p class="mt-2 text-sm text-ink-70">Students with an account</p>
+          </div>
+          <div class="bg-paper p-5">
+            <p class="meta text-ink-45">Details sent</p>
+            <p class="mt-2 font-display text-3xl font-bold leading-none">
+              {onboarded} / {rows.length}
+            </p>
+            <p class="mt-2 text-sm text-ink-70">Pre-arrival form submitted</p>
+          </div>
+          <div class="bg-paper p-5">
+            <p class="meta text-ink-45">Needs chasing</p>
+            <p class="mt-2 font-display text-3xl font-bold leading-none">{needChasing}</p>
+            <p class="mt-2 text-sm text-ink-70">
+              {needChasing === 0 ? 'Nothing outstanding' : 'See the flags below'}
+            </p>
+          </div>
+          <div class="bg-paper p-5">
+            <p class="meta text-ink-45">Course starts</p>
+            <p class="mt-2 font-display text-3xl font-bold leading-none">
+              {daysToStart !== null && daysToStart > 0 ? `${daysToStart}d` : 'Started'}
+            </p>
+            <p class="mt-2 text-sm text-ink-70">{fmtDate(cohort.starts_on)}</p>
+          </div>
+        </section>
+
+        {rows.length === 0 ? (
+          <div class="mt-10">
+            <Notice>
+              <p>
+                Nobody has signed up yet. Students join at{' '}
+                <a href="/gap/join">/gap/join</a> with the course code, which you
+                send out with their enrolment email.
+              </p>
+            </Notice>
+          </div>
+        ) : (
+          <>
+            <div class="mt-10 overflow-x-auto">
+              <table class="w-full min-w-[56rem] border-collapse text-left">
+                <thead>
+                  <tr class="border-b border-ink/20">
+                    <th class="meta py-3 pr-4 text-ink-45">Student</th>
+                    <th class="meta py-3 pr-4 text-ink-45">Joined</th>
+                    <th class="meta py-3 pr-4 text-ink-45">Last seen</th>
+                    <th class="meta py-3 pr-4 text-ink-45">Details</th>
+                    <th class="meta py-3 pr-4 text-ink-45">Pre-arrival</th>
+                    <th class="meta py-3 text-ink-45">Needs chasing</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr class="border-b border-ink/10 align-top">
+                      <td class="py-4 pr-4">
+                        <a
+                          href={`/gap/staff/student/${r.id}`}
+                          class="font-display font-bold text-ink hover:text-accent"
+                        >
+                          {r.name}
+                        </a>
+                        <a
+                          href={`mailto:${r.email}`}
+                          class="meta mt-1 block text-ink-45 hover:text-accent"
+                        >
+                          {r.email}
+                        </a>
+                      </td>
+                      <td class="py-4 pr-4 text-sm text-ink-70">{fmtDate(r.joined_at)}</td>
+                      <td class="py-4 pr-4 text-sm text-ink-70">
+                        {r.last_sign_in_at ? fmtDate(r.last_sign_in_at) : 'Never'}
+                      </td>
+                      <td class="py-4 pr-4 text-sm">
+                        {r.onboarding_submitted_at ? (
+                          <span class="text-ink-70">{fmtDate(r.onboarding_submitted_at)}</span>
+                        ) : (
+                          <span class="meta text-accent">Not sent</span>
+                        )}
+                      </td>
+                      <td class="py-4 pr-4 text-sm text-ink-70">
+                        {r.ticked} / {preArrivalTotal}
+                      </td>
+                      <td class="py-4">
+                        {r.flags.length === 0 ? (
+                          <span class="meta text-ink-45">Nothing</span>
+                        ) : (
+                          <ul class="space-y-1">
+                            {r.flags.map((f) => (
+                              <li class="meta text-accent">{f}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p class="mt-6">
+              <a href="/gap/staff/signups.csv" class="meta text-accent">
+                Export as CSV
+              </a>
+            </p>
+          </>
+        )}
+
+        <section class="mt-16 border-t border-ink/10 pt-10">
+          <h2 class="font-display text-2xl font-bold">How students join</h2>
+          <p class="mt-2 max-w-2xl text-ink-70">
+            They go to <a href="/gap/join" class="text-accent">/gap/join</a> and
+            enter the course code for this intake, which you send with their
+            enrolment email. They choose their own password and confirm their
+            email address, then land on the dashboard.
+          </p>
+          <p class="mt-3 max-w-2xl text-ink-70">
+            To close sign-up, or to rotate the code if it has been shared too
+            widely, clear or change <code class="font-mono text-sm">join_code</code>{' '}
+            on the cohort. Accounts already created are unaffected.
+          </p>
+        </section>
+      </>
+    )
+  }
+</GapLayout>
