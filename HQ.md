@@ -134,6 +134,44 @@ page. A file whose front matter `status` starts with `outline` is held back,
 and links to it become plain text. The SkiOperator walkthrough is held back
 until it has screenshots.
 
+### How documents look
+
+Every document page in HQ and the instructor hub renders through
+`src/components/doc/DocBody.astro`, styled like the public site: Geist
+headings on hairlines, accent dot bullets, numbered steps with round accent
+markers, and pull quotes. A `hero` photo (a path to an image already on the
+site) sits across the top of the page, and a section whose documents have
+photos shows them as cards.
+
+Authored markdown can use richer blocks, which `seed-hq.mjs` turns into
+Portable Text objects:
+
+```
+:::callout tip|rule|warning|note|action Title
+Text, with **bold** and [links](/hq).
+:::
+
+:::template Title | when to use it      (an email, with a Copy button)
+:::script Title | when to use it        (words said out loud)
+:::pills                                 "- item" lines
+:::facts                                 "- value | label" lines
+:::flow                                  "- title | text" lines
+::image /images/path.jpg | alt | caption
+```
+
+In templates, [square brackets] mark the gaps to fill.
+
+**The playbook and the ski camps explainer are authored, not imported.** The
+six playbook documents and "Ski camps, explained" were rewritten in
+November 2026 and live in `portal-content/hq/playbook/` and
+`portal-content/hq/what-we-do/`. They keep their original Sanity ids (front
+matter `id`) and are no longer in `manifest.json`, so re-running
+`import-docs.mjs` will not overwrite them.
+
+`--draft` writes Sanity drafts that the live site cannot see, for previewing
+new block types before the code that renders them is deployed; a normal run
+publishes and removes the drafts. `--only=slug,slug` limits a run.
+
 ### People
 
 The top of `/hq/people` shows how the roles fit together, as a diagram and as

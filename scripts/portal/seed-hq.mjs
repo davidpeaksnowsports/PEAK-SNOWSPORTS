@@ -15,6 +15,13 @@
  * (`04-booking-lifecycle.md` → `booking-lifecycle`). Links between files are
  * rewritten to `/hq/<section>/<slug>`.
  *
+ * Front matter `hero` is a site photo for the page header and card; `id`
+ * keeps the Sanity id of a document first loaded by import-docs.mjs, so a
+ * rewrite replaces it rather than adding a second copy.
+ *
+ * Richer blocks (callouts, email templates, pills, key figures, flows and
+ * photos) use the directives documented above `directiveBlock`.
+ *
  * Unlike seed-knowledge.mjs this handles markdown tables: each becomes a
  * `table` object (first row is the header), rendered by PtTable.astro. A table
  * column whose every cell is an empty checkbox is dropped, and `- [ ]` list
@@ -34,6 +41,12 @@ import { createClient } from '@sanity/client';
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const DUMP = process.argv.includes('--dump');
+// --draft writes Sanity drafts only: invisible to the live site, which reads
+// published documents, so new block types can be previewed before the code
+// that renders them is deployed. Publish later with a normal run.
+const DRAFT = process.argv.includes('--draft');
+// --only=slug,slug limits the run to those documents.
+const ONLY = (process.argv.find((a) => a.startsWith('--only=')) ?? '').slice(7).split(',').filter(Boolean);
 const ROOT = process.env.HQ_CONTENT_DIR || 'portal-content/hq';
 const SECTIONS = ['booking-team', 'what-we-do', 'how-we-work', 'playbook', 'policies', 'people'];
 
@@ -61,6 +74,21 @@ const withKeys = (value) => {
   }
   return value;
 };
+
+// @portabletext/markdown leaks the mark of an auto-linked email address into
+// the blocks after it, pointing at a link the later block does not define.
+// Drop any mark that is neither a decorator nor defined on its own block.
+const DECORATORS = new Set(['strong', 'em', 'code', 'underline', 'strike-through']);
+function cleanMarks(blocks) {
+  for (const b of blocks) {
+    if (b._type !== 'block' || !Array.isArray(b.children)) continue;
+    const defs = new Set((b.markDefs ?? []).map((d) => d._key));
+    for (const c of b.children) {
+      if (Array.isArray(c.marks)) c.marks = c.marks.filter((m) => DECORATORS.has(m) || defs.has(m));
+    }
+  }
+  return blocks;
+}
 
 const slugOf = (file) => file.replace(/\.md$/, '').replace(/^\d+[-_]/, '');
 
@@ -126,14 +154,75 @@ function tableBlock(lines) {
   };
 }
 
-/** Markdown → Portable Text, with tables lifted out as `table` objects. */
-function toBody(md) {
+// Directives: richer blocks written in plain markdown.
+//
+//   :::callout tip|rule|warning|note|action Title        ::: closes
+//   :::template Title | when to use it                    body kept as written
+//   :::script Title | when to use it                      the same, for words said aloud
+//   :::pills                                               "- item" lines
+//   :::facts                                               "- value | label" lines
+//   :::flow                                                "- title | text" lines
+//   ::image /images/path.jpg | alt text | caption         one line
+const TONES = ['note', 'tip', 'rule', 'warning', 'action'];
+const listLines = (body) =>
+  body.split('\n').map((l) => l.trim()).filter((l) => l.startsWith('- ')).map((l) => l.slice(2).trim());
+const pair = (l) => {
+  const i = l.indexOf('|');
+  return i < 0 ? [l.trim(), ''] : [l.slice(0, i).trim(), l.slice(i + 1).trim()];
+};
+
+function directiveBlock(name, args, body, file) {
+  switch (name) {
+    case 'callout': {
+      const [first, ...rest] = args.split(/\s+/);
+      const tone = TONES.includes(first) ? first : 'note';
+      const title = (TONES.includes(first) ? rest.join(' ') : args).trim();
+      return { _type: 'callout', tone, ...(title ? { title } : {}), text: body.trim() };
+    }
+    case 'template':
+    case 'script': {
+      const [title, when] = pair(args);
+      return {
+        _type: 'template',
+        kind: name === 'script' ? 'script' : 'email',
+        title,
+        ...(when ? { when } : {}),
+        text: body.replace(/^\n+|\s+$/g, ''),
+      };
+    }
+    case 'pills':
+      return { _type: 'pills', items: listLines(body) };
+    case 'facts':
+      return {
+        _type: 'facts',
+        items: listLines(body).map((l) => {
+          const [value, label] = pair(l);
+          return { _type: 'fact', value, label };
+        }),
+      };
+    case 'flow':
+      return {
+        _type: 'flow',
+        steps: listLines(body).map((l) => {
+          const [title, text] = pair(l);
+          return { _type: 'flowStep', title, ...(text ? { text } : {}) };
+        }),
+      };
+    default:
+      problems.push(`${file}: unknown block ":::${name}"`);
+      return null;
+  }
+}
+
+/** Markdown → Portable Text, with tables and directives lifted out as objects. */
+function toBody(md, file = '') {
   const blocks = [];
   let prose = [];
   let table = [];
+  let directive = null;
   const flushProse = () => {
     const text = prose.join('\n').trim();
-    if (text) blocks.push(...markdownToPortableText(text));
+    if (text) blocks.push(...cleanMarks(markdownToPortableText(text)));
     prose = [];
   };
   const flushTable = () => {
@@ -141,6 +230,32 @@ function toBody(md) {
     table = [];
   };
   for (const line of md.split('\n')) {
+    if (directive) {
+      if (line.trim() === ':::') {
+        const b = directiveBlock(directive.name, directive.args, directive.body.join('\n'), file);
+        if (b) blocks.push(b);
+        directive = null;
+      } else {
+        directive.body.push(line);
+      }
+      continue;
+    }
+    const open = line.match(/^:::(\w+)\s*(.*)$/);
+    if (open) {
+      flushTable();
+      flushProse();
+      directive = { name: open[1], args: open[2].trim(), body: [] };
+      continue;
+    }
+    const image = line.match(/^::image\s+(.+)$/);
+    if (image) {
+      flushTable();
+      flushProse();
+      const [src, alt = '', caption = ''] = image[1].split('|').map((x) => x.trim());
+      if (!/^\/images\/[\w./ -]+\.(jpe?g|png|webp)$/i.test(src)) problems.push(`${file}: image must be a site path: ${src}`);
+      blocks.push({ _type: 'siteImage', src, alt, ...(caption ? { caption } : {}) });
+      continue;
+    }
     if (line.trim().startsWith('|')) {
       flushProse();
       table.push(line);
@@ -151,6 +266,7 @@ function toBody(md) {
   }
   flushTable();
   flushProse();
+  if (directive) problems.push(`${file}: ":::${directive.name}" is never closed`);
   return blocks;
 }
 
@@ -182,9 +298,15 @@ function prepare(doc) {
     problems.push(`${doc.file}: hubSection needs tier 2; tier 3 is staff only`);
   }
 
+  const hero = doc.data.hero;
+  if (hero && !/^\/images\/[\w./ -]+\.(jpe?g|png|webp)$/i.test(hero)) {
+    problems.push(`${doc.file}: hero must be a site path like /images/x.jpg`);
+  }
+
   const reviewed = doc.data.last_reviewed;
   return {
-    _id: `portalDoc-hq-${doc.slug}`,
+    // `id` keeps the identity of a document first loaded by import-docs.mjs.
+    _id: doc.data.id ?? `portalDoc-hq-${doc.slug}`,
     _type: 'portalDoc',
     title: doc.data.title,
     slug: { _type: 'slug', current: doc.slug },
@@ -196,7 +318,8 @@ function prepare(doc) {
     owner: doc.data.owner,
     reviewedAt:
       reviewed instanceof Date ? reviewed.toISOString().slice(0, 10) : String(reviewed),
-    body: withKeys(toBody(md)),
+    ...(hero ? { heroImage: hero } : {}),
+    body: withKeys(toBody(md, doc.file)),
   };
 }
 
@@ -213,7 +336,7 @@ const client = DRY_RUN
     });
 
 console.log(
-  `\n  ${DRY_RUN ? 'Dry run' : `Publishing to ${PROJECT_ID}/${DATASET}`}: ${docs.length} files\n`,
+  `\n  ${DRY_RUN ? 'Dry run' : `${DRAFT ? 'Writing drafts to' : 'Publishing to'} ${PROJECT_ID}/${DATASET}`}: ${docs.length} files\n`,
 );
 
 const prepared = docs.map((d) => ({ d, out: prepare(d) }));
@@ -240,15 +363,24 @@ for (const { d, out } of prepared) {
   const tables = out.body.filter((b) => b._type === 'table').length;
   if (!d.publish) {
     console.log(`  · ${d.slug.padEnd(30)} held back (${d.data.status})`);
-    if (client) await client.delete(out._id).catch(() => {});
+    if (client && !DRAFT) await client.delete(out._id).catch(() => {});
     continue;
   }
+  if (ONLY.length && !ONLY.includes(d.slug)) continue;
   if (DUMP) console.log(JSON.stringify(out, null, 2));
-  if (client) await client.createOrReplace(out);
+  if (client) {
+    if (DRAFT) {
+      await client.createOrReplace({ ...out, _id: `drafts.${out._id}` });
+    } else {
+      await client.createOrReplace(out);
+      // A normal run publishes: any draft left from a --draft run is retired.
+      await client.delete(`drafts.${out._id}`).catch(() => {});
+    }
+  }
   published += 1;
   console.log(
     `  ✓ ${d.slug.padEnd(30)} ${d.section.padEnd(13)} ${String(out.body.length).padStart(3)} blocks, ${tables} tables`,
   );
 }
 
-console.log(`\n  ${published}/${docs.length} ${DRY_RUN ? 'converted' : 'published'}.\n`);
+console.log(`\n  ${published}/${docs.length} ${DRY_RUN ? 'converted' : DRAFT ? 'drafted' : 'published'}.\n`);

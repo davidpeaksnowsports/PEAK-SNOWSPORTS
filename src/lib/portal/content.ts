@@ -81,6 +81,7 @@ export interface PortalDoc {
   version?: string;
   updatedAt?: string;
   order?: number;
+  heroImage?: string;
 }
 
 const DOC_FIELDS = `
@@ -94,6 +95,7 @@ const DOC_FIELDS = `
   summary,
   version,
   order,
+  heroImage,
   "updatedAt": coalesce(updatedAt, _updatedAt)
 `;
 

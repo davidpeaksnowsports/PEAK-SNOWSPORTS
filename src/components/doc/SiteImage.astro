@@ -1,0 +1,14 @@
+---
+interface Props {
+  node: { src?: string; alt?: string; caption?: string };
+}
+const { src, alt = '', caption } = Astro.props.node;
+// Only photos already on this site: a path, never another host.
+const safe = src && /^\/images\/[\w./ -]+\.(jpe?g|png|webp)$/i.test(src) ? src : null;
+---
+{safe && (
+  <figure class="not-prose my-10">
+    <img src={safe} alt={alt} loading="lazy" class="aspect-[16/9] w-full bg-paper-2 object-cover" />
+    {caption && <figcaption class="meta mt-3 text-ink-45">{caption}</figcaption>}
+  </figure>
+)}

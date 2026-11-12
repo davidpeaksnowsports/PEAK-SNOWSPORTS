@@ -1,0 +1,31 @@
+---
+/**
+ * Stages in order, with arrows between them. A row on wide screens, a column
+ * on a phone, so it never needs sideways scrolling.
+ */
+import { inlineMarkdown } from '../../lib/hq/inline';
+
+interface Props {
+  node: { steps?: { title?: string; text?: string }[] };
+}
+const steps = Astro.props.node.steps ?? [];
+// Five stages fit across the page; more read better as a column.
+const row = steps.length <= 5;
+---
+<ol class:list={['not-prose my-8 flex flex-col gap-0', row && 'lg:flex-row lg:items-stretch']}>
+  {steps.map((s, i) => (
+    <li class:list={['flex flex-col', row && 'lg:flex-1 lg:flex-row lg:items-center']}>
+      <div class="h-full flex-1 border border-ink/15 bg-paper p-4">
+        <p class="meta text-accent">{String(i + 1).padStart(2, '0')}</p>
+        <p class="mt-2 font-display text-base font-bold leading-snug tracking-tight text-ink">{s.title}</p>
+        {s.text && <p class="mt-1 text-sm leading-relaxed text-ink-70 [&_a]:text-accent" set:html={inlineMarkdown(s.text)} />}
+      </div>
+      {i < steps.length - 1 && (
+        <span aria-hidden="true" class:list={['flex items-center justify-center py-1 text-ink-45', row && 'lg:px-1.5 lg:py-0']}>
+          <span class:list={[row && 'lg:hidden']}>↓</span>
+          {row && <span class="hidden lg:inline">→</span>}
+        </span>
+      )}
+    </li>
+  ))}
+</ol>

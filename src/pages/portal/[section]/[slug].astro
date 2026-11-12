@@ -8,8 +8,7 @@
  */
 export const prerender = false;
 
-import { PortableText } from 'astro-portabletext';
-import PtTable from '../../../components/hq/PtTable.astro';
+import DocBody from '../../../components/doc/DocBody.astro';
 import PortalLayout from '../../../layouts/PortalLayout.astro';
 import {
   SECTIONS,
@@ -92,8 +91,8 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
       )
     }
 
-    <div class="prose prose-lg mt-8 max-w-none">
-      <PortableText value={(doc!.body as any) ?? []} components={{ type: { table: PtTable } }} />
+    <div class="mt-8">
+      <DocBody value={doc!.body} />
     </div>
   </article>
 </PortalLayout>

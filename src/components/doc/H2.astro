@@ -1,0 +1,5 @@
+---
+/** Section heading, in the front end's style: hairline above, Geist display. */
+const { node, index, isInline, ...attrs } = Astro.props;
+---
+<h2 class="not-prose mb-5 mt-14 border-t border-ink/10 pt-10 font-display text-3xl font-bold leading-[1.05] tracking-tight text-ink md:text-4xl" {...attrs}><slot /></h2>
