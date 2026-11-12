@@ -27,7 +27,8 @@
  * column whose every cell is an empty checkbox is dropped, and `- [ ]` list
  * items become ordinary bullets: ticking lives in the /hq/start checklist.
  *
- * Documents are tier 3 (staff only) unless the front matter says `tier: 2`.
+ * Documents are tier 3 (staff only) unless the front matter says `tier: 2`,
+ * or `tier: 1` with a `version` (documents the instructor contract refers to).
  * `hubSection` also places a tier 2 document in the instructor hub.
  */
 import { readdir, readFile } from 'node:fs/promises';
@@ -163,6 +164,7 @@ function tableBlock(lines) {
 //   :::facts                                               "- value | label" lines
 //   :::flow                                                "- title | text" lines
 //   ::image /images/path.jpg | alt text | caption         one line
+//   ::signature                                            the Peak email signature
 const TONES = ['note', 'tip', 'rule', 'warning', 'action'];
 const listLines = (body) =>
   body.split('\n').map((l) => l.trim()).filter((l) => l.startsWith('- ')).map((l) => l.slice(2).trim());
@@ -247,6 +249,12 @@ function toBody(md, file = '') {
       directive = { name: open[1], args: open[2].trim(), body: [] };
       continue;
     }
+    if (line.trim() === '::signature') {
+      flushTable();
+      flushProse();
+      blocks.push({ _type: 'signature' });
+      continue;
+    }
     const image = line.match(/^::image\s+(.+)$/);
     if (image) {
       flushTable();
@@ -294,8 +302,12 @@ function prepare(doc) {
     if (!doc.data[f]) problems.push(`${doc.file}: missing "${f}"`);
   }
 
-  if (doc.data.hubSection && Number(doc.data.tier) !== 2) {
-    problems.push(`${doc.file}: hubSection needs tier 2; tier 3 is staff only`);
+  const tier = [1, 2, 3].includes(Number(doc.data.tier)) ? Number(doc.data.tier) : 3;
+  if (doc.data.hubSection && tier === 3) {
+    problems.push(`${doc.file}: hubSection needs tier 1 or 2; tier 3 is staff only`);
+  }
+  if (tier === 1 && !doc.data.version) {
+    problems.push(`${doc.file}: tier 1 documents carry a version`);
   }
 
   const hero = doc.data.hero;
@@ -312,7 +324,8 @@ function prepare(doc) {
     slug: { _type: 'slug', current: doc.slug },
     hqSection: doc.section,
     ...(doc.data.hubSection ? { section: doc.data.hubSection } : {}),
-    tier: [2, 3].includes(Number(doc.data.tier)) ? Number(doc.data.tier) : 3,
+    tier,
+    ...(doc.data.version ? { version: String(doc.data.version) } : {}),
     ...(summary ? { summary } : {}),
     ...(doc.data.order != null ? { order: Number(doc.data.order) } : {}),
     owner: doc.data.owner,

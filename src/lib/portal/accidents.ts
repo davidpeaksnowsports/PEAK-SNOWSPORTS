@@ -217,6 +217,8 @@ export async function fileReport(
 export async function notifyOffice(
   report: { id: string; filed_by_name: string; occurred_at: string; resort: string; resort_other: string | null },
   origin: string,
+  /** Where the report is read: the instructor hub, or Peak HQ. */
+  readPath = '/portal/ops/reports',
 ): Promise<void> {
   const key = import.meta.env.RESEND_API_KEY ?? process.env.RESEND_API_KEY;
   if (!key) return;
@@ -251,8 +253,8 @@ export async function notifyOffice(
           `When:   ${when}`,
           '',
           'Details of the casualty and the injury are deliberately not in this',
-          'email. Read the report in the portal:',
-          `${origin}/portal/ops/reports/${report.id}`,
+          'email. Sign in to read the report:',
+          `${origin}${readPath}/${report.id}`,
         ].join('\n'),
       }),
     });

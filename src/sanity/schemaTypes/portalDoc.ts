@@ -304,6 +304,15 @@ export const portalDoc = defineType({
           preview: { prepare: () => ({ title: 'Flow' }) },
         },
         {
+          // The Peak email signature, filled in for whoever is reading the
+          // page, with a copy button. Place it where the signature belongs.
+          type: 'object',
+          name: 'signature',
+          title: 'Email signature',
+          fields: [{ name: 'note', type: 'string', title: 'Note (not shown)' }],
+          preview: { prepare: () => ({ title: 'Email signature' }) },
+        },
+        {
           type: 'object',
           name: 'siteImage',
           title: 'Website photo',

@@ -414,9 +414,11 @@ Three things to know before touching it:
 - **No contracts and no signatures.** Those are issued and signed offline, by
   David's decision. Do not re-introduce a signing flow unless asked.
 - **Accident reports hold health data about named people, often children.**
-  Every active instructor can read them in full, and retention is ten years;
-  both are David's decisions, recorded in migration 0010 and PORTAL.md. The
-  privacy notice still needs to say instructors can view them.
+  Every active instructor, and since November 2026 every active HQ staff
+  member, can file and read them in full, and retention is ten years; all
+  David's decisions, recorded in migrations 0010 and 0015 and PORTAL.md. The
+  privacy notice still needs to say instructors and office staff can view
+  them. HQ has its own pages for them at `/hq/accidents`.
 - **Portal content is never committed.** Authored documents live in
   `portal-content/`, which is gitignored, and are seeded to the private Sanity
   dataset. Downloadable files live in a private Supabase bucket, not `public/`.

@@ -161,16 +161,33 @@ Text, with **bold** and [links](/hq).
 
 In templates, [square brackets] mark the gaps to fill.
 
-**The playbook and the ski camps explainer are authored, not imported.** The
-six playbook documents and "Ski camps, explained" were rewritten in
-November 2026 and live in `portal-content/hq/playbook/` and
-`portal-content/hq/what-we-do/`. They keep their original Sanity ids (front
+**Thirteen documents are authored, not imported.** The six playbook
+documents, "Ski camps, explained", mission and values, the code of conduct
+(tier 1, version 2026.1, wording unchanged), how we work, how we
+communicate, the email policy and the accident procedure were rewritten in
+November 2026 and live under `portal-content/hq/`. They keep their original Sanity ids (front
 matter `id`) and are no longer in `manifest.json`, so re-running
 `import-docs.mjs` will not overwrite them.
 
 `--draft` writes Sanity drafts that the live site cannot see, for previewing
 new block types before the code that renders them is deployed; a normal run
 publishes and removes the drafts. `--only=slug,slug` limits a run.
+
+### Accident reports in HQ
+
+Staff file and read accident reports at `/hq/accidents`, the same reports
+instructors file in the hub (`/portal/ops/reports`): one table, two sets of
+pages. Every active staff member can file and read every report in full, by
+David's decision of 12 November 2026 (migration 0015). The panel linking to
+them sits at the top of How we work and on the accident procedure.
+
+### Email signature
+
+The email policy carries the Peak signature (`::signature` in markdown,
+`src/components/doc/Signature.astro`). It fills in the reader's name, job
+title and phone from their HQ profile, and copies with its formatting for
+pasting into Gmail. Its colours are written as hex because a pasted
+signature can't use the site's tokens.
 
 ### People
 

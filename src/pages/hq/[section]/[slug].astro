@@ -7,6 +7,7 @@ export const prerender = false;
 
 import HqLayout from '../../../layouts/HqLayout.astro';
 import DocBody from '../../../components/doc/DocBody.astro';
+import AccidentPanel from '../../../components/hq/AccidentPanel.astro';
 import { safeSiteImage } from '../../../lib/hq/inline';
 import { HQ_SECTIONS, getHqDoc, type HqSection } from '../../../lib/hq/content';
 import { leaveFeedback } from '../../../lib/hq/feedback';
@@ -105,6 +106,12 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
             This document carries a version number. If it changes materially, we
             will tell you rather than quietly republishing it.
           </p>
+        )}
+
+        {doc.slug === 'accident-and-lost-skier' && (
+          <div class="mt-10">
+            <AccidentPanel />
+          </div>
         )}
 
         <div class="mt-4">

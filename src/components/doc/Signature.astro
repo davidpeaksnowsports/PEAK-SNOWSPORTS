@@ -1,0 +1,122 @@
+---
+/**
+ * The Peak email signature, filled in for whoever is signed in, with a button
+ * that copies it with its formatting for pasting into Gmail's signature box.
+ *
+ * Email clients ignore stylesheets and classes, so the signature itself is a
+ * table with inline styles and literal colours: the one place outside
+ * tailwind.config.ts where hex values appear, because a pasted signature has
+ * no access to the site's tokens. They are the same three: ink, ink-70 and
+ * the accent. The logo loads from the public site, so it shows in recipients'
+ * inboxes.
+ */
+import { createHqClient, type HqUser } from '../../lib/hq/supabase';
+import { getOnboarding } from '../../lib/hq/onboarding';
+
+const hq = Astro.locals.hqUser as HqUser | null | undefined;
+const portal = (Astro.locals as { portalUser?: { name?: string } | null }).portalUser;
+
+let phone: string | null = null;
+if (hq) {
+  try {
+    const o = await getOnboarding(createHqClient(Astro.cookies, Astro.request), hq.id);
+    phone = o.phone;
+  } catch {
+    phone = null;
+  }
+}
+
+const name = hq?.name ?? portal?.name ?? 'Your name';
+const role = hq?.jobTitle ?? 'Your role';
+const tel = phone ?? '+33 6 00 00 00 00';
+const telHref = `tel:${tel.replace(/[^\d+]/g, '')}`;
+const filled = Boolean(hq && hq.jobTitle && phone);
+
+const INK = '#1A1A1A';
+const INK_70 = '#5C5C5E';
+const ACCENT = '#67458D';
+const FONT = "Helvetica, Arial, sans-serif";
+const LOGO = 'https://www.peaksnowsports.com/images/logos/peak-lockup.png';
+---
+
+<figure class="not-prose my-8 border border-ink/15 bg-paper">
+  <figcaption class="flex flex-wrap items-start justify-between gap-3 border-b border-ink/10 bg-paper-2 px-5 py-4">
+    <span>
+      <span class="meta block text-ink-45">Your email signature</span>
+      <span class="mt-1 block text-sm text-ink-70">
+        {filled
+          ? 'Filled in from your Peak HQ profile.'
+          : 'Sign in to HQ to fill it in, or replace the example details with your own.'}
+      </span>
+    </span>
+    <button
+      type="button"
+      data-copy-signature
+      class="meta shrink-0 rounded-full bg-accent px-4 py-2 text-paper transition-colors hover:bg-ink"
+    >
+      Copy signature
+    </button>
+  </figcaption>
+
+  <div class="overflow-x-auto px-5 py-6">
+    <div data-signature>
+      <table cellpadding="0" cellspacing="0" border="0" style={`border-collapse:collapse;font-family:${FONT};`}>
+        <tr>
+          <td style="padding:0 16px 0 0;vertical-align:top;">
+            <a href="https://www.peaksnowsports.com" style="text-decoration:none;">
+              <img src={LOGO} width="64" height="64" alt="Peak Snowsports" style="display:block;border:0;width:64px;height:64px;" />
+            </a>
+          </td>
+          <td style={`padding:0 0 0 16px;vertical-align:top;border-left:2px solid ${ACCENT};`}>
+            <p style={`margin:0;font-size:15px;line-height:20px;font-weight:bold;color:${INK};`}>{name}</p>
+            <p style={`margin:0 0 8px 0;font-size:13px;line-height:18px;color:${INK_70};`}>{role}, Peak Snowsports</p>
+            <p style={`margin:0;font-size:13px;line-height:18px;color:${INK_70};`}>
+              <a href={telHref} style={`color:${INK_70};text-decoration:none;`}>{tel}</a>
+            </p>
+            <p style={`margin:0;font-size:13px;line-height:18px;`}>
+              <a href="https://www.peaksnowsports.com" style={`color:${ACCENT};text-decoration:none;`}>peaksnowsports.com</a>
+              <span style={`color:${INK_70};`}> · </span>
+              <a href="https://www.instagram.com/peaksnowsports" style={`color:${ACCENT};text-decoration:none;`}>@peaksnowsports</a>
+            </p>
+            <p style={`margin:8px 0 0 0;font-size:12px;line-height:16px;font-style:italic;color:${INK_70};`}>Where moments become memories.</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</figure>
+
+<script>
+  document.addEventListener('click', async (e) => {
+    const button = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-copy-signature]');
+    if (!button) return;
+    const sig = button.closest('figure')?.querySelector<HTMLElement>('[data-signature]');
+    if (!sig) return;
+    let ok = false;
+    // Rich copy first, so Gmail keeps the logo, colours and links.
+    try {
+      if ('ClipboardItem' in window) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/html': new Blob([sig.innerHTML], { type: 'text/html' }),
+            'text/plain': new Blob([sig.innerText], { type: 'text/plain' }),
+          }),
+        ]);
+        ok = true;
+      }
+    } catch {
+      ok = false;
+    }
+    if (!ok) {
+      const range = document.createRange();
+      range.selectNodeContents(sig);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+      ok = document.execCommand('copy');
+      sel?.removeAllRanges();
+    }
+    button.textContent = ok ? 'Copied' : 'Select it and copy';
+    setTimeout(() => (button.textContent = 'Copy signature'), 2500);
+  });
+</script>
