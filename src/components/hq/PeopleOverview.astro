@@ -1,6 +1,6 @@
 ---
 /**
- * The top of HQ → People: how the roles fit together (a diagram, then the same
+ * The top of People, in both HQ and the instructor hub: how the roles fit together (a diagram, then the same
  * thing as cards), and everyone on the team with their headshot.
  *
  * Roles come from src/lib/hq/people.ts. The teaching team is the website's own
@@ -13,10 +13,12 @@ import { LINKS, ROLES, roleByKey, type RoleKey } from '../../lib/hq/people';
 interface Props {
   /** Slugs of job descriptions that exist in this section. */
   jdSlugs: string[];
+  /** Where those documents live: /hq/people in HQ, /portal/people in the hub. */
+  base?: string;
 }
-const { jdSlugs } = Astro.props;
+const { jdSlugs, base = '/hq/people' } = Astro.props;
 const jdHref = (slug?: string) =>
-  slug && jdSlugs.includes(slug) ? `/hq/people/${slug}` : null;
+  slug && jdSlugs.includes(slug) ? `${base}/${slug}` : null;
 
 // Diagram geometry. Boxes are 240 by 72 in a 960 by 490 view box.
 const W = 240;

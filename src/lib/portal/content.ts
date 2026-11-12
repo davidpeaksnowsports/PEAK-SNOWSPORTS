@@ -49,7 +49,7 @@ export const portalSanity = isContentConfigured
   : null;
 const client = portalSanity;
 
-/** The seven areas of the portal. Matches the routes under /portal. */
+/** The eight areas of the portal. Matches the routes under /portal. */
 export type PortalSection =
   | 'handbook'
   | 'knowledge'
@@ -57,7 +57,8 @@ export type PortalSection =
   | 'marketing'
   | 'hr'
   | 'ops'
-  | 'ideas';
+  | 'ideas'
+  | 'people';
 
 export interface PortalDoc {
   _id: string;
@@ -215,5 +216,11 @@ export const SECTIONS: {
     label: 'Ideas',
     href: '/portal/ideas',
     blurb: 'Anything you think we should be doing differently.',
+  },
+  {
+    key: 'people',
+    label: 'People',
+    href: '/portal/people',
+    blurb: 'Who does what, how the roles fit together, and every job description.',
   },
 ];

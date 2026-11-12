@@ -148,6 +148,13 @@ Job descriptions are documents in the People section. The instructor,
 Operations Lead and Marketing and Brand Lead ones are authored in
 `portal-content/hq/people/` and published with `seed-hq.mjs` as tier 2.
 
+**Instructors see People too** (David, 12 November 2026): the instructor hub
+has its own People section (`/portal/people`) with the same diagram, team and
+all four job descriptions, booking specialist included (moved from tier 3 to
+tier 2 in the manifest). In `seed-hq.mjs`, `hubSection: people` in front
+matter is what puts a document there, and it is refused unless the document
+is tier 2.
+
 ### Was this unclear?
 
 Every HQ document ends with a "Was this unclear?" form. Notes land in
