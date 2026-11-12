@@ -9,6 +9,7 @@
 export const prerender = false;
 
 import DocBody from '../../../components/doc/DocBody.astro';
+import AccidentPanel from '../../../components/hq/AccidentPanel.astro';
 import PortalLayout from '../../../layouts/PortalLayout.astro';
 import {
   SECTIONS,
@@ -90,6 +91,12 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
         </p>
       )
     }
+
+    {doc!.slug === 'accident-and-lost-skier' && (
+      <div class="mt-10">
+        <AccidentPanel fileHref="/portal/ops/report" listHref="/portal/ops/reports" />
+      </div>
+    )}
 
     <div class="mt-8">
       <DocBody value={doc!.body} />

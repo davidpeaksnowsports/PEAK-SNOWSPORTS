@@ -1,0 +1,36 @@
+---
+/**
+ * File or read accident reports, as on the instructor hub's Operations page.
+ * Shown in HQ at the top of How we work, and on the accident procedure page in
+ * both HQ and the instructor hub.
+ */
+interface Props {
+  fileHref?: string;
+  listHref?: string;
+}
+const { fileHref = '/hq/accidents/report', listHref = '/hq/accidents' } = Astro.props;
+---
+<section aria-labelledby="accidents-heading" class="mb-12 bg-ink p-6 text-paper md:p-8">
+  <p class="meta text-paper/70">Accidents</p>
+  <h2 id="accidents-heading" class="mt-2 font-display text-2xl font-bold leading-tight tracking-tight md:text-3xl">
+    File a report the same day.
+  </h2>
+  <p class="mt-3 max-w-2xl text-paper/80">
+    While you still remember the detail. It is what protects everyone if an
+    accident later turns into a claim.
+  </p>
+  <p class="mt-6 flex flex-wrap gap-3">
+    <a
+      href={fileHref}
+      class="inline-block bg-accent px-5 py-3 font-display font-bold text-paper no-underline transition-colors hover:bg-paper hover:text-ink hover:no-underline"
+    >
+      File an accident report
+    </a>
+    <a
+      href={listHref}
+      class="inline-block border border-paper/30 px-5 py-3 font-display font-bold text-paper no-underline transition-colors hover:border-paper hover:no-underline"
+    >
+      Read filed reports
+    </a>
+  </p>
+</section>

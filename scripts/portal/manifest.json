@@ -42,27 +42,6 @@
       "hqSection": "policies"
     },
     {
-      "file": "Policies/Code of conduct.docx",
-      "slug": "code-of-conduct",
-      "title": "Code of conduct",
-      "section": "handbook",
-      "tier": 1,
-      "order": 3,
-      "version": "2026.1",
-      "summary": "The standards every person representing Peak is held to. Referenced by your contract.",
-      "hqSection": "policies"
-    },
-    {
-      "file": "Policies/Mission and Values.docx",
-      "slug": "mission-and-values",
-      "title": "Mission and values",
-      "section": "handbook",
-      "tier": 2,
-      "order": 4,
-      "summary": "What we are trying to do, and how we expect to do it.",
-      "hqSection": "what-we-do"
-    },
-    {
       "file": "Policies/Anti-harassment and discrimination policy.docx",
       "slug": "anti-harassment-and-discrimination",
       "title": "Anti-harassment and discrimination",
@@ -123,16 +102,6 @@
       "hqSection": "policies"
     },
     {
-      "file": "Policies/Email Policy.docx",
-      "slug": "email",
-      "title": "Email",
-      "section": "handbook",
-      "tier": 2,
-      "order": 11,
-      "summary": "Using a Peak email address, and what not to put in one.",
-      "hqSection": "policies"
-    },
-    {
       "file": "Policies/Social Media Policy.docx",
       "slug": "social-media",
       "title": "Social media and client images",
@@ -141,36 +110,6 @@
       "order": 3,
       "summary": "Sharing your season online, including consent for filming clients and the extra care needed for under-18s.",
       "hqSection": "policies"
-    },
-    {
-      "file": "Ops/Accident report checklist and procedure and lost skier .docx",
-      "slug": "accident-and-lost-skier",
-      "title": "Accident and lost skier procedure",
-      "section": "ops",
-      "tier": 2,
-      "order": 1,
-      "summary": "What to do on the hill, in order. Read this before you need it.",
-      "hqSection": "how-we-work"
-    },
-    {
-      "file": "Ops/Peak Systems of Work & Habits Guide.docx",
-      "slug": "systems-of-work",
-      "title": "How we work",
-      "section": "ops",
-      "tier": 2,
-      "order": 2,
-      "summary": "The working principles that keep a team spread across four resorts consistent.",
-      "hqSection": "how-we-work"
-    },
-    {
-      "file": "Ops/🧭 Google Chat Space Structure by Department.docx",
-      "slug": "how-we-communicate",
-      "title": "How we communicate",
-      "section": "ops",
-      "tier": 2,
-      "order": 3,
-      "summary": "Which channel to use for what, so nothing important gets lost in a group chat.",
-      "hqSection": "how-we-work"
     },
     {
       "file": "Admin : hr : finance/Carte Pro Guide.docx",
@@ -217,7 +156,8 @@
       "tier": 2,
       "order": 12,
       "summary": "Three brothers, four resorts, and what we set out to build.",
-      "hqSection": "what-we-do"
+      "hqSection": "what-we-do",
+      "hero": "/images/about/three-brothers-image.jpg"
     },
     {
       "file": "Policies/Ideas.docx",
@@ -313,7 +253,8 @@
           "SkiOperator-driven"
         ]
       ],
-      "tier": 3
+      "tier": 3,
+      "hero": "/images/resorts/les-gets.jpg"
     },
     {
       "file": "Admin : hr : finance/JD__ Booking specialist.docx",

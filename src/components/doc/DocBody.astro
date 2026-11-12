@@ -19,6 +19,7 @@ import Template from './Template.astro';
 import Facts from './Facts.astro';
 import Flow from './Flow.astro';
 import SiteImage from './SiteImage.astro';
+import Signature from './Signature.astro';
 
 interface Props {
   value: unknown[] | undefined;
@@ -33,6 +34,7 @@ const components = {
     facts: Facts,
     flow: Flow,
     siteImage: SiteImage,
+    signature: Signature,
   },
   block: { h2: H2, h3: H3, blockquote: Quote },
   list: { bullet: BulletList, number: NumberList },

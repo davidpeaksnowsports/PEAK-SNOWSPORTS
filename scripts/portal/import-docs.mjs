@@ -273,6 +273,7 @@ for (const doc of manifest.documents) {
         summary: doc.summary,
         ...(doc.version ? { version: doc.version } : {}),
         ...(doc.order != null ? { order: doc.order } : {}),
+        ...(doc.hero ? { heroImage: doc.hero } : {}),
         body: blocks,
       });
     }

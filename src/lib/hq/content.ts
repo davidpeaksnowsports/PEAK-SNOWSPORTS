@@ -130,71 +130,84 @@ export const PRODUCTS: {
   name: string;
   summary: string;
   href: string;
+  /** A photo already on the public site, for the row's thumbnail. */
+  image: string;
 }[] = [
   {
     name: 'Private lessons',
     summary:
       'One-to-one private ski lessons with a dedicated Peak instructor. Half day to a full day. All levels, all four home resorts. Request your preferred instructor by name.',
     href: '/lessons/private',
+    image: '/images/about/marc-motion-2.jpg',
   },
   {
     name: 'Adult group lessons',
     summary:
       'Small-group adult ski lessons across Morzine, Avoriaz, Châtel and Les Gets. Seven levels from total beginner to expert. Eight max per group.',
     href: '/lessons/group',
+    image: '/images/journal/5-common-skiing-mistakes.jpg',
   },
   {
     name: "Kids' groups",
     summary:
       "School-holiday kids' ski lessons across the Portes du Soleil for ages 4–12, plus GCSE PE assessment lessons. Max 6 per group, max 4 in Les P'tits (4–5 yrs). PEAK level system with medals.",
     href: '/lessons/family',
+    image: '/images/journal/gcse-ski-pe-course.jpg',
   },
   {
     name: 'Kids club',
     summary:
       'A season-long ski programme for in-resort kids (7+). Wednesday and Saturday afternoons across 30 sessions. PEAK levels, medals, all-mountain skills.',
     href: '/lessons/kids-club',
+    image: '/images/journal/skiing-with-kids.jpg',
   },
   {
     name: 'Off-piste',
     summary:
       'Half-day and full-day off-piste, ski-touring and freeride clinics in Morzine, Avoriaz, Châtel and Les Gets. Avalanche safety, navigation, route planning. Up to six per instructor.',
     href: '/lessons/off-piste',
+    image: '/images/about/george-motion-1.jpg',
   },
   {
     name: 'Race coaching',
     summary:
       'Slalom and GS ski race coaching for kids and adults. Avoriaz weekly camps, Austria pre-season camps, Châtel FIS / Eurotest / Masters training.',
     href: '/lessons/race-coaching',
+    image: '/images/about/david-motion-1.jpg',
   },
   {
     name: 'Ski camps',
     summary:
       "Five-day small-group ski camps in Morzine-Avoriaz, Verbier and Val d'Isère for intermediate and advanced skiers. Coached by BASI L4 ISTD and Trainers. 8 max per group. From €799 coaching only.",
     href: '/ski-camps',
+    image: '/images/og/ski-camps.jpg',
   },
   {
     name: 'GAP course',
     summary:
       'Become a ski instructor in six weeks. BASI Level 1 + 2 ski instructor course, coached by BASI Trainers, 8:1 max, winter 2027 intake in Morzine now booking. From €8,999, staged payments from €150.',
     href: '/gap-course',
+    image: '/images/og/gap-course.jpg',
   },
   {
     name: 'Accommodation',
     summary:
       'Hand-picked accommodation partners we trust. One enquiry, the right team in touch.',
     href: '/accommodation',
+    image: '/images/accommodation/elevation-alps.jpg',
   },
   {
     name: 'Partner programme',
     summary:
       '10% commission on completed referred bookings, five booking channels, real coaches with real names. Partners request the 2026/27 rate card here.',
     href: '/partners',
+    image: '/images/journal/is-morzine-good-for-beginners.jpg',
   },
   {
     name: 'Book anything',
     summary:
       'Live availability for private lessons, kids groups, family groups, off-piste and race coaching across all four resorts. Clients hold their place with a small deposit.',
     href: '/book',
+    image: '/images/resorts/morzine.jpg',
   },
 ];
