@@ -1,0 +1,8 @@
+---
+/** Accent dot bullets, as on the lesson pages. Nested lists indent under the text. */
+const { node, index, isInline, ...attrs } = Astro.props;
+---
+<li class="flex gap-3 text-base leading-relaxed text-ink-70 md:text-lg [&_ul]:mt-3 [&_ol]:mt-3" {...attrs}>
+  <span aria-hidden="true" class="mt-[0.6em] inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent"></span>
+  <div class="min-w-0 flex-1 [&_a]:text-accent [&_strong]:text-ink"><slot /></div>
+</li>

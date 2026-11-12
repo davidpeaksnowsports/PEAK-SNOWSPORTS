@@ -1,0 +1,5 @@
+---
+/** Numbered steps with round accent markers ("01"), as on the race coaching page. */
+const { node, index, isInline, ...attrs } = Astro.props;
+---
+<ol class="not-prose my-8 space-y-0 border-t border-ink/10 [counter-reset:step]" {...attrs}><slot /></ol>

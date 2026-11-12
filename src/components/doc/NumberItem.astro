@@ -1,0 +1,9 @@
+---
+const { node, index, isInline, ...attrs } = Astro.props;
+---
+<li
+  class="grid grid-cols-[2.75rem_1fr] items-start gap-4 border-b border-ink/10 py-4 text-base leading-relaxed text-ink-70 [counter-increment:step] before:flex before:font-mono before:text-xs before:tracking-widest before:h-10 before:w-10 before:items-center before:justify-center before:rounded-full before:bg-accent before:text-paper before:content-[counter(step,decimal-leading-zero)] md:text-lg [&_ul]:mt-3"
+  {...attrs}
+>
+  <div class="min-w-0 pt-1.5 [&_a]:text-accent [&_strong]:text-ink"><slot /></div>
+</li>

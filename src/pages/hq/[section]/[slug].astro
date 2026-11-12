@@ -5,9 +5,9 @@
  */
 export const prerender = false;
 
-import { PortableText } from 'astro-portabletext';
 import HqLayout from '../../../layouts/HqLayout.astro';
-import PtTable from '../../../components/hq/PtTable.astro';
+import DocBody from '../../../components/doc/DocBody.astro';
+import { safeSiteImage } from '../../../lib/hq/inline';
 import { HQ_SECTIONS, getHqDoc, type HqSection } from '../../../lib/hq/content';
 import { leaveFeedback } from '../../../lib/hq/feedback';
 import { createHqClient, type HqUser } from '../../../lib/hq/supabase';
@@ -38,6 +38,7 @@ if (found && doc && Astro.request.method === 'POST') {
   }
 }
 const thanked = Astro.url.searchParams.get('thanks') === '1';
+const hero = safeSiteImage(doc?.heroImage);
 
 const dateFmt = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
@@ -60,9 +61,17 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
       </nav>
 
       <article class="max-w-3xl">
+        {hero && (
+          <img
+            src={hero}
+            alt=""
+            class="mb-10 aspect-[21/9] w-full bg-paper-2 object-cover"
+          />
+        )}
         <header class="border-b border-ink/10 pb-8">
-          <h1 class="font-display text-4xl font-bold md:text-5xl">{doc.title}</h1>
-          {doc.summary && <p class="mt-4 text-lg text-ink-70">{doc.summary}</p>}
+          <p class="meta text-ink-45">{section.label}</p>
+          <h1 class="mt-4 font-display text-4xl font-bold leading-[0.95] tracking-tight md:text-6xl">{doc.title}</h1>
+          {doc.summary && <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-70 md:text-xl">{doc.summary}</p>}
 
           <dl class="meta mt-6 flex flex-wrap gap-x-8 gap-y-2 text-ink-45">
             {doc.version && (
@@ -98,8 +107,8 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
           </p>
         )}
 
-        <div class="prose prose-lg mt-8 max-w-none">
-          <PortableText value={(doc.body as any) ?? []} components={{ type: { table: PtTable } }} />
+        <div class="mt-4">
+          <DocBody value={doc.body} />
         </div>
 
         <section id="unclear" aria-labelledby="unclear-heading" class="mt-16 border-t border-ink pt-8">

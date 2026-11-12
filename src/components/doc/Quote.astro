@@ -1,0 +1,5 @@
+---
+/** A quotation, as on the site: large display type with an accent rule. */
+const { node, index, isInline, ...attrs } = Astro.props;
+---
+<blockquote class="not-prose my-10 border-l-2 border-accent pl-6 font-display text-xl leading-snug tracking-tight text-ink md:text-2xl" {...attrs}><slot /></blockquote>

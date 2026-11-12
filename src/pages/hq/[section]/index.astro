@@ -12,6 +12,7 @@ export const prerender = false;
 
 import HqLayout from '../../../layouts/HqLayout.astro';
 import PeopleOverview from '../../../components/hq/PeopleOverview.astro';
+import { safeSiteImage } from '../../../lib/hq/inline';
 import {
   HQ_SECTIONS,
   PRODUCTS,
@@ -25,6 +26,10 @@ const section = HQ_SECTIONS.find((s) => s.key === key);
 if (!section) Astro.response.status = 404;
 
 const docs = section ? await listHqDocs(key) : [];
+
+// A section whose documents carry photos reads as cards, like the site's
+// product grids; one without stays a plain list.
+const visual = docs.some((d) => safeSiteImage(d.heroImage));
 
 const dateFmt = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
@@ -87,6 +92,35 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
               : 'The document store is not connected yet, so this section is empty.'}
           </p>
         </div>
+      ) : visual ? (
+        <ul class="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          {docs.map((doc, i) => {
+            const img = safeSiteImage(doc.heroImage);
+            return (
+              <li>
+                <a href={`/hq/${key}/${doc.slug}`} class="group block no-underline hover:no-underline">
+                  {img ? (
+                    <img src={img} alt="" loading="lazy" class="aspect-[16/10] w-full bg-paper-2 object-cover transition-opacity group-hover:opacity-90" />
+                  ) : (
+                    <span class="block aspect-[16/10] w-full bg-paper-2" />
+                  )}
+                  <span class="meta mt-5 flex items-center gap-3 text-ink-45">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-paper">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    {doc.updatedAt && <span>{dateFmt.format(new Date(doc.updatedAt))}</span>}
+                  </span>
+                  <span class="mt-4 block font-display text-2xl font-bold leading-tight tracking-tight text-ink group-hover:text-accent">
+                    {doc.title}
+                  </span>
+                  {doc.summary && (
+                    <span class="mt-2 block text-base leading-relaxed text-ink-70">{doc.summary}</span>
+                  )}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
       ) : (
         <ul class="border-t border-ink/10">
           {docs.map((doc) => (

@@ -1,0 +1,32 @@
+---
+/**
+ * A shaded box: a rule to follow, a tip, a warning or a note. Shading and a
+ * left rule, never a second colour: the palette has one accent.
+ */
+import { richText } from '../../lib/hq/inline';
+
+interface Props {
+  node: { tone?: 'note' | 'tip' | 'rule' | 'warning' | 'action'; title?: string; text?: string };
+}
+const { tone = 'note', title, text = '' } = Astro.props.node;
+const label = { note: 'Note', tip: 'Tip', rule: 'The rule', warning: 'Watch out', action: 'To do' }[tone] ?? 'Note';
+const strong = tone === 'rule' || tone === 'warning' || tone === 'action';
+---
+<aside
+  class:list={[
+    'not-prose my-8 p-6 md:p-7',
+    strong ? 'bg-ink text-paper' : 'border-l-2 border-accent bg-paper-2 text-ink',
+  ]}
+>
+  <p class:list={['meta', strong ? 'text-paper/70' : 'text-accent']}>{label}</p>
+  {title && <p class="mt-2 font-display text-xl font-bold leading-snug tracking-tight">{title}</p>}
+  {text && (
+    <div
+      class:list={[
+        "mt-3 space-y-3 text-base leading-relaxed [&_ul]:space-y-1.5 [&_li]:pl-4 [&_li]:-indent-4 [&_li]:before:mr-2 [&_li]:before:content-['•']",
+        strong ? 'text-paper/85 [&_a]:text-paper [&_a]:underline [&_strong]:text-paper' : 'text-ink-70 [&_a]:text-accent [&_strong]:text-ink',
+      ]}
+      set:html={richText(text)}
+    />
+  )}
+</aside>

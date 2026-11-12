@@ -1,0 +1,44 @@
+---
+/**
+ * The body of a portal document, in HQ or the instructor hub, styled like the
+ * public site: Geist headings on hairlines, accent markers, shaded callouts,
+ * pills, template cards, figures, flows and photos.
+ */
+import { PortableText } from 'astro-portabletext';
+import PtTable from '../hq/PtTable.astro';
+import H2 from './H2.astro';
+import H3 from './H3.astro';
+import Quote from './Quote.astro';
+import BulletList from './BulletList.astro';
+import BulletItem from './BulletItem.astro';
+import NumberList from './NumberList.astro';
+import NumberItem from './NumberItem.astro';
+import Callout from './Callout.astro';
+import Pills from './Pills.astro';
+import Template from './Template.astro';
+import Facts from './Facts.astro';
+import Flow from './Flow.astro';
+import SiteImage from './SiteImage.astro';
+
+interface Props {
+  value: unknown[] | undefined;
+}
+
+const components = {
+  type: {
+    table: PtTable,
+    callout: Callout,
+    pills: Pills,
+    template: Template,
+    facts: Facts,
+    flow: Flow,
+    siteImage: SiteImage,
+  },
+  block: { h2: H2, h3: H3, blockquote: Quote },
+  list: { bullet: BulletList, number: NumberList },
+  listItem: { bullet: BulletItem, number: NumberItem },
+};
+---
+<div class="prose prose-lg max-w-none prose-p:leading-relaxed prose-a:text-accent">
+  <PortableText value={(Astro.props.value as any) ?? []} components={components} />
+</div>

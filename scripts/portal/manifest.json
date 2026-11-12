@@ -247,76 +247,6 @@
       "tier": 3
     },
     {
-      "file": "Policies/Phone Etiquette.docx",
-      "slug": "phone-etiquette",
-      "title": "Phone etiquette",
-      "hqSection": "playbook",
-      "order": 1,
-      "summary": "How we sound on the phone, from the first hello.",
-      "tier": 3
-    },
-    {
-      "file": "Policies/Email Templates.docx",
-      "slug": "email-templates",
-      "title": "Email templates",
-      "hqSection": "playbook",
-      "order": 2,
-      "summary": "Enquiry replies, follow-ups and partner emails, ready to adapt.",
-      "replace": [
-        [
-          "{{ contact.firstname }}",
-          "[first name]"
-        ],
-        [
-          "Rezdy",
-          "SkiOperator"
-        ]
-      ],
-      "tier": 3
-    },
-    {
-      "file": "Policies/Sales training.docx",
-      "slug": "sales-training",
-      "title": "Sales training",
-      "hqSection": "playbook",
-      "order": 3,
-      "summary": "Own your pricing. Show the value instead of defending the number.",
-      "tier": 3
-    },
-    {
-      "file": "Policies/GAP Deals.docx",
-      "slug": "gap-pipeline",
-      "title": "GAP course pipeline",
-      "hqSection": "playbook",
-      "order": 4,
-      "summary": "How a GAP enquiry moves from first contact to a deposit.",
-      "tier": 3
-    },
-    {
-      "file": "Policies/Chalet script.docx",
-      "slug": "chalet-script",
-      "title": "Chalet presentation script",
-      "hqSection": "playbook",
-      "order": 5,
-      "summary": "What to say when a chalet invites us in to present. Fill in your own name and role.",
-      "tier": 3
-    },
-    {
-      "file": "Policies/Partner commission _ guide.docx",
-      "slug": "partner-commission",
-      "title": "Partner commission",
-      "hqSection": "playbook",
-      "order": 6,
-      "summary": "Reconciling commission for agents and partners at the end of the season.",
-      "replace": [
-        [
-          "Rezdy",
-          "SkiOperator"
-        ]
-      ],
-      "tier": 3
-    },
-    {
       "file": "Policies/Paid time off policy.docx",
       "slug": "paid-time-off",
       "title": "Paid time off",
@@ -383,15 +313,6 @@
           "SkiOperator-driven"
         ]
       ],
-      "tier": 3
-    },
-    {
-      "file": "Sales and marketing/Explainer __ Ski camps.docx",
-      "slug": "ski-camps-explainer",
-      "title": "Ski camps, explained",
-      "hqSection": "what-we-do",
-      "order": 3,
-      "summary": "Why we are expanding the camps, and how each one runs.",
       "tier": 3
     },
     {

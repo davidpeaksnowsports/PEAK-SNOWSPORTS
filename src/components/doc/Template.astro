@@ -1,0 +1,50 @@
+---
+/**
+ * An email or message to adapt and send: a card with a copy button. Anything
+ * in [square brackets] is highlighted as a gap to fill in.
+ */
+interface Props {
+  node: { _key?: string; title?: string; kind?: 'email' | 'script'; when?: string; text?: string };
+}
+const { _key, title, kind = 'email', when, text = '' } = Astro.props.node;
+const id = `tpl-${_key ?? Math.random().toString(36).slice(2)}`;
+const escape = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const html = escape(text.trim()).replace(
+  /\[([^\]\n]{1,120})\]/g,
+  '<mark class="rounded-sm bg-accent/10 px-1 text-accent">[$1]</mark>',
+);
+---
+<figure class="not-prose my-8 border border-ink/15 bg-paper">
+  <figcaption class="flex flex-wrap items-start justify-between gap-3 border-b border-ink/10 bg-paper-2 px-5 py-4">
+    <span>
+      <span class="meta block text-ink-45">{kind === 'script' ? 'Script' : 'Email template'}</span>
+      {title && <span class="mt-1 block font-display text-lg font-bold leading-snug tracking-tight text-ink">{title}</span>}
+      {when && <span class="mt-1 block text-sm text-ink-70">{when}</span>}
+    </span>
+    <button
+      type="button"
+      data-copy-target={id}
+      class="meta shrink-0 rounded-full border border-ink/20 px-3 py-1.5 text-ink transition-colors hover:border-accent hover:text-accent"
+    >
+      Copy
+    </button>
+  </figcaption>
+  <div id={id} class="whitespace-pre-line px-5 py-5 text-base leading-relaxed text-ink-70" set:html={html} />
+</figure>
+
+<script>
+  document.addEventListener('click', async (e) => {
+    const button = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-copy-target]');
+    if (!button) return;
+    const target = document.getElementById(button.dataset.copyTarget ?? '');
+    if (!target) return;
+    try {
+      await navigator.clipboard.writeText(target.innerText.trim());
+      button.textContent = 'Copied';
+    } catch {
+      button.textContent = 'Select and copy';
+    }
+    setTimeout(() => (button.textContent = 'Copy'), 2000);
+  });
+</script>

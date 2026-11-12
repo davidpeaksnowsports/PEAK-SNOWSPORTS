@@ -33,6 +33,7 @@ export interface HqDoc {
   updatedAt?: string;
   owner?: string;
   reviewedAt?: string;
+  heroImage?: string;
 }
 
 const DOC_FIELDS = `
@@ -45,6 +46,7 @@ const DOC_FIELDS = `
   version,
   owner,
   reviewedAt,
+  heroImage,
   "updatedAt": coalesce(updatedAt, _updatedAt)
 `;
 
