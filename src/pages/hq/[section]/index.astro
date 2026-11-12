@@ -11,6 +11,7 @@
 export const prerender = false;
 
 import HqLayout from '../../../layouts/HqLayout.astro';
+import PeopleOverview from '../../../components/hq/PeopleOverview.astro';
 import {
   HQ_SECTIONS,
   PRODUCTS,
@@ -70,6 +71,12 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
             sees.
           </p>
         </section>
+      )}
+
+      {key === 'people' && <PeopleOverview jdSlugs={docs.map((d) => d.slug)} />}
+
+      {key === 'people' && docs.length > 0 && (
+        <h2 class="mb-2 border-b border-ink pb-3 font-display text-2xl font-bold">Job descriptions</h2>
       )}
 
       {docs.length === 0 ? (

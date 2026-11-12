@@ -20,7 +20,8 @@
  * column whose every cell is an empty checkbox is dropped, and `- [ ]` list
  * items become ordinary bullets: ticking lives in the /hq/start checklist.
  *
- * Every document is tier 3 (staff only) and has no instructor hub section.
+ * Documents are tier 3 (staff only) unless the front matter says `tier: 2`.
+ * None gets an instructor hub section from this script.
  */
 import { readdir, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -184,7 +185,7 @@ function prepare(doc) {
     title: doc.data.title,
     slug: { _type: 'slug', current: doc.slug },
     hqSection: doc.section,
-    tier: 3,
+    tier: [2, 3].includes(Number(doc.data.tier)) ? Number(doc.data.tier) : 3,
     ...(summary ? { summary } : {}),
     ...(doc.data.order != null ? { order: Number(doc.data.order) } : {}),
     owner: doc.data.owner,

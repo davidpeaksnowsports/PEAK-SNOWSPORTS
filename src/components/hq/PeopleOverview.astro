@@ -1,0 +1,188 @@
+---
+/**
+ * The top of HQ → People: how the roles fit together (a diagram, then the same
+ * thing as cards), and everyone on the team with their headshot.
+ *
+ * Roles come from src/lib/hq/people.ts. The teaching team is the website's own
+ * instructor list (src/content/instructors), so names, roles and photos match
+ * what clients see. Office roles not on the website are added below it.
+ */
+import { getCollection } from 'astro:content';
+import { LINKS, ROLES, roleByKey, type RoleKey } from '../../lib/hq/people';
+
+interface Props {
+  /** Slugs of job descriptions that exist in this section. */
+  jdSlugs: string[];
+}
+const { jdSlugs } = Astro.props;
+const jdHref = (slug?: string) =>
+  slug && jdSlugs.includes(slug) ? `/hq/people/${slug}` : null;
+
+// Diagram geometry. Boxes are 240 by 72 in a 960 by 490 view box.
+const W = 240;
+const H = 72;
+const pos: Record<RoleKey, { x: number; y: number }> = {
+  syndicate: { x: 330, y: 20 },
+  basecamp: { x: 710, y: 20 },
+  ops: { x: 110, y: 200 },
+  marketing: { x: 560, y: 200 },
+  booking: { x: 10, y: 400 },
+  instructors: { x: 340, y: 400 },
+  content: { x: 700, y: 400 },
+};
+// Hand-placed lines: [x1, y1, x2, y2, label x, label y, anchor].
+const lines: Record<string, [number, number, number, number, number, number, string]> = {
+  'syndicate>basecamp': [570, 56, 710, 56, 640, 46, 'middle'],
+  'syndicate>ops': [390, 92, 260, 200, 315, 150, 'end'],
+  'syndicate>marketing': [510, 92, 640, 200, 585, 150, 'start'],
+  'marketing>ops': [560, 236, 350, 236, 455, 226, 'middle'],
+  'ops>booking': [180, 272, 130, 400, 145, 340, 'end'],
+  'ops>instructors': [290, 272, 420, 400, 365, 340, 'start'],
+  'booking>instructors': [250, 436, 340, 436, 295, 426, 'middle'],
+  'marketing>content': [720, 272, 800, 400, 770, 340, 'start'],
+};
+
+const worksWith = (k: RoleKey) => [
+  ...LINKS.filter((l) => l.to === k).map((l) => `From ${roleByKey(l.from).title}: ${l.label.toLowerCase()}`),
+  ...LINKS.filter((l) => l.from === k).map((l) => `To ${roleByKey(l.to).title}: ${l.label.toLowerCase()}`),
+];
+
+const instructors = (await getCollection('instructors', ({ data }) => !data.draft)).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99) || a.data.name.localeCompare(b.data.name),
+);
+const office = [
+  { name: 'Margaux', role: 'Booking specialist' },
+  { name: 'Ségolène', role: 'Booking specialist' },
+  { name: 'Mariusz', role: 'Content creator' },
+];
+const initials = (n: string) => n.split(/\s+/).map((p) => p[0]).join('').slice(0, 2);
+---
+
+<section aria-labelledby="roles-heading" class="mb-16">
+  <div class="flex items-baseline justify-between gap-4 border-b border-ink pb-3">
+    <h2 id="roles-heading" class="font-display text-2xl font-bold">How the roles fit together</h2>
+    <p class="meta hidden text-ink-45 sm:block">Tap a role for its job description</p>
+  </div>
+
+  <div class="-mx-4 overflow-x-auto px-4 py-6 sm:mx-0 sm:px-0">
+    <svg
+      viewBox="0 0 960 490"
+      class="h-auto w-full min-w-[720px] max-w-4xl"
+      role="img"
+      aria-labelledby="roles-svg-title roles-svg-desc"
+    >
+      <title id="roles-svg-title">How the roles at Peak work together</title>
+      <desc id="roles-svg-desc">
+        {LINKS.map((l) => `${roleByKey(l.from).title}: ${l.label.toLowerCase()} (${roleByKey(l.to).title}).`).join(' ')}
+      </desc>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" class="fill-ink-45" />
+        </marker>
+      </defs>
+
+      {LINKS.map((l) => {
+        const g = lines[`${l.from}>${l.to}`];
+        if (!g) return null;
+        const [x1, y1, x2, y2, lx, ly, anchor] = g;
+        return (
+          <g>
+            <line x1={x1} y1={y1} x2={x2} y2={y2} class="stroke-ink-45" stroke-width="1.5" marker-end="url(#arrow)" />
+            <text
+              x={lx}
+              y={ly}
+              text-anchor={anchor}
+              class="fill-ink-70 stroke-paper font-mono text-[12px] [paint-order:stroke] [stroke-linejoin:round] [stroke-width:5px]"
+            >
+              {l.short}
+            </text>
+          </g>
+        );
+      })}
+
+      {ROLES.map((r) => {
+        const { x, y } = pos[r.key];
+        const href = jdHref(r.jd);
+        const box = (
+          <g class="group">
+            <rect
+              x={x}
+              y={y}
+              width={W}
+              height={H}
+              class:list={[
+                'fill-paper stroke-ink/30 transition-colors',
+                href && 'group-hover:stroke-accent',
+              ]}
+              stroke-width="1.5"
+              stroke-dasharray={r.key === 'basecamp' ? '5 4' : undefined}
+            />
+            <text x={x + 16} y={y + 30} class="fill-ink font-display text-[16px] font-bold">{r.title}</text>
+            <text x={x + 16} y={y + 54} class="fill-accent text-[14px]">{r.holder}</text>
+          </g>
+        );
+        return href ? <a href={href} aria-label={`${r.title}: job description`}>{box}</a> : box;
+      })}
+    </svg>
+  </div>
+
+  <ul class="grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2 lg:grid-cols-3">
+    {ROLES.map((r) => {
+      const href = jdHref(r.jd);
+      return (
+        <li class="flex flex-col gap-2 bg-paper p-5">
+          <p class="font-display text-lg font-bold text-ink">{r.title}</p>
+          <p class="meta text-accent">{r.holder}</p>
+          <p class="text-sm leading-relaxed text-ink-70">{r.summary}</p>
+          <ul class="mt-1 space-y-1 text-sm text-ink-70">
+            {worksWith(r.key).map((w) => <li class="border-l-2 border-ink/10 pl-3">{w}</li>)}
+          </ul>
+          {href && (
+            <a href={href} class="mt-auto pt-3 text-sm text-accent">
+              Job description
+            </a>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+</section>
+
+<section aria-labelledby="team-heading" class="mb-16">
+  <div class="flex items-baseline justify-between gap-4 border-b border-ink pb-3">
+    <h2 id="team-heading" class="font-display text-2xl font-bold">The team</h2>
+    <p class="meta text-ink-45">{instructors.length + office.length} people</p>
+  </div>
+
+  <ul class="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
+    {instructors.map((i) => (
+      <li>
+        <img
+          src={i.data.photo ?? '/images/instructors/placeholder.jpg'}
+          alt=""
+          loading="lazy"
+          width="300"
+          height="375"
+          class="aspect-[4/5] w-full bg-paper-2 object-cover"
+        />
+        <p class="mt-3 font-display font-bold leading-tight">{i.data.name}</p>
+        {i.data.role && <p class="mt-1 text-sm text-ink-70">{i.data.role}</p>}
+      </li>
+    ))}
+    {office.map((p) => (
+      <li>
+        <div
+          aria-hidden="true"
+          class="flex aspect-[4/5] w-full items-center justify-center bg-paper-2 font-display text-4xl font-bold text-ink-45"
+        >
+          {initials(p.name)}
+        </div>
+        <p class="mt-3 font-display font-bold leading-tight">{p.name}</p>
+        <p class="mt-1 text-sm text-ink-70">{p.role}</p>
+      </li>
+    ))}
+  </ul>
+  <p class="mt-6 text-sm text-ink-45">
+    The teaching team is the website's instructor list, so it matches what clients see.
+  </p>
+</section>
