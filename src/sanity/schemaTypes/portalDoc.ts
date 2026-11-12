@@ -49,6 +49,7 @@ export const portalDoc = defineType({
           { title: 'Pay & expenses', value: 'hr' },
           { title: 'Operations', value: 'ops' },
           { title: 'Ideas', value: 'ideas' },
+          { title: 'People', value: 'people' },
         ],
       },
       validation: (Rule) =>

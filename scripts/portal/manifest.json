@@ -398,10 +398,11 @@
       "file": "Admin : hr : finance/JD__ Booking specialist.docx",
       "slug": "jd-booking-specialist",
       "title": "Booking specialist",
+      "section": "people",
       "hqSection": "people",
       "order": 1,
       "summary": "Job description. Enquiries, conversion and keeping instructors busy.",
-      "tier": 3
+      "tier": 2
     }
   ]
 }

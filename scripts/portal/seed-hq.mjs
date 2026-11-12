@@ -21,7 +21,7 @@
  * items become ordinary bullets: ticking lives in the /hq/start checklist.
  *
  * Documents are tier 3 (staff only) unless the front matter says `tier: 2`.
- * None gets an instructor hub section from this script.
+ * `hubSection` also places a tier 2 document in the instructor hub.
  */
 import { readdir, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -178,6 +178,10 @@ function prepare(doc) {
     if (!doc.data[f]) problems.push(`${doc.file}: missing "${f}"`);
   }
 
+  if (doc.data.hubSection && Number(doc.data.tier) !== 2) {
+    problems.push(`${doc.file}: hubSection needs tier 2; tier 3 is staff only`);
+  }
+
   const reviewed = doc.data.last_reviewed;
   return {
     _id: `portalDoc-hq-${doc.slug}`,
@@ -185,6 +189,7 @@ function prepare(doc) {
     title: doc.data.title,
     slug: { _type: 'slug', current: doc.slug },
     hqSection: doc.section,
+    ...(doc.data.hubSection ? { section: doc.data.hubSection } : {}),
     tier: [2, 3].includes(Number(doc.data.tier)) ? Number(doc.data.tier) : 3,
     ...(summary ? { summary } : {}),
     ...(doc.data.order != null ? { order: Number(doc.data.order) } : {}),
