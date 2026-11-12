@@ -186,7 +186,7 @@ peaksnowsports-web/
 ### Home (`/`)
 - Type-led hero: headline on paper at display size, with the video or image following as a bounded band. Optional `facts` strip under the headline. One primary CTA: "Book a lesson." Secondary: "Explore the GAP Course."
 - Three resort cards (Morzine / Chatel / Les Gets) with imagery.
-- "Why Peak" — three concise pillars: **Premium**, **Personal**, **Professional**.
+- "Why Peak" — three concise pillars: **Premium**, **Personable**, **Professional**.
 - Instructor strip — scrolling horizontal showcase of team faces with names.
 - Two or three testimonials.
 - Journal teaser (latest 3 posts).
