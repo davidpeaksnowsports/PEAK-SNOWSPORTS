@@ -89,6 +89,7 @@ export const portalDoc = defineType({
         'Where this appears in Peak HQ (/hq), the staff portal. Leave blank to keep it out of HQ.',
       options: {
         list: [
+          { title: 'Booking team', value: 'booking-team' },
           { title: 'What we do', value: 'what-we-do' },
           { title: 'How we work', value: 'how-we-work' },
           { title: 'Playbook', value: 'playbook' },
@@ -141,6 +142,18 @@ export const portalDoc = defineType({
         'When this version took effect. Leave blank to use the last edit date.',
     }),
     defineField({
+      name: 'owner',
+      title: 'Owner',
+      type: 'string',
+      description: 'Who keeps this document right. Shown on the page.',
+    }),
+    defineField({
+      name: 'reviewedAt',
+      title: 'Last reviewed',
+      type: 'date',
+      description: 'When the owner last checked it was still true. Shown on the page.',
+    }),
+    defineField({
       name: 'order',
       title: 'Order',
       type: 'number',
@@ -152,6 +165,41 @@ export const portalDoc = defineType({
       type: 'array',
       of: [
         { type: 'block' },
+        {
+          // A simple grid of plain-text cells. The first row is the header.
+          // Portable Text has no table of its own; the HQ booking pages are
+          // mostly tables (rate card, refund bands), so they need one.
+          type: 'object',
+          name: 'table',
+          title: 'Table',
+          fields: [
+            {
+              name: 'rows',
+              title: 'Rows',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'tableRow',
+                  fields: [
+                    { name: 'cells', title: 'Cells', type: 'array', of: [{ type: 'string' }] },
+                  ],
+                  preview: {
+                    select: { cells: 'cells' },
+                    prepare: ({ cells }) => ({ title: (cells ?? []).join(' | ') }),
+                  },
+                },
+              ],
+            },
+          ],
+          preview: {
+            select: { rows: 'rows' },
+            prepare: ({ rows }) => ({
+              title: 'Table',
+              subtitle: `${rows?.length ?? 0} rows`,
+            }),
+          },
+        },
         {
           type: 'image',
           options: { hotspot: true },

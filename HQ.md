@@ -114,6 +114,33 @@ summaries are in `src/lib/hq/content.ts` and are copied verbatim from each
 public page's own meta description, so they match what the client sees. Update
 both together.
 
+### Booking team pages
+
+The **Booking team** section (`/hq/booking-team`) is the day-one guide for
+booking specialists: welcome and first week, how Peak works, logins, the life
+of a booking, the SkiOperator walkthrough, and the rate card. They are written
+as markdown by David, kept in `portal-content/hq/booking-team/` (gitignored:
+they hold team phone numbers and prices), and published with:
+
+```
+node --env-file=.env scripts/portal/seed-hq.mjs --dry-run
+node --env-file=.env scripts/portal/seed-hq.mjs
+```
+
+The seeder turns markdown tables into a `table` block (rendered by
+`src/components/hq/PtTable.astro`), rewrites links between the files to HQ
+URLs, makes every page tier 3, and carries `owner` and `last_reviewed` onto the
+page. A file whose front matter `status` starts with `outline` is held back,
+and links to it become plain text. The SkiOperator walkthrough is held back
+until it has screenshots.
+
+### Was this unclear?
+
+Every HQ document ends with a "Was this unclear?" form. Notes land in
+`hq_page_feedback` (migration 0014) and are listed for managers at the bottom
+of `/hq/team`, where they can be marked dealt with. Staff can only write their
+own notes; nobody can edit or delete someone else's.
+
 ### Substitutions
 
 SkiOperator is the only system staff use now, so the importer rewrites three
@@ -144,7 +171,7 @@ import reports how many times each one fired:
 |---|---|
 | `/hq` | Home; sends people to `/hq/start` until onboarded |
 | `/hq/start` | Onboarding form and first-week checklist |
-| `/hq/<section>` | What we do, how we work, playbook, policies, people |
+| `/hq/<section>` | Booking team, what we do, how we work, playbook, policies, people |
 | `/hq/<section>/<slug>` | One document |
 | `/hq/team` | Managers only; 404 for anyone else |
 | `/hq/login`, `/logout`, `/forgot-password`, `/reset-password` | Auth |

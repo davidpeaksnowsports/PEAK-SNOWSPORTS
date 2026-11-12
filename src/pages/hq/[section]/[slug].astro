@@ -7,7 +7,10 @@ export const prerender = false;
 
 import { PortableText } from 'astro-portabletext';
 import HqLayout from '../../../layouts/HqLayout.astro';
+import PtTable from '../../../components/hq/PtTable.astro';
 import { HQ_SECTIONS, getHqDoc, type HqSection } from '../../../lib/hq/content';
+import { leaveFeedback } from '../../../lib/hq/feedback';
+import { createHqClient, type HqUser } from '../../../lib/hq/supabase';
 
 const key = Astro.params.section as HqSection;
 const slug = Astro.params.slug as string;
@@ -16,6 +19,25 @@ const section = HQ_SECTIONS.find((s) => s.key === key);
 const doc = section ? await getHqDoc(slug) : null;
 const found = Boolean(section && doc && doc.hqSection === key);
 if (!found) Astro.response.status = 404;
+
+// "Was this unclear?" posts back to this page, then redirects (POST-redirect-
+// GET), so a refresh never sends the note twice.
+const user = Astro.locals.hqUser as HqUser;
+let feedbackFailed = false;
+if (found && doc && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  if (form.get('intent') === 'unclear') {
+    const ok = await leaveFeedback(
+      createHqClient(Astro.cookies, Astro.request),
+      user.id,
+      { slug: doc.slug, title: doc.title },
+      form.get('note'),
+    );
+    if (ok) return Astro.redirect(`${Astro.url.pathname}?thanks=1#unclear`, 303);
+    feedbackFailed = true;
+  }
+}
+const thanked = Astro.url.searchParams.get('thanks') === '1';
 
 const dateFmt = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
@@ -49,7 +71,18 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
                 <dd class="text-ink-70">{doc.version}</dd>
               </div>
             )}
-            {doc.updatedAt && (
+            {doc.owner && (
+              <div class="flex gap-2">
+                <dt>Owner</dt>
+                <dd class="text-ink-70">{doc.owner}</dd>
+              </div>
+            )}
+            {doc.reviewedAt ? (
+              <div class="flex gap-2">
+                <dt>Last reviewed</dt>
+                <dd class="text-ink-70">{dateFmt.format(new Date(doc.reviewedAt))}</dd>
+              </div>
+            ) : doc.updatedAt && (
               <div class="flex gap-2">
                 <dt>Updated</dt>
                 <dd class="text-ink-70">{dateFmt.format(new Date(doc.updatedAt))}</dd>
@@ -66,8 +99,48 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
         )}
 
         <div class="prose prose-lg mt-8 max-w-none">
-          <PortableText value={(doc.body as any) ?? []} />
+          <PortableText value={(doc.body as any) ?? []} components={{ type: { table: PtTable } }} />
         </div>
+
+        <section id="unclear" aria-labelledby="unclear-heading" class="mt-16 border-t border-ink pt-8">
+          {thanked ? (
+            <p class="text-ink-70" role="status">
+              Thanks. Your note has gone to the managers, and the page will be
+              fixed. If you need an answer now, ask the other specialist or David.
+            </p>
+          ) : (
+            <details open={feedbackFailed}>
+              <summary id="unclear-heading" class="cursor-pointer font-display text-lg font-bold text-ink">
+                Was this unclear?
+              </summary>
+              <form method="POST" class="mt-4 max-w-xl space-y-4">
+                <input type="hidden" name="intent" value="unclear" />
+                <label class="block">
+                  <span class="block text-sm text-ink-70">
+                    What was unclear or missing? Optional, but it helps.
+                  </span>
+                  <textarea
+                    name="note"
+                    rows="3"
+                    maxlength="2000"
+                    class="mt-2 w-full border border-ink/20 bg-paper p-3 text-ink focus:border-accent focus:outline-none"
+                  />
+                </label>
+                {feedbackFailed && (
+                  <p class="text-sm text-accent" role="alert">
+                    That did not send. Try again, or tell David directly.
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  class="bg-accent px-5 py-3 font-display text-sm font-bold text-paper hover:bg-ink"
+                >
+                  Send to the managers
+                </button>
+              </form>
+            </details>
+          )}
+        </section>
       </article>
     </HqLayout>
   )

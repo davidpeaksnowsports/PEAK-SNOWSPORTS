@@ -1,0 +1,43 @@
+---
+/**
+ * Renders the `table` object in a portalDoc body. The first row is the header.
+ * Wide tables scroll inside their own box, so the page never scrolls sideways
+ * on a phone.
+ */
+import { inlineMarkdown } from '../../lib/hq/inline';
+
+interface Props {
+  node: { rows?: { cells?: string[] }[] };
+}
+
+const rows = (Astro.props.node.rows ?? []).map((r) => r.cells ?? []);
+const [head, ...body] = rows;
+---
+
+{
+  head && (
+    <div class="not-prose my-8 overflow-x-auto border-t border-ink">
+      <table class="w-full min-w-[32rem] border-collapse text-left text-sm">
+        <thead>
+          <tr class="border-b border-ink/20">
+            {head.map((c) => (
+              <th scope="col" class="meta px-3 py-3 align-bottom font-normal text-ink-45" set:html={inlineMarkdown(c)} />
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {body.map((r) => (
+            <tr class="border-b border-ink/10">
+              {r.map((c, i) => (
+                <td
+                  class:list={['px-3 py-3 align-top leading-relaxed [&_a]:text-accent', i === 0 ? 'text-ink' : 'text-ink-70']}
+                  set:html={inlineMarkdown(c)}
+                />
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
