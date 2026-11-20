@@ -56,6 +56,9 @@ const selectedWeek =
   Number.isInteger(asked) && asked >= 1 && asked <= plan.length ? asked : currentWeek;
 const shownWeek = plan[selectedWeek - 1];
 
+/** Planner cells on the full-course view jump to that day's table row. */
+const dayLink = (_week: number, day: string) => `#day-${day}`;
+
 const todays = activities.filter((a) => dayKey(a.starts_at) === today);
 
 /**
@@ -71,6 +74,8 @@ const views: { key: View; label: string }[] = [
   { key: 'week', label: `Week ${currentWeek}` },
   { key: 'all', label: 'Full course' },
 ];
+---
+
 <GapLayout
   title="Programme"
   kicker={cohort ? `${cohort.name} · ${cohort.resort}` : 'Peak GAP'}
@@ -174,7 +179,7 @@ const views: { key: View; label: string }[] = [
             All six weeks at a glance. Tap any session to jump to that day.
           </p>
           <div class="mt-6">
-            <CoursePlanner weeks={plan} today={today} linkFor={(_w: number, d: string) => `#day-${d}`} />
+            <CoursePlanner weeks={plan} today={today} linkFor={dayLink} />
           </div>
         </section>
 
