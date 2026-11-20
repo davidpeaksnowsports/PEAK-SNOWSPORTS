@@ -11,6 +11,7 @@
 import '../styles/global.css';
 import { GAP_SECTIONS } from '../lib/gap/course';
 import { isStaff, type GapUser } from '../lib/gap/supabase';
+import QuickLinks from '../components/gap-portal/QuickLinks.astro';
 
 interface Props {
   title: string;
@@ -125,6 +126,12 @@ const shell = wide ? 'max-w-7xl' : 'max-w-6xl';
         )
       }
       <slot />
+
+      {chrome && user && (
+        <div class="mt-16">
+          <QuickLinks />
+        </div>
+      )}
     </main>
 
     {
