@@ -1,0 +1,198 @@
+---
+/**
+ * One course week as a table: a row per day, a column per part of the day.
+ *
+ * Replaces the long day-by-day feed. A week read across is how students plan
+ * (kit, laundry, rest), so the table puts the shape first and keeps the
+ * detail one tap away: objective, kit and preparation sit in a disclosure
+ * inside the session's own cell rather than being dropped.
+ *
+ * Below the md breakpoint each row becomes a stacked block with its own
+ * Morning / Afternoon / Evening labels, because four columns do not fit 375px.
+ */
+import { fmtTime } from '../../lib/gap/course';
+import {
+  PLAN_KEY,
+  WEEK_THEMES,
+  planCategory,
+  type PlanActivity,
+  type PlanWeek,
+} from '../../lib/gap/programme';
+
+interface Props {
+  week: PlanWeek;
+  today: string;
+  /** Show the "Week n" heading. Off when the page heading already says it. */
+  heading?: boolean;
+}
+
+const { week, today, heading = true } = Astro.props;
+const theme = WEEK_THEMES[week.week];
+
+const fmt = (key: string, opts: Intl.DateTimeFormatOptions) =>
+  new Intl.DateTimeFormat('en-GB', { ...opts, timeZone: 'UTC' }).format(
+    new Date(`${key}T12:00:00Z`),
+  );
+
+const first = week.days[0].key;
+const last = week.days[week.days.length - 1].key;
+const range = `${fmt(first, { day: 'numeric', month: 'short' })} to ${fmt(last, { day: 'numeric', month: 'short' })}`;
+
+const when = (a: PlanActivity) =>
+  a.ends_at ? `${fmtTime(a.starts_at)}–${fmtTime(a.ends_at)}` : fmtTime(a.starts_at);
+
+const hasDetail = (a: PlanActivity) =>
+  Boolean(a.objective || a.bring || a.preparation || a.workbook_module);
+---
+
+<section id={`week-${week.week}`} class="scroll-mt-6" aria-labelledby={`week-${week.week}-title`}>
+  <div class="grid gap-6 md:grid-cols-12">
+    <div class="md:col-span-7">
+      <p class="meta text-ink-45">
+        {heading ? `Week ${week.week} · ${range}` : range}
+      </p>
+      <h2 id={`week-${week.week}-title`} class="mt-1 font-display text-2xl font-bold md:text-3xl">
+        {theme ? theme.theme : `Week ${week.week}`}
+      </h2>
+    </div>
+    {
+      theme && (
+        <div class="md:col-span-5">
+          <p class="meta text-ink-45">Goals this week</p>
+          <ul class="mt-2 flex flex-wrap gap-2">
+            {theme.goals.map((g) => (
+              <li class="border border-accent/40 px-2.5 py-1 text-sm text-accent">{g}</li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </div>
+
+  <table class="mt-6 w-full border-collapse text-left max-md:block">
+    <caption class="sr-only">Week {week.week} daily schedule</caption>
+    <thead class="max-md:hidden">
+      <tr class="border-b border-ink">
+        <th scope="col" class="meta w-32 py-2 pr-4 font-normal text-ink-45">Day</th>
+        <th scope="col" class="meta py-2 pr-4 font-normal text-ink-45">Morning</th>
+        <th scope="col" class="meta py-2 pr-4 font-normal text-ink-45">Afternoon</th>
+        <th scope="col" class="meta w-48 py-2 font-normal text-ink-45">Evening</th>
+      </tr>
+    </thead>
+    <tbody class="max-md:block">
+      {
+        week.days.map((day) => {
+          const isToday = day.key === today;
+          const slots = day.allDay
+            ? [{ label: 'All day', items: day.am, span: 2 }]
+            : [
+                { label: 'Morning', items: day.am, span: 1 },
+                { label: 'Afternoon', items: day.pm, span: 1 },
+              ];
+          slots.push({ label: 'Evening', items: day.eve, span: 1 });
+          return (
+            <tr
+              id={`day-${day.key}`}
+              class:list={[
+                'scroll-mt-6 border-b border-ink/10 align-top max-md:block max-md:py-4',
+                isToday && 'bg-accent/5',
+              ]}
+            >
+              <th scope="row" class="py-4 pr-4 font-normal max-md:block max-md:py-0">
+                <span class:list={['meta block', isToday ? 'text-accent' : 'text-ink-45']}>
+                  {isToday ? 'Today' : fmt(day.key, { weekday: 'long' })}
+                </span>
+                <span class="block font-display text-lg font-bold">
+                  {fmt(day.key, { day: 'numeric', month: 'short' })}
+                </span>
+              </th>
+
+              {slots.map((s) => (
+                <td
+                  colspan={s.span > 1 ? s.span : undefined}
+                  class:list={[
+                    'py-4 pr-4 max-md:block max-md:py-2 max-md:pr-0',
+                    s.items.length === 0 && 'max-md:hidden',
+                  ]}
+                >
+                  <span class="meta mb-1 block text-ink-45 md:hidden">{s.label}</span>
+                  {s.items.length === 0 ? (
+                    <span class="text-ink-45" aria-label="Nothing scheduled">–</span>
+                  ) : (
+                    <div class="space-y-3">
+                      {s.items.map((a) => {
+                        const cat = planCategory(a);
+                        return (
+                          <div class="flex gap-3">
+                            <span
+                              class:list={['mt-1 block w-1.5 shrink-0 self-stretch', PLAN_KEY[cat].cell]}
+                              aria-hidden="true"
+                            />
+                            <div class="min-w-0">
+                              <p class="flex flex-wrap gap-x-3 text-sm">
+                                <span class="meta text-ink">{when(a)}</span>
+                                <span class="meta text-ink-45">{PLAN_KEY[cat].label}</span>
+                              </p>
+                              <p class="font-display font-bold leading-snug">{a.title}</p>
+                              {(a.meeting_point || a.location) && (
+                                <p class="mt-1 text-sm text-ink-70">
+                                  {a.meeting_point || a.location}
+                                  {a.map_url && (
+                                    <>
+                                      {' · '}
+                                      <a href={a.map_url} target="_blank" rel="noopener" class="text-accent">
+                                        Map
+                                      </a>
+                                    </>
+                                  )}
+                                </p>
+                              )}
+                              {a.coach && <p class="mt-1 text-sm text-ink-70">Coach: {a.coach}</p>}
+                              {hasDetail(a) && (
+                                <details class="mt-2 text-sm">
+                                  <summary class="meta cursor-pointer text-accent">Details</summary>
+                                  <dl class="mt-2 space-y-2 text-ink-70">
+                                    {a.objective && (
+                                      <div>
+                                        <dt class="meta text-ink-45">Aim</dt>
+                                        <dd class="whitespace-pre-line">{a.objective}</dd>
+                                      </div>
+                                    )}
+                                    {a.bring && (
+                                      <div>
+                                        <dt class="meta text-ink-45">Bring</dt>
+                                        <dd>{a.bring}</dd>
+                                      </div>
+                                    )}
+                                    {a.preparation && (
+                                      <div>
+                                        <dt class="meta text-ink-45">Prepare</dt>
+                                        <dd class="whitespace-pre-line">{a.preparation}</dd>
+                                      </div>
+                                    )}
+                                    {a.workbook_module && (
+                                      <div>
+                                        <dt class="meta text-ink-45">Workbook</dt>
+                                        <dd>
+                                          <a href="/gap/workbook" class="text-accent">{a.workbook_module}</a>
+                                        </dd>
+                                      </div>
+                                    )}
+                                  </dl>
+                                </details>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </td>
+              ))}
+            </tr>
+          );
+        })
+      }
+    </tbody>
+  </table>
+</section>

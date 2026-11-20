@@ -337,34 +337,6 @@ const firstName = user.name.split(' ')[0];
           </section>
         )}
 
-        {/* -------------------------------------------------------- quick links */}
-        <section class="mt-16 border-t border-ink/10 pt-10">
-          <h2 class="font-display text-2xl font-bold">In a hurry</h2>
-          <ul class="mt-6 flex flex-wrap gap-3">
-            {[
-              { href: '/gap/essentials#emergency', label: 'Emergency contacts' },
-              { href: '/gap/resort', label: 'Resort map' },
-              { href: '/gap/checklist', label: 'Packing list' },
-              { href: '/gap/experience', label: 'Log experience hours' },
-              { href: '/gap/checkin', label: 'Weekly check-in' },
-              { href: '/gap/feedback', label: 'Ask for help' },
-            ].map((l, i) => (
-              <li>
-                <a
-                  href={l.href}
-                  class:list={[
-                    'inline-block px-5 py-3 font-display font-bold no-underline transition-colors hover:no-underline',
-                    i === 0
-                      ? 'bg-accent text-paper hover:bg-ink'
-                      : 'border border-ink/20 text-ink hover:border-ink',
-                  ]}
-                >
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
       </>
     )
   }

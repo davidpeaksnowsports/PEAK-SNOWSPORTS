@@ -1,0 +1,162 @@
+---
+/**
+ * The whole course on one screen, laid out like the coaches' planner
+ * spreadsheet: one block per week, Sunday to Saturday across, morning,
+ * afternoon and evening down. Exams, rest days and travel days fill the
+ * whole day, as the spreadsheet merges those cells.
+ *
+ * Every cell links to the same day in the weekly table below it, which is
+ * where the times, meeting points and kit lists are. This view is the map;
+ * the table is the detail.
+ *
+ * On a phone the grid keeps its seven columns and scrolls sideways inside its
+ * own box, rather than collapsing: the point of a planner is seeing the week
+ * as a shape, and a stacked list would lose exactly that.
+ */
+import { fmtTime } from '../../lib/gap/course';
+import {
+  PLAN_KEY,
+  WEEK_THEMES,
+  planCategory,
+  type PlanCategory,
+  type PlanDay,
+  type PlanWeek,
+} from '../../lib/gap/programme';
+
+interface Props {
+  weeks: PlanWeek[];
+  /** Paris-local YYYY-MM-DD, to mark today. */
+  today: string;
+  /** Where a cell links: the week's table on this page, or the week view. */
+  linkFor: (week: number, day: string) => string;
+}
+
+const { weeks, today, linkFor } = Astro.props as Props;
+
+const used = new Set<PlanCategory>();
+for (const w of weeks)
+  for (const d of w.days)
+    for (const a of [...d.am, ...d.pm, ...d.eve]) used.add(planCategory(a));
+const key = (Object.keys(PLAN_KEY) as PlanCategory[]).filter((k) => used.has(k));
+
+const dayLabel = (key: string) => {
+  const d = new Date(`${key}T12:00:00Z`);
+  return {
+    weekday: new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' }).format(d),
+    date: new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(d),
+  };
+};
+
+const rows = [
+  { slot: 'am', label: 'AM', row: 2 },
+  { slot: 'pm', label: 'PM', row: 3 },
+  { slot: 'eve', label: 'Eve', row: 4 },
+] as const;
+
+/** The cells for one day: an all-day block, or one per slot that has anything in it. */
+const cellsFor = (day: PlanDay) => {
+  if (day.allDay) return [{ items: [day.am[0]], row: '2 / span 2' }];
+  return rows
+    .filter((r) => day[r.slot].length > 0)
+    .map((r) => ({ items: day[r.slot], row: String(r.row) }));
+};
+---
+
+<div>
+  <ul class="flex flex-wrap gap-x-5 gap-y-2" aria-label="Planner key">
+    {
+      key.map((k) => (
+        <li class="flex items-center gap-2 text-sm text-ink-70">
+          <span class:list={['inline-block h-3.5 w-5', PLAN_KEY[k].cell]} aria-hidden="true" />
+          {PLAN_KEY[k].label}
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="mt-6 overflow-x-auto pb-2" tabindex="0" aria-label="Course planner, scrolls sideways">
+    <div class="min-w-[46rem] space-y-8">
+      {
+        weeks.map((w) => (
+          <section aria-labelledby={`plan-week-${w.week}`}>
+            <h3 id={`plan-week-${w.week}`} class="flex flex-wrap items-baseline gap-x-3">
+              <span class="meta text-accent">Week {w.week}</span>
+              {WEEK_THEMES[w.week] && (
+                <span class="font-display text-base font-bold">
+                  {WEEK_THEMES[w.week].theme}
+                </span>
+              )}
+            </h3>
+
+            <div class="mt-3 grid grid-cols-[3rem_repeat(7,minmax(0,1fr))] grid-rows-[auto_4.5rem_4.5rem_3rem] gap-px border border-ink/10 bg-ink/10">
+              <div class="bg-paper" style="grid-column:1;grid-row:1" />
+              {rows.map((r) => (
+                <div
+                  class="meta flex items-center bg-paper px-2 text-ink-45"
+                  style={`grid-column:1;grid-row:${r.row}`}
+                >
+                  {r.label}
+                </div>
+              ))}
+
+              {w.days.map((day, i) => {
+                const label = dayLabel(day.key);
+                const isToday = day.key === today;
+                const col = i + 2;
+                return (
+                  <>
+                    <div
+                      class:list={[
+                        'px-2 py-1.5',
+                        isToday ? 'bg-accent text-paper' : 'bg-paper',
+                      ]}
+                      style={`grid-column:${col};grid-row:1`}
+                    >
+                      <span class:list={['meta block', isToday ? 'text-paper' : 'text-ink-45']}>
+                        {isToday ? 'Today' : label.weekday}
+                      </span>
+                      <span class="block text-sm font-semibold">{label.date}</span>
+                    </div>
+
+                    {rows.map((r) => (
+                      <div class="bg-paper" style={`grid-column:${col};grid-row:${r.row}`} />
+                    ))}
+
+                    {cellsFor(day).map((cell) => (
+                      <a
+                        href={linkFor(w.week, day.key)}
+                        class="group relative flex flex-col gap-px no-underline hover:no-underline focus-visible:z-10"
+                        style={`grid-column:${col};grid-row:${cell.row}`}
+                      >
+                        {cell.items.map((a) => {
+                          const cat = planCategory(a);
+                          return (
+                            <span
+                              class:list={[
+                                'flex flex-1 flex-col justify-center px-2 py-1 transition-opacity group-hover:opacity-80',
+                                PLAN_KEY[cat].cell,
+                              ]}
+                            >
+                              <span class="line-clamp-2 text-xs font-semibold leading-tight">
+                                {a.title}
+                              </span>
+                              {cell.items.length === 1 && cell.row !== '4' && (
+                                <span class="mt-0.5 text-[11px] leading-none opacity-80">
+                                  {fmtTime(a.starts_at)}
+                                </span>
+                              )}
+                            </span>
+                          );
+                        })}
+                      </a>
+                    ))}
+                  </>
+                );
+              })}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</div>
