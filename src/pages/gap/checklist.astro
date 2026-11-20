@@ -169,11 +169,20 @@ const countDone = (rows: typeof all) => rows.filter((i) => done.has(i.id)).lengt
                                     Required
                                   </span>
                                 )}
-                                {i.note && (
-                                  <span class="block text-sm text-ink-45">
-                                    {i.note}
-                                  </span>
-                                )}
+                                {i.note &&
+                                  (i.note.startsWith('/') ? (
+                                    <a
+                                      href={i.note}
+                                      class="block text-sm text-accent"
+                                      onclick="arguments[0].stopPropagation()"
+                                    >
+                                      Open it
+                                    </a>
+                                  ) : (
+                                    <span class="block text-sm text-ink-45">
+                                      {i.note}
+                                    </span>
+                                  ))}
                               </span>
                             </label>
                           </li>
