@@ -10,6 +10,12 @@
   "devCommand": "npm run dev",
   "trailingSlash": false,
   "cleanUrls": true,
+  "crons": [
+    {
+      "path": "/api/keep-supabase-awake",
+      "schedule": "0 7 * * *"
+    }
+  ],
   "redirects": [
     {
       "source": "/adult-group-lessons",
