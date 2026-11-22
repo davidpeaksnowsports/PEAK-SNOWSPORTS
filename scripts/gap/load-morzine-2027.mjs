@@ -15,7 +15,8 @@
  *
  * Dates are derived from the cohort's own starts_on rather than transcribed,
  * so the timetable is internally consistent by construction. The reissued
- * planner (2026-09-20) agrees with it week for week.
+ * planner (2026-09-20) agrees with it week for week. The first aid course
+ * sessions in weeks 1 and 2 follow the planner of 2026-11-20.
  *
  * The planner records each exam as a single cell on its opening day. The real
  * blocks, confirmed by David, are Level 1 Mon–Thu of week 2 and Level 2 across
@@ -133,11 +134,12 @@ const PROGRAMME = [
     objective: 'First shadowing session. Log it the same day.',
     preparation: 'Read the experience log fields before you go so you know what to note.',
   }],
-  [1, 6, '15:00', 'Physical training', 'off_snow', {}],
+  [1, 6, '15:00', 'Outdoor first aid course', 'off_snow', { ends_at: '18:00' }],
   [1, 6, '18:00', 'Team social', 'off_snow', {}],
 
   // ── Week 2 ────────────────────────────────────────────────────────────────
   [2, 0, '09:00', 'Rest day', 'rest', {}],
+  [2, 0, '14:00', 'Outdoor first aid course', 'off_snow', { ends_at: '18:00' }],
   ...[1, 2, 3, 4].map((d, i) => [2, d, '09:00', 'BASI Level 1 exam', 'assessment', {
     objective: `Level 1 assessment, day ${i + 1} of 4.`,
     preparation: i === 0
@@ -148,7 +150,7 @@ const PROGRAMME = [
   [2, 5, '09:00', 'Training', 'on_snow', {}],
   [2, 5, '15:00', 'Training', 'on_snow', {}],
   [2, 6, '09:00', 'Rest day', 'rest', {}],
-  [2, 6, '15:00', 'Physical training', 'off_snow', {}],
+  [2, 6, '15:00', 'Outdoor first aid course', 'off_snow', { ends_at: '18:00' }],
   [2, 6, '18:00', 'Team social', 'off_snow', {}],
 
   // ── Week 3 ────────────────────────────────────────────────────────────────
