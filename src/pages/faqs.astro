@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import Section from '../components/ui/Section.astro';
+
+// The general questions, answered here. Product-specific FAQs stay on their
+// own pages (each section carries id="faqs") so there is one source per
+// answer and no duplicate FAQPage markup across the site.
+const general = [
+  {
+    q: 'Where does Peak Snowsports run ski lessons?',
+    a: 'Across Morzine, Avoriaz, Châtel and Les Gets in the Portes du Soleil, France, one of the largest connected ski areas in the world.',
+  },
+  {
+    q: 'What makes Peak different from ESF or other ski schools?',
+    a: "Every instructor is named, photographed and individually bookable, so there are no anonymous badges. Group sizes are small (max 6, and max 4 in Les P'tits for our 4 to 5 year olds). The team is led by BASI trainers and examiners: the people who train other schools' staff.",
+  },
+  {
+    q: 'How do I book a ski lesson with Peak?',
+    a: 'Book online at /book, or request a specific instructor by name from their profile page. For bigger or more complicated group requests, WhatsApp us or email hello@peaksnowsports.com.',
+  },
+];
+
+const topics = [
+  { label: 'Adult group lessons', href: '/lessons/group#faqs' },
+  { label: "Kids' & teens' ski school", href: '/lessons/family#faqs' },
+  { label: 'Kids club', href: '/lessons/kids-club#faqs' },
+  { label: 'Race coaching', href: '/lessons/race-coaching#faqs' },
+  { label: 'Ski camps', href: '/ski-camps#faqs' },
+  { label: 'GAP instructor course', href: '/gap-course#faqs' },
+  { label: 'Partners', href: '/partners#faqs' },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: general.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<BaseLayout
+  title="FAQs · Peak Snowsports"
+  description="Answers to the most common questions about Peak Snowsports ski lessons, kids' ski school, ski camps and the GAP instructor course in the Portes du Soleil."
+  image="/images/og/default.jpg"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <Hero
+    kicker="FAQs"
+    headline="Your questions, answered."
+    sub="The basics are below. Each lesson, camp and course has its own questions on its own page."
+    variant="compact"
+  />
+
+  <Section kicker="The basics" title="Start here." rule={false}>
+    <div class="max-w-3xl">
+      <dl class="divide-y divide-olive/10 border-y border-olive/10">
+        {general.map((f) => (
+          <div class="py-6">
+            <dt class="font-display text-xl font-bold tracking-tight md:text-2xl">{f.q}</dt>
+            <dd class="mt-3 text-base leading-relaxed text-olive/80 md:text-lg">{f.a}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </Section>
+
+  <Section kicker="By topic" title="Questions about something specific?">
+    <ul class="max-w-3xl">
+      {topics.map((t) => (
+        <li>
+          <a href={t.href} class="group -mx-3 flex items-baseline gap-4 border-b border-olive/10 px-3 py-4 no-underline transition-colors hover:bg-yellow hover:text-snow">
+            <span class="flex-1 text-xl font-semibold">{t.label}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="meta mt-10 text-olive/55">
+      Still not sure?
+      <a href="tel:+441483616522" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">+44 1483 616 522</a>
+      or
+      <a href="/contact" class="underline-offset-4 hover:bg-yellow hover:text-snow hover:underline">drop us a line</a>.
+    </p>
+  </Section>
+</BaseLayout>
