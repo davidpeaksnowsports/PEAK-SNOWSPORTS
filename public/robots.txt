@@ -11,6 +11,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 Disallow: /api/
 Disallow: /admin
 Disallow: /admin/
@@ -22,6 +24,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: Bingbot
 Allow: /
@@ -29,6 +33,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: DuckDuckBot
 Allow: /
@@ -36,6 +42,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # ─── AI / answer-engine crawlers (explicit allow) ───
 
@@ -46,6 +54,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: OAI-SearchBot
 Allow: /
@@ -53,6 +63,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: ChatGPT-User
 Allow: /
@@ -60,6 +72,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Anthropic
 User-agent: ClaudeBot
@@ -68,6 +82,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: Claude-Web
 Allow: /
@@ -75,6 +91,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: anthropic-ai
 Allow: /
@@ -82,6 +100,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Google (separate flag for AI training / Bard / Gemini / AI Overviews)
 User-agent: Google-Extended
@@ -90,6 +110,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Perplexity
 User-agent: PerplexityBot
@@ -98,6 +120,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: Perplexity-User
 Allow: /
@@ -105,6 +129,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Common Crawl (foundation for many LLM training sets)
 User-agent: CCBot
@@ -113,6 +139,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Apple Intelligence / Siri
 User-agent: Applebot
@@ -121,6 +149,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: Applebot-Extended
 Allow: /
@@ -128,6 +158,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Meta (Llama family training crawler)
 User-agent: Meta-ExternalAgent
@@ -136,6 +168,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 User-agent: FacebookBot
 Allow: /
@@ -143,6 +177,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # ByteDance / Doubao
 User-agent: Bytespider
@@ -151,6 +187,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Amazon
 User-agent: Amazonbot
@@ -159,6 +197,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Mistral
 User-agent: MistralAI-User
@@ -167,6 +207,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # You.com
 User-agent: YouBot
@@ -175,6 +217,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # Diffbot (commonly used by AI products to ingest web content)
 User-agent: Diffbot
@@ -183,6 +227,8 @@ Disallow: /portal
 Disallow: /portal/
 Disallow: /hq
 Disallow: /hq/
+Disallow: /camps
+Disallow: /camps/
 
 # ─── Sitemap ───
 Sitemap: https://www.peaksnowsports.com/sitemap-index.xml

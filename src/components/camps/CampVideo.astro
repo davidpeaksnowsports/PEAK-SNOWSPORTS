@@ -1,0 +1,72 @@
+---
+/**
+ * One video from the camp library, played in the page.
+ *
+ * YouTube goes through the GAP portal's VideoEmbed: a thumbnail until someone
+ * presses play, served from youtube-nocookie.com. Vimeo has no thumbnail
+ * without an API call, so it is a lazy-loaded player with Do Not Track set.
+ * Any other link is shown as a link.
+ */
+import VideoEmbed from '../gap-portal/VideoEmbed.astro';
+import { parseVideo } from '../../lib/camps/camp';
+import { LEVEL_LABEL, type CampVideo } from '../../lib/camps/content';
+
+interface Props {
+  video: CampVideo;
+  /** Hide the ski system link on the ski system page itself. */
+  showBlock?: boolean;
+}
+
+const { video, showBlock = true } = Astro.props;
+const parsed = parseVideo(video.url);
+const vimeoSrc =
+  parsed?.kind === 'vimeo'
+    ? `https://player.vimeo.com/video/${parsed.id}?dnt=1${parsed.hash ? `&h=${encodeURIComponent(parsed.hash)}` : ''}`
+    : null;
+---
+
+<article class="border-t border-ink/10 pt-5">
+  {
+    parsed?.kind === 'youtube' && <VideoEmbed videoId={parsed.id} title={video.title} />
+  }
+  {
+    vimeoSrc && (
+      <div class="relative aspect-video w-full max-w-2xl bg-ink">
+        <iframe
+          src={vimeoSrc}
+          title={video.title}
+          loading="lazy"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          class="absolute inset-0 h-full w-full border-0"
+        />
+      </div>
+    )
+  }
+  <p class="meta mt-4 text-ink-45">
+    {[video.duration, video.level && video.level !== 'all' ? LEVEL_LABEL[video.level] : null]
+      .filter(Boolean)
+      .join(' · ') || 'Video'}
+  </p>
+  <h3 class="mt-1 font-display text-lg font-bold">
+    {
+      parsed ? (
+        video.title
+      ) : (
+        <a href={video.url} target="_blank" rel="noopener" class="text-ink hover:text-accent">
+          {video.title}
+        </a>
+      )
+    }
+  </h3>
+  {video.description && <p class="mt-1 max-w-2xl text-ink-70">{video.description}</p>}
+  {
+    showBlock && video.skiSystem && (
+      <p class="mt-2 text-sm">
+        <a href={`/camps/ski-system/${video.skiSystem.slug}`} class="text-accent">
+          {video.skiSystem.title}
+        </a>
+      </p>
+    )
+  }
+</article>

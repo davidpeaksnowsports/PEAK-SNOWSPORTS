@@ -1,0 +1,145 @@
+---
+/**
+ * Ski camp portal sign-in. Plain HTML form, posted to this same route and handled on
+ * the server — no client-side JS and no Supabase in the browser. Same shape as
+ * Peak HQ's login, against the camp_members table.
+ */
+export const prerender = false;
+
+import CampsLayout from '../../layouts/CampsLayout.astro';
+import { createCampsClient, campProfileFor, isCampsConfigured } from '../../lib/camps/supabase';
+
+/**
+ * Only same-site camp portal paths are accepted as a return destination. Anything else
+ * — a full URL, a protocol-relative //evil.com, a path outside /camps, or /campsx
+ * which merely starts with the same letters — is discarded rather than
+ * followed.
+ */
+function safeNext(raw: string | null): string {
+  if (!raw) return '/camps';
+  if (raw.startsWith('//')) return '/camps';
+  if (raw !== '/camps' && !raw.startsWith('/camps/') && !raw.startsWith('/camps?')) return '/camps';
+  return raw;
+}
+
+const next = safeNext(Astro.url.searchParams.get('next'));
+
+let error: string | null = null;
+let email = '';
+
+if (Astro.request.method === 'POST' && isCampsConfigured) {
+  const form = await Astro.request.formData();
+  email = String(form.get('email') ?? '').trim();
+  const password = String(form.get('password') ?? '');
+  const target = safeNext(String(form.get('next') ?? '') || null);
+
+  if (!email || !password) {
+    error = 'Enter your email address and password.';
+  } else {
+    const supabase = createCampsClient(Astro.cookies, Astro.request);
+    const { data: signedIn, error: signInError } =
+      await supabase.auth.signInWithPassword({ email, password });
+
+    if (signInError || !signedIn.user) {
+      // Deliberately vague: distinguishing "no such account" from "wrong
+      // password" tells an attacker which emails are registered.
+      error = 'That email address and password do not match.';
+    } else if (!(await campProfileFor(supabase, signedIn.user))) {
+      // A real account, but not a camper's: an instructor, GAP student or member of staff
+      // student sharing this Supabase project. Without this they would be
+      // signed in, redirected, and bounced straight back here by the middleware
+      // with no explanation. Sign them out so the session doesn't linger.
+      await supabase.auth.signOut();
+      error =
+        'This account is not set up for the ski camp portal yet. Join with the code from your booking email, using the second form on the join page.';
+    } else {
+      return Astro.redirect(target, 303);
+    }
+  }
+}
+---
+
+<CampsLayout title="Sign in" chrome={false}>
+  <div class="mx-auto max-w-md py-8">
+    <p class="meta mb-3 text-ink-45">Peak Snowsports</p>
+    <h1 class="font-display text-4xl font-bold">Ski camp portal</h1>
+
+    {
+      !isCampsConfigured ? (
+        <div class="mt-8 border-l-2 border-accent bg-paper-2 p-5">
+          <p class="meta mb-2 text-accent">Not configured yet</p>
+          <p class="text-ink-70">
+            The camp portal needs <code class="font-mono text-sm">SUPABASE_URL</code> and{' '}
+            <code class="font-mono text-sm">SUPABASE_ANON_KEY</code> before anyone
+            can sign in. Add them in Vercel and redeploy.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p class="mt-4 text-ink-70">
+            Sign in with the email address we hold for you.
+          </p>
+
+          {error && (
+            <p
+              role="alert"
+              class="mt-6 border-l-2 border-accent bg-paper-2 px-4 py-3 text-ink"
+            >
+              {error}
+            </p>
+          )}
+
+          <form method="POST" class="mt-8 space-y-5">
+            <input type="hidden" name="next" value={next} />
+
+            <div>
+              <label for="email" class="meta mb-2 block text-ink-70">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                value={email}
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <div>
+              <label for="password" class="meta mb-2 block text-ink-70">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                class="w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+            >
+              Sign in
+            </button>
+          </form>
+
+          <p class="mt-6 text-sm text-ink-70">
+            <a href="/camps/forgot-password" class="text-accent">
+              Forgotten your password?
+            </a>
+          </p>
+        </>
+      )
+    }
+
+    <p class="mt-12 border-t border-ink/10 pt-6 text-sm text-ink-45">
+      First time here? <a href="/camps/join" class="text-accent">Join with the code from your booking email</a>.
+    </p>
+  </div>
+</CampsLayout>

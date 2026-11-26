@@ -1,0 +1,156 @@
+---
+/**
+ * One ski camp page: knowledge hub, ski system, ski fit or venue notes.
+ *
+ * The URL's section must match the document's own, so a page cannot be
+ * reached under the wrong heading, and anything else is a 404. Static siblings
+ * (/camps/login, /camps/dates…) are one level up and never reach here.
+ */
+export const prerender = false;
+
+import CampsLayout from '../../../layouts/CampsLayout.astro';
+import DocBody from '../../../components/doc/DocBody.astro';
+import CampVideo from '../../../components/camps/CampVideo.astro';
+import FitSession from '../../../components/camps/FitSession.astro';
+import { safeSiteImage } from '../../../lib/hq/inline';
+import {
+  LEVEL_LABEL,
+  SECTION_META,
+  getCampDoc,
+  listCampDocs,
+  videosForDoc,
+  type CampSection,
+} from '../../../lib/camps/content';
+import { sessionKey } from '../../../lib/camps/camp';
+import { listTicks, setTick } from '../../../lib/camps/data';
+import { createCampsClient, type CampUser } from '../../../lib/camps/supabase';
+
+const SECTIONS: CampSection[] = ['knowledge', 'ski-system', 'fitness', 'venues'];
+
+const key = Astro.params.section as CampSection;
+const slug = Astro.params.slug as string;
+const user = Astro.locals.campUser as CampUser;
+
+const doc = SECTIONS.includes(key) ? await getCampDoc(slug) : null;
+const found = Boolean(doc && doc.section === key);
+if (!found) Astro.response.status = 404;
+
+const db = createCampsClient(Astro.cookies, Astro.request);
+
+// Ski fit ticks post back here, then redirect (POST-redirect-GET).
+if (found && doc && key === 'fitness' && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  if (form.get('intent') === 'tick') {
+    await setTick(db, user.id, form, [doc]);
+    const anchor = `s-${String(form.get('session') ?? '').replace(/[^\w-]/g, '-')}`;
+    return Astro.redirect(`${Astro.url.pathname}#${anchor}`, 303);
+  }
+}
+
+const meta = SECTION_META[key] ?? SECTION_META.knowledge;
+const back = key === 'venues' ? { href: '/camps/dates', label: 'Dates and venues' } : meta;
+
+const [videos, siblings, ticks] = found && doc
+  ? await Promise.all([
+      key === 'ski-system' ? videosForDoc(doc._id) : Promise.resolve([]),
+      key === 'ski-system' ? listCampDocs('ski-system') : Promise.resolve([]),
+      key === 'fitness' && doc.sessions?.length ? listTicks(db, user.id) : Promise.resolve(new Set<string>()),
+    ])
+  : [[], [], new Set<string>()];
+
+// Ski system pages read as a sequence: number this one and link onward.
+const index = siblings.findIndex((s) => s._id === doc?._id);
+const prev = index > 0 ? siblings[index - 1] : null;
+const next = index >= 0 && index < siblings.length - 1 ? siblings[index + 1] : null;
+
+const hero = safeSiteImage(doc?.heroImage);
+const dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+{
+  !found || !doc ? (
+    <CampsLayout title="Not found" heading="Not found" intro="That page does not exist, or has moved.">
+      <a href="/camps" class="text-accent">Back to the camp portal</a>
+    </CampsLayout>
+  ) : (
+    <CampsLayout title={doc.title}>
+      <nav aria-label="Breadcrumb" class="mb-8">
+        <a href={back.href} class="meta text-ink-45 hover:text-ink">
+          &larr; {back.label}
+        </a>
+      </nav>
+
+      <article class="max-w-3xl">
+        {hero && <img src={hero} alt="" class="mb-10 aspect-[21/9] w-full bg-paper-2 object-cover" />}
+        <header class="border-b border-ink/10 pb-8">
+          <p class="meta text-ink-45">
+            {index >= 0 ? `${meta.label} · ${String(index + 1).padStart(2, '0')} of ${siblings.length}` : meta.label}
+            {doc.weeksOut ? ` · ${doc.weeksOut} weeks out` : ''}
+          </p>
+          <h1 class="mt-4 font-display text-4xl font-bold leading-[0.95] tracking-tight md:text-6xl">{doc.title}</h1>
+          {doc.summary && <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-70 md:text-xl">{doc.summary}</p>}
+          <dl class="meta mt-6 flex flex-wrap gap-x-8 gap-y-2 text-ink-45">
+            {doc.level && doc.level !== 'all' && (
+              <div class="flex gap-2"><dt>For</dt><dd class="text-ink-70">{LEVEL_LABEL[doc.level]}</dd></div>
+            )}
+            {doc.owner && (
+              <div class="flex gap-2"><dt>From</dt><dd class="text-ink-70">{doc.owner}</dd></div>
+            )}
+            {doc.reviewedAt && (
+              <div class="flex gap-2"><dt>Checked</dt><dd class="text-ink-70">{dateFmt.format(new Date(doc.reviewedAt))}</dd></div>
+            )}
+          </dl>
+        </header>
+
+        <div class="mt-4">
+          <DocBody value={doc.body} />
+        </div>
+
+        {(doc.sessions?.length ?? 0) > 0 && (
+          <section aria-labelledby="sessions-heading" class="mt-12 border-t border-ink pt-6">
+            <h2 id="sessions-heading" class="font-display text-2xl font-bold">Sessions</h2>
+            <ul class="mt-6 space-y-6">
+              {(doc.sessions ?? []).map((s) => {
+                const k = sessionKey(doc, s._key);
+                return <FitSession session={s} tickKey={k} done={ticks.has(k)} />;
+              })}
+            </ul>
+            <p class="mt-6 text-sm">
+              <a href="/camps/fitness" class="text-accent">See the whole plan</a>
+            </p>
+          </section>
+        )}
+      </article>
+
+      {videos.length > 0 && (
+        <section aria-labelledby="videos-heading" class="mt-16">
+          <h2 id="videos-heading" class="border-b border-ink pb-3 font-display text-2xl font-bold">Watch it</h2>
+          <div class="mt-6 grid gap-x-6 gap-y-10 md:grid-cols-2">
+            {videos.map((v) => <CampVideo video={v} showBlock={false} />)}
+          </div>
+        </section>
+      )}
+
+      {(prev || next) && (
+        <nav aria-label="Building blocks" class="mt-16 grid gap-6 border-t border-ink pt-6 sm:grid-cols-2">
+          <div>
+            {prev && (
+              <a href={`/camps/ski-system/${prev.slug}`} class="group block no-underline hover:no-underline">
+                <span class="meta text-ink-45">&larr; Previous</span>
+                <span class="mt-1 block font-display text-xl font-bold text-ink group-hover:text-accent">{prev.title}</span>
+              </a>
+            )}
+          </div>
+          <div class="sm:text-right">
+            {next && (
+              <a href={`/camps/ski-system/${next.slug}`} class="group block no-underline hover:no-underline">
+                <span class="meta text-ink-45">Next &rarr;</span>
+                <span class="mt-1 block font-display text-xl font-bold text-ink group-hover:text-accent">{next.title}</span>
+              </a>
+            )}
+          </div>
+        </nav>
+      )}
+    </CampsLayout>
+  )
+}

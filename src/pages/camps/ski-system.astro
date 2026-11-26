@@ -1,0 +1,70 @@
+---
+/**
+ * The ski system: Peak's building blocks, in coaching order. Every camp works
+ * on the same blocks; the two levels work on them on different terrain. So
+ * the list is the same for everyone, numbered, and a page that goes deeper for
+ * one level says so.
+ */
+export const prerender = false;
+
+import CampsLayout from '../../layouts/CampsLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import {
+  LEVEL_LABEL,
+  SECTION_META,
+  isCampContentConfigured,
+  listCampDocs,
+} from '../../lib/camps/content';
+
+const docs = await listCampDocs('ski-system');
+---
+
+<CampsLayout
+  title={SECTION_META['ski-system'].label}
+  kicker="What we coach"
+  heading={SECTION_META['ski-system'].label}
+  intro="Every good skier is built from the same blocks. We name them, show you what good looks like, and give you a drill for each. Know them before day one and you spend the week skiing, not listening."
+>
+  {
+    docs.length === 0 ? (
+      <Notice>
+        <p>
+          {isCampContentConfigured
+            ? 'The ski system pages are on their way.'
+            : 'Camp pages are not connected yet.'}
+        </p>
+      </Notice>
+    ) : (
+      <ol class="border-t border-ink">
+        {docs.map((d, i) => (
+          <li class="border-b border-ink/10">
+            <a
+              href={`/camps/ski-system/${d.slug}`}
+              class="group grid grid-cols-[3rem_1fr] gap-4 py-6 no-underline hover:no-underline md:grid-cols-12 md:gap-6"
+            >
+              <span class="font-display text-3xl font-bold text-accent md:col-span-1" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="md:col-span-4">
+                <span class="block font-display text-2xl font-bold text-ink group-hover:text-accent">
+                  {d.title}
+                </span>
+                {d.level && d.level !== 'all' && (
+                  <span class="meta mt-1 block text-ink-45">{LEVEL_LABEL[d.level]}</span>
+                )}
+              </span>
+              {d.summary && (
+                <span class="col-start-2 text-ink-70 md:col-span-7 md:col-start-auto">{d.summary}</span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ol>
+    )
+  }
+
+  <p class="mt-10 max-w-2xl text-ink-70">
+    Every block has demos and drills in the{' '}
+    <a href="/camps/videos?category=ski-system" class="text-accent">video library</a>.
+  </p>
+</CampsLayout>

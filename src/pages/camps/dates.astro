@@ -1,0 +1,269 @@
+---
+/**
+ * Camp dates and venues.
+ *
+ * The schedule and venue facts are the public skiCamp and campLocation
+ * documents, the same ones /ski-camps shows, so a date is changed in one
+ * place. What only booked skiers get is on top: their own camp picked out,
+ * and the venue notes (meeting point, first morning) from the private
+ * dataset.
+ */
+export const prerender = false;
+
+import CampsLayout from '../../layouts/CampsLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import {
+  DEFAULT_CAMP_PHOTO,
+  LEVEL_LABEL,
+  VENUE_PHOTO,
+  listCampDocs,
+  listScheduledCamps,
+  listVenues,
+} from '../../lib/camps/content';
+import { campWeek, findMyCamp, formatCampRange, formatDay, isUpcoming } from '../../lib/camps/camp';
+import { saveChoice } from '../../lib/camps/data';
+import { createCampsClient, type CampUser } from '../../lib/camps/supabase';
+
+const user = Astro.locals.campUser as CampUser;
+
+const [camps, venues, notes] = await Promise.all([
+  listScheduledCamps(),
+  listVenues(),
+  listCampDocs('venues'),
+]);
+
+// Save "my camp", then POST-redirect-GET so a refresh never re-sends it.
+let error: string | null = null;
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  if (form.get('intent') === 'choose') {
+    const result = await saveChoice(
+      createCampsClient(Astro.cookies, Astro.request),
+      user.id,
+      form,
+      camps,
+    );
+    if (result.ok) return Astro.redirect('/camps/dates?saved=1#my-camp', 303);
+    error = result.error;
+  }
+}
+const saved = Astro.url.searchParams.get('saved') === '1';
+
+const upcoming = camps.filter((c) => isUpcoming(c));
+const myCamp = findMyCamp(user.choice, camps);
+const selected = myCamp && user.choice ? `${myCamp._id}|${user.choice.locationSlug}` : '';
+
+// One option per camp per venue: that is the choice a skier actually made.
+const options = upcoming.flatMap((c) =>
+  c.locations.map((l) => ({
+    value: `${c._id}|${l.slug}`,
+    label: `${formatCampRange(c.startDate)} · ${l.name}`,
+  })),
+);
+// Keep a past or closed pick selectable so the form never silently drops it.
+if (selected && !options.some((o) => o.value === selected) && myCamp) {
+  const l = myCamp.locations.find((x) => x.slug === user.choice?.locationSlug);
+  if (l) options.unshift({ value: selected, label: `${formatCampRange(myCamp.startDate)} · ${l.name}` });
+}
+
+const notesFor = (slug: string) => notes.filter((n) => n.location === slug);
+
+const field =
+  'w-full border border-ink/20 bg-paper px-4 py-3 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
+---
+
+<CampsLayout
+  title="Dates and venues"
+  kicker="2026/27 season"
+  heading="Dates and venues"
+  intro="Every camp runs Monday to Friday. Arrive the Sunday before. If you booked accommodation, check out the Saturday after."
+>
+  <!-- My camp: narrow form measure -->
+  <section id="my-camp" aria-labelledby="my-camp-heading" class="max-w-2xl scroll-mt-8 border-t border-ink pt-8">
+    <h2 id="my-camp-heading" class="font-display text-2xl font-bold">Your camp</h2>
+    <p class="mt-2 text-ink-70">
+      Pick the week and venue on your booking. It sets your countdown, your ski
+      fit plan and the meeting point you see. Your booking itself stays as it
+      is.
+    </p>
+
+    {saved && (
+      <div class="mt-6" role="status">
+        <Notice tone="good"><p>Saved.</p></Notice>
+      </div>
+    )}
+    {error && (
+      <div class="mt-6">
+        <Notice tone="warn" alert><p>{error}</p></Notice>
+      </div>
+    )}
+
+    {
+      options.length === 0 ? (
+        <div class="mt-6">
+          <Notice>
+            <p>No camps on the schedule right now. The new season's dates appear here as soon as they are set.</p>
+          </Notice>
+        </div>
+      ) : (
+        <form method="POST" class="mt-6 space-y-6">
+          <input type="hidden" name="intent" value="choose" />
+          <div>
+            <label for="camp" class="meta mb-2 block text-ink-70">Week and venue</label>
+            <select id="camp" name="camp" required class={field}>
+              <option value="" disabled selected={!selected}>Choose your camp</option>
+              {options.map((o) => (
+                <option value={o.value} selected={o.value === selected}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+          <fieldset>
+            <legend class="meta mb-2 block text-ink-70">Group</legend>
+            <div class="flex flex-wrap gap-3">
+              {(['intermediate', 'advanced'] as const).map((lvl) => (
+                <label class="flex cursor-pointer items-center gap-3 border border-ink/20 px-4 py-3 has-[:checked]:border-accent">
+                  <input
+                    type="radio"
+                    name="level"
+                    value={lvl}
+                    required
+                    checked={user.choice?.level === lvl}
+                    class="accent-accent"
+                  />
+                  <span class="font-display font-bold">{LEVEL_LABEL[lvl]}</span>
+                </label>
+              ))}
+            </div>
+            <p class="mt-2 text-sm text-ink-45">
+              Not sure? Pick the one you booked. We check levels on the first
+              morning and move people if we need to.
+            </p>
+          </fieldset>
+          <button
+            type="submit"
+            class="bg-accent px-6 py-3 font-display font-bold text-paper transition-colors hover:bg-ink"
+          >
+            Save my camp
+          </button>
+        </form>
+      )
+    }
+  </section>
+
+  <!-- Schedule: full-width table -->
+  <section aria-labelledby="schedule-heading" class="mt-16 border-t border-ink/10 pt-8">
+    <div class="flex flex-wrap items-baseline justify-between gap-4">
+      <h2 id="schedule-heading" class="font-display text-2xl font-bold">This season</h2>
+      <p class="meta text-ink-45">Confirmed when we hit minimum numbers</p>
+    </div>
+
+    {
+      upcoming.length === 0 ? (
+        <p class="mt-6 text-ink-70">Nothing scheduled yet.</p>
+      ) : (
+        <ul class="mt-6 divide-y divide-ink/10 border-y border-ink/10">
+          {upcoming.map((c) => {
+            const w = campWeek(c.startDate);
+            const mine = myCamp?._id === c._id;
+            return (
+              <li class:list={['grid gap-2 py-5 md:grid-cols-12 md:gap-6', mine && 'border-l-2 border-accent pl-4']}>
+                <div class="md:col-span-4">
+                  <p class="font-display text-xl font-bold">{formatCampRange(c.startDate)}</p>
+                  <p class="meta mt-1 text-ink-45">Arrive {formatDay(w.arrive)}</p>
+                </div>
+                <div class="md:col-span-4">
+                  <p class="text-ink">{c.locations.map((l) => l.name).join(' · ')}</p>
+                  {c.closedLocations.length > 0 && (
+                    <p class="mt-1 text-sm text-ink-45">
+                      Closed: {c.closedLocations.map((l) => l.name).join(', ')}
+                    </p>
+                  )}
+                </div>
+                <div class="md:col-span-4 md:text-right">
+                  <p class:list={['meta', c.confirmed ? 'text-accent' : 'text-ink-70']}>
+                    {mine ? 'Your camp · ' : ''}
+                    {c.confirmed ? 'Confirmed' : 'To be confirmed'}
+                  </p>
+                  {c.note && <p class="mt-1 text-sm text-ink-45">{c.note.replace(/,\s*$/, '.')}</p>}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )
+    }
+  </section>
+
+  <!-- Venues: alternating 5/7 photo and text -->
+  <section aria-labelledby="venues-heading" class="mt-16">
+    <h2 id="venues-heading" class="border-b border-ink pb-3 font-display text-2xl font-bold">Venues</h2>
+    <div class="divide-y divide-ink/10">
+      {
+        venues.map((v, i) => {
+          const venueNotes = notesFor(v.slug);
+          const isMine = user.choice?.locationSlug === v.slug;
+          return (
+            <article id={`venue-${v.slug}`} class="grid scroll-mt-8 gap-6 py-10 md:grid-cols-12">
+              <div class:list={['md:col-span-5', i % 2 === 1 && 'md:order-last']}>
+                <img
+                  src={VENUE_PHOTO[v.slug] ?? DEFAULT_CAMP_PHOTO}
+                  alt=""
+                  loading="lazy"
+                  class="aspect-[4/3] w-full bg-paper-2 object-cover"
+                />
+              </div>
+              <div class:list={['md:col-span-7', i % 2 === 1 ? 'md:pr-6' : 'md:pl-6']}>
+                <p class="meta text-ink-45">
+                  {v.area}
+                  {isMine && <span class="text-accent"> · Your venue</span>}
+                </p>
+                <h3 class="mt-2 font-display text-3xl font-bold">{v.name}</h3>
+                {v.shortBlurb && <p class="mt-3 text-ink-70">{v.shortBlurb}</p>}
+
+                {v.facts && v.facts.length > 0 && (
+                  <dl class="mt-5 flex flex-wrap gap-x-10 gap-y-3">
+                    {v.facts.map((f) => (
+                      <div>
+                        <dt class="meta text-ink-45">{f.label}</dt>
+                        <dd class="font-display text-2xl font-bold">{f.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+
+                {v.accommodationHeadline && (
+                  <p class="mt-5 text-sm text-ink-70">
+                    <span class="meta text-ink-45">Accommodation</span>{' '}
+                    {v.accommodationHeadline}
+                  </p>
+                )}
+
+                <div class="mt-6 border-t border-ink/10 pt-5">
+                  <p class="meta text-ink-45">Before your first morning</p>
+                  {venueNotes.length > 0 ? (
+                    <ul class="mt-3 space-y-3">
+                      {venueNotes.map((n) => (
+                        <li>
+                          <a href={`/camps/venues/${n.slug}`} class="font-display font-bold text-accent">
+                            {n.title}
+                          </a>
+                          {n.summary && <p class="text-sm text-ink-70">{n.summary}</p>}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p class="mt-2 text-sm text-ink-70">
+                      Meeting point instructions come with your booking
+                      confirmation. If you booked accommodation, you travel to
+                      the hill with the group.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </section>
+</CampsLayout>

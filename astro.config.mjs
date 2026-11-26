@@ -60,6 +60,8 @@ export default defineConfig({
         // Peak HQ, the staff portal. Segment-exact, so a future public page
         // such as /journal/hq-tour is not dropped by accident.
         !/\/hq(\/|$)/.test(new URL(page).pathname) &&
+        // The ski camp portal. /ski-camps, the public page, never matches.
+        !/^\/camps(\/|$)/.test(new URL(page).pathname) &&
         !page.includes('/_'),
       changefreq: 'weekly',
       priority: 0.7,

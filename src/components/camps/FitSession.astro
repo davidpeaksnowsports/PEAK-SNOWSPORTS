@@ -1,0 +1,64 @@
+---
+/**
+ * One ski fit session with its tick. The tick is a plain form posted back to
+ * the page it sits on, so it works without JavaScript; the page redirects
+ * after saving, so a refresh never re-sends it.
+ */
+import { inlineMarkdown } from '../../lib/hq/inline';
+import type { FitSession as Session } from '../../lib/camps/content';
+
+interface Props {
+  session: Session;
+  /** The stable key the tick is stored under. */
+  tickKey: string;
+  done: boolean;
+}
+
+const { session, tickKey, done } = Astro.props;
+const lines = (session.detail ?? '')
+  .split('\n')
+  .map((l) => l.replace(/^\s*[-*]\s+/, '').trim())
+  .filter(Boolean);
+const anchor = `s-${tickKey.replace(/[^\w-]/g, '-')}`;
+---
+
+<li id={anchor} class:list={['border-t pt-5', done ? 'border-accent' : 'border-ink/10']}>
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p class="meta text-ink-45">
+        {[session.focus, session.duration].filter(Boolean).join(' · ') || 'Session'}
+      </p>
+      <h4 class="mt-1 font-display text-lg font-bold">{session.title}</h4>
+    </div>
+    <form method="POST" action={`#${anchor}`}>
+      <input type="hidden" name="intent" value="tick" />
+      <input type="hidden" name="session" value={tickKey} />
+      <input type="hidden" name="done" value={done ? '0' : '1'} />
+      <button
+        type="submit"
+        aria-pressed={done ? 'true' : 'false'}
+        class:list={[
+          'meta px-4 py-2 transition-colors',
+          done
+            ? 'bg-accent text-paper hover:bg-ink'
+            : 'border border-ink/20 text-ink hover:border-ink',
+        ]}
+      >
+        {done ? 'Done' : 'Mark done'}
+        <span class="sr-only">: {session.title}</span>
+      </button>
+    </form>
+  </div>
+  {
+    lines.length > 0 && (
+      <ul class="mt-3 space-y-1 text-ink-70">
+        {lines.map((l) => (
+          <li class="flex gap-3">
+            <span class="text-accent" aria-hidden="true">·</span>
+            <span set:html={inlineMarkdown(l)} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</li>

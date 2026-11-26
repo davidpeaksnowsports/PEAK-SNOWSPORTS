@@ -1,0 +1,258 @@
+---
+/**
+ * Ski camp portal home. Answers three questions for a booked skier:
+ *
+ *   * When and where is my camp, and is it confirmed?
+ *   * Am I ready? (ski fit this week, the ski system, the kit list)
+ *   * Where is everything else?
+ *
+ * "My camp" is the camper's own pick from the public schedule, saved in
+ * camp_choices. It personalises; it grants nothing.
+ */
+export const prerender = false;
+
+import CampsLayout from '../../layouts/CampsLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import {
+  SECTION_META,
+  LEVEL_LABEL,
+  VENUE_PHOTO,
+  DEFAULT_CAMP_PHOTO,
+  isCampContentConfigured,
+  listCampDocs,
+  listScheduledCamps,
+} from '../../lib/camps/content';
+import {
+  campPhase,
+  campWeek,
+  currentBlock,
+  daysBetween,
+  findMyCamp,
+  formatCampRange,
+  formatLong,
+  planBlocks,
+  sessionKey,
+  todayInResort,
+  weeksUntil,
+} from '../../lib/camps/camp';
+import { listTicks } from '../../lib/camps/data';
+import { createCampsClient, type CampUser } from '../../lib/camps/supabase';
+
+const user = Astro.locals.campUser as CampUser;
+const db = createCampsClient(Astro.cookies, Astro.request);
+
+const [camps, fitness, ticks] = await Promise.all([
+  listScheduledCamps(),
+  listCampDocs('fitness'),
+  listTicks(db, user.id),
+]);
+
+const today = todayInResort();
+const myCamp = findMyCamp(user.choice, camps);
+const venue = myCamp?.locations.find((l) => l.slug === user.choice?.locationSlug) ?? null;
+const venueClosed = Boolean(
+  myCamp?.closedLocations.some((l) => l.slug === user.choice?.locationSlug),
+);
+const phase = myCamp ? campPhase(myCamp.startDate, today) : null;
+const week = myCamp ? campWeek(myCamp.startDate) : null;
+const daysToGo = myCamp ? daysBetween(today, myCamp.startDate) : null;
+
+const blocks = planBlocks(fitness);
+const weeksOut = myCamp ? weeksUntil(myCamp.startDate, today) : null;
+const { block, early } = currentBlock(blocks, weeksOut);
+const blockSessions = block?.sessions ?? [];
+const blockDone = block
+  ? blockSessions.filter((s) => ticks.has(sessionKey(block, s._key))).length
+  : 0;
+const allSessions = blocks.flatMap((b) => (b.sessions ?? []).map((s) => sessionKey(b, s._key)));
+const allDone = allSessions.filter((k) => ticks.has(k)).length;
+
+const firstName = user.name.split(/\s+/)[0];
+const photo = (user.choice?.locationSlug && VENUE_PHOTO[user.choice.locationSlug]) || DEFAULT_CAMP_PHOTO;
+
+const headline = !myCamp
+  ? 'Which camp are you on?'
+  : phase === 'before'
+    ? `${daysToGo} days to go.`
+    : phase === 'arrival'
+      ? 'Arrival day. See you tomorrow morning.'
+      : phase === 'during'
+        ? 'Camp week. Ski well.'
+        : 'Camp done. Keep the work going.';
+
+const cards = [
+  { ...SECTION_META.knowledge },
+  { ...SECTION_META['ski-system'] },
+  {
+    label: 'Video library',
+    href: '/camps/videos',
+    blurb: 'Demos of every building block, drills to practise, and how we film you on camp.',
+  },
+  { ...SECTION_META.fitness },
+  { ...SECTION_META.venues },
+];
+---
+
+<CampsLayout title="Home">
+  <p class="meta text-ink-45">Hi {firstName}</p>
+  <h1 class="mt-3 max-w-4xl font-display text-5xl font-bold leading-[0.95] tracking-tight md:text-7xl">
+    {headline}
+  </h1>
+
+  {
+    !isCampContentConfigured && (
+      <div class="mt-8 max-w-3xl">
+        <Notice tone="warn" label="Setup">
+          <p>
+            Camp pages are not connected yet. The schedule below still works; the
+            knowledge hub, ski system, videos and ski fit plan appear once the
+            private dataset is set (<code>SANITY_PORTAL_DATASET</code>,{' '}
+            <code>SANITY_PORTAL_TOKEN</code>).
+          </p>
+        </Notice>
+      </div>
+    )
+  }
+
+  <!-- Your camp: 7/5 split, photo bounded beside the facts -->
+  <section aria-labelledby="my-camp-heading" class="mt-12 grid gap-8 border-t border-ink pt-8 md:grid-cols-12 md:gap-6">
+    <div class="md:col-span-7">
+      <h2 id="my-camp-heading" class="meta text-ink-45">Your camp</h2>
+      {
+        myCamp && week && venue ? (
+          <>
+            <p class="mt-3 font-display text-3xl font-bold md:text-4xl">
+              {venue.name} · {formatCampRange(myCamp.startDate)}
+            </p>
+            <dl class="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
+              <div>
+                <dt class="meta text-ink-45">Arrive</dt>
+                <dd class="mt-1 text-ink">{formatLong(week.arrive)}</dd>
+              </div>
+              <div>
+                <dt class="meta text-ink-45">Ski</dt>
+                <dd class="mt-1 text-ink">Monday to Friday</dd>
+              </div>
+              <div>
+                <dt class="meta text-ink-45">Group</dt>
+                <dd class="mt-1 text-ink">{user.choice?.level ? LEVEL_LABEL[user.choice.level] : 'Not set'}</dd>
+              </div>
+              <div class="col-span-2 sm:col-span-3">
+                <dt class="meta text-ink-45">Status</dt>
+                <dd class="mt-1 text-ink">
+                  {venueClosed
+                    ? 'This venue is closed for this date. We will be in touch about your options.'
+                    : myCamp.confirmed
+                      ? 'Confirmed. It is going ahead.'
+                      : 'Waiting on numbers. We confirm as soon as we hit the minimum, and if we don’t, your coaching hours become private lessons the same week.'}
+                </dd>
+              </div>
+            </dl>
+            <p class="mt-8 flex flex-wrap gap-3">
+              <a
+                href={`/camps/dates#venue-${venue.slug}`}
+                class="inline-block bg-accent px-5 py-3 font-display font-bold text-paper no-underline transition-colors hover:bg-ink hover:no-underline"
+              >
+                Meeting point and arrival
+              </a>
+              <a
+                href="/camps/dates#my-camp"
+                class="inline-block border border-ink/20 px-5 py-3 font-display font-bold text-ink no-underline transition-colors hover:border-ink hover:no-underline"
+              >
+                Change camp
+              </a>
+            </p>
+          </>
+        ) : (
+          <>
+            <p class="mt-3 max-w-xl text-lg text-ink-70">
+              {user.choice?.campId
+                ? 'The camp you picked is no longer on the schedule. Pick it again so your countdown and ski fit plan line up.'
+                : 'Tell us your dates and venue. We use it to count you down, line up your ski fit plan and show the right meeting point.'}
+            </p>
+            <p class="mt-6">
+              <a
+                href="/camps/dates#my-camp"
+                class="inline-block bg-accent px-5 py-3 font-display font-bold text-paper no-underline transition-colors hover:bg-ink hover:no-underline"
+              >
+                Choose my camp
+              </a>
+            </p>
+          </>
+        )
+      }
+    </div>
+    <div class="md:col-span-5">
+      <img src={photo} alt="" class="aspect-[4/3] w-full bg-paper-2 object-cover" />
+    </div>
+  </section>
+
+  <!-- Ski fit this week: narrow measure, the one number that matters -->
+  {
+    blocks.length > 0 && (
+      <section aria-labelledby="fit-heading" class="mt-16 border-t border-ink/10 pt-8">
+        <div class="grid gap-6 md:grid-cols-12">
+          <div class="md:col-span-4">
+            <h2 id="fit-heading" class="font-display text-2xl font-bold">Ski fit</h2>
+            <p class="mt-2 font-display text-5xl font-bold text-accent">
+              {allDone}
+              <span class="text-2xl text-ink-45">/ {allSessions.length}</span>
+            </p>
+            <p class="meta mt-1 text-ink-45">Sessions done</p>
+          </div>
+          <div class="md:col-span-8">
+            {phase === 'during' || phase === 'arrival' ? (
+              <p class="text-lg text-ink-70">
+                The plan is done. This week, sleep, eat and stretch after skiing.
+              </p>
+            ) : block ? (
+              <>
+                <p class="meta text-ink-45">
+                  {early
+                    ? `Starts ${block.weeksOut} weeks before camp`
+                    : weeksOut !== null
+                      ? `This week · ${weeksOut} ${weeksOut === 1 ? 'week' : 'weeks'} out`
+                      : 'Where to start'}
+                </p>
+                <p class="mt-1 font-display text-2xl font-bold">{block.title}</p>
+                {block.summary && <p class="mt-2 max-w-xl text-ink-70">{block.summary}</p>}
+                <p class="mt-3 text-ink">
+                  {blockDone} of {blockSessions.length} sessions done in this block.
+                </p>
+                <p class="mt-4">
+                  <a href={`/camps/fitness#block-${block.slug}`} class="font-display font-bold text-accent">
+                    Open the plan
+                  </a>
+                </p>
+              </>
+            ) : (
+              <p class="text-ink-70">
+                <a href="/camps/fitness" class="text-accent">Open the plan</a>
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Everything else: numbered index, accent markers -->
+  <section aria-labelledby="sections-heading" class="mt-16 border-t border-ink/10 pt-8">
+    <h2 id="sections-heading" class="font-display text-2xl font-bold">Everything for your week</h2>
+    <ol class="mt-6 grid gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        cards.map((c, i) => (
+          <li class="border-t border-ink/10 py-6">
+            <a href={c.href} class="group block no-underline hover:no-underline">
+              <span class="meta text-accent">{String(i + 1).padStart(2, '0')}</span>
+              <span class="mt-2 block font-display text-xl font-bold text-ink group-hover:text-accent">
+                {c.label}
+              </span>
+              <span class="mt-2 block text-ink-70">{c.blurb}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</CampsLayout>
