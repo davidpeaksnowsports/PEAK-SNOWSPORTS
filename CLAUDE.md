@@ -458,10 +458,10 @@ A third server-rendered area at `/hq`, for employed office and booking staff:
 onboarding, then a knowledge hub (what we do, how we work, playbook, policies,
 people). See [`HQ.md`](./HQ.md).
 
-- **A session is not access.** `/portal`, `/gap` and `/hq` share one Supabase
-  project. Each resolves the visitor against its own table only
-  (`instructors`, `gap_members`, `staff_members`) and returns null without a
-  row. Never add a fallback profile: that exact bug let any account into
+- **A session is not access.** `/portal`, `/gap`, `/hq` and `/camps` share one
+  Supabase project. Each resolves the visitor against its own table only
+  (`instructors`, `gap_members`, `staff_members`, `camp_members`) and returns
+  null without a row. Never add a fallback profile: that exact bug let any account into
   `/portal` until September 2026.
 - **Sign-up is gated on a join code checked in the database.** The metadata on
   a sign-up is written by whoever is signing up, so it carries a claim and
@@ -478,6 +478,31 @@ people). See [`HQ.md`](./HQ.md).
 - **No em dashes in user-facing portal copy**, in any of the three areas.
 
 Every `/hq` route sets `prerender = false`.
+
+---
+
+## 11d. Ski camp portal
+
+A fourth server-rendered area at `/camps`, for skiers booked on a ski camp:
+knowledge hub, ski system, video library, ski fit plan, and camp dates and
+venues. See [`CAMPS.md`](./CAMPS.md).
+
+- **`/camps/*` is the portal; `/ski-camps` is the public page.** Same reason as
+  `/gap` and `/gap-course`: the middleware prefix test is segment-exact.
+- **Campers are paying clients, not team.** Their pages are `campDoc` and
+  `campVideo` in the private dataset, a separate type from `portalDoc`, and
+  the camp queries ask for those types only. Never point a camp page at
+  `portalDoc`.
+- **Dates and venues come from the public `skiCamp` and `campLocation`
+  documents**, the same ones `/ski-camps` shows. Do not copy them into the
+  portal.
+- **Sign-up is the join code from 0009** with area `camps`, and always makes a
+  `camper`. The code goes in the booking confirmation email; rotate it every
+  season.
+- **Camp choice is the camper's own word and personalises only.** It is not
+  read from SkiOperator and grants nothing. No medical or insurance data here.
+
+Every `/camps` route sets `prerender = false`.
 
 ---
 

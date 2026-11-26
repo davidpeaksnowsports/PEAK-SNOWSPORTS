@@ -166,7 +166,7 @@ const field =
             const w = campWeek(c.startDate);
             const mine = myCamp?._id === c._id;
             return (
-              <li class:list={['grid gap-2 py-5 md:grid-cols-12 md:gap-6', mine && 'border-l-2 border-accent pl-4']}>
+              <li class="grid gap-2 py-5 md:grid-cols-12 md:gap-6">
                 <div class="md:col-span-4">
                   <p class="font-display text-xl font-bold">{formatCampRange(c.startDate)}</p>
                   <p class="meta mt-1 text-ink-45">Arrive {formatDay(w.arrive)}</p>
@@ -180,8 +180,8 @@ const field =
                   )}
                 </div>
                 <div class="md:col-span-4 md:text-right">
+                  {mine && <p class="meta text-accent">Your camp</p>}
                   <p class:list={['meta', c.confirmed ? 'text-accent' : 'text-ink-70']}>
-                    {mine ? 'Your camp · ' : ''}
                     {c.confirmed ? 'Confirmed' : 'To be confirmed'}
                   </p>
                   {c.note && <p class="mt-1 text-sm text-ink-45">{c.note.replace(/,\s*$/, '.')}</p>}
