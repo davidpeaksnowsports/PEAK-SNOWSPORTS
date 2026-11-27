@@ -496,9 +496,12 @@ venues. See [`CAMPS.md`](./CAMPS.md).
 - **Dates and venues come from the public `skiCamp` and `campLocation`
   documents**, the same ones `/ski-camps` shows. Do not copy them into the
   portal.
-- **Sign-up is the join code from 0009** with area `camps`, and always makes a
-  `camper`. The code goes in the booking confirmation email; rotate it every
-  season.
+- **Sign-up is open: an email address and an emailed link, no code**, by
+  David's decision (migration 0017). After the link is used, `join_camps()`
+  adds only the caller, only as `camper`, never changing an existing row. No
+  trigger, nothing read from sign-up metadata. The consequence, accepted:
+  anyone can read camp pages, so nothing booked-skiers-only belongs there.
+  This is the one area without a gate; don't copy it to the others.
 - **Camp choice is the camper's own word and personalises only.** It is not
   read from SkiOperator and grants nothing. No medical or insurance data here.
 

@@ -25,7 +25,9 @@ blocks, and knowing where to be on Monday morning.
 | `/camps/fitness` | The ski fit plan, counted down to your camp, with sessions to tick off |
 | `/camps/dates` | Choose your camp, the season's schedule, each venue and its meeting notes |
 | `/camps/<section>/<slug>` | One page from any section |
-| `/camps/join`, `login`, `forgot-password`, `reset-password`, `logout` | Account |
+| `/camps/login` | Sign in and sign up: an email address, then a link. Password optional |
+| `/camps/confirm` | Where the emailed link lands |
+| `/camps/forgot-password`, `reset-password`, `logout` | Account. `/camps/join` redirects to login |
 
 Every route sets `prerender = false`; `src/middleware.ts` guards them.
 
@@ -56,31 +58,28 @@ the booking in SkiOperator.
 
 ### 1. Supabase
 
-Run `supabase/migrations/0016_ski_camp_portal.sql` (`supabase db push`, or
-paste it into the SQL editor). It adds the three tables and a `camps` area to
-the join-code table from 0009. It replaces `handle_join_code_signup` and
-`redeem_join_code` with versions that behave identically for `portal` and
-`hq`.
+Run both migrations (`supabase db push`, or paste them into the SQL editor):
 
-### 2. The join code
+- `0016_ski_camp_portal.sql` adds the three tables, and a `camps` area to the
+  join-code table from 0009.
+- `0017_open_camp_signup.sql` adds `join_camps()`, which is what lets anyone
+  in with just an email address.
 
-Campers sign up at `/camps/join` with a code. Set it, as for the other areas,
-in the SQL editor. Not in this repo:
+### 2. Sign-up: open, by email link
 
-```sql
-insert into public.area_join_codes (area, code, label, expires_at)
-values ('camps', '<code, 8 to 64 characters>', '2026/27 camps', '2027-04-30')
-on conflict (area) do update
-  set code = excluded.code, label = excluded.label,
-      expires_at = excluded.expires_at, active = true, updated_at = now();
-```
+By David's decision there is no code. A camper enters their email at
+`/camps/login` (first name optional), gets a link, taps it, and is in. Put
+`https://www.peaksnowsports.com/camps/login` in the booking confirmation email.
 
-Put the code and `https://www.peaksnowsports.com/camps/join` in the camp
-booking confirmation email. This code is shared more widely than the staff
-ones, so rotate it every season and let it expire when the season ends. A
-camper who already has a Peak login (an instructor, a GAP student, last
-season's camper) keeps it: last season's campers just sign in, and the others
-use the second form on the join page.
+What keeps that safe: no trigger reads sign-up metadata. Once someone has
+proved they own the email address, `/camps/confirm` calls `join_camps()`, which
+adds only the caller, only as `camper`, and never changes an existing row. It
+opens `/camps` and nothing else. The trade-off, accepted: anyone who signs up
+can read the camp pages, booked or not. Keep anything that must stay with
+booked skiers only out of the camp portal.
+
+Anyone with an existing Peak password can use it under "Use a password
+instead", and becomes a camper too.
 
 Everyone who signs up is a `camper`. To make a coach:
 
@@ -91,16 +90,42 @@ update public.camp_members set role = 'coach' where id = '<auth-uid>';
 Coaches see the same pages for now; the role is there for a group roster
 later. To remove someone, `active = false`.
 
-### 3. Password reset URLs
+### 3. Redirect URLs
 
 Add to **Authentication → URL Configuration → Redirect URLs**:
 
 ```
+https://www.peaksnowsports.com/camps/confirm
 https://www.peaksnowsports.com/camps/reset-password
-https://www.peaksnowsports.com/camps/login
+https://staging.peaksnowsports.com/camps/confirm
 https://staging.peaksnowsports.com/camps/reset-password
-https://staging.peaksnowsports.com/camps/login
 ```
+
+Without `/camps/confirm` on the list, Supabase silently sends the sign-in link
+to the Site URL instead, and campers land on the home page signed out.
+
+### 3a. Make the link work on any device (recommended)
+
+Supabase's default link only works in the browser that asked for it. A camper
+who asks on a laptop and opens their email on a phone gets "open it on the
+device you asked for it on". To fix that, in **Authentication → Emails →
+Magic Link**, change the link in the template to:
+
+```
+{{ .SiteURL }}/camps/confirm?token_hash={{ .TokenHash }}&type=email
+```
+
+`/camps/confirm` accepts both styles, so this can be done any time. Only the
+camp portal sends magic links, so no other area is affected. Check the Site
+URL is `https://www.peaksnowsports.com`.
+
+### 3b. Email sending
+
+Every sign-in is now an email. Supabase's built-in mailer allows only a few
+an hour for the whole project, so confirm a custom SMTP server (Resend) is set
+under **Authentication → Emails → SMTP settings**. Supabase also limits how
+often one address can ask for a link; the page says "wait a minute" when that
+happens.
 
 ### 4. Content
 

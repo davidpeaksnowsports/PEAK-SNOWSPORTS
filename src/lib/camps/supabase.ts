@@ -106,3 +106,27 @@ export async function getCampUser(
   if (error || !user) return null;
   return campProfileFor(supabase, user);
 }
+
+/**
+ * Give a signed-in user camp portal access, and return their profile.
+ *
+ * Sign-up is open (migration 0017): anyone with a Peak login, or anyone who
+ * has just confirmed their email, becomes a camper the first time they arrive.
+ * `join_camps` adds only the caller, only as a camper, and never changes an
+ * existing row, so a deactivated camper stays out. Null means no access.
+ */
+export async function joinCamps(
+  supabase: SupabaseClient,
+  user: User,
+): Promise<CampUser | null> {
+  const existing = await campProfileFor(supabase, user);
+  if (existing) return existing;
+
+  const name = typeof user.user_metadata?.name === 'string' ? user.user_metadata.name : null;
+  const { error } = await supabase.rpc('join_camps', { display_name: name });
+  if (error) {
+    console.error('[camps] join_camps failed:', error.message);
+    return null;
+  }
+  return campProfileFor(supabase, user);
+}

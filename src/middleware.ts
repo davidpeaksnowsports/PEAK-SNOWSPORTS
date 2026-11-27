@@ -50,6 +50,7 @@ const PUBLIC_HQ_ROUTES = new Set([
 const PUBLIC_CAMPS_ROUTES = new Set([
   '/camps/join',
   '/camps/login',
+  '/camps/confirm',
   '/camps/logout',
   '/camps/forgot-password',
   '/camps/reset-password',
