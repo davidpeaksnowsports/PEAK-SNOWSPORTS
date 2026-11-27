@@ -1,0 +1,66 @@
+---
+/**
+ * Where the emailed sign-in link lands.
+ *
+ * Two link styles are accepted:
+ *
+ *   * `?code=` is Supabase's default (PKCE). It only works in the browser that
+ *     asked for the link, because the other half of the exchange is a cookie
+ *     set there. Opened on another device, it fails, and we say so.
+ *
+ *   * `?token_hash=&type=` works on any device. It needs the Magic Link email
+ *     template changed in Supabase (see CAMPS.md). Recommended: campers often
+ *     ask on a laptop and open their email on a phone.
+ *
+ * On success the visitor becomes a camper if they are not already one
+ * (migration 0017), then lands on the portal home. Nothing renders on
+ * success; failures go back to the sign-in page with a reason.
+ */
+export const prerender = false;
+
+import type { EmailOtpType } from '@supabase/supabase-js';
+import { createCampsClient, isCampsConfigured, joinCamps } from '../../lib/camps/supabase';
+
+const OTP_TYPES: EmailOtpType[] = ['email', 'magiclink', 'signup'];
+
+if (!isCampsConfigured) return Astro.redirect('/camps/login', 303);
+
+const params = Astro.url.searchParams;
+const supabase = createCampsClient(Astro.cookies, Astro.request);
+
+let problem: 'expired' | 'device' | 'denied' | null = null;
+
+if (params.get('error_description') || params.get('error')) {
+  // Supabase reports a bad or reused link as query params, not a status.
+  problem = 'expired';
+} else if (params.get('token_hash')) {
+  const type = params.get('type') as EmailOtpType;
+  const { error } = await supabase.auth.verifyOtp({
+    token_hash: params.get('token_hash')!,
+    type: OTP_TYPES.includes(type) ? type : 'email',
+  });
+  if (error) problem = 'expired';
+} else if (params.get('code')) {
+  const { error } = await supabase.auth.exchangeCodeForSession(params.get('code')!);
+  if (error) {
+    // A missing code verifier means another browser asked for this link.
+    problem = /verifier/i.test(error.message) ? 'device' : 'expired';
+  }
+}
+
+if (problem) return Astro.redirect(`/camps/login?link=${problem}`, 303);
+
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+if (!user) return Astro.redirect('/camps/login', 303);
+
+if (!(await joinCamps(supabase, user))) {
+  // Only a camper an admin has deactivated ends up here.
+  await supabase.auth.signOut();
+  return Astro.redirect('/camps/login?link=denied', 303);
+}
+
+return Astro.redirect('/camps', 303);
+---
