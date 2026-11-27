@@ -1,0 +1,144 @@
+---
+/**
+ * Shell for every ski camp portal page, at /camps.
+ *
+ * Same reasoning as the other portal layouts: Winter Collection type and
+ * colour, no public nav, no analytics, nothing indexable. The audience is
+ * different, though. These are paying clients, not team, so the footer gives
+ * them a way to reach us rather than an "internal" notice.
+ */
+import '../styles/global.css';
+import { CAMP_NAV } from '../lib/camps/content';
+import type { CampUser } from '../lib/camps/supabase';
+import { whatsappHref } from '../lib/whatsapp';
+
+interface Props {
+  title: string;
+  kicker?: string;
+  heading?: string;
+  intro?: string;
+  /** False on login and password pages, which have no signed-in user. */
+  chrome?: boolean;
+}
+
+const { title, kicker, heading, intro, chrome = true } = Astro.props;
+const user = Astro.locals.campUser as CampUser | null;
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (href: string, exact = false) =>
+  exact ? path === href : path === href || path.startsWith(`${href}/`);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} · Peak ski camps</title>
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Source+Sans+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-paper text-ink">
+    <a
+      href="#camps-main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-ink focus:px-4 focus:py-2 focus:text-paper"
+      >Skip to content</a
+    >
+
+    {
+      chrome && user && (
+        <header class="border-b border-ink/10">
+          <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+            <a href="/camps" class="no-underline hover:no-underline">
+              <span class="meta text-ink-45">Peak Snowsports</span>
+              <span class="block font-display text-lg font-bold leading-none">
+                Ski camps
+              </span>
+            </a>
+
+            <div class="flex items-center gap-4">
+              <span class="hidden text-sm text-ink-70 sm:inline">{user.name}</span>
+              <form method="POST" action="/camps/logout">
+                <button
+                  type="submit"
+                  class="meta border border-ink/20 px-3 py-2 text-ink-70 transition-colors hover:border-ink hover:text-ink"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <nav aria-label="Camp portal sections" class="border-t border-ink/10">
+            <ul class="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-1 sm:px-6">
+              {CAMP_NAV.map((s) => (
+                <li>
+                  <a
+                    href={s.href}
+                    aria-current={isActive(s.href, s.exact) ? 'page' : undefined}
+                    class:list={[
+                      'meta block whitespace-nowrap border-b-2 px-3 py-3 no-underline transition-colors hover:no-underline',
+                      isActive(s.href, s.exact)
+                        ? 'border-accent text-accent'
+                        : 'border-transparent text-ink-70 hover:text-ink',
+                    ]}
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </header>
+      )
+    }
+
+    <main id="camps-main" class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-14">
+      {
+        (kicker || heading || intro) && (
+          <div class="mb-10 max-w-3xl">
+            {kicker && <p class="meta mb-3 text-ink-45">{kicker}</p>}
+            {heading && (
+              <h1 class="font-display text-4xl font-bold md:text-5xl">{heading}</h1>
+            )}
+            {intro && <p class="mt-4 text-lg text-ink-70">{intro}</p>}
+          </div>
+        )
+      }
+      <slot />
+    </main>
+
+    {
+      chrome && (
+        <footer class="mt-16 border-t border-ink/10">
+          <div class="mx-auto flex max-w-6xl flex-wrap items-baseline justify-between gap-4 px-4 py-8 sm:px-6">
+            <p class="meta text-ink-45">Peak ski camps · For booked skiers</p>
+            <p class="text-sm text-ink-70">
+              Questions?{' '}
+              <a
+                href={whatsappHref("Hi Peak, I'm booked on a ski camp and have a question.")}
+                target="_blank"
+                rel="noopener"
+                class="text-accent"
+              >
+                WhatsApp us
+              </a>{' '}
+              or email{' '}
+              <a href="mailto:hello@peaksnowsports.com" class="text-accent">
+                hello@peaksnowsports.com
+              </a>
+            </p>
+          </div>
+        </footer>
+      )
+    }
+  </body>
+</html>

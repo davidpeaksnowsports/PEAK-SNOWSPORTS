@@ -47,5 +47,7 @@ declare namespace App {
     gapUser: import('./lib/gap/supabase').GapUser | null;
     /** Set by middleware on /hq routes. Null when signed out or not staff. */
     hqUser: import('./lib/hq/supabase').HqUser | null;
+    /** Set by middleware on /camps routes. Null when signed out or not a camper. */
+    campUser: import('./lib/camps/supabase').CampUser | null;
   }
 }

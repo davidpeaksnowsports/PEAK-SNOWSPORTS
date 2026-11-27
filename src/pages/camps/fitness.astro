@@ -1,0 +1,182 @@
+---
+/**
+ * Ski fit: the training plan, counted down to the camper's own camp.
+ *
+ * The plan is a set of fitness campDocs with a `weeksOut` and sessions. The
+ * block for this week is open and marked; the rest are collapsed. Fitness
+ * pages without a `weeksOut` are reading, listed underneath.
+ *
+ * Ticks are plain forms that post back here and redirect (POST-redirect-GET).
+ */
+export const prerender = false;
+
+import CampsLayout from '../../layouts/CampsLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import FitSession from '../../components/camps/FitSession.astro';
+import CampVideo from '../../components/camps/CampVideo.astro';
+import {
+  SECTION_META,
+  isCampContentConfigured,
+  listCampDocs,
+  listCampVideos,
+  listScheduledCamps,
+} from '../../lib/camps/content';
+import {
+  campPhase,
+  currentBlock,
+  findMyCamp,
+  formatCampRange,
+  planBlocks,
+  sessionKey,
+  weeksUntil,
+} from '../../lib/camps/camp';
+import { listTicks, setTick } from '../../lib/camps/data';
+import { createCampsClient, type CampUser } from '../../lib/camps/supabase';
+
+const user = Astro.locals.campUser as CampUser;
+const db = createCampsClient(Astro.cookies, Astro.request);
+
+const [docs, camps, videos] = await Promise.all([
+  listCampDocs('fitness'),
+  listScheduledCamps(),
+  listCampVideos(),
+]);
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  if (form.get('intent') === 'tick') {
+    await setTick(db, user.id, form, docs);
+    // Keep the camper where they were on the page.
+    const anchor = `s-${String(form.get('session') ?? '').replace(/[^\w-]/g, '-')}`;
+    return Astro.redirect(`/camps/fitness#${anchor}`, 303);
+  }
+}
+
+const ticks = await listTicks(db, user.id);
+const blocks = planBlocks(docs);
+const reading = docs.filter((d) => !blocks.includes(d));
+const myCamp = findMyCamp(user.choice, camps);
+const weeksOut = myCamp ? weeksUntil(myCamp.startDate) : null;
+const { block: current, early } = currentBlock(blocks, weeksOut);
+const fitVideos = videos.filter((v) => v.category === 'fitness');
+
+const doneIn = (b: (typeof blocks)[number]) =>
+  (b.sessions ?? []).filter((s) => ticks.has(sessionKey(b, s._key))).length;
+const total = blocks.reduce((n, b) => n + (b.sessions?.length ?? 0), 0);
+const done = blocks.reduce((n, b) => n + doneIn(b), 0);
+
+const status = !myCamp
+  ? 'Choose your camp and the plan counts down to it.'
+  : campPhase(myCamp.startDate) === 'after'
+    ? 'Your camp is done. Two sessions a week keeps what you built for next time.'
+    : weeksOut !== null && weeksOut <= 0
+      ? 'Camp week. The work is done: sleep, eat well, stretch after skiing.'
+      : early && current
+        ? `${weeksOut} weeks to go. The plan starts ${current.weeksOut} weeks out, so you are early. Start the first block now if you like.`
+        : `${weeksOut} ${weeksOut === 1 ? 'week' : 'weeks'} to ${formatCampRange(myCamp.startDate)}.`;
+---
+
+<CampsLayout
+  title={SECTION_META.fitness.label}
+  kicker="Get your legs ready"
+  heading={SECTION_META.fitness.label}
+  intro="Five days of coaching is five days of hard skiing. Legs that last until the afternoon are where most of the improvement happens. This plan gets you there."
+>
+  <section class="grid gap-6 border-t border-ink pt-6 md:grid-cols-12">
+    <p class="text-lg text-ink md:col-span-8">
+      {status}
+      {!myCamp && <> <a href="/camps/dates#my-camp" class="text-accent">Choose my camp</a></>}
+    </p>
+    {total > 0 && (
+      <p class="md:col-span-4 md:text-right">
+        <span class="font-display text-4xl font-bold text-accent">{done}</span>
+        <span class="font-display text-xl text-ink-45"> / {total}</span>
+        <span class="meta block text-ink-45">Sessions done</span>
+      </p>
+    )}
+  </section>
+
+  {
+    blocks.length === 0 ? (
+      <div class="mt-10">
+        <Notice>
+          <p>
+            {isCampContentConfigured
+              ? 'The training plan is on its way.'
+              : 'Camp pages are not connected yet.'}
+          </p>
+        </Notice>
+      </div>
+    ) : (
+      <div class="mt-12 space-y-4">
+        {blocks.map((b) => {
+          const isCurrent = current?._id === b._id;
+          return (
+            <details
+              id={`block-${b.slug}`}
+              open={isCurrent || (!current && b === blocks[0])}
+              class:list={['scroll-mt-8 border-t pt-5', isCurrent ? 'border-accent' : 'border-ink/10']}
+            >
+              <summary class="flex cursor-pointer flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                <span>
+                  <span class:list={['meta block', isCurrent ? 'text-accent' : 'text-ink-45']}>
+                    {b.weeksOut} weeks out{isCurrent ? ' · This week' : ''}
+                  </span>
+                  <span class="mt-1 block font-display text-2xl font-bold">{b.title}</span>
+                </span>
+                <span class="meta text-ink-45">
+                  {doneIn(b)} / {b.sessions?.length ?? 0} done
+                </span>
+              </summary>
+              {b.summary && <p class="mt-3 max-w-2xl text-ink-70">{b.summary}</p>}
+              <p class="mt-2 text-sm">
+                <a href={`/camps/fitness/${b.slug}`} class="text-accent">Read the notes for this block</a>
+              </p>
+              <ul class="mt-6 grid gap-x-6 gap-y-6 md:grid-cols-2">
+                {(b.sessions ?? []).map((s) => {
+                  const key = sessionKey(b, s._key);
+                  return <FitSession session={s} tickKey={key} done={ticks.has(key)} />;
+                })}
+              </ul>
+            </details>
+          );
+        })}
+      </div>
+    )
+  }
+
+  {
+    reading.length > 0 && (
+      <section aria-labelledby="reading-heading" class="mt-16 grid gap-6 border-t border-ink pt-6 md:grid-cols-12">
+        <h2 id="reading-heading" class="font-display text-2xl font-bold md:col-span-4">Reading</h2>
+        <ul class="divide-y divide-ink/10 md:col-span-8">
+          {reading.map((d) => (
+            <li class="py-4 first:pt-0">
+              <a href={`/camps/fitness/${d.slug}`} class="font-display text-lg font-bold text-ink hover:text-accent">
+                {d.title}
+              </a>
+              {d.summary && <p class="mt-1 text-ink-70">{d.summary}</p>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    fitVideos.length > 0 && (
+      <section aria-labelledby="fit-videos" class="mt-16">
+        <h2 id="fit-videos" class="border-b border-ink pb-3 font-display text-2xl font-bold">How to do them</h2>
+        <div class="mt-6 grid gap-x-6 gap-y-10 md:grid-cols-2">
+          {fitVideos.map((v) => <CampVideo video={v} />)}
+        </div>
+      </section>
+    )
+  }
+
+  <p class="mt-16 max-w-2xl border-t border-ink/10 pt-6 text-sm text-ink-45">
+    General guidance, not a medical programme. If you have an injury or a
+    health condition, check with your doctor or physio first, and stop any
+    exercise that hurts.
+  </p>
+</CampsLayout>

@@ -20,6 +20,7 @@ table and nothing else:
 | `/portal` | `instructors` | an admin, by SQL |
 | `/gap` | `gap_members` | the enrolment trigger, gated on a course code |
 | `/hq` | `staff_members` | an admin, by SQL |
+| `/camps` | `camp_members` | the join-code trigger, always as `camper` (see `CAMPS.md`) |
 
 One person can hold rows in more than one table (a manager who also teaches,
 say) and sign in to each area with the same account. Nobody gets into an area

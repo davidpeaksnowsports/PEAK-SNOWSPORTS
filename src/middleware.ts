@@ -1,13 +1,14 @@
 /**
- * Auth guard for the three signed-in areas: the instructor portal at /portal,
- * the GAP student portal at /gap and Peak HQ, the staff portal, at /hq.
+ * Auth guard for the four signed-in areas: the instructor portal at /portal,
+ * the GAP student portal at /gap, Peak HQ, the staff portal, at /hq, and the
+ * ski camp portal at /camps.
  *
  * Middleware runs only for on-demand routes, so every guarded page sets
  * `export const prerender = false`. A page that forgets that would be built as
  * static HTML and served without ever passing through here — so each layout
  * asserts on its own `Astro.locals` user rather than trusting the guard alone.
  *
- * All three share one Supabase project and so one session cookie. Each area
+ * All four share one Supabase project and so one session cookie. Each area
  * resolves the visitor against its own profile table only — a valid session is
  * never access by itself.
  *
@@ -19,6 +20,7 @@ import { defineMiddleware } from 'astro:middleware';
 import { getPortalUser, isPortalConfigured } from './lib/portal/supabase';
 import { getGapUser, isGapConfigured } from './lib/gap/supabase';
 import { getHqUser, isHqConfigured } from './lib/hq/supabase';
+import { getCampUser, isCampsConfigured } from './lib/camps/supabase';
 
 /** Reachable without a session. Everything else under /portal requires one. */
 const PUBLIC_PORTAL_ROUTES = new Set([
@@ -45,7 +47,15 @@ const PUBLIC_HQ_ROUTES = new Set([
   '/hq/reset-password',
 ]);
 
-type Area = 'portal' | 'gap' | 'hq';
+const PUBLIC_CAMPS_ROUTES = new Set([
+  '/camps/join',
+  '/camps/login',
+  '/camps/logout',
+  '/camps/forgot-password',
+  '/camps/reset-password',
+]);
+
+type Area = 'portal' | 'gap' | 'hq' | 'camps';
 
 /**
  * Everything that differs between the signed-in areas. `home` is where a
@@ -86,6 +96,13 @@ const AREAS: Record<
     publicRoutes: PUBLIC_HQ_ROUTES,
     resolve: getHqUser,
   },
+  camps: {
+    configured: isCampsConfigured,
+    loginPath: '/camps/login',
+    home: '/camps',
+    publicRoutes: PUBLIC_CAMPS_ROUTES,
+    resolve: getCampUser,
+  },
 };
 
 const normalise = (pathname: string) => pathname.replace(/\/+$/, '') || '/';
@@ -93,7 +110,9 @@ const normalise = (pathname: string) => pathname.replace(/\/+$/, '') || '/';
 /**
  * Segment-exact prefix test. `startsWith('/gap')` would also match the public
  * marketing page /gap-course and put it behind a login — which is exactly the
- * page that sells the course.
+ * page that sells the course. The same holds for /camps: the public page is
+ * /ski-camps, which this never matches, and nothing like /camps-2027 should be
+ * swept up either.
  */
 const under = (path: string, prefix: string) =>
   path === prefix || path.startsWith(`${prefix}/`);
@@ -180,7 +199,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
       ? 'gap'
       : under(path, '/hq')
         ? 'hq'
-        : null;
+        : under(path, '/camps')
+          ? 'camps'
+          : null;
 
   if (!area) return next();
 
@@ -197,10 +218,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   // Only ever populate the locals for the area being served. One person can
   // hold an instructors row and a staff_members row on the same session, but
-  // /portal must not read an HQ profile, or vice versa.
+  // /portal must not read an HQ profile, or vice versa. The same for campers.
   context.locals.portalUser = null;
   context.locals.gapUser = null;
   context.locals.hqUser = null;
+  context.locals.campUser = null;
 
   // Without Supabase configured there is no way to authenticate anyone. Let the
   // login page render its setup notice, and keep every other route shut.
@@ -212,7 +234,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const user = await resolve(context.cookies, context.request);
   if (area === 'portal') context.locals.portalUser = user as App.Locals['portalUser'];
   else if (area === 'gap') context.locals.gapUser = user as App.Locals['gapUser'];
-  else context.locals.hqUser = user as App.Locals['hqUser'];
+  else if (area === 'hq') context.locals.hqUser = user as App.Locals['hqUser'];
+  else context.locals.campUser = user as App.Locals['campUser'];
 
   if (publicRoutes.has(path)) {
     // Already signed in and heading for the login page — send them onward.

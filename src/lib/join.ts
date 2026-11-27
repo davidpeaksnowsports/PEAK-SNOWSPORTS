@@ -1,6 +1,6 @@
 /**
- * Join-code sign-up, shared by the instructor hub (/portal/join) and Peak HQ
- * (/hq/join).
+ * Join-code sign-up, shared by the instructor hub (/portal/join), Peak HQ
+ * (/hq/join) and the ski camp portal (/camps/join).
  *
  * The code is the gate, and it is checked in the database, never here: a
  * trigger on sign-up and the `redeem_join_code` function both call
@@ -16,16 +16,18 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-export type JoinArea = 'portal' | 'hq';
+export type JoinArea = 'portal' | 'hq' | 'camps';
 
 export const AREA_LABEL: Record<JoinArea, string> = {
   portal: 'the instructor hub',
   hq: 'Peak HQ',
+  camps: 'the ski camp portal',
 };
 
 export const AREA_HOME: Record<JoinArea, string> = {
   portal: '/portal',
   hq: '/hq',
+  camps: '/camps',
 };
 
 export const MIN_PASSWORD = 10;

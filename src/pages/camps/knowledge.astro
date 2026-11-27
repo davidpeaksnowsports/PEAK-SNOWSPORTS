@@ -1,0 +1,77 @@
+---
+/**
+ * Knowledge hub: the practical reading for a camp week, grouped the way a
+ * skier thinks about it (before you go, on the camp, kit, mountain sense).
+ * Pages for the other level are kept, tagged, rather than hidden: an
+ * intermediate may well want to know what the advanced group works on.
+ */
+export const prerender = false;
+
+import CampsLayout from '../../layouts/CampsLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import {
+  KNOWLEDGE_GROUPS,
+  LEVEL_LABEL,
+  SECTION_META,
+  forLevel,
+  isCampContentConfigured,
+  listCampDocs,
+} from '../../lib/camps/content';
+import type { CampUser } from '../../lib/camps/supabase';
+
+const user = Astro.locals.campUser as CampUser;
+const level = user.choice?.level ?? null;
+const docs = await listCampDocs('knowledge');
+
+const known = new Set(KNOWLEDGE_GROUPS.map((g) => g.key));
+const groups = [
+  ...KNOWLEDGE_GROUPS.map((g) => ({ ...g, docs: docs.filter((d) => d.category === g.key) })),
+  { key: 'other', label: 'More', docs: docs.filter((d) => !d.category || !known.has(d.category)) },
+].filter((g) => g.docs.length > 0);
+---
+
+<CampsLayout
+  title={SECTION_META.knowledge.label}
+  kicker="Read before you go"
+  heading={SECTION_META.knowledge.label}
+  intro={SECTION_META.knowledge.blurb}
+>
+  {
+    groups.length === 0 ? (
+      <Notice>
+        <p>
+          {isCampContentConfigured
+            ? 'Nothing published yet. The first pages land here before the season starts.'
+            : 'Camp pages are not connected yet.'}
+        </p>
+      </Notice>
+    ) : (
+      <div class="space-y-14">
+        {groups.map((g) => (
+          <section aria-labelledby={`g-${g.key}`} class="grid gap-6 border-t border-ink pt-6 md:grid-cols-12">
+            <h2 id={`g-${g.key}`} class="font-display text-2xl font-bold md:col-span-4">
+              {g.label}
+            </h2>
+            <ul class="divide-y divide-ink/10 md:col-span-8">
+              {g.docs.map((d) => (
+                <li class="py-4 first:pt-0">
+                  <a href={`/camps/knowledge/${d.slug}`} class="group block no-underline hover:no-underline">
+                    <span class="block font-display text-lg font-bold text-ink group-hover:text-accent">
+                      {d.title}
+                    </span>
+                    {d.summary && <span class="mt-1 block text-ink-70">{d.summary}</span>}
+                    {d.level && d.level !== 'all' && (
+                      <span class:list={['meta mt-2 block', forLevel(d, level) ? 'text-accent' : 'text-ink-45']}>
+                        {LEVEL_LABEL[d.level]}
+                      </span>
+                    )}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    )
+  }
+</CampsLayout>

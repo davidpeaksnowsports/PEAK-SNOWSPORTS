@@ -1,0 +1,123 @@
+---
+/**
+ * Video library. Filtered on the server by category and level through the
+ * query string, so the filters are plain links: they work without JavaScript
+ * and a filtered view can be shared.
+ *
+ * The level filter defaults to the camper's own group. "Every level" shows
+ * the lot.
+ */
+export const prerender = false;
+
+import CampsLayout from '../../layouts/CampsLayout.astro';
+import Notice from '../../components/gap-portal/Notice.astro';
+import CampVideo from '../../components/camps/CampVideo.astro';
+import {
+  LEVEL_LABEL,
+  VIDEO_CATEGORIES,
+  forLevel,
+  isCampContentConfigured,
+  listCampVideos,
+} from '../../lib/camps/content';
+import type { CampLevel, CampUser } from '../../lib/camps/supabase';
+
+const user = Astro.locals.campUser as CampUser;
+const videos = await listCampVideos();
+
+const params = Astro.url.searchParams;
+const categoryParam = params.get('category');
+const category = VIDEO_CATEGORIES.some((c) => c.key === categoryParam) ? categoryParam : null;
+const levelParam = params.get('level');
+const level: CampLevel | null =
+  levelParam === 'intermediate' || levelParam === 'advanced'
+    ? levelParam
+    : levelParam === 'all'
+      ? null
+      : user.choice?.level ?? null;
+
+const shown = videos.filter(
+  (v) => (!category || v.category === category) && forLevel(v, level),
+);
+const groups = VIDEO_CATEGORIES.map((c) => ({
+  ...c,
+  videos: shown.filter((v) => v.category === c.key),
+})).filter((g) => g.videos.length > 0);
+
+const href = (next: { category?: string | null; level?: string | null }) => {
+  const q = new URLSearchParams();
+  const cat = next.category === undefined ? category : next.category;
+  const lvl = next.level === undefined ? (levelParam ?? null) : next.level;
+  if (cat) q.set('category', cat);
+  if (lvl) q.set('level', lvl);
+  const s = q.toString();
+  return s ? `/camps/videos?${s}` : '/camps/videos';
+};
+
+const activeLevel = levelParam === 'all' ? 'all' : (level ?? 'all');
+const chip = (active: boolean) => [
+  'meta inline-block px-3 py-2 no-underline transition-colors hover:no-underline',
+  active ? 'bg-accent text-paper' : 'border border-ink/20 text-ink-70 hover:border-ink hover:text-ink',
+];
+---
+
+<CampsLayout
+  title="Video library"
+  kicker="Watch, then ski it"
+  heading="Video library"
+  intro="Demos of every building block, the drills we use on camp, and what to look for when you watch yourself back."
+>
+  {
+    videos.length === 0 ? (
+      <Notice>
+        <p>
+          {isCampContentConfigured
+            ? 'No videos yet. The first demos go up before the season starts.'
+            : 'Camp pages are not connected yet.'}
+        </p>
+      </Notice>
+    ) : (
+      <>
+        <nav aria-label="Filter videos" class="space-y-4 border-y border-ink/10 py-5">
+          <ul class="flex flex-wrap gap-2">
+            <li><a href={href({ category: null })} class:list={chip(!category)} aria-current={!category ? 'true' : undefined}>All topics</a></li>
+            {VIDEO_CATEGORIES.filter((c) => videos.some((v) => v.category === c.key)).map((c) => (
+              <li>
+                <a href={href({ category: c.key })} class:list={chip(category === c.key)} aria-current={category === c.key ? 'true' : undefined}>
+                  {c.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <ul class="flex flex-wrap gap-2">
+            {(['all', 'intermediate', 'advanced'] as const).map((l) => (
+              <li>
+                <a href={href({ level: l })} class:list={chip(activeLevel === l)} aria-current={activeLevel === l ? 'true' : undefined}>
+                  {l === 'all' ? 'Every level' : LEVEL_LABEL[l]}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {groups.length === 0 ? (
+          <p class="mt-10 text-ink-70">
+            Nothing matches that filter. <a href={href({ category: null, level: 'all' })} class="text-accent">Show everything</a>.
+          </p>
+        ) : (
+          <div class="mt-12 space-y-16">
+            {groups.map((g) => (
+              <section aria-labelledby={`v-${g.key}`}>
+                <h2 id={`v-${g.key}`} class="border-b border-ink pb-3 font-display text-2xl font-bold">
+                  {g.label}
+                </h2>
+                <div class="mt-6 grid gap-x-6 gap-y-10 md:grid-cols-2">
+                  {g.videos.map((v) => <CampVideo video={v} />)}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </>
+    )
+  }
+</CampsLayout>
